@@ -520,8 +520,13 @@ function gateBoardHtml(periodMap) {
     body = '<ol class="gate-list" id="gateList">' +
       shown.map(function (r, i) { return gateRowHtml(r, i === 0); }).join("") + "</ol>";
     if (g.rows.length > shown.length) {
-      body += '<button class="gate-more" type="button" id="gateMore">Show all ' +
-        fmt0(g.rows.length) + "</button>";
+      /* The click reveals `capped` rows, which is 50 at most. Promising the
+         full count and then drawing 50 is simply untrue, so the button says
+         "all" only when all of them really do appear. */
+      body += '<button class="gate-more" type="button" id="gateMore">' +
+        (capped === g.rows.length
+          ? "Show all " + fmt0(g.rows.length)
+          : "Show the first " + fmt0(capped)) + "</button>";
     }
     body += srTable(
       "People inside the paid depth under the 100.00 Sales Volume line in " + monthName,

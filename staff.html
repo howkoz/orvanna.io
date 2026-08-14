@@ -214,7 +214,7 @@
               <div class="t-row"><span>Order PV</span><span class="t-pv" id="sumPv">0 PV</span></div>
 
               <div class="meter-box" id="meterBox">
-                <div class="meter-label"><span>Qualified month</span><span class="m-now" id="meterNow">0 / 100 PV</span></div>
+                <div class="meter-label"><span>Qualified month</span><span class="m-now" id="meterNow">0.00 / 100.00 SV</span></div>
                 <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
                 <p class="meter-note" id="meterNote"></p>
                 <p class="meter-say" id="meterSay" hidden></p>
@@ -844,7 +844,11 @@
     var combined = baseSv + orderPv;
     var box = byId('meterBox');
     byId('meterFill').style.width = Math.min(100, combined / QUAL_PV * 100) + '%';
-    byId('meterNow').textContent = Math.round(combined).toLocaleString('en-US') + ' / 100 PV';
+    /* The qualification line is 100.00 Sales Volume (SV), per the compensation
+       plan. This meter used to call it "100 PV" and round to whole numbers,
+       which contradicted the member portal on the same figure. Products carry
+       Personal Volume (PV); the month is qualified on SV. */
+    byId('meterNow').textContent = fmtNum(combined) + ' / 100.00 SV';
     byId('meterNote').textContent = 'Month Sales Volume (SV) ' + fmtNum(baseSv) +
       ' + this order ' + fmtPv(orderPv) + '.';
     var say = byId('meterSay');
@@ -1093,7 +1097,7 @@
         ? 'This order carries ' + fmtPv(pv) + '; it qualifies you for the month.'
         : 'This order carries ' + fmtPv(pv) + '; you were already qualified this month.')
       : 'This order carries ' + fmtPv(pv) + '; with this month’s volume you are at ' +
-        Math.round(combined) + ' of the 100 PV qualified month.';
+        fmtNum(combined) + ' of the 100.00 Sales Volume (SV) qualified month.';
 
     byId('confFacts').innerHTML =
       fact('Placed for', esc(caller.code) + ' · ' + esc(caller.name)) +
