@@ -256,6 +256,15 @@
                   </div>
                 </div>
                 <p class="wallet-note" id="walletNote" hidden></p>
+                <!-- Live payments (Phase 6): this area stays hidden and inert
+                     unless the LIVE_PAYMENTS flag in the script below is true.
+                     The secure card form from the payment provider mounts into
+                     hyperswitchMount; card data never touches this page's code. -->
+                <div id="livePayArea" hidden>
+                  <p class="pay-note" id="livePayNote"></p>
+                  <div id="hyperswitchMount"></div>
+                  <p class="pay-note" id="livePayStatus" hidden aria-live="polite"></p>
+                </div>
                 <button class="btn btn-solid btn-block" type="submit" id="placeOrderBtn">Place order</button>
               </form>
               <p class="login-note">Demonstration checkout: any values continue, including empty fields.</p>
@@ -341,9 +350,19 @@
 
         <p class="confirm-note" id="confirmRenews" hidden></p>
         <p class="confirm-note" id="confirmQualified"></p>
-        <p class="confirm-note">Demonstration checkout: no payment occurred and nothing will be charged.</p>
+        <p class="confirm-note" id="confirmDemoNote">Demonstration checkout: no payment occurred and nothing will be charged.</p>
         <p class="confirm-forward">Payments route through the Orvanna orchestration layer in a later phase.</p>
         <a class="btn btn-solid" href="shop.html">Back to the catalog</a>
+      </div>
+
+      <!-- Live payments (Phase 6): recent test orders from visitors,
+           served by the rate-limited list-demo-orders function. Stays
+           hidden and inert unless the LIVE_PAYMENTS flag is true. -->
+      <div class="confirm-card glass" id="liveOrdersSection" hidden>
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h2 class="checkout-panel-title">Recent test orders</h2>
+        <p class="step-intro">Test orders placed by visitors like you. Test mode only; nothing is ever charged.</p>
+        <div class="summary-lines" id="liveOrdersList"></div>
       </div>
     </div>
   </section>
@@ -828,6 +847,37 @@
     radio.addEventListener('change', renderSummary);
   });
 
+  /* ============================================================
+     LIVE PAYMENTS FEATURE FLAG (Phase 6)
+
+     false = today's demonstration checkout, byte for byte: no
+             network calls, no external script, the
+             always-succeeds Place order handler.
+     true  = Place order calls the create-payment Edge Function,
+             mounts the official HyperSwitch checkout script
+             (HyperLoader.js, the ONE sanctioned external script,
+             loaded only when this flag is true), then confirms
+             server-side through confirm-payment. The server's
+             pricing mirror is the only math that counts; this
+             page sends only item codes, modes, and quantities.
+     Spec: MLM-PILOT/docs/PHASE-6-SPEC.md
+     ============================================================ */
+  const LIVE_PAYMENTS = true;
+
+  var LIVE_CONFIG = {
+    /* Supabase Edge Function base for the Orvanna project. */
+    functionsBase: 'https://oiyibdczkokegaxkwulv.supabase.co/functions/v1',
+    /* The public anon key: public by design, grants nothing on
+       the database; it only lets the browser invoke the
+       functions. Same key the portal pages already ship. */
+    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw',
+    /* The sanctioned external script (spec section 1.4). Pinned
+       from the HyperSwitch documentation at wiring time; confirm
+       against the dashboard docs before flipping the flag and
+       record the final URL in the QA sheet. */
+    hyperLoaderUrl: 'https://beta.hyperswitch.io/v1/HyperLoader.js'
+  };
+
   /* ---------- step 4: payment method ---------- */
 
   var PAY_LABELS = {
@@ -940,6 +990,9 @@
     accountMode = null;
     setAccountStage('chooser');
     setPayMethod('card');
+    /* a fresh checkout entry always starts a fresh payment: any
+       earlier client_secret belongs to a possibly stale cart */
+    if (LIVE_PAYMENTS) liveResetPayment('');
     renderSummary();
     showView('checkout');
   });
@@ -966,6 +1019,13 @@
 
   document.getElementById('checkoutForm').addEventListener('submit', function (e) {
     e.preventDefault();
+    if (LIVE_PAYMENTS) { liveSubmit(); return; }
+    demoPlaceOrder();
+  });
+
+  /* the round-4 demonstration handler, unchanged: it runs when
+     LIVE_PAYMENTS is false and never touches the network */
+  function demoPlaceOrder() {
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
 
     var m = orderMath();
@@ -1008,7 +1068,318 @@
     persist();
     renderAll();
     showView('confirm');
-  });
+  }
+
+  /* ============================================================
+     LIVE PAYMENT FLOW (only reachable when LIVE_PAYMENTS is true)
+
+     Create on the server, pay inside the provider's secure card
+     form, confirm by server-side retrieve. This page never sees
+     card data and never sends prices, names, addresses, or tax
+     identifiers: the create-payment request carries only
+     { sku, mode, quantity } lines plus the activation choice,
+     the tax exempt yes or no, the optional member code, and the
+     channel (spec section 1.2).
+     ============================================================ */
+
+  var liveState = {
+    orderNumber: null,
+    clientSecret: null,
+    hyper: null,
+    widgets: null,
+    busy: false
+  };
+  var livePayArea = document.getElementById('livePayArea');
+  var livePayNote = document.getElementById('livePayNote');
+  var livePayStatus = document.getElementById('livePayStatus');
+
+  function liveStatus(message) {
+    livePayStatus.hidden = !message;
+    livePayStatus.textContent = message || '';
+  }
+
+  /* invoke an Edge Function; resolves { status, data } and never
+     rejects on an HTTP error status (the caller reads status) */
+  function fnCall(name, method, body) {
+    return fetch(LIVE_CONFIG.functionsBase + '/' + name, {
+      method: method,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + LIVE_CONFIG.anonKey,
+        'apikey': LIVE_CONFIG.anonKey
+      },
+      body: body ? JSON.stringify(body) : undefined
+    }).then(function (resp) {
+      return resp.json().catch(function () { return {}; }).then(function (data) {
+        return { status: resp.status, data: data };
+      });
+    });
+  }
+
+  function friendlyError(result, fallback) {
+    if (result && result.data && result.data.error && result.data.error.message) {
+      return result.data.error.message;
+    }
+    return fallback;
+  }
+
+  /* the cart snapshot the server prices: never any price fields */
+  function cartPayload() {
+    return Object.keys(cart).map(function (key) {
+      var kp = O.keyParts(key);
+      return { sku: kp.sku, mode: kp.mode, quantity: cart[key] };
+    });
+  }
+
+  /* clear any in-flight payment; an optional message stays on
+     screen (used for the decline copy, cart untouched) */
+  function liveResetPayment(message) {
+    liveState.orderNumber = null;
+    liveState.clientSecret = null;
+    liveState.hyper = null;
+    liveState.widgets = null;
+    liveState.busy = false;
+    document.getElementById('hyperswitchMount').innerHTML = '';
+    livePayNote.textContent = '';
+    if (message) {
+      livePayArea.hidden = false;
+      liveStatus(message);
+    } else {
+      livePayArea.hidden = true;
+      liveStatus('');
+    }
+    cardFields.hidden = payMethod !== 'card';
+    placeOrderBtn.disabled = false;
+    placeOrderBtn.textContent = 'Place order';
+  }
+
+  /* load HyperLoader.js, the one sanctioned external script,
+     only on demand and only when the flag is true */
+  function loadHyperLoader() {
+    return new Promise(function (resolve, reject) {
+      if (window.Hyper) { resolve(); return; }
+      var s = document.createElement('script');
+      s.src = LIVE_CONFIG.hyperLoaderUrl;
+      s.onload = function () { resolve(); };
+      s.onerror = function () {
+        reject(new Error('The secure card form could not load. Nothing was charged. Please try again.'));
+      };
+      document.head.appendChild(s);
+    });
+  }
+
+  function liveSubmit() {
+    if (liveState.busy) return;
+    if (Object.keys(cart).length === 0) { showView('catalog'); return; }
+    if (liveState.clientSecret) { liveConfirm(); } else { liveStart(); }
+  }
+
+  /* step one: ask the server to price the cart and open a test
+     payment; the response carries the order number, the client
+     secret, and the publishable key */
+  function liveStart() {
+    liveState.busy = true;
+    placeOrderBtn.disabled = true;
+    livePayArea.hidden = false;
+    liveStatus('Contacting the test payment service...');
+    var payload = {
+      items: cartPayload(),
+      activation: deliveryChoice(),
+      tax_exempt: taxExempt(),
+      member_code: document.getElementById('memberCode').value.trim(),
+      channel: 'shop'
+    };
+    fnCall('create-payment', 'POST', payload).then(function (result) {
+      if (result.status !== 200 || !result.data.client_secret) {
+        throw new Error(friendlyError(result,
+          'The test payment service is not answering. Nothing was charged. Please try again.'));
+      }
+      liveState.orderNumber = result.data.order_number;
+      liveState.clientSecret = result.data.client_secret;
+      return loadHyperLoader().then(function () {
+        liveMountCheckout(result.data.publishable_key);
+      });
+    }).catch(function (err) {
+      liveState.busy = false;
+      placeOrderBtn.disabled = false;
+      liveStatus(err.message || 'Something went wrong. Nothing was charged. Please try again.');
+    });
+  }
+
+  /* step two: mount the provider's secure card form in the
+     step-4 panel; card data goes only into that form */
+  function liveMountCheckout(publishableKey) {
+    liveState.hyper = window.Hyper(publishableKey);
+    liveState.widgets = liveState.hyper.widgets({
+      clientSecret: liveState.clientSecret
+    });
+    var checkoutWidget = liveState.widgets.create('payment', { layout: 'tabs' });
+    checkoutWidget.mount('#hyperswitchMount');
+    cardFields.hidden = true;
+    walletNote.hidden = true;
+    livePayNote.textContent =
+      'Test mode. Use the test card 4242 4242 4242 4242 with any future expiry date and any three digit security code. Nothing is ever charged.';
+    liveStatus('');
+    /* label only: the button shows this page's total, and the
+       server's mirror computes the identical figure (the verifier
+       gate proves the two tables match fact for fact) */
+    placeOrderBtn.textContent = 'Pay ' + fmtMoney(orderMath().total) + ' now, test mode';
+    placeOrderBtn.disabled = false;
+    liveState.busy = false;
+  }
+
+  /* step three: hand the card to the provider, then ask OUR
+     server for the truth; the browser's own callback result is
+     never trusted (spec section 4) */
+  function liveConfirm() {
+    liveState.busy = true;
+    placeOrderBtn.disabled = true;
+    liveStatus('Confirming with the test bank...');
+    liveState.hyper.confirmPayment({
+      widgets: liveState.widgets,
+      confirmParams: { return_url: window.location.href },
+      redirect: 'if_required'
+    }).then(function () {
+      return fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber });
+    }).then(function (result) {
+      if (result.status !== 200) {
+        throw new Error(friendlyError(result,
+          'Could not confirm the order. Please press the button again in a moment.'));
+      }
+      liveHandleReceipt(result.data, 0);
+    }).catch(function (err) {
+      liveState.busy = false;
+      placeOrderBtn.disabled = false;
+      liveStatus(err.message || 'Could not confirm the order. Please press the button again in a moment.');
+    });
+  }
+
+  /* act on the server's receipt: success clears the cart (only
+     then), a decline preserves it, in-flight polls politely */
+  function liveHandleReceipt(receipt, retryCount) {
+    if (receipt.payment_status === 'succeeded') {
+      liveRenderConfirmation(receipt);
+      cart = {};
+      persist();
+      renderAll();
+      liveResetPayment('');
+      showView('confirm');
+      liveRenderRecentOrders();
+      return;
+    }
+    if (receipt.payment_status === 'failed') {
+      liveResetPayment(
+        'The test bank declined this one. Try the standard test card 4242 4242 4242 4242. Your cart is unchanged.');
+      return;
+    }
+    if (retryCount < 3) {
+      liveStatus('Still processing, one moment.');
+      window.setTimeout(function () {
+        fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber })
+          .then(function (result) {
+            if (result.status === 200) {
+              liveHandleReceipt(result.data, retryCount + 1);
+            } else {
+              liveState.busy = false;
+              placeOrderBtn.disabled = false;
+              liveStatus(friendlyError(result,
+                'Could not confirm the order. Please press the button again in a moment.'));
+            }
+          });
+      }, 2500);
+      return;
+    }
+    liveState.busy = false;
+    placeOrderBtn.disabled = false;
+    liveStatus('Still processing. Your order number is ' + liveState.orderNumber +
+      '. Press the button again in a moment to check.');
+  }
+
+  /* render the confirmation view from the SERVER receipt, not
+     from this page's math (spec section 1.2, step 8) */
+  function liveRenderConfirmation(r) {
+    function cents(c) { return fmtMoney(c / 100); }
+
+    document.getElementById('confirmLines').innerHTML =
+      (r.items || []).map(function (it) {
+        var p = O.get(it.sku);
+        var name = p ? p.name : it.sku;
+        var amount = it.unit_price * it.quantity;
+        return '<div class="summary-line">' +
+          '<span class="sl-name">' + name +
+            ' <span class="sl-qty">&times; ' + it.quantity + '</span> ' +
+            modeBadge(it.mode) + '</span>' +
+          '<span class="sl-amt">' + fmtMoney(amount) +
+            (it.mode === 'sub' ? '<span class="sl-per"> / mo</span>' : '') + '</span>' +
+        '</div>';
+      }).join('');
+
+    var rows = '';
+    if (r.subtotal_one_cents > 0) {
+      rows += '<div class="total-row"><span>Subtotal, one time <span class="row-hint">billed today</span></span><span class="total-num">' + cents(r.subtotal_one_cents) + '</span></div>';
+    }
+    if (r.subtotal_sub_cents > 0) {
+      rows += '<div class="total-row"><span>Subtotal, monthly</span><span class="total-num">' + cents(r.subtotal_sub_cents) + '</span></div>';
+    }
+    rows += '<div class="total-row"><span>' +
+      (r.activation === 'priority' ? 'Priority activation' : 'Standard activation') +
+      '</span><span class="total-num">' +
+      (r.activation_fee_cents === 0 ? 'Free' : cents(r.activation_fee_cents)) + '</span></div>';
+    rows += r.tax_exempt
+      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">$0.00</span></div>'
+      : '<div class="total-row"><span>Tax <span class="row-hint">5 percent</span></span><span class="total-num">' + cents(r.tax_cents) + '</span></div>';
+    rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + cents(r.total_cents) + '</span></div>';
+    rows += '<div class="total-row"><span>Payment method</span><span class="total-num">Credit card, test mode</span></div>';
+    rows += '<div class="total-row"><span>Total PV</span><span class="total-pv-num">' + fmtPv(r.pv_total) + '</span></div>';
+    document.getElementById('confirmTotals').innerHTML = rows;
+
+    var renews = document.getElementById('confirmRenews');
+    if (r.subtotal_sub_cents > 0) {
+      renews.hidden = false;
+      renews.textContent = 'Your subscription items renew monthly at ' +
+        cents(r.subtotal_sub_cents) + ' until cancelled.';
+    } else {
+      renews.hidden = true;
+    }
+
+    document.getElementById('orderNumber').textContent = r.order_number;
+    document.getElementById('confirmQualified').textContent = r.pv_total >= 100
+      ? 'This order carries ' + fmtPv(r.pv_total) + ': a qualified month.'
+      : 'This order carries ' + fmtPv(r.pv_total) + ' of the 100 PV qualified month.';
+    document.getElementById('confirmDemoNote').textContent =
+      'Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.';
+  }
+
+  /* the recent-test-orders section, from the rate-limited
+     list-demo-orders function (spec section 2.4) */
+  function liveRenderRecentOrders() {
+    if (!LIVE_PAYMENTS) return;
+    fnCall('list-demo-orders', 'GET').then(function (result) {
+      if (result.status !== 200 || !result.data.orders) return;
+      document.getElementById('liveOrdersList').innerHTML =
+        result.data.orders.map(function (o) {
+          return '<div class="summary-line">' +
+            '<span class="sl-name">' + o.order_number +
+              ' <span class="sl-qty">' + o.item_count +
+              (o.item_count === 1 ? ' item' : ' items') + '</span></span>' +
+            '<span class="sl-amt">' + fmtMoney(o.total) +
+              ' <span class="sl-per">' + o.payment_status + '</span></span>' +
+          '</div>';
+        }).join('');
+      document.getElementById('liveOrdersSection').hidden = false;
+    }).catch(function () { /* the section simply stays hidden */ });
+  }
+
+  /* in live mode the express marks stay demonstration drawings:
+     the card flow is the one real test rail (spec 1.2, step 7) */
+  if (LIVE_PAYMENTS) {
+    payButtons.forEach(function (b) {
+      if (b.getAttribute('data-pay') !== 'card') {
+        b.disabled = true;
+        b.title = 'Demonstration mark only. The card flow is the real test rail in this phase.';
+      }
+    });
+  }
 
   /* ---------- render everything ---------- */
 
