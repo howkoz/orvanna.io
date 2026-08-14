@@ -1239,19 +1239,44 @@
       widgets: liveState.widgets,
       confirmParams: { return_url: window.location.href },
       redirect: 'if_required'
-    }).then(function () {
-      return fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber });
-    }).then(function (result) {
-      if (result.status !== 200) {
-        throw new Error(friendlyError(result,
-          'Could not confirm the order. Please press the button again in a moment.'));
+    }).then(
+      function (sdkResult) {
+        liveAfterSdk(sdkResult && sdkResult.error ? sdkResult.error : null);
+      },
+      function (err) {
+        liveAfterSdk({ message: (err && err.message) || 'The card form could not submit.' });
       }
-      liveHandleReceipt(result.data, 0);
-    }).catch(function (err) {
+    );
+  }
+
+  /* The card form's own verdict is advisory: a decline can reach
+     the bank and come back through the form as an error, so OUR
+     server is ALWAYS asked for the truth afterward. The one
+     exception is a pure form-validation problem (incomplete or
+     invalid fields), which never left the browser: keep the form
+     up for editing and say so. */
+  function liveAfterSdk(sdkError) {
+    if (
+      sdkError &&
+      /incomplete|invalid|required|expir|number|cvc|cvv|blank|empty/i.test(sdkError.message || '')
+    ) {
       liveState.busy = false;
       placeOrderBtn.disabled = false;
-      liveStatus(err.message || 'Could not confirm the order. Please press the button again in a moment.');
-    });
+      liveStatus('The card form says: ' + sdkError.message +
+        '. Fix the card details and press the button again. Nothing was charged.');
+      return;
+    }
+    fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber })
+      .then(function (result) {
+        if (result.status !== 200) {
+          liveState.busy = false;
+          placeOrderBtn.disabled = false;
+          liveStatus(friendlyError(result,
+            'Could not confirm the order. Please press the button again in a moment.'));
+          return;
+        }
+        liveHandleReceipt(result.data, 0);
+      });
   }
 
   /* act on the server's receipt: success clears the cart (only
@@ -1268,8 +1293,11 @@
       return;
     }
     if (receipt.payment_status === 'failed') {
-      liveResetPayment(
-        'The test bank declined this one. Try the standard test card 4242 4242 4242 4242. Your cart is unchanged.');
+      var reason = receipt.processor && receipt.processor.error_message
+        ? ' The test bank said: ' + receipt.processor.error_message + '.'
+        : '';
+      liveResetPayment('Declined.' + reason +
+        ' Your cart is unchanged. Press Place order to try again with a different card, for example the standard test card 4242 4242 4242 4242.');
       return;
     }
     if (retryCount < 3) {
