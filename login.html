@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Sign In</title>
-<meta name="description" content="Orvanna member sign in. Demonstration environment: any credentials continue.">
+<meta name="description" content="Orvanna sign in. Credentials are checked against the demonstration database on the server; nothing is compared in this page.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=5.0">
+<link rel="stylesheet" href="css/corporate.css?v=5.2">
 </head>
 <body class="login-body">
 
@@ -31,29 +31,179 @@
     </svg>
   </div>
 
-  <h1 class="login-title">Member sign in</h1>
+  <h1 class="login-title" id="loginTitle">Member portal sign in</h1>
 
   <form class="login-form" id="loginForm" novalidate>
     <label class="field-label" for="username">Username</label>
     <input class="field" type="text" id="username" name="username" autocomplete="off" spellcheck="false">
     <label class="field-label" for="password">Password</label>
     <input class="field" type="password" id="password" name="password" autocomplete="off">
-    <button class="btn btn-solid btn-block" type="submit">Continue</button>
+    <p class="login-error" id="loginError" role="status" aria-live="polite"></p>
+    <button class="btn btn-solid btn-block" type="submit" id="loginBtn">Continue</button>
   </form>
 
-  <p class="login-note">Demonstration environment: any credentials continue.</p>
+  <p class="login-note" id="loginNote">Sign-in is checked against the demonstration database on the server. This page never holds or compares a password.</p>
   <a class="login-back" href="index.html">Back</a>
 </div>
 
 <p class="login-legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
 
 <script>
-/* Demonstration sign in: no validation, no storage, no real
-   authentication. Continue always opens the member portal. */
-document.getElementById('loginForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-  window.location.href = 'portal/index.html';
-});
+/* ============================================================
+   Orvanna sign in.
+
+   The page collects a username and a password and hands them to
+   the demo-login Edge Function, which checks them against bcrypt
+   hashes held in the database. No credential, and no rule about
+   what a valid credential looks like, lives in this file. The
+   server answers with a signed session token; the page only
+   stores what it is given.
+
+   Two doors, one page. The address decides which one the visitor
+   is standing at: ?role=staff is the staff call console, anything
+   else is the member portal. The role travels with the request,
+   so a staff credential cannot open the portal and a member
+   credential cannot open the console.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var FUNCTIONS_BASE = 'https://oiyibdczkokegaxkwulv.supabase.co/functions/v1';
+  /* public anon key, public by design; grants nothing on the database */
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw';
+  var SESSION_KEY = 'orvanna_session';
+
+  var DOORS = {
+    admin: {
+      heading: 'Member portal sign in',
+      tab: 'Orvanna Member Portal Sign In',
+      next: 'portal/index.html'
+    },
+    staff: {
+      heading: 'Staff console sign in',
+      tab: 'Orvanna Staff Console Sign In',
+      next: 'staff.html'
+    }
+  };
+
+  var params = new URLSearchParams(window.location.search);
+  var role = params.get('role') === 'staff' ? 'staff' : 'admin';
+  var door = DOORS[role];
+
+  /* Only the two known doors are accepted as a destination, so the
+     address bar cannot turn this page into a redirector to anywhere
+     else. Anything unrecognized falls back to the role's own door. */
+  var requested = params.get('next');
+  var destination =
+    (requested === DOORS.admin.next || requested === DOORS.staff.next)
+      ? requested
+      : door.next;
+
+  document.title = door.tab;
+  document.getElementById('loginTitle').textContent = door.heading;
+  if (role === 'staff') {
+    document.getElementById('loginNote').textContent =
+      'Staff console. Sign-in is checked against the demonstration database on the server. This page never holds or compares a password.';
+  }
+
+  var form = document.getElementById('loginForm');
+  var userEl = document.getElementById('username');
+  var passEl = document.getElementById('password');
+  var errEl = document.getElementById('loginError');
+  var btn = document.getElementById('loginBtn');
+  var busy = false;
+
+  userEl.focus();
+
+  function showError(message) {
+    errEl.textContent = message;
+    passEl.value = '';          /* the username stays, the password clears */
+    passEl.focus();
+  }
+
+  function releaseButton() {
+    busy = false;
+    btn.disabled = false;
+    btn.textContent = 'Continue';
+  }
+
+  /* The server decides what every failure says. The page adds no
+     rule of its own, so it can never leak whether a username
+     exists. */
+  function serverMessage(result) {
+    if (result.data && result.data.error && result.data.error.message) {
+      return result.data.error.message;
+    }
+    return 'That sign-in could not be completed. Please try again.';
+  }
+
+  function waitPhrase(header) {
+    var seconds = parseInt(header, 10);
+    if (!(seconds > 0)) return '';
+    if (seconds < 90) return ' Try again in about ' + seconds + ' seconds.';
+    return ' Try again in about ' + Math.ceil(seconds / 60) + ' minutes.';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (busy) return;
+    busy = true;
+    errEl.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Checking...';
+
+    fetch(FUNCTIONS_BASE + '/demo-login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + ANON_KEY,
+        'apikey': ANON_KEY
+      },
+      body: JSON.stringify({
+        username: userEl.value,
+        password: passEl.value,
+        role: role
+      })
+    }).then(function (resp) {
+      return resp.json().catch(function () { return {}; }).then(function (data) {
+        return {
+          status: resp.status,
+          retryAfter: resp.headers.get('Retry-After'),
+          data: data
+        };
+      });
+    }).then(function (result) {
+      if (result.status === 200 && result.data && result.data.token) {
+        var session = {
+          token: result.data.token,
+          role: result.data.role,
+          username: result.data.username,
+          label: result.data.label,
+          expires_at: result.data.expires_at
+        };
+        try {
+          window.sessionStorage.setItem(SESSION_KEY, JSON.stringify(session));
+        } catch (storageError) {
+          releaseButton();
+          showError('This browser is blocking session storage, so the sign-in cannot be kept. Allow it for this site and try again.');
+          return;
+        }
+        window.location.replace(destination);
+        return;
+      }
+
+      releaseButton();
+      if (result.status === 429) {
+        showError(serverMessage(result) + waitPhrase(result.retryAfter));
+        return;
+      }
+      showError(serverMessage(result));
+    }).catch(function () {
+      releaseButton();
+      showError('The sign-in service could not be reached. Check the connection and try again.');
+    });
+  });
+})();
 </script>
 
 </body>

@@ -522,3 +522,17 @@ table.stmt {
 @media (max-width: 720px) {
   .site-links { border-left: none; padding-left: 0; gap: 12px; }
 }
+
+
+/* ---------- Support chat trigger (Botpress, nav driven) ----------
+   See the matching block in corporate.css. The floating action button is
+   suppressed so the chat only opens from the Support item in the header. */
+.bpFab { display: none !important; }
+
+.site-support {
+  font-family: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}

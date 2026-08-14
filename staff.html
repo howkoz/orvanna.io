@@ -6,8 +6,8 @@
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=5.0">
-<link rel="stylesheet" href="css/staff.css?v=5.0">
+<link rel="stylesheet" href="css/corporate.css?v=5.2">
+<link rel="stylesheet" href="css/staff.css?v=5.2">
 </head>
 <body class="console-body">
 
@@ -30,13 +30,15 @@
       <a class="console-link" href="portal/index.html">Member portal</a>
       <a class="console-link" href="shop.html">Shop</a>
       <a class="console-link" href="team.html">Team</a>
+      <button class="console-link console-support" type="button" data-orvanna-support>Support</button>
+      <a class="console-link" id="signOutLink" href="index.html" title="End this console session and return to the Orvanna home page">Sign out</a>
     </nav>
   </div>
 </header>
 
 <div class="console-notice">
   <div class="console-wrap">
-    Staff console, demonstration; in production this sits behind a staff login. Live volume figures come from the demonstration database; contact details are synthesized. Payments run on the live TEST rail: test cards only, play money, no real charge is possible. Point terms: Personal Volume (PV), Sales Volume (SV), Team Volume (TV).
+    Staff console, demonstration; it opens only after a staff sign-in checked against the demonstration database. Live volume figures come from the demonstration database; contact details are synthesized. Payments run on the live TEST rail: test cards only, play money, no real charge is possible. Point terms: Personal Volume (PV), Sales Volume (SV), Team Volume (TV).
   </div>
 </div>
 
@@ -205,7 +207,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff console &middot; demonstration data &middot; no real members, orders, or charges</div>
 </footer>
 
-<script src="js/catalog.js?v=5.0"></script>
+<script src="js/catalog.js?v=5.2"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -217,6 +219,41 @@
    ============================================================ */
 (function () {
   'use strict';
+
+  /* ---------- session gate ----------
+     Runs before anything else on this page, so a visitor without a
+     valid staff session triggers no database call at all. The token
+     was signed by the server; the browser cannot mint or edit one.
+     The gate is inlined rather than shared with the member portal
+     because the two pages live in folders the deploy script moves
+     apart, and a shared file would need a path that survives that
+     move. Twenty-five lines duplicated beats a fragile path. */
+  var SESSION_KEY = 'orvanna_session';
+  var SIGN_IN_URL = 'login.html?role=staff&next=staff.html';
+
+  function readSession() {
+    try {
+      return JSON.parse(window.sessionStorage.getItem(SESSION_KEY));
+    } catch (e) {
+      return null;
+    }
+  }
+  function sessionIsValid(s) {
+    return !!(s && s.token && s.role === 'staff' &&
+      Number(s.expires_at) * 1000 > Date.now());
+  }
+  function clearSession() {
+    try { window.sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* nothing to clear */ }
+  }
+
+  var session = readSession();
+  if (!sessionIsValid(session)) {
+    clearSession();
+    window.location.replace(SIGN_IN_URL);
+    return;                       /* nothing below this line runs */
+  }
+
+  document.getElementById('signOutLink').addEventListener('click', clearSession);
 
   var O = window.ORVANNA;
   var fmtMoney = O.fmtMoney;
@@ -1213,5 +1250,49 @@
 })();
 </script>
 
+<!-- ============ SUPPORT CHAT (Botpress, hosted) ============
+     The second sanctioned external script after HyperLoader.js, recorded in
+     ROADMAP.md. Nav triggered on purpose: the vendor's floating action button
+     is hidden in the stylesheet, so nothing can open itself over the cart
+     control on a phone or over the card form during checkout. Conversation
+     text is handled by Botpress, a third party. -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/08/14/20/20260814201237-9JS9TWQ7.js" defer></script>
+<script>
+(function () {
+  var triggers = document.querySelectorAll('[data-orvanna-support]');
+  if (!triggers.length) return;
+  var wantOpen = false, listening = false;
+
+  function openNow() {
+    if (window.botpress && typeof window.botpress.open === 'function') {
+      try { window.botpress.open(); return true; } catch (err) { return false; }
+    }
+    return false;
+  }
+
+  /* The widget arrives asynchronously. Watch for it, and if someone pressed
+     Support before it was ready, open the moment it reports ready. */
+  var waited = 0;
+  var poll = window.setInterval(function () {
+    if (!listening && window.botpress && typeof window.botpress.on === 'function') {
+      listening = true;
+      window.clearInterval(poll);
+      window.botpress.on('webchat:ready', function () {
+        if (wantOpen) { wantOpen = false; openNow(); }
+      });
+    } else if ((waited += 250) > 20000) {
+      window.clearInterval(poll);
+    }
+  }, 250);
+
+  Array.prototype.forEach.call(triggers, function (trigger) {
+    trigger.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (!openNow()) { wantOpen = true; }
+    });
+  });
+})();
+</script>
 </body>
 </html>

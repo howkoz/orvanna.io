@@ -846,6 +846,23 @@ a.nav-link.is-active::after { transform: scaleX(1); }
 
 .btn-block { display: block; width: 100%; text-align: center; }
 
+/* Sign-in failure message. Empty means no failure, so the box
+   disappears completely rather than reserving space. */
+.login-error {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #FCA5A5;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.36);
+  border-radius: 8px;
+  text-align: left;
+}
+.login-error:empty {
+  display: none;
+}
+
 .login-note {
   margin-top: 20px;
   font-size: 0.78rem;
@@ -1133,4 +1150,30 @@ a.flink:hover { color: var(--cyan); }
   .profile-card { grid-template-columns: 1fr; gap: 24px; text-align: center; padding: 34px 24px 30px; }
   .profile-bio { margin: 0 auto; }
   .gate-caption { margin-top: -14px; }
+}
+
+
+/* ---------- Support chat trigger (Botpress, nav driven) ----------
+   The vendor's floating action button is suppressed: the chat opens only from
+   the Support item in the navigation, so nothing floats over the cart control
+   on a phone or over the card form during checkout. The triggers are real
+   buttons, so the browser's own control styling is reset explicitly; color and
+   size still come from the companion nav class, which is the lesson from the
+   invisible-button defect of 2026-08-14. */
+.bpFab { display: none !important; }
+
+.nav-support {
+  font-family: inherit;
+  background: transparent;
+  border: 0;
+  padding: 0 0 3px;
+  cursor: pointer;
+}
+
+.console-support {
+  font-family: inherit;
+  background: transparent;
+  border: 0;
+  padding: 6px 10px;
+  cursor: pointer;
 }

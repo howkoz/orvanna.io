@@ -6,8 +6,8 @@
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=5.0">
-<link rel="stylesheet" href="css/shop.css?v=5.0">
+<link rel="stylesheet" href="css/corporate.css?v=5.2">
+<link rel="stylesheet" href="css/shop.css?v=5.2">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -22,6 +22,7 @@
       <a class="nav-link" href="index.html">Learn</a>
       <a class="nav-link is-active" href="shop.html">Shop</a>
       <a class="nav-link" href="team.html">Team</a>
+      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
       <button class="nav-cart" id="cartButton" type="button" aria-label="Open cart">
@@ -472,7 +473,7 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=5.0"></script>
+<script src="js/catalog.js?v=5.2"></script>
 <script>
 /* ============================================================
    Orvanna shop, round 4. The catalog lives in js/catalog.js
@@ -1425,5 +1426,49 @@
 })();
 </script>
 
+<!-- ============ SUPPORT CHAT (Botpress, hosted) ============
+     The second sanctioned external script after HyperLoader.js, recorded in
+     ROADMAP.md. Nav triggered on purpose: the vendor's floating action button
+     is hidden in the stylesheet, so nothing can open itself over the cart
+     control on a phone or over the card form during checkout. Conversation
+     text is handled by Botpress, a third party. -->
+<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
+<script src="https://files.bpcontent.cloud/2026/08/14/20/20260814201237-9JS9TWQ7.js" defer></script>
+<script>
+(function () {
+  var triggers = document.querySelectorAll('[data-orvanna-support]');
+  if (!triggers.length) return;
+  var wantOpen = false, listening = false;
+
+  function openNow() {
+    if (window.botpress && typeof window.botpress.open === 'function') {
+      try { window.botpress.open(); return true; } catch (err) { return false; }
+    }
+    return false;
+  }
+
+  /* The widget arrives asynchronously. Watch for it, and if someone pressed
+     Support before it was ready, open the moment it reports ready. */
+  var waited = 0;
+  var poll = window.setInterval(function () {
+    if (!listening && window.botpress && typeof window.botpress.on === 'function') {
+      listening = true;
+      window.clearInterval(poll);
+      window.botpress.on('webchat:ready', function () {
+        if (wantOpen) { wantOpen = false; openNow(); }
+      });
+    } else if ((waited += 250) > 20000) {
+      window.clearInterval(poll);
+    }
+  }, 250);
+
+  Array.prototype.forEach.call(triggers, function (trigger) {
+    trigger.addEventListener('click', function (event) {
+      event.preventDefault();
+      if (!openNow()) { wantOpen = true; }
+    });
+  });
+})();
+</script>
 </body>
 </html>
