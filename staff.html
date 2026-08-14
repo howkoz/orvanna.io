@@ -1463,7 +1463,8 @@
         newCardFields.hidden = true;
         staffStatus('Key the card into the secure form while the caller reads it; repeat back the last four only. ' +
           'If their bank asks for an approval you cannot complete it for them and you must not ask for any code. ' +
-          'Test mode: 4242 4242 4242 4242 goes straight through, any future expiry, any three digit code.');
+          'Test mode: 4242 4242 4242 4242 is approved and 4000 0000 0000 0002 is declined, ' +
+          'any future expiry, any three digit code.');
         btn.textContent = 'Take ' + fmtMoney(orderMath().total) + ' now, test mode';
         btn.disabled = false;
         staffLive.busy = false;
