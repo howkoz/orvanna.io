@@ -123,16 +123,50 @@
             <!-- payment: phone-appropriate, no wallets -->
             <div>
               <h3 class="panel-title">Payment by phone</h3>
-              <div class="pay-choice-row" role="radiogroup" aria-label="Payment method">
+
+              <!-- The rule that has to be visible, not buried in a manual.
+                   A bank's approval step (3-D Secure, or 3DS) asks the
+                   CARDHOLDER to prove who they are on their OWN device. An
+                   agent cannot do that step for them, and asking a caller to
+                   read out the code their bank just sent is word for word the
+                   script real fraudsters use, so it is forbidden here. -->
+              <div class="agent-rules" id="agentRules">
+                <p class="ar-head">Rules for card approvals on a call</p>
+                <ul class="ar-list">
+                  <li><b>Never ask the caller to read you a code from their bank.</b> Not the six digits in a text message, not a code from a banking application, not ever. That request is the exact script of a real fraud technique, and it does not complete the approval anyway.</li>
+                  <li>If the bank asks for an approval, only the cardholder can give it, on their own phone or computer. Send them a payment link and stay on the line.</li>
+                  <li>A card you key here is a telephone order. Telephone orders sit outside Strong Customer Authentication (SCA), the European rule that requires these approvals, so the bank usually will not ask for one. The trade is that a fraud chargeback lands on us rather than on the card issuer.</li>
+                </ul>
+              </div>
+
+              <div class="pay-choice-row" role="radiogroup" aria-label="How to take the payment">
+                <label class="pay-choice">
+                  <input type="radio" name="payChoice" value="link">
+                  <span>Payment link to the caller's own device <span class="rec-chip">recommended</span> <span class="pc-note">the normal way to take a card: they pay on their phone while you stay on the line, and any bank approval works properly</span></span>
+                </label>
+                <label class="pay-choice">
+                  <input type="radio" name="payChoice" value="new">
+                  <span>Key the card here, telephone order <span class="pc-note">key it while they read; repeat back the last four only. No bank approval is possible on this path.</span></span>
+                </label>
                 <label class="pay-choice">
                   <input type="radio" name="payChoice" value="onfile" checked>
                   <span>Card on file <span class="pc-note" id="onFileNote">Visa ending 0000</span> <span class="demo-chip">demo</span></span>
                 </label>
-                <label class="pay-choice">
-                  <input type="radio" name="payChoice" value="new">
-                  <span>New card, read by the caller <span class="pc-note">key it while they read; repeat back the last four only</span></span>
-                </label>
               </div>
+
+              <!-- Payment link path. The console side is built; the server
+                   side that mints a hosted payment link is not, and the
+                   button says so rather than pretending. -->
+              <div class="link-panel" id="linkPanel">
+                <p class="lp-line" id="linkStatus">Create the order, then send the caller a link. They pay on their own device, their bank can ask them to approve properly, and no card number is ever spoken aloud.</p>
+                <div class="lp-row">
+                  <input class="staff-field" id="linkField" type="text" readonly placeholder="The payment link appears here" aria-label="Payment link for the caller">
+                  <button class="btn-addline" id="copyLinkBtn" type="button" disabled>Copy</button>
+                </div>
+                <button class="btn-place" id="createLinkBtn" type="button" disabled>Create a payment link</button>
+                <p class="lp-note" id="linkNote">Not available on this sandbox yet: creating a hosted payment link needs a server function that has not been built, so nothing here can mint one. Until it exists, use the keyed telephone order path above and read the rules.</p>
+              </div>
+
               <div class="card-grid" id="newCardFields" hidden>
                 <input class="staff-field span2" id="cardName" type="text" placeholder="Name on card" autocomplete="off" spellcheck="false" aria-label="Name on card">
                 <input class="staff-field span2" id="cardNumber" type="text" placeholder="Card number" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Card number">
@@ -140,9 +174,31 @@
                 <input class="staff-field" id="cardCode" type="text" placeholder="Security code" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Card security code">
               </div>
               <div id="hsStaffMount"></div>
-              <p class="place-hint" id="staffPayStatus" hidden></p>
+              <p class="place-hint" id="staffOrderChip" hidden>Order <span id="staffOrderNum"></span>, not yet charged. Give the caller this number before anything else happens.</p>
+              <p class="place-hint" id="staffPayStatus" hidden role="status" aria-live="polite" tabindex="-1"></p>
+
+              <!-- Shown only while a bank has the approval open. It says the
+                   honest thing rather than inviting the agent to help. -->
+              <div class="await-auth" id="awaitAuth" hidden>
+                <p class="aa-head">This card's bank wants the cardholder to approve on their own device</p>
+                <p class="aa-body">You cannot do this step for them, and you must not ask them for any code their bank sends. Stay on the line while they finish it on their phone. This can take several minutes. Nothing has been charged.</p>
+                <p class="aa-meta">Order <span id="awaitOrderNum"></span> &middot; waiting <span id="awaitElapsed">0:00</span></p>
+              </div>
+
               <button class="btn-place" id="placeOrderBtn" type="button" disabled>Place order for the caller</button>
+              <button class="btn-addline btn-abandon" id="abandonBtn" type="button" hidden>Abandon this attempt</button>
               <p class="place-hint">Test mode: the payment runs on the live test rail, play money only. <kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Ctrl</kbd>+<kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Enter</kbd> places it.</p>
+
+              <!-- Recovery: any order number can be looked up, for the call
+                   that comes in asking "was I charged?" -->
+              <div class="order-lookup">
+                <label class="order-label" for="staffLookupOrder">Look up an order</label>
+                <div class="lp-row">
+                  <input class="staff-field" id="staffLookupOrder" type="text" placeholder="ORV-2026-08-XXXXXX" autocomplete="off" spellcheck="false">
+                  <button class="btn-addline" id="staffLookupBtn" type="button">Check</button>
+                </div>
+                <p class="place-hint" id="staffLookupResult" role="status" aria-live="polite"></p>
+              </div>
             </div>
 
             <!-- totals + qualified meter -->
@@ -206,6 +262,18 @@
 <footer class="console-foot">
   <div class="console-wrap" id="footLine">Orvanna staff console &middot; demonstration data &middot; no real members, orders, or charges</div>
 </footer>
+
+<!-- ============ BANK APPROVAL CHROME ============
+     If a bank's approval screen ever opens on this rail it belongs to
+     the cardholder, not to the agent. This bar sits above it carrying
+     the order number, the rule, and a clean way to abandon. -->
+<div class="challenge-chrome" id="challengeChrome" role="dialog" aria-modal="true" aria-labelledby="ccTitle" hidden>
+  <div class="cc-inner">
+    <p class="cc-line" id="ccTitle"><b>A bank approval screen has opened.</b> Only the cardholder can complete it, on their own device. Do not ask the caller for any code.</p>
+    <p class="cc-line cc-order">Order <span id="ccOrderNum">&mdash;</span>, not yet charged</p>
+    <button class="btn-addline" type="button" id="ccCancel">Abandon and go back</button>
+  </div>
+</div>
 
 <script src="js/catalog.js?v=5.2"></script>
 <script>
@@ -818,30 +886,96 @@
     hyperLoaderUrl: 'https://beta.hyperswitch.io/v1/HyperLoader.js'
   };
 
+  /* ============================================================
+     PAYMENT LINKS
+
+     A payment link is the honest primary path for a card taken over
+     the phone: the caller pays on their own device, so a bank
+     approval can actually happen, and no card number is ever spoken.
+     The console side of it is built. What is missing is the server
+     side: minting a hosted payment link needs an Edge Function that
+     does not exist yet, so the button stays disabled and says so
+     rather than pretending to work.
+     ============================================================ */
+  const PAYMENT_LINK_READY = false;
+
   var newCardFields = byId('newCardFields');
+  var linkPanel = byId('linkPanel');
+  var linkNote = byId('linkNote');
+
+  function applyPayChoice() {
+    var choice = payChoice();
+    /* in live mode the provider's secure form replaces the
+       demonstration card fields entirely */
+    newCardFields.hidden = LIVE_PAYMENTS || choice !== 'new';
+    if (choice === 'link') {
+      staffStatus(PAYMENT_LINK_READY
+        ? 'Create the order, then send the link and stay on the line.'
+        : 'The payment link path is not available on this sandbox yet. Use the keyed telephone order path below, and read the rules above before you do.');
+    }
+  }
+
   document.querySelectorAll('input[name="payChoice"]').forEach(function (r) {
-    r.addEventListener('change', function () {
-      /* in live mode the provider's secure form replaces the
-         demonstration card fields entirely */
-      newCardFields.hidden = LIVE_PAYMENTS || payChoice() !== 'new';
-    });
+    r.addEventListener('change', applyPayChoice);
   });
+
   function payChoice() {
     var c = document.querySelector('input[name="payChoice"]:checked');
     return c ? c.value : 'onfile';
   }
 
   /* Live mode: there is no real stored card, so Card on file stays a
-     labeled demonstration and live orders always use the secure form. */
+     labeled demonstration and live orders always use the secure form.
+     The payment link option leads the list because it is the right
+     habit, and it is visibly disabled with the reason attached,
+     because a console that quietly offers a path it cannot walk is
+     worse than one that says what is missing. */
   function applyLiveModeDefaults() {
     if (!LIVE_PAYMENTS) return;
     var onfile = document.querySelector('input[name="payChoice"][value="onfile"]');
+    var link = document.querySelector('input[name="payChoice"][value="link"]');
     var fresh = document.querySelector('input[name="payChoice"][value="new"]');
     onfile.disabled = true;
+    link.disabled = !PAYMENT_LINK_READY;
     fresh.checked = true;
     newCardFields.hidden = true;
+    linkPanel.hidden = false;
+    byId('createLinkBtn').disabled = !PAYMENT_LINK_READY;
+    byId('copyLinkBtn').disabled = true;
+    linkNote.hidden = PAYMENT_LINK_READY;
   }
   applyLiveModeDefaults();
+
+  /* with the flag off no order exists on any server, so a lookup
+     could only ever answer "not found" and would mislead */
+  if (!LIVE_PAYMENTS) {
+    document.querySelector('.order-lookup').hidden = true;
+  }
+
+  /* The link itself would be minted server side, then copied to the
+     caller. Everything except that one call is here: the field, the
+     copy control, and the status line that watches the caller pay
+     through the same confirm-payment check the keyed path uses.
+     What it needs: an Edge Function that creates a HyperSwitch
+     payment link for an existing order number and returns its
+     address, so this console never handles a card at all. */
+  byId('createLinkBtn').addEventListener('click', function () {
+    if (!PAYMENT_LINK_READY) return;
+  });
+
+  byId('copyLinkBtn').addEventListener('click', function () {
+    var field = byId('linkField');
+    if (!field.value) return;
+    field.select();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(field.value);
+      }
+      byId('linkStatus').textContent = 'Link copied. Send it to the caller and stay on the line while they pay.';
+    } catch (e) {
+      byId('linkStatus').textContent = 'Copy did not work in this browser. Select the link and copy it by hand.';
+    }
+  });
 
   function openOrderFor() {
     byId('orderGate').hidden = true;
@@ -911,6 +1045,12 @@
   }
 
   function placeOrder() {
+    /* a payment already handed to a bank can be checked again even
+       when the order lines have been cleared away */
+    if (LIVE_PAYMENTS && staffLive.checkOnly && staffLive.orderNumber) {
+      liveStaffSubmit();
+      return;
+    }
     if (!caller || Object.keys(order).length === 0) return;
     if (LIVE_PAYMENTS) { liveStaffSubmit(); return; }
     var num = orderNumber();
@@ -985,13 +1125,99 @@
      demonstration card fields stay hidden in live mode.
      ============================================================ */
 
-  var staffLive = { clientSecret: null, orderNumber: null, hyper: null, widgets: null, busy: false };
+  var staffLive = {
+    clientSecret: null,
+    orderNumber: null,
+    hyper: null,
+    widgets: null,
+    busy: false,
+    sawChallenge: false,
+    checkOnly: false,
+    resuming: false,
+    waitStartedAt: 0
+  };
   var staffPayStatus = byId('staffPayStatus');
   var hsStaffMount = byId('hsStaffMount');
+  var staffOrderChip = byId('staffOrderChip');
+  var staffOrderNum = byId('staffOrderNum');
+  var awaitAuth = byId('awaitAuth');
+  var abandonBtn = byId('abandonBtn');
+
+  var STAFF_ORDER_RE = /^ORV-\d{4}-\d{2}-[0-9A-Z]{6}$/;
 
   function staffStatus(msg) {
     staffPayStatus.hidden = !msg;
     staffPayStatus.textContent = msg || '';
+  }
+
+  /* ============================================================
+     RESUME STATE, staff side
+
+     Identical reasoning to the shop: a bank approval can take this
+     whole page away with a history-replacing navigation, so what we
+     want back is written before the payment is confirmed, in two
+     places. The session copy carries the client secret and dies with
+     the tab; the local copy carries no secret and expires in thirty
+     minutes. If the staff session itself has expired by the time the
+     agent returns, the sign-in gate runs first and this state is
+     still waiting afterward.
+     ============================================================ */
+
+  var RESUME_KEY = 'orv.resume.staff.v1';
+  var RESUME_MAX_AGE_MS = 30 * 60 * 1000;
+
+  function resumeSave(patch) {
+    var base = resumeRead() || {};
+    var next = {
+      v: 1,
+      order_number: patch.order_number || base.order_number || null,
+      client_secret: patch.client_secret || base.client_secret || null,
+      saw_challenge: patch.saw_challenge === true || base.saw_challenge === true,
+      created_at_ms: base.created_at_ms || Date.now(),
+      channel: 'staff_console'
+    };
+    try { window.sessionStorage.setItem(RESUME_KEY, JSON.stringify(next)); } catch (e) { /* query parameter still carries it */ }
+    try {
+      var lean = JSON.parse(JSON.stringify(next));
+      lean.client_secret = null;
+      window.localStorage.setItem(RESUME_KEY, JSON.stringify(lean));
+    } catch (e) { /* same */ }
+  }
+
+  function parseStore(store) {
+    try {
+      var raw = store.getItem(RESUME_KEY);
+      if (!raw) return null;
+      var v = JSON.parse(raw);
+      if (!v || v.v !== 1 || !v.order_number) return null;
+      if (Date.now() - Number(v.created_at_ms || 0) > RESUME_MAX_AGE_MS) return null;
+      return v;
+    } catch (e) { return null; }
+  }
+
+  function resumeRead() {
+    var s = null, l = null;
+    try { s = parseStore(window.sessionStorage); } catch (e) { s = null; }
+    try { l = parseStore(window.localStorage); } catch (e) { l = null; }
+    if (s && l && s.order_number === l.order_number) {
+      s.saw_challenge = s.saw_challenge || l.saw_challenge;
+    }
+    return s || l;
+  }
+
+  function resumeClear() {
+    try { window.sessionStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
+    try { window.localStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
+  }
+
+  /* built from the origin and the path, never from the live address
+     bar, so no leftovers from an earlier attempt ride along */
+  function canonicalReturnUrl(orderNum) {
+    var url = new URL(window.location.pathname, window.location.origin);
+    url.search = '';
+    url.hash = '';
+    if (orderNum) url.searchParams.set('orv', orderNum);
+    return url.toString();
   }
 
   function staffFnCall(name, body) {
@@ -1031,15 +1257,172 @@
     staffLive.hyper = null;
     staffLive.widgets = null;
     staffLive.busy = false;
+    staffLive.sawChallenge = false;
+    staffLive.checkOnly = false;
+    staffLive.resuming = false;
+    resumeClear();
+    setOrderInert(false);
+    hideAwaitAuth();
     hsStaffMount.innerHTML = '';
+    staffOrderChip.hidden = true;
+    staffOrderNum.textContent = '';
+    abandonBtn.hidden = true;
     staffStatus(message || '');
     var btn = byId('placeOrderBtn');
     btn.disabled = Object.keys(order).length === 0;
     btn.textContent = 'Place order for the caller';
   }
 
+  /* ---------- the order goes inert while a payment is in flight ---------- */
+
+  var staffInertOn = false;
+
+  function setOrderInert(on) {
+    if (on === staffInertOn) return;
+    staffInertOn = on;
+    [].slice.call(document.querySelectorAll(
+      '#productSelect, #qtyInput, #addLineBtn, #modeSub, #modeOne, ' +
+      '#taxIdInput, #lookupInput, input[name="payChoice"], ' +
+      '.line-qty, .line-drop, #newCallBtn, #sameCallerBtn'
+    )).forEach(function (el) {
+      if (on) {
+        if (el.disabled) el.setAttribute('data-was-disabled', '1');
+        el.disabled = true;
+      } else if (el.getAttribute('data-was-disabled')) {
+        el.removeAttribute('data-was-disabled');
+      } else {
+        el.disabled = false;
+      }
+    });
+    if (!on) applyLiveModeDefaults();
+  }
+
+  /* ---------- the honest waiting state for a bank approval ---------- */
+
+  var awaitTimer = null;
+
+  function showAwaitAuth() {
+    if (!staffLive.waitStartedAt) staffLive.waitStartedAt = Date.now();
+    byId('awaitOrderNum').textContent = staffLive.orderNumber || 'not yet issued';
+    awaitAuth.hidden = false;
+    abandonBtn.hidden = false;
+    if (awaitTimer) return;
+    awaitTimer = window.setInterval(function () {
+      var s = Math.floor((Date.now() - staffLive.waitStartedAt) / 1000);
+      var m = Math.floor(s / 60);
+      var rest = s % 60;
+      byId('awaitElapsed').textContent = m + ':' + (rest < 10 ? '0' : '') + rest;
+    }, 1000);
+  }
+
+  function hideAwaitAuth() {
+    awaitAuth.hidden = true;
+    staffLive.waitStartedAt = 0;
+    if (awaitTimer) { window.clearInterval(awaitTimer); awaitTimer = null; }
+  }
+
+  /* ---------- chrome above a bank's own approval overlay ---------- */
+
+  var challengeChrome = byId('challengeChrome');
+  var ccCancel = byId('ccCancel');
+  var challengeOpen = false;
+  var focusBeforeChallenge = null;
+
+  function challengeFrame() { return document.getElementById('orca-fullscreen'); }
+
+  function openChallengeChrome() {
+    if (challengeOpen) return;
+    challengeOpen = true;
+    staffLive.sawChallenge = true;
+    resumeSave({ order_number: staffLive.orderNumber, saw_challenge: true });
+    focusBeforeChallenge = document.activeElement;
+    byId('ccOrderNum').textContent = staffLive.orderNumber || 'not yet issued';
+    challengeChrome.hidden = false;
+    setOrderInert(true);
+    showAwaitAuth();
+    staffStatus('A bank approval screen is open. Only the cardholder can complete it, on their own device. Do not ask the caller to read you any code.');
+    try { ccCancel.focus(); } catch (e) { /* best effort */ }
+    document.addEventListener('keydown', challengeKeydown, true);
+  }
+
+  function closeChallengeChrome() {
+    if (!challengeOpen) return;
+    challengeOpen = false;
+    challengeChrome.hidden = true;
+    document.removeEventListener('keydown', challengeKeydown, true);
+    var back = focusBeforeChallenge;
+    focusBeforeChallenge = null;
+    var CONTROLS = /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/;
+    if (back && document.contains(back) && !back.disabled && !back.hidden &&
+        CONTROLS.test(back.tagName || '')) {
+      try { back.focus(); return; } catch (e) { /* fall through */ }
+    }
+    try {
+      staffPayStatus.hidden = false;
+      staffPayStatus.focus();
+    } catch (e) { /* fall through */ }
+    if (document.activeElement !== staffPayStatus) {
+      try { byId('placeOrderBtn').focus(); } catch (err) { /* best effort */ }
+    }
+  }
+
+  function challengeKeydown(e) {
+    if (e.key === 'Escape') { e.preventDefault(); return; }
+    if (e.key !== 'Tab') return;
+    var frame = challengeFrame();
+    var stops = [ccCancel];
+    if (frame) stops.push(frame);
+    var index = stops.indexOf(document.activeElement);
+    e.preventDefault();
+    var next = e.shiftKey
+      ? stops[(index <= 0 ? stops.length : index) - 1]
+      : stops[(index + 1) % stops.length];
+    try { next.focus(); } catch (err) { /* best effort */ }
+  }
+
+  if (window.MutationObserver) {
+    new MutationObserver(function () {
+      var present = !!challengeFrame();
+      if (present && !challengeOpen) openChallengeChrome();
+      if (!present && challengeOpen) closeChallengeChrome();
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  function abandonAttempt() {
+    var frame = challengeFrame();
+    if (frame && frame.parentNode) frame.parentNode.removeChild(frame);
+    closeChallengeChrome();
+    hideAwaitAuth();
+    if (!staffLive.orderNumber) {
+      staffResetLive('Attempt abandoned. Nothing was charged; the order lines are kept.');
+      return;
+    }
+    /* the caller may have approved a second before the agent gave up,
+       so the server is still asked what really happened */
+    var num = staffLive.orderNumber;
+    staffStatus('Checking whether that payment went through before you abandoned it. Nothing has been charged yet.');
+    staffFnCall('confirm-payment', { order_number: num }).then(function (result) {
+      if (result.status === 200 && result.data.payment_status === 'succeeded') {
+        staffHandleReceipt(result.data, Date.now());
+        return;
+      }
+      staffResetLive('Attempt abandoned for order ' + num +
+        '. Nothing was charged. The order lines are kept, so you can send a payment link or try a different card.');
+    });
+  }
+
+  ccCancel.addEventListener('click', abandonAttempt);
+  abandonBtn.addEventListener('click', abandonAttempt);
+
   function liveStaffSubmit() {
-    if (staffLive.busy) return;
+    if (staffLive.busy || staffLive.resuming || challengeOpen) return;
+    if (staffLive.checkOnly && staffLive.orderNumber) {
+      staffLive.busy = true;
+      byId('placeOrderBtn').disabled = true;
+      staffStatus('Checking order ' + staffLive.orderNumber + ' with the payment service.');
+      staffPollReceipt(Date.now());
+      return;
+    }
     if (staffLive.clientSecret) { liveStaffConfirm(); } else { liveStaffStart(); }
   }
 
@@ -1056,7 +1439,10 @@
       activation: 'standard',
       tax_exempt: taxExempt(),
       member_code: caller ? caller.code : '',
-      channel: 'staff_console'
+      channel: 'staff_console',
+      /* a page name, never a full address: the server builds the
+         return address from its own allowed origin */
+      return_page: 'staff.html'
     };
     staffFnCall('create-payment', payload).then(function (result) {
       if (result.status !== 200 || !result.data.client_secret) {
@@ -1066,12 +1452,18 @@
       }
       staffLive.orderNumber = result.data.order_number;
       staffLive.clientSecret = result.data.client_secret;
+      /* the confirmation number exists now, so the agent can give it
+         to the caller before anything else can go wrong */
+      staffOrderNum.textContent = staffLive.orderNumber;
+      staffOrderChip.hidden = false;
       return staffLoadHyperLoader().then(function () {
         staffLive.hyper = window.Hyper(result.data.publishable_key);
         staffLive.widgets = staffLive.hyper.widgets({ clientSecret: staffLive.clientSecret });
         staffLive.widgets.create('payment', { layout: 'tabs' }).mount('#hsStaffMount');
         newCardFields.hidden = true;
-        staffStatus('Key the card into the secure form while the caller reads it; repeat back the last four only. Test mode: the test card is 4242 4242 4242 4242, any future expiry, any three digit code.');
+        staffStatus('Key the card into the secure form while the caller reads it; repeat back the last four only. ' +
+          'If their bank asks for an approval you cannot complete it for them and you must not ask for any code. ' +
+          'Test mode: 4242 4242 4242 4242 goes straight through, any future expiry, any three digit code.');
         btn.textContent = 'Take ' + fmtMoney(orderMath().total) + ' now, test mode';
         btn.disabled = false;
         staffLive.busy = false;
@@ -1087,10 +1479,19 @@
     staffLive.busy = true;
     var btn = byId('placeOrderBtn');
     btn.disabled = true;
-    staffStatus('Confirming with the test bank...');
+    setOrderInert(true);
+    abandonBtn.hidden = false;
+    staffStatus('Sending the card to the bank. Tell the caller their order number is ' +
+      staffLive.orderNumber + ' and that nothing has been charged yet.');
+    /* written BEFORE the confirm, because the widget can navigate
+       this whole console away before any callback of ours runs */
+    resumeSave({
+      order_number: staffLive.orderNumber,
+      client_secret: staffLive.clientSecret
+    });
     staffLive.hyper.confirmPayment({
       widgets: staffLive.widgets,
-      confirmParams: { return_url: window.location.href },
+      confirmParams: { return_url: canonicalReturnUrl(staffLive.orderNumber) },
       redirect: 'if_required'
     }).then(
       function (sdkResult) {
@@ -1117,48 +1518,174 @@
         '. Fix the card details and press the button again. Nothing was charged.');
       return;
     }
+    staffPollReceipt(Date.now());
+  }
+
+  /* ============================================================
+     READING THE SERVER RECEIPT, staff wording
+
+     Same four endings as the shop, written for the person holding
+     the phone rather than the person holding the card. The `reason`
+     and `authentication` fields come from the server; everything
+     here tolerates their absence.
+     ============================================================ */
+
+  function authOf(r) { return (r && r.authentication) || {}; }
+  function reasonOf(r) { return (r && typeof r.reason === 'string') ? r.reason : ''; }
+  function transStatus(r) { return String(authOf(r).trans_status || '').toUpperCase(); }
+
+  function authApproved(r) {
+    var ts = transStatus(r);
+    if (ts === 'Y' || ts === 'A') return true;
+    var st = String(authOf(r).status || '').toLowerCase();
+    return st === 'success' || st === 'authenticated' || st === 'authentication_successful';
+  }
+  function authRefused(r) {
+    var ts = transStatus(r);
+    if (ts === 'N' || ts === 'R' || ts === 'U') return true;
+    var st = String(authOf(r).status || '').toLowerCase();
+    if (st === 'failed' || st === 'authentication_failed') return true;
+    return /authentication_failed|challenge_abandoned|attempt_reset|not_submitted/.test(reasonOf(r));
+  }
+  function authBroke(r) {
+    var a = authOf(r);
+    if (a.error_code || a.error_message) return true;
+    return /authentication_error|three_ds_error|3ds_error|unavailable/.test(reasonOf(r));
+  }
+  function awaitingAuthentication(r) {
+    if (reasonOf(r) === 'awaiting_authentication') return true;
+    var st = String((r && r.processor && r.processor.status) || '').toLowerCase();
+    return st === 'requires_customer_action';
+  }
+
+  /* what the agent should say, and what to do next */
+  function staffOutcomeMessage(receipt) {
+    var bankSaid = receipt.processor && receipt.processor.error_message
+      ? ' The bank said: ' + receipt.processor.error_message + '.'
+      : '';
+    if (authBroke(receipt)) {
+      return 'The security check could not run. Nothing was charged and nothing about the card is wrong. ' +
+        'Tell the caller that, and try again in a minute. The order lines are kept.';
+    }
+    if (authRefused(receipt) && !authApproved(receipt)) {
+      return 'The cardholder did not complete their bank approval, so the payment stopped there. Nothing was charged. ' +
+        'Do not ask them for any code. Offer to send a payment link to their own device, or try a different card. The order lines are kept.';
+    }
+    if (authApproved(receipt)) {
+      return 'The bank confirmed the cardholder, then declined the money itself.' + bankSaid +
+        ' Nothing was charged. This is usually a limit or a hold, so a different card often works. Do not tell them to check their card details. The order lines are kept.';
+    }
+    return 'Declined.' + bankSaid +
+      ' Nothing was charged. The order lines are kept; the caller can read a different card number, or you can send a payment link.';
+  }
+
+  /* ---------- two waiting clocks ---------- */
+
+  var PROCESSOR_WAIT_MS = 20 * 1000;
+  var AUTH_WAIT_MS = 10 * 60 * 1000;
+
+  function nextPollDelay(receipt, elapsedMs) {
+    if (awaitingAuthentication(receipt) || staffLive.sawChallenge || challengeOpen) {
+      if (elapsedMs > AUTH_WAIT_MS) return -1;
+      return elapsedMs < 60 * 1000 ? 5000 : 10000;
+    }
+    if (elapsedMs > PROCESSOR_WAIT_MS) return -1;
+    return 2000;
+  }
+
+  function staffPollReceipt(startedAt) {
     staffFnCall('confirm-payment', { order_number: staffLive.orderNumber })
       .then(function (result) {
         if (result.status !== 200) {
           staffLive.busy = false;
-          btn.disabled = false;
-          staffStatus('Could not confirm the order. Press the button again in a moment.');
+          staffLive.checkOnly = true;
+          setOrderInert(false);
+          byId('placeOrderBtn').disabled = false;
+          byId('placeOrderBtn').textContent = 'Check this order again';
+          staffStatus('Could not check order ' + staffLive.orderNumber +
+            ' just now. Nothing has been charged. Press the button again in a moment.');
           return;
         }
-        staffHandleReceipt(result.data, 0);
+        staffHandleReceipt(result.data, startedAt);
       });
   }
 
-  function staffHandleReceipt(receipt, retryCount) {
+  /* A recovered order has no caller loaded and no order lines left on
+     this page, so its read-aloud figures come from the SERVER receipt
+     rather than from local math. Reading numbers this page invented
+     for an order it no longer holds would be the one unforgivable
+     thing a call console could do. */
+  function staffRenderRecoveredSuccess(receipt) {
+    var token = (receipt.order_number || '').split('-').pop();
+    byId('confOrderNum').textContent = receipt.order_number;
+    byId('confPhonetic').innerHTML = 'Spell it out: <b>O R V</b>, then <b>' +
+      esc(phonetic(token)) + '</b>.';
+    var total = receipt.total_cents / 100;
+    byId('sayTotalText').textContent = 'This order was paid in full: ' + fmtMoney(total) +
+      ', ' + moneyWords(total) + '.';
+    var renewRow = byId('sayRenew');
+    if (receipt.subtotal_sub_cents > 0) {
+      renewRow.hidden = false;
+      byId('sayRenewText').textContent = 'Of that, ' + fmtMoney(receipt.subtotal_sub_cents / 100) +
+        ' renews monthly until they cancel.';
+    } else renewRow.hidden = true;
+    byId('sayQualifyText').textContent = 'This order carries ' + fmtPv(Number(receipt.pv_total)) + '.';
+    byId('confFacts').innerHTML =
+      '<div class="snap-stat"><div class="st-label">Recovered</div><div class="st-value" style="font-size:0.95rem">Figures read from the server record, not from this screen</div></div>' +
+      '<div class="snap-stat"><div class="st-label">Placed for</div><div class="st-value" style="font-size:0.95rem">' +
+        esc(receipt.referral_code_entered || 'no member code on the order') + '</div></div>' +
+      '<div class="snap-stat"><div class="st-label">Order PV</div><div class="st-value" style="font-size:0.95rem">' +
+        fmtPv(Number(receipt.pv_total)) + '</div></div>';
+    byId('orderPanel').hidden = true;
+    byId('confirmPanel').hidden = false;
+    byId('confirmPanel').scrollIntoView({ block: 'nearest' });
+  }
+
+  function staffHandleReceipt(receipt, startedAt) {
     if (receipt.payment_status === 'succeeded') {
       var token = (receipt.order_number || '').split('-').pop();
-      renderConfirmationView(receipt.order_number, token,
-        'New card, keyed into the secure form during the call');
+      if (!caller || Object.keys(order).length === 0) {
+        staffRenderRecoveredSuccess(receipt);
+      } else {
+        renderConfirmationView(receipt.order_number, token,
+          staffLive.sawChallenge || authApproved(receipt)
+            ? 'New card, approved by the cardholder with their bank'
+            : 'New card, keyed into the secure form during the call');
+      }
       staffResetLive('');
       return;
     }
-    if (receipt.payment_status === 'failed') {
-      var reason = receipt.processor && receipt.processor.error_message
-        ? ' The test bank said: ' + receipt.processor.error_message + '.'
-        : '';
-      staffResetLive('Declined.' + reason +
-        ' The order lines are kept. Press the button to try again with a different card; the caller can read a different number.');
+    var reason = reasonOf(receipt);
+    if (receipt.payment_status === 'failed' || receipt.payment_status === 'abandoned' ||
+        reason === 'attempt_reset' || reason === 'not_submitted') {
+      staffResetLive(staffOutcomeMessage(receipt));
       return;
     }
-    if (retryCount < 3) {
-      staffStatus('Still processing, one moment.');
-      window.setTimeout(function () {
-        staffFnCall('confirm-payment', { order_number: staffLive.orderNumber })
-          .then(function (result) {
-            if (result.status === 200) { staffHandleReceipt(result.data, retryCount + 1); }
-            else {
-              staffResetLive('Could not confirm the order. The order lines are kept; press the button to try again.');
-            }
-          });
-      }, 1500);
+
+    var elapsed = Date.now() - startedAt;
+    var waitingOnCardholder = awaitingAuthentication(receipt) || staffLive.sawChallenge;
+    if (waitingOnCardholder) showAwaitAuth();
+    var delay = nextPollDelay(receipt, elapsed);
+    if (delay > 0) {
+      staffStatus(waitingOnCardholder
+        ? 'Waiting for the cardholder to approve this with their bank on their own device. Order ' +
+          staffLive.orderNumber + '. Nothing has been charged.'
+        : 'Still checking with the payment service. Order ' + staffLive.orderNumber +
+          '. Nothing has been charged.');
+      window.setTimeout(function () { staffPollReceipt(startedAt); }, delay);
       return;
     }
-    staffResetLive('The payment is still processing at the test bank. Wait a moment and press the button again; the order lines are kept.');
+
+    staffLive.busy = false;
+    staffLive.checkOnly = true;
+    setOrderInert(false);
+    hideAwaitAuth();
+    abandonBtn.hidden = false;
+    var btn2 = byId('placeOrderBtn');
+    btn2.disabled = false;
+    btn2.textContent = 'Check this order again';
+    staffStatus('No answer yet for order ' + staffLive.orderNumber +
+      '. Nothing has been charged. Give the caller that number, then press the button to check again, or abandon the attempt.');
   }
 
   /* ---------- same caller, new order / new call ---------- */
@@ -1244,9 +1771,108 @@
     });
   }
 
+  /* ============================================================
+     COMING BACK FROM A BANK APPROVAL
+
+     If a bank's approval step took the console away with a full page
+     navigation, this runs on the way back in. The order number rides
+     in the address, with the stored copies as insurance. Note the
+     order of operations on this page: the staff sign-in gate at the
+     top of this script runs first, so an agent whose console session
+     expired while the caller was approving lands on the sign-in page
+     and the resume state is still waiting for them afterward. The
+     address parameter does not survive that detour; the stored
+     copies do, which is exactly why there are two of them.
+     ============================================================ */
+
+  function staffResumeBoot() {
+    if (!LIVE_PAYMENTS) return;
+    var params = new URLSearchParams(window.location.search);
+    var fromQuery = (params.get('orv') || '').trim().toUpperCase();
+    var hasProviderReturn = params.has('payment_intent_client_secret');
+    var stored = resumeRead();
+    if (!fromQuery && !hasProviderReturn && !stored) return;
+
+    var orderNum = STAFF_ORDER_RE.test(fromQuery)
+      ? fromQuery
+      : (stored && stored.order_number) || '';
+
+    try {
+      window.history.replaceState({}, '', window.location.pathname);
+    } catch (e) { /* older browsers keep the query; harmless */ }
+
+    if (!STAFF_ORDER_RE.test(orderNum)) {
+      staffStatus('A payment came back from a bank but we could not tell which order it was. ' +
+        'Nothing was charged twice. Ask the caller for their order number and check it below.');
+      return;
+    }
+
+    staffLive.orderNumber = orderNum;
+    staffLive.resuming = true;
+    staffLive.checkOnly = true;
+    staffLive.sawChallenge = !!(stored && stored.saw_challenge) || hasProviderReturn;
+    staffOrderNum.textContent = orderNum;
+    staffOrderChip.hidden = false;
+    abandonBtn.hidden = false;
+    staffStatus('Picking up order ' + orderNum + ' where it left off. Nothing has been charged yet.');
+    staffFnCall('confirm-payment', { order_number: orderNum }).then(function (result) {
+      staffLive.resuming = false;
+      if (result.status !== 200) {
+        staffStatus('Could not check order ' + orderNum +
+          ' just now. Nothing has been charged. Use the lookup below in a moment.');
+        return;
+      }
+      staffHandleReceipt(result.data, Date.now());
+    });
+  }
+
+  /* ---------- order lookup: the "was I charged?" call ---------- */
+
+  function runStaffLookup() {
+    var field = byId('staffLookupOrder');
+    var out = byId('staffLookupResult');
+    var value = field.value.trim().toUpperCase();
+    if (!STAFF_ORDER_RE.test(value)) {
+      out.textContent = 'That is not an Orvanna order number. They read ORV, the year, the month, then six characters.';
+      return;
+    }
+    out.textContent = 'Checking ' + value + '.';
+    staffFnCall('confirm-payment', { order_number: value }).then(function (result) {
+      if (result.status === 404) {
+        out.textContent = 'No order with that number exists, which means nothing was charged for it.';
+        return;
+      }
+      if (result.status !== 200) {
+        out.textContent = 'Could not check that order just now. Try again in a moment.';
+        return;
+      }
+      var r = result.data;
+      if (r.payment_status === 'succeeded') {
+        out.textContent = 'Order ' + r.order_number + ' was paid in full, ' +
+          fmtMoney(r.total_cents / 100) + ', test mode. Read them that number.';
+        return;
+      }
+      if (r.payment_status === 'failed' || r.payment_status === 'abandoned') {
+        out.textContent = 'Order ' + r.order_number + ' was not completed and nothing was charged. ' +
+          staffOutcomeMessage(r);
+        return;
+      }
+      out.textContent = 'Order ' + r.order_number + ' has no answer yet and nothing has been charged. ' +
+        (awaitingAuthentication(r)
+          ? 'Their bank still has the approval open, which only the cardholder can finish.'
+          : 'The payment service has not answered yet.');
+    });
+  }
+
+  byId('staffLookupBtn').addEventListener('click', runStaffLookup);
+  byId('staffLookupOrder').addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); runStaffLookup(); }
+  });
+
   renderProductOptions();
   renderAddPreview();
   boot();
+  staffResumeBoot();
 })();
 </script>
 

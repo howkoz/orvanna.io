@@ -264,10 +264,21 @@
                 <div id="livePayArea" hidden>
                   <p class="pay-note" id="livePayNote"></p>
                   <div id="hyperswitchMount"></div>
-                  <p class="pay-note" id="livePayStatus" hidden aria-live="polite"></p>
+                  <p class="pay-note" id="livePayStatus" hidden role="status" aria-live="polite" tabindex="-1"></p>
                 </div>
+
+                <!-- Pre-challenge notice (3-D Secure). Present from the moment
+                     the payment step mounts, because surprise is the single
+                     largest cause of people abandoning a bank approval. -->
+                <p class="pay-3ds-note" id="threeDsNotice">Your bank may ask you to approve this payment. This is 3-D Secure (3DS), the card networks' identity check. If it asks, a window from your bank opens right here on this page. Nothing is charged while you are in it.</p>
+
+                <!-- The order number exists from the moment the server opens the
+                     payment, so the shopper holds it BEFORE anything can go wrong. -->
+                <p class="pay-order-chip" id="payOrderChip" hidden>Order <span id="payOrderNum"></span>, not yet charged. Keep this number.</p>
+
                 <button class="btn btn-solid btn-block" type="submit" id="placeOrderBtn">Place order</button>
               </form>
+              <p class="pay-lookup-line"><button class="link-btn" type="button" id="openLookup">Started an order that never finished? Look it up by order number.</button></p>
               <p class="login-note">Demonstration checkout: any values continue, including empty fields.</p>
             </div>
 
@@ -369,7 +380,65 @@
   </section>
 </div>
 
+<!-- ==================================================
+     VIEW 4: RESUME
+
+     Where a shopper lands when their bank's approval step sent
+     them away from this page and back again. This view is a
+     complete destination in its own right: it names the order,
+     asks OUR server what actually happened, and says plainly
+     whether anything was charged. It never tells anyone to press
+     Back, because the payment widget navigates with a history
+     replace, which destroys the entry Back would return to.
+     ================================================== -->
+<div class="view" id="viewResume">
+  <section class="confirm-band glow-cyan">
+    <div class="wrap">
+
+      <div class="confirm-card glass" id="resumeCard">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h1 class="confirm-title" id="resumeTitle">Finishing your order</h1>
+        <p class="order-number" id="resumeOrderNum" hidden></p>
+        <p class="confirm-note" id="resumeStatus" role="status" aria-live="polite">Checking with the payment service.</p>
+        <p class="confirm-note" id="resumeDetail" hidden></p>
+        <div class="resume-actions">
+          <button class="btn btn-solid" type="button" id="resumeCheckAgain" hidden>Check again</button>
+          <button class="btn btn-ghost" type="button" id="resumeRetry" hidden>Back to my cart</button>
+          <a class="btn btn-ghost" href="shop.html">Back to the catalog</a>
+        </div>
+      </div>
+
+      <div class="confirm-card glass" id="resumeLookup" hidden>
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h2 class="checkout-panel-title">Look up an order</h2>
+        <p class="step-intro" id="resumeLookupIntro">Enter an Orvanna order number and we will tell you exactly what happened to it.</p>
+        <label class="field-label" for="lookupOrder">Order number</label>
+        <input class="field" type="text" id="lookupOrder" placeholder="ORV-2026-08-XXXXXX" autocomplete="off" spellcheck="false">
+        <p class="field-hint">The letters ORV, then the year, the month, then six characters.</p>
+        <button class="btn btn-solid" type="button" id="lookupGo">Look up this order</button>
+        <p class="confirm-note" id="lookupResult" role="status" aria-live="polite"></p>
+      </div>
+
+    </div>
+  </section>
+</div>
+
 </main>
+
+<!-- ============ BANK APPROVAL CHROME ============
+     The bank's approval screen is the issuer's own content inside an
+     overlay the payment widget injects. We cannot brand or reach into
+     it, so this slim bar sits above it carrying the three things the
+     shopper needs in the same screenshot: that this is test mode, the
+     order number, and a way out. It also carries the accessible name
+     and holds the keyboard focus trap while the overlay is up. -->
+<div class="challenge-chrome" id="challengeChrome" role="dialog" aria-modal="true" aria-labelledby="ccTitle" hidden>
+  <div class="cc-inner">
+    <p class="cc-line" id="ccTitle"><b>Your bank is asking you to approve this payment.</b> Test mode: this is a simulated approval and no money moves.</p>
+    <p class="cc-line cc-order">Order <span id="ccOrderNum">&mdash;</span>, not yet charged</p>
+    <button class="btn btn-ghost btn-sm" type="button" id="ccCancel">Cancel and go back</button>
+  </div>
+</div>
 
 <!-- ============ CART DRAWER ============ -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
@@ -757,7 +826,8 @@
   var views = {
     catalog: document.getElementById('viewCatalog'),
     checkout: document.getElementById('viewCheckout'),
-    confirm: document.getElementById('viewConfirm')
+    confirm: document.getElementById('viewConfirm'),
+    resume: document.getElementById('viewResume')
   };
 
   function showView(name) {
@@ -1088,16 +1158,112 @@
     clientSecret: null,
     hyper: null,
     widgets: null,
-    busy: false
+    busy: false,
+    /* true once the bank's approval overlay has been seen for this
+       attempt: it changes both the waiting schedule and the wording */
+    sawChallenge: false,
+    /* true once a payment has been handed to the bank and the button
+       may only ask what happened, never submit again */
+    checkOnly: false,
+    /* true while an on-load resume is unresolved, so nothing can
+       start a second payment behind it */
+    resuming: false
   };
   var livePayArea = document.getElementById('livePayArea');
   var livePayNote = document.getElementById('livePayNote');
   var livePayStatus = document.getElementById('livePayStatus');
+  var payOrderChip = document.getElementById('payOrderChip');
+  var payOrderNum = document.getElementById('payOrderNum');
 
   function liveStatus(message) {
     livePayStatus.hidden = !message;
     livePayStatus.textContent = message || '';
   }
+
+  /* ============================================================
+     RESUME STATE
+
+     The bank's approval step can take the whole page away with a
+     history-replacing navigation, so anything we want back must be
+     written BEFORE the payment is confirmed, never in a callback.
+
+     Two copies, on purpose:
+     - sessionStorage survives a same-tab redirect and is scoped to
+       the tab, which is the correct default. The client secret, a
+       bearer token for this one payment, lives here and nowhere
+       else.
+     - localStorage is the fallback for a bank application that
+       bounces the shopper back into a NEW tab, which starts with
+       an empty sessionStorage. It carries no secret and expires
+       after thirty minutes.
+     ============================================================ */
+
+  var RESUME_KEY = 'orv.resume.v1';
+  var RESUME_MAX_AGE_MS = 30 * 60 * 1000;
+
+  function resumeSave(patch) {
+    var base = resumeRead() || {};
+    var next = {
+      v: 1,
+      order_number: patch.order_number || base.order_number || null,
+      client_secret: patch.client_secret || base.client_secret || null,
+      total_cents: typeof patch.total_cents === 'number' ? patch.total_cents : (base.total_cents || null),
+      saw_challenge: patch.saw_challenge === true || base.saw_challenge === true,
+      created_at_ms: base.created_at_ms || Date.now(),
+      channel: 'shop'
+    };
+    try {
+      window.sessionStorage.setItem(RESUME_KEY, JSON.stringify(next));
+    } catch (e) { /* private mode: the query parameter still carries the order */ }
+    try {
+      var lean = JSON.parse(JSON.stringify(next));
+      lean.client_secret = null;          /* never a bearer token in localStorage */
+      window.localStorage.setItem(RESUME_KEY, JSON.stringify(lean));
+    } catch (e) { /* same */ }
+  }
+
+  function parseStore(store) {
+    try {
+      var raw = store.getItem(RESUME_KEY);
+      if (!raw) return null;
+      var v = JSON.parse(raw);
+      if (!v || v.v !== 1 || !v.order_number) return null;
+      if (Date.now() - Number(v.created_at_ms || 0) > RESUME_MAX_AGE_MS) return null;
+      return v;
+    } catch (e) { return null; }
+  }
+
+  /* sessionStorage first (it has the secret and the right scope),
+     then localStorage (the new-tab case) */
+  function resumeRead() {
+    var s = null, l = null;
+    try { s = parseStore(window.sessionStorage); } catch (e) { s = null; }
+    try { l = parseStore(window.localStorage); } catch (e) { l = null; }
+    if (s && l && s.order_number === l.order_number) {
+      s.saw_challenge = s.saw_challenge || l.saw_challenge;
+    }
+    return s || l;
+  }
+
+  function resumeClear() {
+    try { window.sessionStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
+    try { window.localStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
+  }
+
+  /* The address the bank comes back to. Built from the origin and
+     the path, never from the live address bar, so no leftover query
+     or hash from an earlier attempt rides along. The server builds
+     the same address from the return_page we send it; this copy is
+     what the widget itself uses. */
+  function canonicalReturnUrl(orderNum) {
+    var url = new URL(window.location.pathname, window.location.origin);
+    url.search = '';
+    url.hash = '';
+    if (orderNum) url.searchParams.set('orv', orderNum);
+    return url.toString();
+  }
+
+  var ORDER_NUMBER_RE = /^ORV-\d{4}-\d{2}-[0-9A-Z]{6}$/;
 
   /* invoke an Edge Function; resolves { status, data } and never
      rejects on an HTTP error status (the caller reads status) */
@@ -1140,8 +1306,15 @@
     liveState.hyper = null;
     liveState.widgets = null;
     liveState.busy = false;
+    liveState.sawChallenge = false;
+    liveState.checkOnly = false;
+    liveState.resuming = false;
+    resumeClear();
+    setPaymentInert(false);
     document.getElementById('hyperswitchMount').innerHTML = '';
     livePayNote.textContent = '';
+    payOrderChip.hidden = true;
+    payOrderNum.textContent = '';
     if (message) {
       livePayArea.hidden = false;
       liveStatus(message);
@@ -1153,6 +1326,146 @@
     placeOrderBtn.disabled = false;
     placeOrderBtn.textContent = 'Place order';
   }
+
+  /* ============================================================
+     INERT WHILE A PAYMENT IS IN FLIGHT
+
+     Nothing the shopper can reach may change the amount that is
+     currently being authorized. Really disabled, not dimmed, so a
+     keyboard user cannot tab into it either.
+     ============================================================ */
+
+  var inertOn = false;
+
+  function paymentInertControls() {
+    return [].slice.call(document.querySelectorAll(
+      '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
+      '#memberCode, #taxId, .pay-btn, #cartButton, #checkoutButton, ' +
+      '#backToShop, #accountSwitch'
+    ));
+  }
+
+  function setPaymentInert(on) {
+    if (on === inertOn) return;
+    inertOn = on;
+    paymentInertControls().forEach(function (el) {
+      if (on) {
+        if (el.disabled) el.setAttribute('data-was-disabled', '1');
+        el.disabled = true;
+      } else if (el.getAttribute('data-was-disabled')) {
+        el.removeAttribute('data-was-disabled');
+      } else {
+        el.disabled = false;
+      }
+    });
+    document.body.classList.toggle('payment-in-flight', on);
+  }
+
+  /* ============================================================
+     THE BANK APPROVAL OVERLAY
+
+     The payment widget injects a full-screen frame of its own for
+     the bank's approval screen. We do not control its contents, so
+     what we do control is everything around it: the page behind it
+     goes inert, our chrome bar carries the order number and the
+     test-mode reminder, focus moves into the dialog and stays
+     there, and screen readers are told what happened.
+     ============================================================ */
+
+  var challengeChrome = document.getElementById('challengeChrome');
+  var ccOrderNum = document.getElementById('ccOrderNum');
+  var ccCancel = document.getElementById('ccCancel');
+  var challengeOpen = false;
+  var focusBeforeChallenge = null;
+
+  function challengeFrame() {
+    return document.getElementById('orca-fullscreen');
+  }
+
+  function openChallengeChrome() {
+    if (challengeOpen) return;
+    challengeOpen = true;
+    liveState.sawChallenge = true;
+    resumeSave({ order_number: liveState.orderNumber, saw_challenge: true });
+    focusBeforeChallenge = document.activeElement;
+    ccOrderNum.textContent = liveState.orderNumber || 'not yet issued';
+    challengeChrome.hidden = false;
+    setPaymentInert(true);
+    liveStatus('Your bank is asking you to approve this payment. Finish in the window from your bank. Nothing has been charged yet.');
+    try { ccCancel.focus(); } catch (e) { /* focus is best effort */ }
+    document.addEventListener('keydown', challengeKeydown, true);
+  }
+
+  function closeChallengeChrome() {
+    if (!challengeOpen) return;
+    challengeOpen = false;
+    challengeChrome.hidden = true;
+    document.removeEventListener('keydown', challengeKeydown, true);
+    /* focus must never be left on the control that just disappeared.
+       It goes back where it came from when that is still a real,
+       usable control, and otherwise to the status line, which is
+       exactly where the outcome is about to be written. */
+    var back = focusBeforeChallenge;
+    focusBeforeChallenge = null;
+    var CONTROLS = /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/;
+    if (back && document.contains(back) && !back.disabled && !back.hidden &&
+        CONTROLS.test(back.tagName || '')) {
+      try { back.focus(); return; } catch (e) { /* fall through */ }
+    }
+    try {
+      livePayArea.hidden = false;
+      livePayStatus.hidden = false;
+      livePayStatus.focus();
+    } catch (e) { /* fall through to the button */ }
+    if (document.activeElement !== livePayStatus) {
+      try { placeOrderBtn.focus(); } catch (err) { /* best effort */ }
+    }
+  }
+
+  /* Keyboard containment. The bank's own screen is a cross-origin
+     frame, so once focus is inside it the browser handles the
+     tabbing; what we can guarantee is that Tab never lands back on
+     the checkout behind the overlay, and that Escape does not
+     silently drop the shopper somewhere undefined. */
+  function challengeKeydown(e) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      return;                    /* Escape must not orphan a live payment */
+    }
+    if (e.key !== 'Tab') return;
+    var frame = challengeFrame();
+    var stops = [ccCancel];
+    if (frame) stops.push(frame);
+    var index = stops.indexOf(document.activeElement);
+    e.preventDefault();
+    var next = e.shiftKey
+      ? stops[(index <= 0 ? stops.length : index) - 1]
+      : stops[(index + 1) % stops.length];
+    try { next.focus(); } catch (err) { /* best effort */ }
+  }
+
+  /* Watch for the widget's overlay appearing and disappearing. */
+  if (window.MutationObserver) {
+    new MutationObserver(function () {
+      var present = !!challengeFrame();
+      if (present && !challengeOpen) openChallengeChrome();
+      if (!present && challengeOpen) closeChallengeChrome();
+    }).observe(document.body, { childList: true, subtree: true });
+  }
+
+  ccCancel.addEventListener('click', function () {
+    var frame = challengeFrame();
+    if (frame && frame.parentNode) frame.parentNode.removeChild(frame);
+    closeChallengeChrome();
+    /* the shopper may have approved and then backed out, so the
+       server is still asked what really happened */
+    liveStatus('Checking whether your bank approved before you closed that window. Nothing has been charged yet.');
+    if (liveState.orderNumber) {
+      livePollReceipt(0, Date.now());
+    } else {
+      liveResetPayment('You closed the approval window before it finished. Nothing was charged and your cart is unchanged.');
+    }
+  });
 
   /* load HyperLoader.js, the one sanctioned external script,
      only on demand and only when the flag is true */
@@ -1170,7 +1483,21 @@
   }
 
   function liveSubmit() {
-    if (liveState.busy) return;
+    /* three guards against a second payment: the in-flight flag, an
+       unresolved resume, and the bank's own approval window being
+       up. The server's guarded update makes a duplicate CONFIRM
+       harmless; a duplicate CREATE would make a second order, which
+       is what these guards exist to prevent. */
+    if (liveState.busy || liveState.resuming || challengeOpen) return;
+    /* a payment already handed to the bank is never re-submitted:
+       the button becomes a way to ask again what happened to it */
+    if (liveState.checkOnly && liveState.orderNumber) {
+      liveState.busy = true;
+      placeOrderBtn.disabled = true;
+      liveStatus('Checking your order with the payment service.');
+      livePollReceipt(0, Date.now());
+      return;
+    }
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
     if (liveState.clientSecret) { liveConfirm(); } else { liveStart(); }
   }
@@ -1188,7 +1515,12 @@
       activation: deliveryChoice(),
       tax_exempt: taxExempt(),
       member_code: document.getElementById('memberCode').value.trim(),
-      channel: 'shop'
+      channel: 'shop',
+      /* which page the bank should come back to. A page name, never
+         a full address: the server builds the address itself from
+         its own allowed origin, so nothing this browser types can
+         redirect a shopper somewhere else. */
+      return_page: 'shop.html'
     };
     fnCall('create-payment', 'POST', payload).then(function (result) {
       if (result.status !== 200 || !result.data.client_secret) {
@@ -1197,6 +1529,13 @@
       }
       liveState.orderNumber = result.data.order_number;
       liveState.clientSecret = result.data.client_secret;
+      /* written the moment the order number exists, so it is on
+         screen and in storage before anything can go wrong */
+      payOrderNum.textContent = liveState.orderNumber;
+      payOrderChip.hidden = false;
+      /* deliberately NOT saved as resume state yet: nothing has been
+         handed to a bank, so a page that reloads here should show
+         the ordinary catalog, not a "finishing your order" panel */
       return loadHyperLoader().then(function () {
         liveMountCheckout(result.data.publishable_key);
       });
@@ -1218,8 +1557,20 @@
     checkoutWidget.mount('#hyperswitchMount');
     cardFields.hidden = true;
     walletNote.hidden = true;
+    /* The card hint names cards that can actually demonstrate a bank
+       approval on the authentication path this site uses. Our
+       authentication provider encodes the outcome in the last four
+       digits: a card ending 70 challenges and passes, one ending 71
+       challenges and fails. 4242 4242 4242 4242 is documented as not
+       enrolled in 3-D Secure (3DS), so it can never raise the
+       approval screen no matter what is asked for, which is why it
+       cannot be used to test this. Full matrix, and the alternative
+       path through the processor's own 3DS: docs/TEST-CARDS.html. */
     livePayNote.textContent =
-      'Test mode. Use the test card 4242 4242 4242 4242 with any future expiry date and any three digit security code. Nothing is ever charged.';
+      'Test mode, any future expiry date and any three digit security code. ' +
+      '7000 1009 1111 2070 asks your bank to approve, then succeeds. ' +
+      '3000 1010 1111 1071 asks your bank to approve, then fails the approval. ' +
+      '4242 4242 4242 4242 sails straight through and never asks. Nothing is ever charged.';
     liveStatus('');
     /* label only: the button shows this page's total, and the
        server's mirror computes the identical figure (the verifier
@@ -1235,10 +1586,22 @@
   function liveConfirm() {
     liveState.busy = true;
     placeOrderBtn.disabled = true;
-    liveStatus('Confirming with the test bank...');
+    setPaymentInert(true);
+    /* never a bare spinner: between this moment and the bank's
+       screen there can be several seconds of quiet checking, and a
+       message that implies the money is already moving would be a
+       lie */
+    liveStatus('Checking with your bank. If it asks you to approve, a window from your bank will open here. Nothing has been charged yet.');
+    /* resume state is written BEFORE confirm, because the widget can
+       navigate this whole page away before any callback of ours runs */
+    resumeSave({
+      order_number: liveState.orderNumber,
+      client_secret: liveState.clientSecret,
+      total_cents: Math.round(orderMath().total * 100)
+    });
     liveState.hyper.confirmPayment({
       widgets: liveState.widgets,
-      confirmParams: { return_url: window.location.href },
+      confirmParams: { return_url: canonicalReturnUrl(liveState.orderNumber) },
       redirect: 'if_required'
     }).then(
       function (sdkResult) {
@@ -1267,22 +1630,129 @@
         '. Fix the card details and press the button again. Nothing was charged.');
       return;
     }
+    livePollReceipt(0, Date.now());
+  }
+
+  /* ============================================================
+     READING THE SERVER RECEIPT
+
+     The server sends back a short plain-English `reason` and a set
+     of named authentication fields. Those two are what let this
+     page tell four genuinely different stories apart, instead of
+     showing one generic decline for all of them. Everything here
+     tolerates their absence, because the older server shape had
+     neither field.
+     ============================================================ */
+
+  function authOf(r) { return (r && r.authentication) || {}; }
+  function reasonOf(r) { return (r && typeof r.reason === 'string') ? r.reason : ''; }
+
+  function transStatus(r) {
+    return String(authOf(r).trans_status || '').toUpperCase();
+  }
+
+  /* the bank confirmed the shopper's identity */
+  function authApproved(r) {
+    var ts = transStatus(r);
+    if (ts === 'Y' || ts === 'A') return true;
+    var st = String(authOf(r).status || '').toLowerCase();
+    return st === 'success' || st === 'authenticated' || st === 'authentication_successful';
+  }
+
+  /* the identity check ran and came back no, or never finished */
+  function authRefused(r) {
+    var ts = transStatus(r);
+    if (ts === 'N' || ts === 'R' || ts === 'U') return true;
+    var st = String(authOf(r).status || '').toLowerCase();
+    if (st === 'failed' || st === 'authentication_failed') return true;
+    return /authentication_failed|challenge_abandoned|attempt_reset|not_submitted/.test(reasonOf(r));
+  }
+
+  /* the identity check itself broke: nobody said no, it simply
+     could not run */
+  function authBroke(r) {
+    var a = authOf(r);
+    if (a.error_code || a.error_message) return true;
+    return /authentication_error|three_ds_error|3ds_error|unavailable/.test(reasonOf(r));
+  }
+
+  function awaitingAuthentication(r) {
+    if (reasonOf(r) === 'awaiting_authentication') return true;
+    var st = String((r && r.processor && r.processor.status) || '').toLowerCase();
+    return st === 'requires_customer_action';
+  }
+
+  /* The four distinct endings, plus the plain decline that has
+     nothing to do with a bank approval. Every failing message ends
+     by saying nothing was charged, without exception. */
+  function liveOutcomeMessage(receipt) {
+    var bankSaid = receipt.processor && receipt.processor.error_message
+      ? ' Your bank said: ' + receipt.processor.error_message + '.'
+      : '';
+    if (authBroke(receipt)) {
+      return 'The security check could not run just now. Nothing was charged, and nothing about your card is wrong. Please try again in a minute.';
+    }
+    if (authRefused(receipt) && !authApproved(receipt)) {
+      return 'Your bank did not confirm it was you, so the payment stopped there. Nothing was charged and your cart is unchanged. You can try the approval again, or use a different card.';
+    }
+    if (authApproved(receipt)) {
+      return 'Your bank confirmed it was you, then declined the payment itself.' + bankSaid +
+        ' Nothing was charged and your cart is unchanged. This is usually a limit or a hold on the card, so a different card will often work.';
+    }
+    return 'Declined.' + bankSaid +
+      ' Nothing was charged and your cart is unchanged. Press Place order to try again with a different card.';
+  }
+
+  /* success copy acknowledges the extra step when there was one */
+  function liveSuccessNote(receipt) {
+    if (liveState.sawChallenge || authApproved(receipt)) {
+      return 'Approved by your bank and confirmed. Test mode: a test payment ran against the sandbox and nothing real was ever charged.';
+    }
+    return 'Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.';
+  }
+
+  /* ============================================================
+     TWO WAITING CLOCKS
+
+     Waiting for a processor takes seconds. Waiting for a person to
+     read a text message from their bank takes one to three
+     minutes. One schedule cannot serve both, and the old single
+     schedule (three checks over seven and a half seconds) timed
+     out in the middle of every real approval.
+     ============================================================ */
+
+  var PROCESSOR_WAIT_MS = 20 * 1000;
+  var AUTH_WAIT_MS = 10 * 60 * 1000;
+
+  function nextPollDelay(receipt, elapsedMs) {
+    if (awaitingAuthentication(receipt) || liveState.sawChallenge || challengeOpen) {
+      if (elapsedMs > AUTH_WAIT_MS) return -1;
+      return elapsedMs < 60 * 1000 ? 5000 : 10000;
+    }
+    if (elapsedMs > PROCESSOR_WAIT_MS) return -1;
+    return 2000;
+  }
+
+  function livePollReceipt(attempt, startedAt) {
     fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber })
       .then(function (result) {
         if (result.status !== 200) {
           liveState.busy = false;
+          setPaymentInert(false);
           placeOrderBtn.disabled = false;
           liveStatus(friendlyError(result,
-            'Could not confirm the order. Please press the button again in a moment.'));
+            'Could not check the order just now. Your order number is ' + liveState.orderNumber +
+            '. Nothing has been charged. Press the button again in a moment.'));
           return;
         }
-        liveHandleReceipt(result.data, 0);
+        liveHandleReceipt(result.data, startedAt);
       });
   }
 
   /* act on the server's receipt: success clears the cart (only
-     then), a decline preserves it, in-flight polls politely */
-  function liveHandleReceipt(receipt, retryCount) {
+     then), a decline preserves it, in-flight waits on the right
+     clock and never calls itself an error */
+  function liveHandleReceipt(receipt, startedAt) {
     if (receipt.payment_status === 'succeeded') {
       liveRenderConfirmation(receipt);
       cart = {};
@@ -1293,35 +1763,35 @@
       liveRenderRecentOrders();
       return;
     }
-    if (receipt.payment_status === 'failed') {
-      var reason = receipt.processor && receipt.processor.error_message
-        ? ' The test bank said: ' + receipt.processor.error_message + '.'
-        : '';
-      liveResetPayment('Declined.' + reason +
-        ' Your cart is unchanged. Press Place order to try again with a different card, for example the standard test card 4242 4242 4242 4242.');
+    var reasonNow = reasonOf(receipt);
+    if (receipt.payment_status === 'failed' || receipt.payment_status === 'abandoned' ||
+        reasonNow === 'attempt_reset' || reasonNow === 'not_submitted') {
+      liveResetPayment(liveOutcomeMessage(receipt));
       return;
     }
-    if (retryCount < 3) {
-      liveStatus('Still processing, one moment.');
+
+    var elapsed = Date.now() - startedAt;
+    var delay = nextPollDelay(receipt, elapsed);
+    if (delay > 0) {
+      liveStatus(awaitingAuthentication(receipt) || liveState.sawChallenge
+        ? 'Waiting for you to approve this with your bank. Order ' + liveState.orderNumber +
+          '. We have not charged you yet.'
+        : 'Still checking with the payment service, one moment. Order ' + liveState.orderNumber +
+          '. We have not charged you yet.');
       window.setTimeout(function () {
-        fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber })
-          .then(function (result) {
-            if (result.status === 200) {
-              liveHandleReceipt(result.data, retryCount + 1);
-            } else {
-              liveState.busy = false;
-              placeOrderBtn.disabled = false;
-              liveStatus(friendlyError(result,
-                'Could not confirm the order. Please press the button again in a moment.'));
-            }
-          });
-      }, 2500);
+        livePollReceipt(0, startedAt);
+      }, delay);
       return;
     }
+
     liveState.busy = false;
+    liveState.checkOnly = true;
+    setPaymentInert(false);
     placeOrderBtn.disabled = false;
-    liveStatus('Still processing. Your order number is ' + liveState.orderNumber +
-      '. Press the button again in a moment to check.');
+    placeOrderBtn.textContent = 'Check this order again';
+    liveStatus('This is taking longer than usual and we still do not have an answer. ' +
+      'We have not charged you. Your order number is ' + liveState.orderNumber +
+      '. Press the button to check again.');
   }
 
   /* render the confirmation view from the SERVER receipt, not
@@ -1375,8 +1845,7 @@
     document.getElementById('confirmQualified').textContent = r.pv_total >= 100
       ? 'This order carries ' + fmtPv(r.pv_total) + ': a qualified month.'
       : 'This order carries ' + fmtPv(r.pv_total) + ' of the 100 PV qualified month.';
-    document.getElementById('confirmDemoNote').textContent =
-      'Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.';
+    document.getElementById('confirmDemoNote').textContent = liveSuccessNote(r);
   }
 
   /* the recent-test-orders section, from the rate-limited
@@ -1408,6 +1877,232 @@
         b.title = 'Demonstration mark only. The card flow is the real test rail in this phase.';
       }
     });
+  } else {
+    /* with the flag off there is no bank, no order to look up, and
+       nothing that could ever ask for an approval, so neither the
+       warning nor the lookup would be telling the truth */
+    document.getElementById('threeDsNotice').hidden = true;
+    document.getElementById('openLookup').parentNode.hidden = true;
+  }
+
+  /* ============================================================
+     COMING BACK FROM THE BANK
+
+     When the bank's approval step is a full page redirect rather
+     than an overlay, this page is destroyed and rebuilt. The
+     payment widget navigates with a history replace, which means
+     the entry the Back button would return to no longer exists, so
+     no message here ever suggests pressing Back. Instead this view
+     is a complete destination: it names the order, asks our server
+     what happened, and says whether anything was charged.
+     ============================================================ */
+
+  var resumeCard = document.getElementById('resumeCard');
+  var resumeTitle = document.getElementById('resumeTitle');
+  var resumeOrderNumEl = document.getElementById('resumeOrderNum');
+  var resumeStatusEl = document.getElementById('resumeStatus');
+  var resumeDetailEl = document.getElementById('resumeDetail');
+  var resumeCheckAgain = document.getElementById('resumeCheckAgain');
+  var resumeRetry = document.getElementById('resumeRetry');
+  var resumeLookup = document.getElementById('resumeLookup');
+  var resumeLookupIntro = document.getElementById('resumeLookupIntro');
+  var lookupOrder = document.getElementById('lookupOrder');
+  var lookupGo = document.getElementById('lookupGo');
+  var lookupResult = document.getElementById('lookupResult');
+
+  function resumeSay(status, detail) {
+    resumeStatusEl.textContent = status;
+    resumeDetailEl.hidden = !detail;
+    resumeDetailEl.textContent = detail || '';
+  }
+
+  function showResumeView(orderNum) {
+    if (orderNum) {
+      resumeOrderNumEl.hidden = false;
+      resumeOrderNumEl.textContent = orderNum;
+    } else {
+      resumeOrderNumEl.hidden = true;
+    }
+    showView('resume');
+  }
+
+  /* strip our own and the payment service's query parameters once
+     they have been read, so a refresh cannot re-enter this flow
+     carrying a stale client secret */
+  function cleanAddressBar() {
+    try {
+      window.history.replaceState({}, '', window.location.pathname);
+    } catch (e) { /* older browsers keep the query; harmless */ }
+  }
+
+  function resumeApply(receipt) {
+    liveState.resuming = false;
+    if (receipt.payment_status === 'succeeded') {
+      resumeClear();
+      liveRenderConfirmation(receipt);
+      cart = {};
+      persist();
+      renderAll();
+      showView('confirm');
+      liveRenderRecentOrders();
+      return;
+    }
+    var reason = reasonOf(receipt);
+    var neverWentThrough = reason === 'not_submitted' || reason === 'attempt_reset';
+    if (receipt.payment_status === 'failed' || receipt.payment_status === 'abandoned' || neverWentThrough) {
+      resumeClear();
+      resumeTitle.textContent = 'This order was not completed';
+      resumeSay(liveOutcomeMessage(receipt),
+        'Your cart is exactly as you left it. Nothing was charged.');
+      resumeCheckAgain.hidden = true;
+      resumeRetry.hidden = false;
+      return;
+    }
+    /* still in flight: this must never claim either result */
+    resumeTitle.textContent = 'We are still waiting on your bank';
+    resumeSay('We have not charged you. ' + (awaitingAuthentication(receipt)
+      ? 'Your bank still has the approval open. If a window from your bank is still on your phone, finish it there.'
+      : 'The payment service has not answered yet.'),
+      'Keep this order number. This page checks again on its own, and you can check it any time from the lookup below.');
+    resumeCheckAgain.hidden = false;
+  }
+
+  function resumeConfirm(orderNum, startedAt, silent) {
+    liveState.orderNumber = orderNum;
+    if (!silent) resumeSay('Checking with the payment service. Nothing has been charged yet.', '');
+    fnCall('confirm-payment', 'POST', { order_number: orderNum }).then(function (result) {
+      if (result.status === 404) {
+        liveState.resuming = false;
+        resumeTitle.textContent = 'We could not find that order';
+        resumeSay('No order with that number exists on our side, which means nothing was charged for it.',
+          'Check the number and try the lookup below.');
+        resumeCheckAgain.hidden = true;
+        resumeLookup.hidden = false;
+        return;
+      }
+      if (result.status !== 200) {
+        liveState.resuming = false;
+        resumeSay(friendlyError(result, 'We could not check that order just now. Nothing has been charged.'),
+          'Press Check again in a moment.');
+        resumeCheckAgain.hidden = false;
+        return;
+      }
+      var receipt = result.data;
+      var terminal = receipt.payment_status === 'succeeded' ||
+        receipt.payment_status === 'failed' || receipt.payment_status === 'abandoned';
+      if (!terminal) {
+        var elapsed = Date.now() - startedAt;
+        var delay = nextPollDelay(receipt, elapsed);
+        if (delay > 0) {
+          resumeApply(receipt);
+          window.setTimeout(function () { resumeConfirm(orderNum, startedAt, true); }, delay);
+          return;
+        }
+      }
+      resumeApply(receipt);
+    });
+  }
+
+  resumeCheckAgain.addEventListener('click', function () {
+    if (!liveState.orderNumber) return;
+    resumeCheckAgain.hidden = true;
+    resumeConfirm(liveState.orderNumber, Date.now(), false);
+  });
+
+  resumeRetry.addEventListener('click', function () {
+    liveResetPayment('');
+    if (Object.keys(cart).length === 0) { showView('catalog'); return; }
+    setAccountStage('chooser');
+    accountMode = null;
+    setPayMethod('card');
+    renderSummary();
+    showView('checkout');
+  });
+
+  /* the recovery panel: the last line of defence against the
+     question nobody should ever have to ask their own bank */
+  function runLookup() {
+    var value = lookupOrder.value.trim().toUpperCase();
+    if (!ORDER_NUMBER_RE.test(value)) {
+      lookupResult.textContent = 'That does not look like an Orvanna order number. It reads ORV, the year, the month, then six characters.';
+      return;
+    }
+    lookupResult.textContent = 'Looking it up.';
+    fnCall('confirm-payment', 'POST', { order_number: value }).then(function (result) {
+      if (result.status === 404) {
+        lookupResult.textContent = 'No order with that number, which means nothing was charged for it.';
+        return;
+      }
+      if (result.status !== 200) {
+        lookupResult.textContent = friendlyError(result, 'We could not check that order just now. Please try again in a moment.');
+        return;
+      }
+      lookupResult.textContent = '';
+      liveState.sawChallenge = false;
+      showResumeView(value);
+      resumeApply(result.data);
+    });
+  }
+
+  lookupGo.addEventListener('click', runLookup);
+  lookupOrder.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); runLookup(); }
+  });
+
+  document.getElementById('openLookup').addEventListener('click', function () {
+    resumeTitle.textContent = 'Look up an order';
+    resumeOrderNumEl.hidden = true;
+    resumeSay('Enter the order number you were given and we will tell you exactly what happened to it, including whether anything was charged.', '');
+    resumeCheckAgain.hidden = true;
+    resumeRetry.hidden = false;
+    resumeLookup.hidden = false;
+    resumeLookupIntro.textContent = 'Every Orvanna order number reads ORV, the year, the month, then six characters.';
+    showView('resume');
+    try { lookupOrder.focus(); } catch (e) { /* best effort */ }
+  });
+
+  /* Runs before the ordinary checkout ever shows. Resume when the
+     address carries our order parameter, or the payment service's
+     own client secret parameter, or when fresh resume state is in
+     storage. Order number resolution: the query parameter first
+     (it survives a return into a brand new tab), then the tab's own
+     storage, then the thirty-minute local copy. */
+  function resumeBoot() {
+    if (!LIVE_PAYMENTS) return false;
+    var params = new URLSearchParams(window.location.search);
+    var fromQuery = (params.get('orv') || '').trim().toUpperCase();
+    var hasProviderReturn = params.has('payment_intent_client_secret');
+    var stored = resumeRead();
+
+    if (!fromQuery && !hasProviderReturn && !stored) return false;
+
+    var orderNum = ORDER_NUMBER_RE.test(fromQuery)
+      ? fromQuery
+      : (stored && stored.order_number) || '';
+
+    liveState.resuming = true;
+    liveState.checkOnly = true;
+    liveState.sawChallenge = !!(stored && stored.saw_challenge) || hasProviderReturn;
+    if (stored && stored.client_secret) liveState.clientSecret = stored.client_secret;
+    cleanAddressBar();
+
+    if (!ORDER_NUMBER_RE.test(orderNum)) {
+      liveState.resuming = false;
+      resumeTitle.textContent = 'We could not tell which order this was';
+      showResumeView('');
+      resumeSay('Your cart is untouched and nothing was charged twice.',
+        'If you have your Orvanna order number, enter it below and we will tell you exactly what happened. If your bank shows a pending hold, it drops off on its own.');
+      resumeCheckAgain.hidden = true;
+      resumeRetry.hidden = false;
+      resumeLookup.hidden = false;
+      return true;
+    }
+
+    resumeTitle.textContent = 'Finishing your order';
+    showResumeView(orderNum);
+    resumeSay('Checking with the payment service. Nothing has been charged yet.', '');
+    resumeConfirm(orderNum, Date.now(), false);
+    return true;
   }
 
   /* ---------- render everything ---------- */
@@ -1419,8 +2114,10 @@
 
   renderAll();
 
+  var resumed = resumeBoot();
+
   /* product.html sends its View cart link here with #cart */
-  if (window.location.hash === '#cart') {
+  if (!resumed && window.location.hash === '#cart') {
     openDrawer();
   }
 })();

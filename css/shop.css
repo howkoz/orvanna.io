@@ -1454,3 +1454,113 @@ a.back-to-shop { text-decoration: none; }
   .delivery-price { margin-left: auto; }
   .pay-btn { font-size: 0.7rem; padding: 11px 6px; }
 }
+
+/* ============================================================
+   3-D SECURE (3DS) BANK APPROVAL, PHASE 6 FOLLOW-UP
+
+   Everything the shopper sees around a bank approval step: the
+   warning that it may happen, the order number held before it
+   starts, the chrome that sits above the bank's own overlay, and
+   the resume view they land on when the approval took the whole
+   page away and sent it back.
+   ============================================================ */
+
+.pay-3ds-note {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--text-d);
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  border-left: 3px solid var(--indigo-d);
+  border-radius: 8px;
+  background: rgba(79, 70, 229, 0.08);
+  padding: 11px 14px;
+  margin: 0 0 14px;
+}
+
+.pay-order-chip {
+  font-size: 0.82rem;
+  color: var(--text-d);
+  border: 1px solid rgba(34, 211, 238, 0.34);
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.07);
+  padding: 10px 14px;
+  margin: 0 0 16px;
+}
+.pay-order-chip span {
+  font-family: Consolas, "Cascadia Mono", monospace;
+  letter-spacing: 0.06em;
+  color: var(--cyan);
+}
+
+.pay-lookup-line { margin: 12px 0 0; }
+
+/* the page behind a live payment is really disabled, not dimmed */
+body.payment-in-flight .qty-btn,
+body.payment-in-flight .line-remove,
+body.payment-in-flight .pay-btn {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ---------- chrome above the bank's own approval overlay ---------- */
+
+.challenge-chrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483000;          /* above the widget's full screen frame */
+  background: #0A1226;
+  border-bottom: 1px solid var(--cyan);
+  box-shadow: 0 6px 26px rgba(2, 6, 20, 0.7);
+}
+.challenge-chrome[hidden] { display: none; }
+
+.cc-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.cc-line {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--text-d);
+  margin: 0;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.cc-line b { color: var(--paper); }
+.cc-order {
+  flex: 0 1 auto;
+  font-family: Consolas, "Cascadia Mono", monospace;
+  letter-spacing: 0.05em;
+  color: var(--cyan);
+}
+.btn-sm {
+  font-size: 0.72rem;
+  padding: 7px 14px;
+  flex: 0 0 auto;
+}
+
+/* ---------- the resume view ---------- */
+
+.resume-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+#resumeLookup { margin-top: 24px; text-align: left; }
+#resumeLookup .field { max-width: 320px; }
+#lookupResult { margin-top: 14px; }
+
+@media (max-width: 480px) {
+  .cc-inner { padding: 9px 14px; }
+  .cc-line { flex: 1 1 100%; }
+  .resume-actions .btn { flex: 1 1 100%; text-align: center; }
+}

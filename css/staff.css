@@ -866,3 +866,156 @@
 @media (min-width: 621px) {
   .order-table .mode-inline { display: none; }
 }
+
+/* ============================================================
+   BANK APPROVALS ON A CALL, PHASE 6 FOLLOW-UP
+
+   The console side of a bank approval (3-D Secure, or 3DS): the
+   standing rules the agent can see without opening a manual, the
+   payment-link path presented as the normal way to take a card,
+   the honest waiting state when only the cardholder can finish,
+   and the abandon control that stops an order from being left in
+   limbo.
+   ============================================================ */
+
+.agent-rules {
+  border: 1px solid rgba(248, 113, 113, 0.34);
+  border-left: 3px solid #F87171;
+  border-radius: 8px;
+  background: rgba(248, 113, 113, 0.07);
+  padding: 11px 14px;
+  margin-bottom: 12px;
+}
+.ar-head {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FCA5A5;
+  margin-bottom: 7px;
+}
+.ar-list { margin: 0; padding-left: 18px; }
+.ar-list li {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: #CBD5E1;
+  margin-bottom: 6px;
+}
+.ar-list li:last-child { margin-bottom: 0; }
+.ar-list b { color: #FECACA; }
+
+.rec-chip {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0A1226;
+  background: #22D3EE;
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+
+.link-panel {
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.05);
+  padding: 11px 14px;
+  margin-bottom: 12px;
+}
+.lp-line { font-size: 0.78rem; line-height: 1.55; color: #CBD5E1; margin-bottom: 9px; }
+.lp-row { display: flex; gap: 8px; align-items: center; margin-bottom: 9px; }
+.lp-row .staff-field { flex: 1 1 auto; min-width: 0; }
+.lp-row .btn-addline { flex: 0 0 auto; }
+.lp-note { font-size: 0.73rem; line-height: 1.5; color: #94A3B8; margin-top: 8px; }
+
+.await-auth {
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  border-left: 3px solid #FACC15;
+  border-radius: 8px;
+  background: rgba(250, 204, 21, 0.07);
+  padding: 11px 14px;
+  margin: 10px 0;
+}
+.aa-head {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #FDE68A;
+  line-height: 1.45;
+  margin-bottom: 6px;
+}
+.aa-body { font-size: 0.78rem; line-height: 1.55; color: #CBD5E1; }
+.aa-meta {
+  font-family: Consolas, "Cascadia Mono", monospace;
+  font-size: 0.74rem;
+  color: #94A3B8;
+  margin-top: 7px;
+}
+
+.btn-abandon {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.4);
+  color: #FCA5A5;
+}
+
+#staffOrderChip, #staffPayStatus { text-align: left; line-height: 1.55; }
+#staffOrderChip span {
+  font-family: Consolas, "Cascadia Mono", monospace;
+  color: #67E8F9;
+  letter-spacing: 0.05em;
+}
+#staffPayStatus:focus { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+.order-lookup {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(129, 140, 248, 0.12);
+}
+#staffLookupResult { text-align: left; }
+
+/* ---------- chrome above a bank's own approval overlay ---------- */
+
+.challenge-chrome {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483000;
+  background: #0A1226;
+  border-bottom: 1px solid #FACC15;
+  box-shadow: 0 6px 26px rgba(2, 6, 20, 0.7);
+}
+.challenge-chrome[hidden] { display: none; }
+.cc-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 10px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+}
+.cc-line {
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: #CBD5E1;
+  margin: 0;
+  flex: 1 1 240px;
+  min-width: 0;
+}
+.cc-line b { color: #FDE68A; }
+.cc-order {
+  flex: 0 1 auto;
+  font-family: Consolas, "Cascadia Mono", monospace;
+  letter-spacing: 0.05em;
+  color: #67E8F9;
+}
+
+@media (max-width: 620px) {
+  .cc-inner { padding: 9px 14px; }
+  .cc-line { flex: 1 1 100%; }
+  .lp-row { flex-wrap: wrap; }
+  .lp-row .staff-field { flex: 1 1 100%; }
+}

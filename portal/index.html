@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Member Portal, Demo Mode</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/portal.css?v=5.2">
+<link rel="stylesheet" href="css/portal.css?v=5.3">
 </head>
 <body>
 
@@ -41,7 +41,7 @@
 </header>
 
 <nav class="tabs" aria-label="Portal sections">
-  <button class="tab active" data-tab="team"      type="button">My Team</button>
+  <button class="tab active" data-tab="team"      type="button">My Business</button>
   <button class="tab" data-tab="volume"    type="button">My Volume</button>
   <button class="tab" data-tab="rank"      type="button">My Rank</button>
   <button class="tab" data-tab="statement" type="button">My Statement</button>
@@ -96,7 +96,7 @@
   document.getElementById('signOutLink').addEventListener('click', clearSession);
 
   var portal = document.createElement('script');
-  portal.src = 'js/app.js?v=5.2';
+  portal.src = 'js/app.js?v=5.3';
   document.body.appendChild(portal);
 })();
 </script>
