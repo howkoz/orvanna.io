@@ -1566,11 +1566,25 @@
        approval screen no matter what is asked for, which is why it
        cannot be used to test this. Full matrix, and the alternative
        path through the processor's own 3DS: docs/TEST-CARDS.html. */
+    /* CARD HINT, corrected 2026-08-14 after live testing.
+       The numbers 3DSecure.io publishes are illustrative and do
+       NOT satisfy the Luhn checksum every card number must pass,
+       so the card form rejects them in the browser before any
+       request is sent, which looks exactly like nothing
+       happening. Separately, the two connectors wired up today
+       are HyperSwitch DUMMY connectors, which do payments and
+       refunds only and cannot run an approval screen at all: a
+       checksum-valid 3-D Secure (3DS) card is refused by them
+       with "Card not supported". So there is currently exactly
+       one card that works end to end, and the honest thing is to
+       say so rather than send a tester down a path that cannot
+       succeed. Approval screens become testable when a real
+       processor in test mode is connected; see ROADMAP.md. */
     livePayNote.textContent =
       'Test mode, any future expiry date and any three digit security code. ' +
-      '7000 1009 1111 2070 asks your bank to approve, then succeeds. ' +
-      '3000 1010 1111 1071 asks your bank to approve, then fails the approval. ' +
-      '4242 4242 4242 4242 sails straight through and never asks. Nothing is ever charged.';
+      'Use 4242 4242 4242 4242. The approval screen cannot be demonstrated yet, ' +
+      'because the processors connected today are simulators that do not run one. ' +
+      'Nothing is ever charged.';
     liveStatus('');
     /* label only: the button shows this page's total, and the
        server's mirror computes the identical figure (the verifier
