@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna</title>
+<meta name="description" content="Orvanna: intelligent agents on your team, working around the clock. Demonstration company, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/corporate.css?v=4.1">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ============ STICKY NAV (glass) ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#top" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link is-active" href="#overview">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO: live constellation ============ -->
+<section class="hero" id="hero">
+  <canvas id="constellation" aria-hidden="true"></canvas>
+  <div class="hero-inner">
+    <p class="kicker">Orvanna</p>
+    <h1 class="hero-title">Intelligent agents on your team, working around the clock</h1>
+    <p class="hero-sub">Orvanna pairs a human network with artificial intelligence (AI) agents that carry real workloads: reconciling payments, watching prices, answering customers, and keeping the books, every hour of every day.</p>
+    <div class="hero-actions">
+      <a class="btn btn-solid" href="#overview">Explore the company</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OVERVIEW ============ -->
+<section class="band glow-indigo" id="overview">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="kicker kicker-light">Overview</p>
+      <h2 class="section-title">A company run with agents</h2>
+      <p class="lead">Orvanna builds AI agents that a business subscribes to the way it would hire staff. Each agent owns one job, a domain such as payments or a support role such as bookkeeping, and works it continuously. Our members bring those agents to the businesses around them, and everything the company records, from subscriptions to monthly statements, is computed, locked, and auditable.</p>
+    </div>
+    <div class="metrics stagger reveal">
+      <div class="metric glass glass-cyan">
+        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+        <div class="metric-num"><span class="count" data-count="12">12</span></div>
+        <div class="metric-label">Specialist AI agents, sold solo or in packs</div>
+      </div>
+      <div class="metric glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <div class="metric-num"><span class="count" data-count="1000" data-comma="1">1,000</span></div>
+        <div class="metric-label">Members in the network</div>
+      </div>
+      <div class="metric glass glass-violet">
+        <span class="accent-bar bar-violet" aria-hidden="true"></span>
+        <div class="metric-num"><span class="count" data-count="6">6</span></div>
+        <div class="metric-label">Months of locked statements</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PILLARS ============ -->
+<section class="band glow-violet" id="pillars">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="kicker kicker-light">What we build</p>
+      <h2 class="section-title">Three pillars</h2>
+    </div>
+    <div class="cards stagger reveal">
+
+      <article class="card glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
+                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="32" y1="32" x2="32" y2="19" stroke="#818CF8" stroke-width="2"/>
+            <line x1="32" y1="32" x2="21" y2="41" stroke="#818CF8" stroke-width="2"/>
+            <line x1="32" y1="32" x2="43" y2="41" stroke="#818CF8" stroke-width="2"/>
+            <circle cx="32" cy="19" r="3.4" fill="#818CF8"/>
+            <circle cx="21" cy="41" r="3.4" fill="#818CF8"/>
+            <circle cx="43" cy="41" r="3.4" fill="#818CF8"/>
+            <circle cx="32" cy="32" r="4" fill="#22D3EE"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Domain Agents</h3>
+        <p class="card-desc">Specialist agents that run a business function end to end.</p>
+        <p class="card-body">A domain agent owns one function: payments, shipping, pricing, inventory, marketing, or tax preparation. It works the queue all day, clears the routine cases itself, and brings you the exceptions with the history already gathered.</p>
+      </article>
+
+      <article class="card glass glass-cyan">
+        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
+                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
+            <line x1="19" y1="32" x2="45" y2="32" stroke="#818CF8" stroke-width="2"/>
+            <circle cx="19" cy="32" r="3.4" fill="#818CF8"/>
+            <circle cx="45" cy="32" r="3.4" fill="#818CF8"/>
+            <circle cx="32" cy="32" r="4" fill="#22D3EE"/>
+          </svg>
+        </div>
+        <h3 class="card-title">Support Agents</h3>
+        <p class="card-desc">The staff roles every operation needs, on demand.</p>
+        <p class="card-body">Support agents cover the desk work that quietly eats a week: code fixes, quality checks, calendars, books, and customer replies. Add one for a single role, or several to staff a small office.</p>
+      </article>
+
+      <article class="card glass glass-violet">
+        <span class="accent-bar bar-violet" aria-hidden="true"></span>
+        <div class="card-icon" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
+                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
+            <circle cx="32" cy="20" r="3.2" fill="#818CF8"/>
+            <circle cx="42.5" cy="26" r="3.2" fill="#818CF8"/>
+            <circle cx="42.5" cy="38" r="3.2" fill="#818CF8"/>
+            <circle cx="32" cy="44" r="3.2" fill="#22D3EE"/>
+            <circle cx="21.5" cy="38" r="3.2" fill="#818CF8"/>
+            <circle cx="21.5" cy="26" r="3.2" fill="#818CF8"/>
+          </svg>
+        </div>
+        <h3 class="card-title">The Network</h3>
+        <p class="card-desc">People who bring the agents to the businesses that need them.</p>
+        <p class="card-body">Agents do not sell themselves. Our members know the shops, practices, and firms in their own communities, match them with the right agents, and stay on as the human point of contact.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ORIGIN ============ -->
+<section class="band glow-cyan" id="origin">
+  <div class="wrap origin-grid">
+    <div class="origin-copy reveal">
+      <p class="kicker">Our story</p>
+      <h2 class="section-title on-dark">From a single node</h2>
+      <p class="body-dark">Orvanna began as a four-person team running its own small operations firm, and drowning in the back office of it. The first agent was built for ourselves, to reconcile our own payments. The second kept our books. The third answered our inbox. Within a year the agents were doing the routine work and the people were doing the judgment calls. Auren Vale, who led that first team, still opens every company meeting the same way:</p>
+      <blockquote class="pull-quote">
+        A network is not made of machines. It is made of people who direct them.
+      </blockquote>
+      <p class="body-dark">Other owners asked for the same help, and the friends who introduced them became the first members of the network. That is still the whole model: one person connecting one business to the agents it needs, and staying on as the human in the loop. The agents have multiplied; the idea has not changed.</p>
+    </div>
+    <div class="origin-art reveal" aria-hidden="true">
+      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="150" cy="150" r="104" fill="none" stroke="#818CF8" stroke-width="1.5" opacity="0.25"/>
+        <g fill="#818CF8" opacity="0.9">
+          <circle cx="150" cy="46"  r="6"/>
+          <circle cx="202" cy="60"  r="6"/>
+          <circle cx="240" cy="98"  r="6"/>
+          <circle cx="254" cy="150" r="6"/>
+          <circle cx="240" cy="202" r="6"/>
+          <circle cx="202" cy="240" r="6"/>
+          <circle cx="150" cy="254" r="6"/>
+          <circle cx="98"  cy="240" r="6"/>
+          <circle cx="60"  cy="202" r="6"/>
+          <circle cx="46"  cy="150" r="6"/>
+          <circle cx="60"  cy="98"  r="6"/>
+        </g>
+        <g stroke="#818CF8" stroke-width="1" opacity="0.18">
+          <line x1="150" y1="150" x2="150" y2="46"/>
+          <line x1="150" y1="150" x2="240" y2="98"/>
+          <line x1="150" y1="150" x2="240" y2="202"/>
+          <line x1="150" y1="150" x2="98"  y2="240"/>
+          <line x1="150" y1="150" x2="46"  y2="150"/>
+          <line x1="150" y1="150" x2="98"  y2="60"/>
+        </g>
+        <circle cx="98" cy="60" r="10" fill="#22D3EE" opacity="0.15"/>
+        <circle cx="98" cy="60" r="6.5" fill="#22D3EE"/>
+        <circle cx="150" cy="150" r="5" fill="#818CF8"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TECHNOLOGY ============ -->
+<section class="band glow-indigo" id="technology">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="kicker kicker-light">Technology</p>
+      <h2 class="section-title">One platform underneath</h2>
+      <p class="lead">The platform vision behind every agent we ship.</p>
+    </div>
+    <div class="features stagger reveal">
+
+      <div class="feature glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <div class="feature-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="8" cy="16" r="3.4" fill="#818CF8"/>
+            <line x1="11" y1="15" x2="24" y2="7"  stroke="#818CF8" stroke-width="2"/>
+            <line x1="11" y1="16" x2="25" y2="16" stroke="#818CF8" stroke-width="2"/>
+            <line x1="11" y1="17" x2="24" y2="25" stroke="#818CF8" stroke-width="2"/>
+            <circle cx="26" cy="7"  r="2.4" fill="#818CF8"/>
+            <circle cx="27" cy="16" r="2.4" fill="#22D3EE"/>
+            <circle cx="26" cy="25" r="2.4" fill="#818CF8"/>
+          </svg>
+        </div>
+        <h3 class="feature-label">Orchestration</h3>
+        <p class="feature-body">One layer assigns the work, sequences every handoff between agents, and records each step. We are building toward routing payments across processors the same way: one brain, many rails.</p>
+      </div>
+
+      <div class="feature glass glass-cyan">
+        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+        <div class="feature-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="16,3 27.2,9.5 27.2,22.5 16,29 4.8,22.5 4.8,9.5"
+                     fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linejoin="round"/>
+            <circle cx="16" cy="16" r="3.2" fill="#22D3EE"/>
+          </svg>
+        </div>
+        <h3 class="feature-label">Vault</h3>
+        <p class="feature-body">Customer records and payment credentials belong in one guarded place that answers to you. We are building a neutral vault, so your data stays yours and moves with you, never locked to a processor.</p>
+      </div>
+
+      <div class="feature glass glass-violet">
+        <span class="accent-bar bar-violet" aria-hidden="true"></span>
+        <div class="feature-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+            <rect x="4" y="7" width="24" height="18" rx="3" fill="none" stroke="#818CF8" stroke-width="2.4"/>
+            <line x1="4" y1="13" x2="28" y2="13" stroke="#818CF8" stroke-width="2.4"/>
+            <circle cx="10" cy="19.5" r="2.2" fill="#22D3EE"/>
+          </svg>
+        </div>
+        <h3 class="feature-label">Secure Payments</h3>
+        <p class="feature-body">Checkout, authentication, and settlement will run through the same platform the agents run on. That is the direction we are building in: every dollar handled with the same discipline as every task.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ LEADERSHIP ============ -->
+<section class="band glow-violet" id="leadership">
+  <div class="wrap">
+    <div class="reveal">
+      <p class="kicker kicker-light">Leadership</p>
+      <h2 class="section-title">The people at the hub</h2>
+    </div>
+    <div class="leaders stagger reveal">
+
+      <article class="leader glass">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="44" fill="#4F46E5"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.6"/>
+            <circle cx="82" cy="30" r="5" fill="#22D3EE"/>
+            <text x="48" y="60" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="30" font-weight="600" fill="#FFFFFF" letter-spacing="2">AV</text>
+          </svg>
+        </div>
+        <h3 class="leader-name">Auren Vale</h3>
+        <p class="leader-role">Chief Executive</p>
+        <p class="leader-bio">Auren spent fifteen years running operations for small firms before building the first Orvanna agent to do his own reconciliations. He still reads the monthly statements line by line.</p>
+      </article>
+
+      <article class="leader glass glass-cyan">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="44" fill="#0F172A"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="#22D3EE" stroke-width="2" opacity="0.7"/>
+            <circle cx="82" cy="30" r="5" fill="#22D3EE"/>
+            <text x="48" y="60" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="30" font-weight="600" fill="#FFFFFF" letter-spacing="2">LS</text>
+          </svg>
+        </div>
+        <h3 class="leader-name">Liora Sen</h3>
+        <p class="leader-role">Head of Agents</p>
+        <p class="leader-bio">Liora leads the team that designs, trains, and retires every agent in the catalog. Her shipping rule is simple: an agent must survive a week of her own inbox first.</p>
+      </article>
+
+      <article class="leader glass glass-violet">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="44" fill="#4F46E5"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="#A78BFA" stroke-width="2" opacity="0.7"/>
+            <circle cx="82" cy="30" r="5" fill="#22D3EE"/>
+            <text x="48" y="60" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="30" font-weight="600" fill="#FFFFFF" letter-spacing="2">DV</text>
+          </svg>
+        </div>
+        <h3 class="leader-name">Dorian Vesk</h3>
+        <p class="leader-role">Head of Network</p>
+        <p class="leader-bio">Dorian built regional field teams for two decades before joining Orvanna, and now looks after the members who carry the agents to market. He answers member mail himself, usually the same day.</p>
+      </article>
+
+      <article class="leader glass">
+        <div class="avatar" aria-hidden="true">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="48" cy="48" r="44" fill="#0F172A"/>
+            <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.6"/>
+            <circle cx="82" cy="30" r="5" fill="#22D3EE"/>
+            <text x="48" y="60" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="30" font-weight="600" fill="#FFFFFF" letter-spacing="2">MO</text>
+          </svg>
+        </div>
+        <h3 class="leader-name">Maren Ostrey</h3>
+        <p class="leader-role">Head of Trust</p>
+        <p class="leader-bio">Maren owns security, compliance, and the audit trail behind every commission run. Before Orvanna she spent a decade keeping books clean for companies that could not afford surprises.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ CALL TO ACTION ============ -->
+<section class="band glow-cyan cta" id="cta">
+  <div class="wrap cta-inner reveal">
+    <h2 class="section-title on-dark">Start the conversation</h2>
+    <p class="body-dark cta-sub">The catalog is open: twelve specialist agents, plus the Manager Agent and three ready-made packs. Or send us a message: we answer every one.</p>
+    <div class="cta-actions">
+      <a class="btn btn-solid" href="shop.html">Browse the catalog</a>
+      <a class="btn btn-ghost" href="mailto:support@orvanna.io">Contact us</a>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4 class="footer-head">Shop</h4>
+        <span class="flink">Domain agents</span>
+        <span class="flink">Support agents</span>
+        <span class="flink">Pricing</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Learn</h4>
+        <span class="flink">About us</span>
+        <span class="flink">Our story</span>
+        <span class="flink">Frequently asked questions</span>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Support</h4>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Careers</h4>
+        <span class="flink">Open roles</span>
+        <span class="flink">How we work</span>
+        <span class="flink">Internships</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <div class="footer-contact">
+        <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+        <div class="socials" aria-hidden="true">
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 12 A 4.2 4.2 0 1 0 12 16.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 8 L 16.2 13.4 A 2.6 2.6 0 0 0 21.4 13.4 L 21.4 12 A 9.4 9.4 0 1 0 12 21.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 6 h 16 v 11 h -9 l -4 3 v -3 h -3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="9"  cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="13" cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="17" cy="11.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Hero constellation: connected nodes, gentle drift, one lit
+   node pulsing. Pauses when the tab is hidden (the Page Visibility
+   application programming interface), renders a single static frame
+   under prefers-reduced-motion, and is throttled to 30 frames per
+   second to stay light on the central processing unit (CPU).
+   ============================================================ */
+(function () {
+  var canvas = document.getElementById('constellation');
+  if (!canvas || !canvas.getContext) return;
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var dpr = 1, W = 0, H = 0, nodes = [], litIndex = 0;
+  var rafId = null, running = false, lastFrame = 0;
+  var FRAME_MS = 1000 / 30;
+  var LINK = 150;
+  var pointer = { x: 0, y: 0, active: false };
+
+  function resize() {
+    var host = canvas.parentElement;
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    W = host.clientWidth;
+    H = host.clientHeight;
+    canvas.width = Math.round(W * dpr);
+    canvas.height = Math.round(H * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function build() {
+    var count = W < 700 ? 26 : 44;
+    nodes = [];
+    for (var i = 0; i < count; i++) {
+      nodes.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        r: 1.4 + Math.random() * 1.8
+      });
+    }
+    var tx = W * 0.62, ty = H * 0.4, best = 0, bestD = Infinity;
+    for (var j = 0; j < nodes.length; j++) {
+      var dx = nodes[j].x - tx, dy = nodes[j].y - ty, d = dx * dx + dy * dy;
+      if (d < bestD) { bestD = d; best = j; }
+    }
+    litIndex = best;
+  }
+
+  function draw(ts) {
+    ctx.clearRect(0, 0, W, H);
+    var i, j, a, b, dx, dy, d2, dist, alpha;
+    for (i = 0; i < nodes.length; i++) {
+      a = nodes[i];
+      a.x += a.vx; a.y += a.vy;
+      if (a.x < -20) a.x = W + 20; else if (a.x > W + 20) a.x = -20;
+      if (a.y < -20) a.y = H + 20; else if (a.y > H + 20) a.y = -20;
+    }
+    ctx.lineWidth = 1;
+    for (i = 0; i < nodes.length; i++) {
+      a = nodes[i];
+      for (j = i + 1; j < nodes.length; j++) {
+        b = nodes[j];
+        dx = a.x - b.x; dy = a.y - b.y;
+        d2 = dx * dx + dy * dy;
+        if (d2 < LINK * LINK) {
+          dist = Math.sqrt(d2);
+          alpha = 0.16 * (1 - dist / LINK);
+          ctx.strokeStyle = 'rgba(129, 140, 248, ' + alpha.toFixed(3) + ')';
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+        }
+      }
+      if (pointer.active) {
+        dx = a.x - pointer.x; dy = a.y - pointer.y;
+        d2 = dx * dx + dy * dy;
+        if (d2 < 160 * 160) {
+          dist = Math.sqrt(d2);
+          alpha = 0.22 * (1 - dist / 160);
+          ctx.strokeStyle = 'rgba(34, 211, 238, ' + alpha.toFixed(3) + ')';
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y); ctx.stroke();
+        }
+      }
+    }
+    for (i = 0; i < nodes.length; i++) {
+      if (i === litIndex) continue;
+      a = nodes[i];
+      ctx.fillStyle = 'rgba(129, 140, 248, 0.85)';
+      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.2832); ctx.fill();
+    }
+    a = nodes[litIndex];
+    var pulse = 0.5 + 0.5 * Math.sin((ts || 0) / 700);
+    var haloR = 26 + 10 * pulse;
+    var halo = ctx.createRadialGradient(a.x, a.y, 0, a.x, a.y, haloR);
+    halo.addColorStop(0, 'rgba(34, 211, 238, ' + (0.26 + 0.2 * pulse).toFixed(3) + ')');
+    halo.addColorStop(1, 'rgba(34, 211, 238, 0)');
+    ctx.fillStyle = halo;
+    ctx.beginPath(); ctx.arc(a.x, a.y, haloR, 0, 6.2832); ctx.fill();
+    ctx.fillStyle = '#22D3EE';
+    ctx.beginPath(); ctx.arc(a.x, a.y, 3.2, 0, 6.2832); ctx.fill();
+  }
+
+  function step(ts) {
+    if (!running) return;
+    rafId = requestAnimationFrame(step);
+    if (ts - lastFrame < FRAME_MS) return;
+    lastFrame = ts;
+    draw(ts);
+  }
+
+  function start() {
+    if (running || reduce.matches || document.hidden) return;
+    running = true;
+    lastFrame = 0;
+    rafId = requestAnimationFrame(step);
+  }
+
+  function stop() {
+    running = false;
+    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
+  }
+
+  function drawStatic() { draw(0); }
+
+  window.addEventListener('resize', function () {
+    resize(); build();
+    if (!running) drawStatic();
+  });
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { stop(); } else { start(); }
+  });
+
+  if (typeof reduce.addEventListener === 'function') {
+    reduce.addEventListener('change', function () {
+      if (reduce.matches) { stop(); drawStatic(); } else { start(); }
+    });
+  }
+
+  var hero = canvas.parentElement;
+  hero.addEventListener('pointermove', function (e) {
+    var rect = canvas.getBoundingClientRect();
+    pointer.x = e.clientX - rect.left;
+    pointer.y = e.clientY - rect.top;
+    pointer.active = !reduce.matches;
+  });
+  hero.addEventListener('pointerleave', function () { pointer.active = false; });
+
+  resize(); build();
+  if (reduce.matches) { drawStatic(); }
+  else {
+    start();
+    /* loaded in a hidden tab: paint one static frame so the hero
+       is never blank at the moment the tab first becomes visible */
+    if (!running) drawStatic();
+  }
+
+  window.OrvannaHero = { isRunning: function () { return running; }, start: start, stop: stop, drawStatic: drawStatic };
+})();
+
+/* ============================================================
+   Scroll reveals + metric count-ups (IntersectionObserver).
+   Each section reveals once; numbers count up the first time
+   their tile scrolls into view. Reduced motion jumps straight
+   to the final values.
+   ============================================================ */
+(function () {
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function setFinal(el) {
+    var target = parseInt(el.getAttribute('data-count'), 10);
+    el.textContent = el.hasAttribute('data-comma') ? target.toLocaleString('en-US') : String(target);
+  }
+
+  function countUp(el) {
+    if (reduce.matches) { setFinal(el); return; }
+    var target = parseInt(el.getAttribute('data-count'), 10);
+    var comma = el.hasAttribute('data-comma');
+    var DUR = 1100, t0 = null;
+    el.textContent = '0';
+    function tick(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min((ts - t0) / DUR, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      var val = Math.round(target * eased);
+      el.textContent = comma ? val.toLocaleString('en-US') : String(val);
+      if (p < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  var reveals = document.querySelectorAll('.reveal');
+
+  if (!('IntersectionObserver' in window)) {
+    reveals.forEach(function (el) { el.classList.add('is-in'); });
+    document.querySelectorAll('.count').forEach(setFinal);
+    return;
+  }
+
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (!entry.isIntersecting) return;
+      entry.target.classList.add('is-in');
+      entry.target.querySelectorAll('.count').forEach(function (c) {
+        if (!c.hasAttribute('data-done')) {
+          c.setAttribute('data-done', '1');
+          countUp(c);
+        }
+      });
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+
+  reveals.forEach(function (el) { io.observe(el); });
+})();
+</script>
+
+</body>
+</html>

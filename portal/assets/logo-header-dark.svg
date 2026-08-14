@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 100">
+  <!-- Orvanna site header lockup: transparent background, for the dark-theme portal header. -->
+  <g transform="translate(20,22)">
+    <polygon points="28,0 52.2,14 52.2,42 28,56 3.8,42 3.8,14" fill="none" stroke="#818CF8" stroke-width="5" stroke-linejoin="round"/>
+    <line x1="28" y1="28" x2="28" y2="13" stroke="#818CF8" stroke-width="2.2"/>
+    <line x1="28" y1="28" x2="17" y2="37" stroke="#818CF8" stroke-width="2.2"/>
+    <line x1="28" y1="28" x2="39" y2="37" stroke="#818CF8" stroke-width="2.2"/>
+    <circle cx="28" cy="13" r="3.8" fill="#818CF8"/>
+    <circle cx="17" cy="37" r="3.8" fill="#818CF8"/>
+    <circle cx="39" cy="37" r="3.8" fill="#818CF8"/>
+    <circle cx="28" cy="28" r="4.5" fill="#22D3EE"/>
+  </g>
+  <g transform="translate(112,30)" fill="none" stroke="#FFFFFF" stroke-width="7" stroke-linecap="square" stroke-linejoin="miter">
+    <rect x="3.5" y="3.5" width="25" height="33" rx="12" stroke-linecap="butt"/>
+    <g transform="translate(45,0)">
+      <path d="M 3.5 36.5 L 3.5 3.5 L 15.5 3.5 A 9 9 0 0 1 15.5 21.5 L 3.5 21.5"/>
+      <path d="M 15 21.5 L 24.5 36.5"/>
+    </g>
+    <g transform="translate(86,0)">
+      <path d="M 3.5 3.5 L 16 34 L 28.5 3.5"/>
+    </g>
+    <g transform="translate(131,0)">
+      <path d="M 3.5 36.5 L 16 4.5 L 28.5 36.5"/>
+      <path d="M 9.5 26 L 22.5 26" stroke-width="5.5" stroke-linecap="butt"/>
+    </g>
+    <g transform="translate(176,0)">
+      <path d="M 3.5 36.5 L 3.5 3.5 L 26.5 36.5 L 26.5 3.5"/>
+    </g>
+    <g transform="translate(219,0)">
+      <path d="M 3.5 36.5 L 3.5 3.5 L 26.5 36.5 L 26.5 3.5"/>
+    </g>
+    <g transform="translate(262,0)">
+      <path d="M 3.5 36.5 L 16 4.5 L 28.5 36.5"/>
+      <path d="M 9.5 26 L 22.5 26" stroke-width="5.5" stroke-linecap="butt"/>
+    </g>
+  </g>
+</svg>

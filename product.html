@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Product</title>
+<meta name="description" content="Orvanna product page: one agent, bundle, or pack, as a monthly subscription or a one-time purchase. Demonstration storefront, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/corporate.css?v=4.1">
+<link rel="stylesheet" href="css/shop.css?v=4.1">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ============ STICKY NAV (glass) ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link is-active" href="shop.html">Shop</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <a class="nav-cart" id="cartButton" href="shop.html#cart" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 4 6 h 2.4 l 2 10.2 h 9.4 l 2.2 -7.6 h -12.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="9.6" cy="19.4" r="1.4" fill="currentColor"/>
+          <circle cx="16.6" cy="19.4" r="1.4" fill="currentColor"/>
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ PRODUCT HERO: mark, name, price, mode toggle ============ -->
+<section class="pdp-hero glow-indigo">
+  <div class="wrap">
+    <a class="back-to-shop" href="shop.html">
+      <svg viewBox="0 0 16 16" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M 10 3 L 5 8 L 10 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Back to the catalog
+    </a>
+
+    <div class="pdp-grid">
+
+      <div class="pdp-mark glass glass-cyan">
+        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+        <div class="pdp-mark-icon" id="prodIcon" aria-hidden="true"></div>
+      </div>
+
+      <div class="pdp-buy">
+        <span id="prodBadge"></span>
+        <h1 class="pdp-name" id="prodName">Agent</h1>
+        <p class="pdp-blurb" id="prodBlurb"></p>
+
+        <div class="pdp-price-box glass">
+          <span class="accent-bar" aria-hidden="true"></span>
+
+          <div class="mode-toggle">
+            <button class="switch" id="modeSwitch" type="button" role="switch" aria-checked="true" aria-label="Subscribe monthly">
+              <span class="switch-knob" aria-hidden="true"></span>
+            </button>
+            <div class="mode-copy">
+              <span class="mode-title" id="modeTitle">Subscribe monthly</span>
+              <span class="mode-note" id="modeNote">Renews monthly. Cancel anytime.</span>
+            </div>
+          </div>
+
+          <div class="pdp-price-row">
+            <span class="pdp-price" id="prodPrice">$0.00</span>
+            <span class="pdp-per" id="prodPer">/ month</span>
+            <span class="product-pv pdp-pv" id="prodPv">0 PV</span>
+          </div>
+
+          <p class="pdp-alt" id="prodAlt"></p>
+          <p class="pdp-pv-note">Every purchase carries Personal Volume (PV), the number that counts toward your qualified month, in either mode.</p>
+
+          <button class="btn-add btn-add-pdp" type="button" id="addBtn">
+            <span class="add-label-default" id="addLabel">Add to cart</span>
+            <svg class="add-check" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M 2.5 8.5 L 6.5 12.5 L 13.5 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span class="add-label-added" hidden>Added</span>
+          </button>
+          <p class="pdp-toast" id="addedToast" hidden>Added to your cart. <a href="shop.html#cart">View cart</a></p>
+
+          <p class="pdp-digital">Digital delivery: this product activates on your account, nothing ships.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ INCLUDES (bundles and packs only) ============ -->
+<section class="pdp-includes glow-cyan" id="includesSection" hidden>
+  <div class="wrap">
+    <div class="tier-head">
+      <h2 class="tier-title">Includes</h2>
+      <span class="tier-meta" id="includesMeta"></span>
+    </div>
+    <hr class="tier-rule">
+    <div class="includes-grid" id="includesGrid"></div>
+  </div>
+</section>
+
+<!-- ============ PROSE: business-benefit sections, filled per product from js/catalog.js ============ -->
+<section class="pdp-prose glow-violet">
+  <div class="wrap">
+    <div class="prose-grid">
+
+      <div class="prose-panel glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h2 class="prose-title">How this helps your business</h2>
+        <p class="prose-body" id="proseHelp1">Every Orvanna agent takes one job off your plate and works it continuously.</p>
+        <p class="prose-body" id="proseHelp2">The routine work gets done; the decisions still come to you.</p>
+      </div>
+
+      <div class="prose-panel glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h2 class="prose-title" id="proseDayTitle">What this agent does day to day</h2>
+        <p class="prose-body" id="proseDay1">It works its queue through the day and keeps a record of everything it touches.</p>
+        <p class="prose-body" id="proseDay2">Exceptions are escalated to you with the history already gathered.</p>
+      </div>
+
+      <div class="prose-panel glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h2 class="prose-title">Works with your team</h2>
+        <p class="prose-body" id="proseTeam1">Agents share what they learn, so a fact found once is known everywhere.</p>
+        <p class="prose-body" id="proseTeam2">Approval for anything consequential always rests with a person.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4 class="footer-head">Shop</h4>
+        <span class="flink">Domain agents</span>
+        <span class="flink">Support agents</span>
+        <span class="flink">Pricing</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Learn</h4>
+        <span class="flink">About us</span>
+        <span class="flink">Our story</span>
+        <span class="flink">Frequently asked questions</span>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Support</h4>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Careers</h4>
+        <span class="flink">Open roles</span>
+        <span class="flink">How we work</span>
+        <span class="flink">Internships</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <div class="footer-contact">
+        <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+        <div class="socials" aria-hidden="true">
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 12 A 4.2 4.2 0 1 0 12 16.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 8 L 16.2 13.4 A 2.6 2.6 0 0 0 21.4 13.4 L 21.4 12 A 9.4 9.4 0 1 0 12 21.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 6 h 16 v 11 h -9 l -4 3 v -3 h -3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="9"  cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="13" cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="17" cy="11.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/catalog.js?v=4.1"></script>
+<script>
+/* ============================================================
+   Orvanna product page template. One file serves every item:
+   ?sku= selects the product from js/catalog.js. Works from
+   file:// and any static server; a missing or unknown sku falls
+   back to the first product in the catalog. The cart is the
+   same localStorage cart the shop uses; the nav cart button
+   returns to shop.html#cart where the drawer opens.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var O = window.ORVANNA;
+  var fmtMoney = O.fmtMoney;
+  var fmtPv = O.fmtPv;
+
+  /* ---------- resolve the sku ---------- */
+
+  var sku = null;
+  try {
+    sku = new URLSearchParams(window.location.search).get('sku');
+  } catch (err) { sku = null; }
+  var product = (sku && O.get(sku)) || O.PRODUCTS[0];
+
+  document.title = product.name + ' | Orvanna Shop';
+
+  /* ---------- hero fill ---------- */
+
+  var BADGES = {
+    domain:  '<span class="tier-badge badge-domain">Domain agent</span>',
+    support: '<span class="tier-badge">Support agent</span>',
+    bundle:  '<span class="tier-badge badge-bundle">Bundle</span>',
+    pack:    '<span class="tier-badge badge-bundle">Digital pack</span>'
+  };
+
+  document.getElementById('prodIcon').innerHTML = product.icon;
+  document.getElementById('prodBadge').outerHTML = BADGES[product.tier];
+  document.getElementById('prodName').textContent = product.name;
+  document.getElementById('prodBlurb').textContent = product.blurb;
+
+  if (product.tier === 'pack') {
+    document.getElementById('proseDayTitle').textContent = 'What this pack does day to day';
+  }
+
+  /* ---------- per-product prose (text from js/catalog.js) ---------- */
+
+  if (product.prose) {
+    document.getElementById('proseHelp1').textContent = product.prose.help[0];
+    document.getElementById('proseHelp2').textContent = product.prose.help[1];
+    document.getElementById('proseDay1').textContent = product.prose.day[0];
+    document.getElementById('proseDay2').textContent = product.prose.day[1];
+    document.getElementById('proseTeam1').textContent = product.prose.team[0];
+    document.getElementById('proseTeam2').textContent = product.prose.team[1];
+  }
+
+  /* ---------- billing mode toggle (subscription is the default) ---------- */
+
+  var mode = 'sub';
+  var modeSwitch = document.getElementById('modeSwitch');
+
+  function renderMode() {
+    var isSub = mode === 'sub';
+    modeSwitch.setAttribute('aria-checked', String(isSub));
+    document.getElementById('modeTitle').textContent = isSub ? 'Subscribe monthly' : 'One-time purchase';
+    document.getElementById('modeNote').textContent = isSub
+      ? 'Renews monthly. Cancel anytime.'
+      : 'Own it outright: one payment, yours for good.';
+    document.getElementById('prodPrice').textContent = fmtMoney(O.priceOf(product, mode));
+    document.getElementById('prodPer').textContent = isSub ? '/ month' : 'one time';
+    document.getElementById('prodPv').textContent = fmtPv(O.pvOf(product, mode));
+    document.getElementById('prodAlt').textContent = isSub
+      ? 'Full value ' + fmtMoney(product.once.price) + '. Subscribe and start for ' + fmtMoney(product.sub.price) + ' this month.'
+      : 'Or subscribe instead: ' + fmtMoney(product.sub.price) + ' / month at ' + fmtPv(product.sub.pv) + '.';
+    document.getElementById('addLabel').textContent = isSub ? 'Add to cart' : 'Add to cart, one time';
+  }
+
+  modeSwitch.addEventListener('click', function () {
+    mode = mode === 'sub' ? 'one' : 'sub';
+    renderMode();
+  });
+
+  renderMode();
+
+  /* ---------- includes (bundles and packs) ---------- */
+
+  if (product.includes) {
+    var section = document.getElementById('includesSection');
+    section.hidden = false;
+    document.getElementById('includesMeta').textContent =
+      product.includes.length + ' items, one subscription';
+    document.getElementById('includesGrid').innerHTML = product.includes.map(function (childSku) {
+      var c = O.get(childSku);
+      return '<a class="include-chip glass" href="product.html?sku=' + c.sku + '">' +
+        '<span class="include-icon" aria-hidden="true">' + c.icon + '</span>' +
+        '<span class="include-body">' +
+          '<span class="include-name">' + c.name + '</span>' +
+          '<span class="include-blurb">' + c.blurb + '</span>' +
+        '</span>' +
+      '</a>';
+    }).join('');
+  }
+
+  /* ---------- cart ---------- */
+
+  var cart = O.loadCart();
+  var cartCount = document.getElementById('cartCount');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function renderBadge() {
+    cartCount.textContent = String(O.cartTotals(cart).count);
+  }
+
+  var addBtn = document.getElementById('addBtn');
+  var toast = document.getElementById('addedToast');
+
+  addBtn.addEventListener('click', function () {
+    var key = product.sku + '|' + mode;
+    cart[key] = Math.min((cart[key] || 0) + 1, 99);
+    O.saveCart(cart);
+    renderBadge();
+
+    addBtn.classList.add('is-added');
+    addBtn.querySelector('.add-label-added').hidden = false;
+    toast.hidden = false;
+    if (!reduce.matches) {
+      cartCount.classList.add('bump');
+      window.setTimeout(function () { cartCount.classList.remove('bump'); }, 220);
+    }
+    window.setTimeout(function () {
+      addBtn.classList.remove('is-added');
+      addBtn.querySelector('.add-label-added').hidden = true;
+    }, 1100);
+  });
+
+  renderBadge();
+})();
+</script>
+
+</body>
+</html>

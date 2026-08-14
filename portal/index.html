@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Member Portal, Demo Mode</title>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/portal.css?v=1.0.2">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <img id="logoImg" src="assets/logo-header-dark.svg" alt="Orvanna" class="brand-logo">
+      <span class="demo-pill" title="Every account, order, and payout on this site is synthetic.">DEMO MODE</span>
+    </div>
+    <nav class="site-links" aria-label="Orvanna sites">
+      <a class="site-link" href="../index.html">Orvanna Home</a>
+      <a class="site-link" href="../shop.html">Shop</a>
+      <a class="site-link" href="../staff.html" title="Staff call console (demonstration; a staff login in production)">Staff</a>
+    </nav>
+    <div class="controls">
+      <div class="control picker-wrap">
+        <label class="control-label" for="memberSearch">Viewing as</label>
+        <input id="memberSearch" class="picker-input" type="text" autocomplete="off"
+               spellcheck="false" placeholder="Search member code or name">
+        <div id="memberList" class="picker-list" hidden></div>
+      </div>
+      <div class="control">
+        <label class="control-label" for="periodSelect">Period</label>
+        <select id="periodSelect" class="period-select" aria-label="Volume period"></select>
+      </div>
+      <button id="themeBtn" class="theme-btn" type="button" aria-label="Switch between dark and light theme">
+        <span id="themeIcon" aria-hidden="true">&#9788;</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Portal sections">
+  <button class="tab active" data-tab="team"      type="button">My Team</button>
+  <button class="tab" data-tab="volume"    type="button">My Volume</button>
+  <button class="tab" data-tab="rank"      type="button">My Rank</button>
+  <button class="tab" data-tab="statement" type="button">My Statement</button>
+  <button class="tab" data-tab="company"   type="button">Company</button>
+</nav>
+
+<main id="main">
+  <section id="panel-team"      class="panel active"><div class="panel-body"></div></section>
+  <section id="panel-volume"    class="panel"><div class="panel-body"></div></section>
+  <section id="panel-rank"      class="panel"><div class="panel-body"></div></section>
+  <section id="panel-statement" class="panel"><div class="panel-body"></div></section>
+  <section id="panel-company"   class="panel"><div class="panel-body"></div></section>
+</main>
+
+<footer id="footer" class="footer">Synthetic demo data &middot; loading&hellip;</footer>
+
+<script src="js/app.js?v=1.0.1"></script>
+</body>
+</html>

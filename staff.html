@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Staff Call Console</title>
+<meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/corporate.css?v=4.5">
+<link rel="stylesheet" href="css/staff.css?v=4.5.1">
+</head>
+<body class="console-body">
+
+<!-- ============ TOP BAR: identity, call timer, new call ============ -->
+<header class="console-top">
+  <div class="console-wrap console-top-inner">
+    <a href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="console-logo">
+    </a>
+    <span class="console-title">Staff Call Console</span>
+    <span class="console-demo-pill">Demonstration</span>
+    <span class="console-top-spacer"></span>
+    <div class="call-timer" id="callTimer" aria-label="Call timer">
+      <span class="timer-dot" aria-hidden="true"></span>
+      <span class="timer-label">Call</span>
+      <span id="timerValue">00:00</span>
+    </div>
+    <button class="btn-newcall" id="newCallBtn" type="button" title="Clear everything for the next caller">New call</button>
+    <nav class="console-links" aria-label="Other Orvanna pages">
+      <a class="console-link" href="portal/index.html">Member portal</a>
+      <a class="console-link" href="shop.html">Shop</a>
+    </nav>
+  </div>
+</header>
+
+<div class="console-notice">
+  <div class="console-wrap">
+    Staff console, demonstration; in production this sits behind a staff login. Live volume figures come from the demonstration database; contact details are synthesized. No payment is ever taken. Point terms: Personal Volume (PV), Sales Volume (SV), Team Volume (TV).
+  </div>
+</div>
+
+<!-- ============ WORK SURFACE ============ -->
+<main class="console-main">
+  <div class="console-wrap console-grid">
+
+    <!-- ===== LEFT COLUMN: the caller ===== -->
+    <div>
+
+      <!-- lookup -->
+      <section class="console-panel lookup-panel" aria-label="Member lookup">
+        <h2 class="panel-title">Caller lookup</h2>
+        <div class="lookup-row">
+          <label class="order-label" for="lookupInput">Member number or name</label>
+          <input class="lookup-input" id="lookupInput" type="text" autocomplete="off"
+                 spellcheck="false" placeholder="GW-000002, 2, or a name" autofocus>
+          <div class="lookup-list" id="lookupList" hidden></div>
+        </div>
+        <p class="lookup-hint">Codes work with or without the GW- prefix. <kbd>Enter</kbd> picks the top match; <kbd>/</kbd> jumps back here from anywhere.</p>
+      </section>
+
+      <!-- caller snapshot -->
+      <section class="console-panel" aria-label="Caller snapshot" id="snapshotPanel">
+        <h2 class="panel-title">Caller snapshot <span class="title-chip" id="snapPeriodChip" hidden></span></h2>
+        <div id="snapshotBody">
+          <div class="snap-empty" id="snapEmpty">
+            <div class="snap-hex" aria-hidden="true">
+              <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/><circle cx="32" cy="32" r="4" fill="#22D3EE"/></svg>
+            </div>
+            Look up the caller to open their snapshot.
+          </div>
+        </div>
+      </section>
+
+      <!-- call notes -->
+      <section class="console-panel" aria-label="Call notes">
+        <h2 class="panel-title">Call notes <span class="title-chip">Saved per member, this browser</span></h2>
+        <textarea class="notes-area" id="notesArea" placeholder="Look up a member to take notes on this call." disabled></textarea>
+        <p class="notes-state" id="notesState"></p>
+      </section>
+
+    </div>
+
+    <!-- ===== RIGHT COLUMN: the order ===== -->
+    <div>
+
+      <!-- quick order -->
+      <section class="console-panel" aria-label="Quick order" id="orderPanel">
+        <h2 class="panel-title">Quick order <span class="title-chip">Placed for the caller</span></h2>
+
+        <div class="order-disabled-note" id="orderGate">Look up the caller first; the order is placed on their account.</div>
+
+        <div id="orderForm" hidden>
+          <div class="order-add-row">
+            <div class="cell-product">
+              <label class="order-label" for="productSelect">Product</label>
+              <select class="order-select" id="productSelect" aria-label="Product to add"></select>
+            </div>
+            <div>
+              <span class="order-label" id="modeLabel">Billing</span>
+              <div class="mode-seg" role="group" aria-labelledby="modeLabel">
+                <button type="button" id="modeSub" aria-pressed="true">Monthly</button>
+                <button type="button" id="modeOne" aria-pressed="false">One-time</button>
+              </div>
+            </div>
+            <div>
+              <label class="order-label" for="qtyInput">Qty</label>
+              <input class="order-qty" id="qtyInput" type="number" min="1" max="99" step="1" value="1" inputmode="numeric">
+            </div>
+            <div>
+              <span class="order-label" aria-hidden="true">&nbsp;</span>
+              <button class="btn-addline" id="addLineBtn" type="button">Add line</button>
+            </div>
+          </div>
+          <p class="add-preview" id="addPreview"></p>
+
+          <div id="orderLinesWrap"></div>
+
+          <div class="order-bottom">
+
+            <!-- payment: phone-appropriate, no wallets -->
+            <div>
+              <h3 class="panel-title">Payment by phone</h3>
+              <div class="pay-choice-row" role="radiogroup" aria-label="Payment method">
+                <label class="pay-choice">
+                  <input type="radio" name="payChoice" value="onfile" checked>
+                  <span>Card on file <span class="pc-note" id="onFileNote">Visa ending 0000</span> <span class="demo-chip">demo</span></span>
+                </label>
+                <label class="pay-choice">
+                  <input type="radio" name="payChoice" value="new">
+                  <span>New card, read by the caller <span class="pc-note">key it while they read; repeat back the last four only</span></span>
+                </label>
+              </div>
+              <div class="card-grid" id="newCardFields" hidden>
+                <input class="staff-field span2" id="cardName" type="text" placeholder="Name on card" autocomplete="off" spellcheck="false" aria-label="Name on card">
+                <input class="staff-field span2" id="cardNumber" type="text" placeholder="Card number" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Card number">
+                <input class="staff-field" id="cardExpiry" type="text" placeholder="Expiry" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Card expiry">
+                <input class="staff-field" id="cardCode" type="text" placeholder="Security code" inputmode="numeric" autocomplete="off" spellcheck="false" aria-label="Card security code">
+              </div>
+              <button class="btn-place" id="placeOrderBtn" type="button" disabled>Place order for the caller</button>
+              <p class="place-hint">Demonstration: any values continue and nothing is charged. <kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Ctrl</kbd>+<kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Enter</kbd> places it.</p>
+            </div>
+
+            <!-- totals + qualified meter -->
+            <div class="totals-box">
+              <div class="t-row" id="rowSub" hidden><span>Monthly <span class="t-hint">renews monthly</span></span><span class="t-num" id="sumSub">$0.00</span></div>
+              <div class="t-row" id="rowOne" hidden><span>One-time <span class="t-hint">billed today</span></span><span class="t-num" id="sumOne">$0.00</span></div>
+              <div class="t-row"><span id="taxLabel">Tax <span class="t-hint">5 percent</span></span><span class="t-num" id="sumTax">$0.00</span></div>
+              <div class="taxid-line">
+                <label for="taxIdInput">Tax ID</label>
+                <input class="taxid-input" id="taxIdInput" type="text" placeholder="Optional, any digit exempts" autocomplete="off" spellcheck="false">
+              </div>
+              <div class="t-row t-main"><span>Order total</span><span class="t-num" id="sumTotal">$0.00</span></div>
+              <div class="t-row"><span>Order PV</span><span class="t-pv" id="sumPv">0 PV</span></div>
+
+              <div class="meter-box" id="meterBox">
+                <div class="meter-label"><span>Qualified month</span><span class="m-now" id="meterNow">0 / 100 PV</span></div>
+                <div class="meter-track"><div class="meter-fill" id="meterFill"></div></div>
+                <p class="meter-note" id="meterNote"></p>
+                <p class="meter-say" id="meterSay" hidden></p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- confirmation: designed for reading aloud -->
+      <section class="console-panel confirm-panel" aria-label="Order confirmation" id="confirmPanel" hidden>
+        <p class="readaloud-kicker">Read this to the caller</p>
+
+        <p class="confirm-ordernum-label">Confirmation number</p>
+        <p class="confirm-ordernum" id="confOrderNum">ORV-0000-00-000000</p>
+        <p class="confirm-phonetic" id="confPhonetic"></p>
+
+        <div class="say-block" id="sayTotal"><span class="say-label">The total</span><span id="sayTotalText"></span></div>
+        <div class="say-block" id="sayRenew" hidden><span class="say-label">The renewal</span><span id="sayRenewText"></span></div>
+        <div class="say-block"><span class="say-label">Activation</span><span id="sayActivation">Your agents come online within 48 hours; you will see them in your member portal.</span></div>
+        <div class="say-block" id="sayQualify"><span class="say-label">Qualification</span><span id="sayQualifyText"></span></div>
+
+        <div class="confirm-facts" id="confFacts"></div>
+
+        <p class="place-hint" style="text-align:left">Demonstration checkout: no payment occurred and nothing will be charged.</p>
+
+        <div class="confirm-actions">
+          <button class="btn-again" id="sameCallerBtn" type="button">Same caller, new order</button>
+          <button class="btn-newcall" id="confirmNewCallBtn" type="button">New call</button>
+        </div>
+      </section>
+
+      <div class="kbd-strip" aria-label="Keyboard shortcuts">
+        <span><kbd>/</kbd> focus lookup</span>
+        <span><kbd>Enter</kbd> in lookup picks the top match</span>
+        <span><kbd>Enter</kbd> in quantity adds the line</span>
+        <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> places the order</span>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<footer class="console-foot">
+  <div class="console-wrap" id="footLine">Orvanna staff console &middot; demonstration data &middot; no real members, orders, or charges</div>
+</footer>
+
+<script src="js/catalog.js?v=4.5"></script>
+<script>
+/* ============================================================
+   Orvanna Staff Call Console (Phase 4.5).
+   One caller, one screen: verify who is calling, see their
+   situation, place an order for them, read the confirmation
+   aloud. Live figures come from the same Supabase demo views
+   the member portal uses; contact details are synthesized
+   deterministically from the member code.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var O = window.ORVANNA;
+  var fmtMoney = O.fmtMoney;
+  var fmtPv = O.fmtPv;
+
+  /* ---------- live data layer (same views as site/js/app.js) ---------- */
+
+  var API_BASE = 'https://oiyibdczkokegaxkwulv.supabase.co/rest/v1';
+  var API_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw';
+  var QUAL_PV = 100;
+
+  function rest(pathQuery) {
+    return fetch(API_BASE + '/' + pathQuery, {
+      headers: { apikey: API_KEY, Authorization: 'Bearer ' + API_KEY }
+    }).then(function (res) {
+      if (!res.ok) throw new Error('The data service answered HTTP ' + res.status);
+      return res.json();
+    });
+  }
+
+  /* page past PostgREST's 1,000-row cap (the member list is 1,000 accounts) */
+  function fetchAll(pathQuery) {
+    var sep = pathQuery.indexOf('?') >= 0 ? '&' : '?';
+    var out = [];
+    function page(offset) {
+      return rest(pathQuery + sep + 'limit=1000&offset=' + offset).then(function (rows) {
+        out = out.concat(rows);
+        if (rows.length < 1000) return out;
+        return page(offset + 1000);
+      });
+    }
+    return page(0);
+  }
+
+  /* ---------- small utilities ---------- */
+
+  function esc(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  }
+  function byId(id) { return document.getElementById(id); }
+  function round2(n) { return Math.round(n * 100) / 100; }
+
+  var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  function periodLong(p) { return MONTHS[parseInt(p.slice(5, 7), 10) - 1] + ' ' + p.slice(0, 4); }
+
+  /* GW-000002, gw2, 000002, 2 all normalize to GW-000002 */
+  function normalizeCode(raw) {
+    var t = String(raw).trim().toUpperCase().replace(/^GW[-\s]?/, '');
+    if (!/^\d{1,6}$/.test(t)) return null;
+    while (t.length < 6) t = '0' + t;
+    return 'GW-' + t;
+  }
+
+  /* ---------- synthesized contact details (deterministic per code) ---------- */
+
+  function synthFor(code) {
+    var n = parseInt(code.replace(/\D/g, ''), 10) || 0;
+    var h = (n * 2654435761) >>> 0;
+    var pick = function (arr, shift) { return arr[((h >>> shift) % arr.length + arr.length) % arr.length]; };
+    var AREA = ['212', '305', '312', '415', '512', '602', '702', '801', '206', '614', '404', '919'];
+    var CITY = [['Cedar Falls', 'Iowa'], ['Mesa', 'Arizona'], ['Provo', 'Utah'], ['Franklin', 'Tennessee'],
+      ['Naperville', 'Illinois'], ['Boise', 'Idaho'], ['Plano', 'Texas'], ['Asheville', 'North Carolina'],
+      ['Spokane', 'Washington'], ['Sarasota', 'Florida'], ['Ann Arbor', 'Michigan'], ['Reno', 'Nevada']];
+    var PREF = ['Phone call', 'Text message', 'Email'];
+    var NOTES = ['Prefers calls after noon; asks for totals twice.',
+      'Building a customer base; interested in bundles.',
+      'Asked about one-time pricing on the last call.',
+      'New to the portal; walk changes through slowly.',
+      'Tracks the qualification meter closely each month.',
+      'Considering the Manager Agent for the back office.',
+      'Usually orders near month end to qualify.',
+      'Runs a small storefront; support agents in use.'];
+    var line = String(100 + ((h >>> 8) % 900));   /* 555-01XX style fictional block, padded */
+    return {
+      phone: '(' + pick(AREA, 0) + ') 555-0' + line,
+      city: pick(CITY, 4)[0] + ', ' + pick(CITY, 4)[1],
+      pref: pick(PREF, 6),
+      note: pick(NOTES, 10),
+      card: 'Visa ending ' + String(1000 + (h % 9000))
+    };
+  }
+
+  /* ---------- state ---------- */
+
+  var db = { members: [], byCode: {}, periods: [], latestPeriod: null };
+  var caller = null;          /* { code, name, rank, enrolledOn, sv, tv, custSv, stmtTotal, monthsOnFile, frontline, synth } */
+  var lookupSeq = 0;          /* discards stale lookups if the staffer types fast */
+  var order = {};             /* "sku|mode" -> qty */
+  var addMode = 'sub';
+  var callStart = null;
+
+  /* ---------- call timer ---------- */
+
+  var timerEl = byId('callTimer');
+  var timerValue = byId('timerValue');
+  window.setInterval(function () {
+    if (document.hidden) return;
+    if (!callStart) return;
+    var s = Math.floor((Date.now() - callStart) / 1000);
+    var mm = String(Math.floor(s / 60));
+    if (mm.length < 2) mm = '0' + mm;
+    var ss = String(s % 60);
+    if (ss.length < 2) ss = '0' + ss;
+    timerValue.textContent = mm + ':' + ss;
+  }, 500);
+
+  function startTimer() {
+    if (!callStart) {
+      callStart = Date.now();
+      timerEl.classList.add('is-live');
+    }
+  }
+  function resetTimer() {
+    callStart = null;
+    timerEl.classList.remove('is-live');
+    timerValue.textContent = '00:00';
+  }
+
+  /* ---------- lookup: typeahead over the live member list ---------- */
+
+  var lookupInput = byId('lookupInput');
+  var lookupList = byId('lookupList');
+
+  function matches(query) {
+    var q = query.trim().toLowerCase();
+    if (!q) return { rows: db.members.slice(0, 30), total: db.members.length };
+    var norm = normalizeCode(q);
+    var out = db.members.filter(function (m) {
+      return m.member_code.toLowerCase().indexOf(q) >= 0 ||
+        (norm && m.member_code === norm) ||
+        m.display_name.toLowerCase().indexOf(q) >= 0;
+    });
+    /* exact normalized code floats to the top */
+    if (norm) {
+      out.sort(function (a, b) {
+        return (b.member_code === norm ? 1 : 0) - (a.member_code === norm ? 1 : 0);
+      });
+    }
+    return { rows: out.slice(0, 30), total: out.length };
+  }
+
+  var hotIndex = 0;   /* which match the keyboard highlight sits on */
+
+  function paintHot() {
+    var items = lookupList.querySelectorAll('.lookup-item');
+    items.forEach(function (el, i) { el.classList.toggle('is-hot', i === hotIndex); });
+    var hot = items[hotIndex];
+    if (hot && hot.scrollIntoView) hot.scrollIntoView({ block: 'nearest' });
+  }
+
+  function renderLookupList() {
+    var m = matches(lookupInput.value);
+    hotIndex = 0;
+    if (m.rows.length === 0) {
+      lookupList.innerHTML = '<div class="lookup-empty">No member matches. Codes run GW-000001 through GW-00' +
+        String(db.members.length) + '.</div>';
+    } else {
+      lookupList.innerHTML = m.rows.map(function (r, i) {
+        return '<div class="lookup-item' + (i === 0 ? ' is-hot' : '') + '" data-code="' + esc(r.member_code) + '">' +
+          '<span><span class="li-code">' + esc(r.member_code) + '</span> ' + esc(r.display_name) + '</span>' +
+          '<span class="li-rank">' + esc(r.rank_name) + '</span></div>';
+      }).join('') +
+      (m.total > m.rows.length
+        ? '<div class="lookup-empty">' + (m.total - m.rows.length).toLocaleString('en-US') +
+          ' more matches; keep typing to narrow.</div>'
+        : '');
+    }
+    lookupList.hidden = false;
+    lookupList.scrollTop = 0;
+  }
+
+  lookupInput.addEventListener('input', renderLookupList);
+  lookupInput.addEventListener('focus', function () {
+    if (db.members.length) renderLookupList();
+  });
+  lookupInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { lookupList.hidden = true; }
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();                       /* the caret stays put; the highlight moves */
+      if (lookupList.hidden) { renderLookupList(); return; }
+      var n = lookupList.querySelectorAll('.lookup-item').length;
+      if (n === 0) return;
+      hotIndex = e.key === 'ArrowDown'
+        ? Math.min(hotIndex + 1, n - 1)
+        : Math.max(hotIndex - 1, 0);
+      paintHot();
+    }
+    if (e.key === 'Enter') {
+      var items = lookupList.querySelectorAll('.lookup-item');
+      var hot = items[hotIndex] || items[0];
+      if (hot && !lookupList.hidden) selectCaller(hot.getAttribute('data-code'));
+      else {
+        var norm = normalizeCode(lookupInput.value);
+        if (norm && db.byCode[norm]) selectCaller(norm);
+      }
+    }
+  });
+  lookupList.addEventListener('mousedown', function (e) {
+    var item = e.target.closest ? e.target.closest('.lookup-item') : null;
+    if (item) { e.preventDefault(); selectCaller(item.getAttribute('data-code')); }
+  });
+  document.addEventListener('click', function (e) {
+    if (!e.target.closest || !e.target.closest('.lookup-row')) lookupList.hidden = true;
+  });
+
+  /* global "/" jumps to the lookup */
+  document.addEventListener('keydown', function (e) {
+    var tag = (e.target.tagName || '').toLowerCase();
+    if (e.key === '/' && tag !== 'input' && tag !== 'textarea' && tag !== 'select') {
+      e.preventDefault();
+      lookupInput.focus();
+      lookupInput.select();
+    }
+    if (e.key === 'Enter' && e.ctrlKey && caller && Object.keys(order).length > 0 &&
+        byId('confirmPanel').hidden) {
+      placeOrder();
+    }
+  });
+
+  /* ---------- caller snapshot ---------- */
+
+  var snapshotBody = byId('snapshotBody');
+  var snapPeriodChip = byId('snapPeriodChip');
+
+  function monthsBetween(fromIso, toIso) {
+    var fy = parseInt(fromIso.slice(0, 4), 10), fm = parseInt(fromIso.slice(5, 7), 10);
+    var ty = parseInt(toIso.slice(0, 4), 10), tm = parseInt(toIso.slice(5, 7), 10);
+    return Math.max(0, (ty - fy) * 12 + (tm - fm)) + 1;
+  }
+
+  function selectCaller(code) {
+    var m = db.byCode[code];
+    if (!m) return;
+    lookupList.hidden = true;
+    lookupInput.value = code + ' · ' + m.display_name;
+    lookupInput.blur();
+    startTimer();
+
+    var seq = ++lookupSeq;
+    snapshotBody.innerHTML = '<div class="snap-loading">Pulling live figures for ' + esc(code) + '&hellip;</div>';
+    snapPeriodChip.hidden = true;
+
+    var p = db.latestPeriod;
+    Promise.all([
+      rest('v_demo_member_months?member_code=eq.' + encodeURIComponent(code) + '&period=eq.' + p +
+        '&select=sv,cv,tv,is_active,rank_earned'),
+      rest('v_demo_customer_volume?member_code=eq.' + encodeURIComponent(code) + '&volume_month=eq.' + p +
+        '&select=customer_sv'),
+      fetchAll('v_demo_statements?earner_code=eq.' + encodeURIComponent(code) + '&period=eq.' + p + '&select=amount'),
+      fetchAll('v_demo_tree?sponsor_code=eq.' + encodeURIComponent(code) + '&select=member_code')
+    ]).then(function (res) {
+      if (seq !== lookupSeq) return;   /* a newer lookup superseded this one */
+      var mm = res[0][0] || null;
+      var custSv = res[1].reduce(function (s, r) { return s + Number(r.customer_sv); }, 0);
+      var stmtTotal = res[2].reduce(function (s, r) { return s + Number(r.amount); }, 0);
+      caller = {
+        code: code,
+        name: m.display_name,
+        rank: ((mm && mm.rank_earned) || m.rank_name || 'member').toLowerCase(),
+        enrolledOn: m.enrolled_on,
+        sv: mm ? Number(mm.sv) : 0,
+        tv: mm ? Number(mm.tv) : 0,
+        custSv: custSv,
+        stmtTotal: stmtTotal,
+        monthsOnFile: monthsBetween(m.enrolled_on, p),
+        frontline: res[3].length,
+        synth: synthFor(code)
+      };
+      renderSnapshot();
+      openOrderFor();
+      loadNotes();
+    }).catch(function (err) {
+      if (seq !== lookupSeq) return;
+      snapshotBody.innerHTML = '<div class="snap-error">Could not load this member: ' +
+        esc(err.message) + '<button class="retry-link" type="button">Retry</button></div>';
+      snapshotBody.querySelector('.retry-link').addEventListener('click', function () { selectCaller(code); });
+    });
+  }
+
+  function renderSnapshot() {
+    var c = caller;
+    var qualified = c.sv >= QUAL_PV;
+    var rankLabel = c.rank.charAt(0).toUpperCase() + c.rank.slice(1);
+    snapPeriodChip.textContent = periodLong(db.latestPeriod);
+    snapPeriodChip.hidden = false;
+
+    snapshotBody.innerHTML =
+      '<div class="snap-head">' +
+        '<span class="snap-name">' + esc(c.name) + '</span>' +
+        '<span class="snap-code">' + esc(c.code) + '</span>' +
+      '</div>' +
+      '<div class="snap-badges">' +
+        '<span class="rank-chip rank-' + esc(c.rank) + '">' + esc(rankLabel) + '</span>' +
+        (qualified
+          ? '<span class="qual-chip qual-yes">Qualified · ' + fmtPv(Math.round(c.sv)) + '</span>'
+          : '<span class="qual-chip qual-no">Not qualified · needs ' + fmtPv(Math.max(0, Math.ceil(QUAL_PV - c.sv))) + ' more</span>') +
+      '</div>' +
+      '<div class="snap-verify">' +
+        '<div class="verify-row"><span class="v-label">Phone</span><span class="v-value">' + esc(c.synth.phone) + '</span></div>' +
+        '<div class="verify-row"><span class="v-label">Location</span><span class="v-value">' + esc(c.synth.city) + '</span></div>' +
+        '<div class="verify-row"><span class="v-label">Prefers</span><span class="v-value">' + esc(c.synth.pref) + '</span></div>' +
+        '<div class="verify-row"><span class="v-label">Account notes</span><span class="v-value">' + esc(c.synth.note) + '</span></div>' +
+        '<div class="verify-row"><span class="v-label"></span><span class="demo-chip">demonstration data</span></div>' +
+      '</div>' +
+      '<div class="snap-stats">' +
+        stat('Sales Volume (SV)', fmtNum(c.sv), 'this month', true) +
+        stat('Team Volume (TV)', fmtNum(c.tv), 'whole downline', false) +
+        stat('Customer volume', fmtNum(c.custSv), 'inside SV, from retail customers', false) +
+        stat('Last statement', fmtMoney(c.stmtTotal), periodLong(db.latestPeriod) + ' commissions', false) +
+        stat('Months on file', String(c.monthsOnFile), 'since ' + esc(c.enrolledOn), false) +
+        stat('Frontline', String(c.frontline), 'directly sponsored members', false) +
+      '</div>';
+
+    function stat(label, value, note, cyan) {
+      return '<div class="snap-stat' + (cyan ? ' st-cyan' : '') + '"><div class="st-label">' + label +
+        '</div><div class="st-value">' + value + '</div><div class="st-note">' + note + '</div></div>';
+    }
+  }
+
+  function fmtNum(n) {
+    return Number(n).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  /* ---------- call notes: persist per member in localStorage ---------- */
+
+  var NOTES_KEY = 'orvannaStaffNotes';
+  var notesArea = byId('notesArea');
+  var notesState = byId('notesState');
+  var notesTimer = null;
+
+  function readNotesStore() {
+    try { return JSON.parse(localStorage.getItem(NOTES_KEY)) || {}; } catch (e) { return {}; }
+  }
+  function loadNotes() {
+    notesArea.disabled = false;
+    notesArea.placeholder = 'Notes for ' + caller.code + '; they keep across calls and reloads.';
+    notesArea.value = readNotesStore()[caller.code] || '';
+    notesState.textContent = notesArea.value ? 'Saved notes loaded for ' + caller.code + '.' : '';
+  }
+  notesArea.addEventListener('input', function () {
+    if (!caller) return;
+    window.clearTimeout(notesTimer);
+    notesState.textContent = 'Saving…';
+    notesTimer = window.setTimeout(function () {
+      var store = readNotesStore();
+      if (notesArea.value.trim()) store[caller.code] = notesArea.value;
+      else delete store[caller.code];
+      try { localStorage.setItem(NOTES_KEY, JSON.stringify(store)); } catch (e) { /* session-only then */ }
+      notesState.textContent = 'Saved for ' + caller.code + '.';
+    }, 350);
+  });
+
+  /* ---------- quick order: product dropdown, mode, lines ---------- */
+
+  var productSelect = byId('productSelect');
+  var qtyInput = byId('qtyInput');
+  var modeSubBtn = byId('modeSub');
+  var modeOneBtn = byId('modeOne');
+
+  function optionLabel(p, mode) {
+    var price = O.priceOf(p, mode);
+    var pv = O.pvOf(p, mode);
+    return p.name + ' · ' + fmtMoney(price) + (mode === 'one' ? ' once' : ' / mo') +
+      ' · ' + fmtPv(pv);
+  }
+
+  function renderProductOptions() {
+    var groups = [
+      ['Domain agents', function (p) { return p.tier === 'domain'; }],
+      ['Support agents', function (p) { return p.tier === 'support'; }],
+      ['Bundles and packs', function (p) { return p.tier === 'bundle' || p.tier === 'pack'; }]
+    ];
+    var keep = productSelect.value;
+    productSelect.innerHTML = groups.map(function (g) {
+      return '<optgroup label="' + g[0] + '">' +
+        O.PRODUCTS.filter(g[1]).map(function (p) {
+          return '<option value="' + p.sku + '">' + esc(optionLabel(p, addMode)) + '</option>';
+        }).join('') + '</optgroup>';
+    }).join('');
+    if (keep && O.get(keep)) productSelect.value = keep;
+    renderAddPreview();
+  }
+
+  function setAddMode(mode) {
+    addMode = mode;
+    modeSubBtn.setAttribute('aria-pressed', String(mode === 'sub'));
+    modeOneBtn.setAttribute('aria-pressed', String(mode === 'one'));
+    renderProductOptions();
+  }
+  modeSubBtn.addEventListener('click', function () { setAddMode('sub'); });
+  modeOneBtn.addEventListener('click', function () { setAddMode('one'); });
+
+  function currentQty() {
+    var q = parseInt(qtyInput.value, 10);
+    if (!(q > 0)) q = 1;
+    return Math.min(q, 99);
+  }
+
+  function renderAddPreview() {
+    var p = O.get(productSelect.value);
+    var el = byId('addPreview');
+    if (!p) { el.textContent = ''; return; }
+    var q = currentQty();
+    var amt = O.priceOf(p, addMode) * q;
+    var pv = O.pvOf(p, addMode) * q;
+    el.innerHTML = 'Adds <b>' + esc(p.name) + ' × ' + q + '</b>: ' +
+      '<b>' + fmtMoney(amt) + (addMode === 'one' ? ' billed once' : ' per month') + '</b>, ' +
+      '<b>' + fmtPv(pv) + '</b>' +
+      (p.includes ? ' · includes ' + p.includes.map(function (s) { return O.get(s).name; }).join(', ') : '');
+  }
+  productSelect.addEventListener('change', renderAddPreview);
+  qtyInput.addEventListener('input', renderAddPreview);
+  qtyInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); addLine(); }
+  });
+
+  function addLine() {
+    var p = O.get(productSelect.value);
+    if (!p || !caller) return;
+    var key = p.sku + '|' + addMode;
+    order[key] = Math.min((order[key] || 0) + currentQty(), 99);
+    qtyInput.value = '1';
+    renderOrder();
+    productSelect.focus();
+  }
+  byId('addLineBtn').addEventListener('click', addLine);
+
+  /* ---------- order lines table ---------- */
+
+  var orderLinesWrap = byId('orderLinesWrap');
+
+  orderLinesWrap.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var inc = e.target.closest('[data-inc]');
+    var dec = e.target.closest('[data-dec]');
+    var rem = e.target.closest('[data-rem]');
+    if (inc) order[inc.getAttribute('data-inc')] = Math.min(order[inc.getAttribute('data-inc')] + 1, 99);
+    else if (dec) { var k = dec.getAttribute('data-dec'); if (order[k] > 1) order[k] -= 1; }
+    else if (rem) delete order[rem.getAttribute('data-rem')];
+    else return;
+    renderOrder();
+  });
+
+  function modeTag(mode) {
+    return mode === 'one'
+      ? '<span class="mode-tag tag-one">One-time</span>'
+      : '<span class="mode-tag tag-sub">Monthly</span>';
+  }
+
+  function renderLines() {
+    var keys = Object.keys(order);
+    if (keys.length === 0) {
+      orderLinesWrap.innerHTML = '<div class="order-empty">No lines yet. Pick a product above and press Add line, or Enter in the quantity box.</div>';
+      return;
+    }
+    var rows = keys.map(function (key) {
+      var kp = O.keyParts(key);
+      var p = O.get(kp.sku);
+      var q = order[key];
+      var amt = O.priceOf(p, kp.mode) * q;
+      var pv = O.pvOf(p, kp.mode) * q;
+      return '<tr>' +
+        '<td><span class="line-name">' + esc(p.name) + '</span><span class="mode-inline">' + modeTag(kp.mode) + '</span>' +
+          (p.includes ? '<div class="line-includes">Includes ' + p.includes.map(function (s) { return O.get(s).name; }).join(', ') + '</div>' : '') +
+        '</td>' +
+        '<td>' + modeTag(kp.mode) + '</td>' +
+        '<td><span class="qty-cell">' +
+          '<button class="qty-step" type="button" data-dec="' + key + '" aria-label="Decrease quantity"' + (q <= 1 ? ' disabled' : '') + '>&#8722;</button>' +
+          '<span class="qty-num">' + q + '</span>' +
+          '<button class="qty-step" type="button" data-inc="' + key + '" aria-label="Increase quantity"' + (q >= 99 ? ' disabled' : '') + '>+</button>' +
+        '</span></td>' +
+        '<td class="num">' + fmtMoney(amt) + (kp.mode === 'sub' ? ' / mo' : '') + '</td>' +
+        '<td class="num">' + fmtPv(pv) + '</td>' +
+        '<td class="num"><button class="line-remove-btn" type="button" data-rem="' + key + '">Remove</button></td>' +
+      '</tr>';
+    }).join('');
+    orderLinesWrap.innerHTML =
+      '<table class="order-table" aria-label="Order lines">' +
+      '<thead><tr><th>Item</th><th>Billing</th><th>Qty</th><th class="num">Amount</th><th class="num">PV</th><th></th></tr></thead>' +
+      '<tbody>' + rows + '</tbody></table>';
+  }
+
+  /* ---------- totals, tax, qualified meter ---------- */
+
+  var taxIdInput = byId('taxIdInput');
+  taxIdInput.addEventListener('input', renderTotals);
+  function taxExempt() { return /\d/.test(taxIdInput.value); }
+
+  function orderMath() {
+    var t = O.cartTotals(order);
+    var taxable = t.oneMoney + t.subMoney;
+    var tax = taxExempt() ? 0 : round2(taxable * 0.05);
+    return { t: t, tax: tax, total: round2(taxable + tax) };
+  }
+
+  function renderTotals() {
+    var m = orderMath();
+    byId('rowSub').hidden = m.t.subMoney === 0;
+    byId('rowOne').hidden = m.t.oneMoney === 0;
+    byId('sumSub').textContent = fmtMoney(m.t.subMoney) + ' / mo';
+    byId('sumOne').textContent = fmtMoney(m.t.oneMoney);
+    if (taxExempt()) {
+      byId('taxLabel').innerHTML = 'Tax exempt';
+      byId('sumTax').textContent = '$0.00';
+    } else {
+      byId('taxLabel').innerHTML = 'Tax <span class="t-hint">5 percent</span>';
+      byId('sumTax').textContent = fmtMoney(m.tax);
+    }
+    byId('sumTotal').textContent = fmtMoney(m.total);
+    byId('sumPv').textContent = fmtPv(m.t.pv);
+    byId('placeOrderBtn').disabled = Object.keys(order).length === 0;
+    renderMeter(m.t.pv);
+  }
+
+  function renderMeter(orderPv) {
+    var baseSv = caller ? caller.sv : 0;
+    var combined = baseSv + orderPv;
+    var box = byId('meterBox');
+    byId('meterFill').style.width = Math.min(100, combined / QUAL_PV * 100) + '%';
+    byId('meterNow').textContent = Math.round(combined).toLocaleString('en-US') + ' / 100 PV';
+    byId('meterNote').textContent = 'Month Sales Volume (SV) ' + fmtNum(baseSv) +
+      ' + this order ' + fmtPv(orderPv) + '.';
+    var say = byId('meterSay');
+    if (combined >= QUAL_PV) {
+      box.classList.add('is-qualified');
+      if (baseSv < QUAL_PV && orderPv > 0) {
+        say.hidden = false;
+        say.textContent = '“This order qualifies you for the month.”';
+      } else {
+        say.hidden = false;
+        say.textContent = baseSv >= QUAL_PV
+          ? '“You are already qualified this month.”'
+          : '';
+      }
+    } else {
+      box.classList.remove('is-qualified');
+      say.hidden = true;
+      byId('meterNote').textContent += ' ' + Math.ceil(QUAL_PV - combined) + ' PV short of a qualified month.';
+    }
+  }
+
+  function renderOrder() {
+    renderLines();
+    renderTotals();
+  }
+
+  /* ---------- payment choice ---------- */
+
+  var newCardFields = byId('newCardFields');
+  document.querySelectorAll('input[name="payChoice"]').forEach(function (r) {
+    r.addEventListener('change', function () {
+      newCardFields.hidden = payChoice() !== 'new';
+    });
+  });
+  function payChoice() {
+    var c = document.querySelector('input[name="payChoice"]:checked');
+    return c ? c.value : 'onfile';
+  }
+
+  function openOrderFor() {
+    byId('orderGate').hidden = true;
+    byId('orderForm').hidden = false;
+    byId('confirmPanel').hidden = true;
+    byId('orderPanel').hidden = false;
+    byId('onFileNote').textContent = caller.synth.card;
+    renderOrder();
+  }
+
+  /* ---------- confirmation: numbers turned into speech ---------- */
+
+  var ONES = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  var TENS = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+  function threeWords(n) {
+    var out = [];
+    if (n >= 100) { out.push(ONES[Math.floor(n / 100)] + ' hundred'); n %= 100; }
+    if (n >= 20) {
+      var t = TENS[Math.floor(n / 10)];
+      out.push(n % 10 ? t + '-' + ONES[n % 10] : t);
+    } else if (n > 0) out.push(ONES[n]);
+    return out.join(' ');
+  }
+
+  function intWords(n) {
+    if (n === 0) return 'zero';
+    var parts = [];
+    var scales = [[1000000, 'million'], [1000, 'thousand'], [1, '']];
+    scales.forEach(function (s) {
+      var v = Math.floor(n / s[0]);
+      if (v > 0) { parts.push(threeWords(v) + (s[1] ? ' ' + s[1] : '')); n %= s[0]; }
+    });
+    return parts.join(' ');
+  }
+
+  function moneyWords(amount) {
+    var dollars = Math.floor(amount);
+    var cents = Math.round((amount - dollars) * 100);
+    var s = intWords(dollars) + (dollars === 1 ? ' dollar' : ' dollars');
+    if (cents > 0) s += ' and ' + intWords(cents) + (cents === 1 ? ' cent' : ' cents');
+    return s;
+  }
+
+  var NATO = { A: 'Alpha', B: 'Bravo', C: 'Charlie', D: 'Delta', E: 'Echo', F: 'Foxtrot', G: 'Golf',
+    H: 'Hotel', I: 'India', J: 'Juliett', K: 'Kilo', L: 'Lima', M: 'Mike', N: 'November', O: 'Oscar',
+    P: 'Papa', Q: 'Quebec', R: 'Romeo', S: 'Sierra', T: 'Tango', U: 'Uniform', V: 'Victor',
+    W: 'Whiskey', X: 'X-ray', Y: 'Yankee', Z: 'Zulu' };
+
+  function phonetic(token) {
+    return token.split('').map(function (ch) {
+      if (/\d/.test(ch)) return ONES[parseInt(ch, 10)];
+      return NATO[ch] || ch;
+    }).join(' ');
+  }
+
+  function orderNumber() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var mo = String(d.getMonth() + 1);
+    if (mo.length < 2) mo = '0' + mo;
+    var ms = ((d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds()) * 1000 + d.getMilliseconds();
+    var token = ms.toString(36).toUpperCase();
+    while (token.length < 6) token = '0' + token;
+    return { full: 'ORV-' + y + '-' + mo + '-' + token, token: token };
+  }
+
+  function placeOrder() {
+    if (!caller || Object.keys(order).length === 0) return;
+    var m = orderMath();
+    var num = orderNumber();
+
+    byId('confOrderNum').textContent = num.full;
+    byId('confPhonetic').innerHTML = 'Spell it out: <b>O R V</b>, then <b>' +
+      esc(phonetic(num.token)) + '</b>.';
+
+    var totalSay = 'Your total today is ' + fmtMoney(m.total) + ': ' + moneyWords(m.total) + '.';
+    if (m.tax === 0 && taxExempt()) totalSay += ' Tax exempt on the tax ID you gave us.';
+    byId('sayTotalText').textContent = totalSay;
+
+    var renewRow = byId('sayRenew');
+    if (m.t.subMoney > 0) {
+      renewRow.hidden = false;
+      byId('sayRenewText').textContent = 'Of that, ' + fmtMoney(m.t.subMoney) +
+        ' renews monthly until you cancel; the rest is a one-time charge.';
+      if (m.t.oneMoney === 0) {
+        byId('sayRenewText').textContent = 'The full ' + fmtMoney(m.t.subMoney) +
+          ' renews monthly until you cancel.';
+      }
+    } else renewRow.hidden = true;
+
+    var baseSv = caller.sv, pv = m.t.pv, combined = baseSv + pv;
+    byId('sayQualifyText').textContent = combined >= QUAL_PV
+      ? (baseSv < QUAL_PV
+        ? 'This order carries ' + fmtPv(pv) + '; it qualifies you for the month.'
+        : 'This order carries ' + fmtPv(pv) + '; you were already qualified this month.')
+      : 'This order carries ' + fmtPv(pv) + '; with this month’s volume you are at ' +
+        Math.round(combined) + ' of the 100 PV qualified month.';
+
+    var payLabel = payChoice() === 'onfile'
+      ? 'Card on file, ' + caller.synth.card
+      : 'New card, keyed during the call';
+    byId('confFacts').innerHTML =
+      fact('Placed for', esc(caller.code) + ' · ' + esc(caller.name)) +
+      fact('Payment', esc(payLabel)) +
+      fact('Lines', String(Object.keys(order).length) + ', ' + String(m.t.count) + ' unit' + (m.t.count === 1 ? '' : 's')) +
+      fact('Order PV', fmtPv(pv));
+
+    function fact(label, value) {
+      return '<div class="snap-stat"><div class="st-label">' + label +
+        '</div><div class="st-value" style="font-size:0.95rem">' + value + '</div></div>';
+    }
+
+    byId('orderPanel').hidden = true;
+    byId('confirmPanel').hidden = false;
+    byId('confirmPanel').scrollIntoView({ block: 'nearest' });
+
+    order = {};
+  }
+
+  byId('placeOrderBtn').addEventListener('click', placeOrder);
+
+  /* ---------- same caller, new order / new call ---------- */
+
+  function backToOrder() {
+    byId('confirmPanel').hidden = true;
+    byId('orderPanel').hidden = false;
+    order = {};
+    qtyInput.value = '1';
+    taxIdInput.value = '';
+    byId('cardName').value = '';
+    byId('cardNumber').value = '';
+    byId('cardExpiry').value = '';
+    byId('cardCode').value = '';
+    document.querySelector('input[name="payChoice"][value="onfile"]').checked = true;
+    newCardFields.hidden = true;
+    setAddMode('sub');               /* subscription is the default on every new order */
+    renderOrder();
+    productSelect.focus();
+  }
+  byId('sameCallerBtn').addEventListener('click', backToOrder);
+
+  function newCall() {
+    caller = null;
+    lookupSeq++;                       /* invalidates any in-flight lookup */
+    order = {};
+    resetTimer();
+    lookupInput.value = '';
+    qtyInput.value = '1';
+    taxIdInput.value = '';
+    byId('cardName').value = '';
+    byId('cardNumber').value = '';
+    byId('cardExpiry').value = '';
+    byId('cardCode').value = '';
+    document.querySelector('input[name="payChoice"][value="onfile"]').checked = true;
+    newCardFields.hidden = true;
+    setAddMode('sub');
+    byId('confirmPanel').hidden = true;
+    byId('orderPanel').hidden = false;
+    byId('orderGate').hidden = false;
+    byId('orderForm').hidden = true;
+    snapPeriodChip.hidden = true;
+    snapshotBody.innerHTML = '';
+    snapshotBody.appendChild(buildSnapEmpty());
+    notesArea.value = '';
+    notesArea.disabled = true;
+    notesArea.placeholder = 'Look up a member to take notes on this call.';
+    notesState.textContent = '';
+    lookupInput.focus();
+  }
+  function buildSnapEmpty() {
+    var div = document.createElement('div');
+    div.className = 'snap-empty';
+    div.innerHTML = '<div class="snap-hex" aria-hidden="true">' +
+      '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/><circle cx="32" cy="32" r="4" fill="#22D3EE"/></svg>' +
+      '</div>Look up the caller to open their snapshot.';
+    return div;
+  }
+  byId('newCallBtn').addEventListener('click', newCall);
+  byId('confirmNewCallBtn').addEventListener('click', newCall);
+
+  /* ---------- boot: member list + latest finalized period ---------- */
+
+  function boot() {
+    Promise.all([
+      fetchAll('v_demo_members?select=member_code,display_name,enrolled_on,rank_name&order=member_code.asc'),
+      rest('v_demo_company?select=period&order=period.desc&limit=1')
+    ]).then(function (res) {
+      db.members = res[0];
+      db.byCode = {};
+      db.members.forEach(function (m) { db.byCode[m.member_code] = m; });
+      db.latestPeriod = res[1].length ? res[1][0].period : '2026-07-01';
+      byId('footLine').textContent = 'Orvanna staff console · ' +
+        db.members.length.toLocaleString('en-US') + ' demonstration accounts · period ' +
+        periodLong(db.latestPeriod) + ' · no real members, orders, or charges';
+      renderProductOptions();
+    }).catch(function (err) {
+      snapshotBody.innerHTML = '<div class="snap-error">Could not reach the demonstration database: ' +
+        esc(err.message) + '<button class="retry-link" type="button">Retry</button></div>';
+      snapshotBody.querySelector('.retry-link').addEventListener('click', boot);
+    });
+  }
+
+  renderProductOptions();
+  renderAddPreview();
+  boot();
+})();
+</script>
+
+</body>
+</html>

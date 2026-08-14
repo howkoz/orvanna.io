@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Shop</title>
+<meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/corporate.css?v=4.1">
+<link rel="stylesheet" href="css/shop.css?v=4.1">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<!-- ============ STICKY NAV (glass) ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link is-active" href="shop.html">Shop</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <button class="nav-cart" id="cartButton" type="button" aria-label="Open cart">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 4 6 h 2.4 l 2 10.2 h 9.4 l 2.2 -7.6 h -12.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="9.6" cy="19.4" r="1.4" fill="currentColor"/>
+          <circle cx="16.6" cy="19.4" r="1.4" fill="currentColor"/>
+        </svg>
+        <span class="cart-count" id="cartCount">0</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ==================================================
+     VIEW 1: CATALOG
+     ================================================== -->
+<div class="view is-active" id="viewCatalog">
+
+  <section class="shop-hero">
+    <div class="wrap">
+      <p class="kicker">The catalog</p>
+      <h1 class="section-title">Agents, bundles, and packs</h1>
+      <p class="shop-hero-sub">Every item is a monthly subscription by default and carries Personal Volume (PV), the number that counts toward your qualified month. Prefer to own an agent outright? Every product page offers a one-time purchase at its full value.</p>
+      <div class="filter-row" role="group" aria-label="Filter by tier">
+        <button class="filter-pill" type="button" data-filter="all" aria-pressed="true">All</button>
+        <button class="filter-pill" type="button" data-filter="domain" aria-pressed="false">Domain</button>
+        <button class="filter-pill" type="button" data-filter="support" aria-pressed="false">Support</button>
+        <button class="filter-pill" type="button" data-filter="bundles" aria-pressed="false">Bundles</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="tier-band glow-indigo" id="tierDomain">
+    <div class="wrap">
+      <div class="tier-head">
+        <h2 class="tier-title">Domain agents</h2>
+        <span class="tier-meta">$100.00 per month, 100 PV each</span>
+      </div>
+      <hr class="tier-rule">
+      <div class="product-grid" id="gridDomain"></div>
+    </div>
+  </section>
+
+  <section class="tier-band glow-violet" id="tierSupport">
+    <div class="wrap">
+      <div class="tier-head">
+        <h2 class="tier-title">Support agents</h2>
+        <span class="tier-meta">$50.00 per month, 50 PV each</span>
+      </div>
+      <hr class="tier-rule">
+      <div class="product-grid" id="gridSupport"></div>
+    </div>
+  </section>
+
+  <section class="tier-band glow-cyan" id="tierBundles">
+    <div class="wrap">
+      <div class="tier-head">
+        <h2 class="tier-title">Bundles and packs</h2>
+        <span class="tier-meta">Curated teams, one subscription</span>
+      </div>
+      <hr class="tier-rule">
+      <div class="product-grid" id="gridBundles"></div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ==================================================
+     VIEW 2: CHECKOUT
+     ================================================== -->
+<div class="view" id="viewCheckout">
+  <section class="checkout-band glow-cyan">
+    <div class="wrap">
+      <button class="back-to-shop" type="button" id="backToShop">
+        <svg viewBox="0 0 16 16" width="12" height="12" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 10 3 L 5 8 L 10 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to the catalog
+      </button>
+      <p class="kicker">Checkout</p>
+      <h1 class="section-title">Review and place your order</h1>
+
+      <div class="checkout-grid">
+
+        <div class="checkout-flow">
+
+          <!-- STEP 1: ACCOUNT -->
+          <div class="checkout-panel glass" id="accountPanel">
+            <span class="accent-bar" aria-hidden="true"></span>
+            <h2 class="checkout-panel-title"><span class="step-num">1</span>Account</h2>
+
+            <div id="accountChooser">
+              <p class="step-intro">Sign in to use your saved billing address, or continue as a guest.</p>
+              <div class="account-choices">
+                <button class="btn btn-ghost" type="button" id="chooseSignin">Sign in</button>
+                <button class="btn btn-ghost" type="button" id="chooseGuest">Continue as guest</button>
+              </div>
+            </div>
+
+            <div id="accountSignin" hidden>
+              <label class="field-label" for="acctUser">Username</label>
+              <input class="field" type="text" id="acctUser" autocomplete="off" spellcheck="false">
+              <label class="field-label" for="acctPass">Password</label>
+              <input class="field" type="password" id="acctPass" autocomplete="off">
+              <div class="account-choices">
+                <button class="btn btn-solid" type="button" id="signinContinue">Continue</button>
+                <button class="btn btn-ghost" type="button" id="signinBack">Back</button>
+              </div>
+              <p class="field-hint hint-loose">Demonstration sign in: any credentials continue.</p>
+            </div>
+
+            <div id="accountDone" hidden>
+              <p class="account-status" id="accountStatus"></p>
+              <button class="link-btn" type="button" id="accountSwitch">Switch</button>
+            </div>
+          </div>
+
+          <div id="checkoutRest" hidden>
+
+            <!-- STEP 2: BILLING ADDRESS -->
+            <div class="checkout-panel glass" id="addressPanel">
+              <span class="accent-bar" aria-hidden="true"></span>
+              <h2 class="checkout-panel-title"><span class="step-num">2</span>Billing address</h2>
+              <label class="field-label" for="billName">Full name</label>
+              <input class="field" type="text" id="billName" autocomplete="off" spellcheck="false">
+              <label class="field-label" for="billStreet">Street address</label>
+              <input class="field" type="text" id="billStreet" autocomplete="off" spellcheck="false">
+              <div class="field-row field-row-3">
+                <div>
+                  <label class="field-label" for="billCity">City</label>
+                  <input class="field" type="text" id="billCity" autocomplete="off" spellcheck="false">
+                </div>
+                <div>
+                  <label class="field-label" for="billState">State</label>
+                  <input class="field" type="text" id="billState" autocomplete="off" spellcheck="false">
+                </div>
+                <div>
+                  <label class="field-label" for="billZip">ZIP</label>
+                  <input class="field" type="text" id="billZip" inputmode="numeric" autocomplete="off" spellcheck="false">
+                </div>
+              </div>
+              <label class="field-label" for="memberCode">Member code</label>
+              <input class="field" type="text" id="memberCode" autocomplete="off" spellcheck="false">
+              <p class="field-hint">Optional. Credits this order to a referring member.</p>
+            </div>
+
+            <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
+            <div class="checkout-panel glass" id="deliveryPanel">
+              <span class="accent-bar" aria-hidden="true"></span>
+              <h2 class="checkout-panel-title"><span class="step-num">3</span>Activation</h2>
+              <p class="step-intro">Your agents are digital: nothing ships. Choose how fast they come online.</p>
+              <div class="delivery-options" role="radiogroup" aria-label="Activation method">
+                <label class="delivery-option">
+                  <input type="radio" name="delivery" value="priority">
+                  <span class="delivery-body">
+                    <span class="delivery-name">Priority activation</span>
+                    <span class="delivery-desc">Your agents come online immediately</span>
+                  </span>
+                  <span class="delivery-price">$25.00</span>
+                </label>
+                <label class="delivery-option">
+                  <input type="radio" name="delivery" value="standard" checked>
+                  <span class="delivery-body">
+                    <span class="delivery-name">Standard activation</span>
+                    <span class="delivery-desc">Access within 48 hours</span>
+                  </span>
+                  <span class="delivery-price delivery-free">Free</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- STEP 4: PAYMENT -->
+            <div class="checkout-panel glass" id="paymentPanel">
+              <span class="accent-bar" aria-hidden="true"></span>
+              <h2 class="checkout-panel-title"><span class="step-num">4</span>Payment</h2>
+              <p class="step-intro">Express options place the order in one step. Credit card opens the card form.</p>
+
+              <div class="pay-row" role="group" aria-label="Payment method">
+                <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="7" y="4" width="10" height="16" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+                    <line x1="10.5" y1="17.2" x2="13.5" y2="17.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    <path d="M 19 9 a 5 5 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                  Apple Pay
+                </button>
+                <button class="pay-btn pay-googlepay" type="button" data-pay="googlepay" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M 4 8.5 a 2.5 2.5 0 0 1 2.5 -2.5 h 11 a 2.5 2.5 0 0 1 2.5 2.5 v 8 a 2.5 2.5 0 0 1 -2.5 2.5 h -11 a 2.5 2.5 0 0 1 -2.5 -2.5 z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+                    <path d="M 14 10.5 h 6 v 4 h -6 a 2 2 0 0 1 0 -4 z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+                    <circle cx="15.6" cy="12.5" r="1" fill="currentColor"/>
+                  </svg>
+                  Google Pay
+                </button>
+                <button class="pay-btn pay-paypal" type="button" data-pay="paypal" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M 16 8 a 5 5 0 1 0 1.3 4.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    <path d="M 17.6 9.4 L 17.3 12.9 L 14 11.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="11.3" cy="12.6" r="1.1" fill="currentColor"/>
+                  </svg>
+                  PayPal
+                </button>
+                <button class="pay-btn pay-card" type="button" data-pay="card" aria-pressed="true">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="3" y="6" width="18" height="12.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+                    <line x1="3" y1="10.2" x2="21" y2="10.2" stroke="currentColor" stroke-width="1.7"/>
+                    <circle cx="7.4" cy="14.6" r="1.2" fill="currentColor"/>
+                  </svg>
+                  Credit card
+                </button>
+              </div>
+              <p class="pay-note">Demonstration marks, not real payment brands. Nothing is charged.</p>
+
+              <form id="checkoutForm" novalidate>
+                <div id="cardFields">
+                  <label class="field-label" for="cardName">Name on card</label>
+                  <input class="field" type="text" id="cardName" autocomplete="off" spellcheck="false">
+                  <label class="field-label" for="cardNumber">Card number</label>
+                  <input class="field" type="text" id="cardNumber" inputmode="numeric" autocomplete="off" spellcheck="false">
+                  <div class="field-row">
+                    <div>
+                      <label class="field-label" for="cardExpiry">Expiry</label>
+                      <input class="field" type="text" id="cardExpiry" inputmode="numeric" autocomplete="off" spellcheck="false">
+                    </div>
+                    <div>
+                      <label class="field-label" for="cardCode">Security code</label>
+                      <input class="field" type="text" id="cardCode" inputmode="numeric" autocomplete="off" spellcheck="false">
+                    </div>
+                  </div>
+                </div>
+                <p class="wallet-note" id="walletNote" hidden></p>
+                <button class="btn btn-solid btn-block" type="submit" id="placeOrderBtn">Place order</button>
+              </form>
+              <p class="login-note">Demonstration checkout: any values continue, including empty fields.</p>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ORDER SUMMARY (right column) -->
+        <div class="checkout-panel glass glass-cyan checkout-summary">
+          <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+          <h2 class="checkout-panel-title">Order summary</h2>
+          <div class="summary-lines" id="checkoutLines"></div>
+          <div class="summary-totals">
+            <div class="total-row" id="rowOneSub" hidden>
+              <span>Subtotal, one time <span class="row-hint">billed today</span></span>
+              <span class="total-num" id="sumOne">$0.00</span>
+            </div>
+            <div class="total-row" id="rowSubSub" hidden>
+              <span>Subtotal, monthly <span class="row-hint">renews monthly</span></span>
+              <span class="total-num" id="sumSub">$0.00</span>
+            </div>
+            <div class="total-row">
+              <span>Activation <span class="row-hint" id="sumDeliveryName">Standard</span></span>
+              <span class="total-num" id="sumDelivery">Free</span>
+            </div>
+            <div class="total-row">
+              <span id="taxLabel">Tax <span class="row-hint">5 percent</span></span>
+              <span class="total-num" id="sumTax">$0.00</span>
+            </div>
+            <div class="taxid-row">
+              <label class="field-label" for="taxId">Tax ID</label>
+              <input class="field field-compact" type="text" id="taxId" autocomplete="off" spellcheck="false" placeholder="Optional">
+              <p class="field-hint">A tax ID with any digit removes the 5 percent tax.</p>
+            </div>
+            <div class="total-row total-main">
+              <span>Order total</span>
+              <span class="total-num" id="checkoutTotal">$0.00</span>
+            </div>
+            <p class="summary-foot" id="summaryRenews" hidden>Monthly items renew each month until cancelled.</p>
+            <div class="total-row">
+              <span>Total PV</span>
+              <span class="total-pv-num" id="checkoutPv">0 PV</span>
+            </div>
+          </div>
+          <div class="pv-meter" id="checkoutMeter">
+            <div class="pv-meter-label">
+              <span>Qualified month</span>
+              <span class="pv-now" id="checkoutMeterNow">0 / 100 PV</span>
+            </div>
+            <div class="pv-track"><div class="pv-fill" id="checkoutMeterFill"></div></div>
+            <p class="pv-meter-note" id="checkoutMeterNote">A qualified month needs 100 PV.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ==================================================
+     VIEW 3: CONFIRMATION
+     ================================================== -->
+<div class="view" id="viewConfirm">
+  <section class="confirm-band glow-cyan">
+    <div class="wrap">
+      <div class="confirm-card glass glass-cyan">
+        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+        <div class="confirm-badge" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="32,4 56.2,18 56.2,46 32,60 7.8,46 7.8,18"
+                     fill="none" stroke="#818CF8" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M 22 33 L 29 40 L 43 25" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <h1 class="confirm-title">Order placed</h1>
+        <p class="order-number" id="orderNumber">ORV-2026-08-0000</p>
+
+        <div class="confirm-summary">
+          <div class="summary-lines" id="confirmLines"></div>
+          <div class="summary-totals" id="confirmTotals"></div>
+        </div>
+
+        <p class="confirm-note" id="confirmRenews" hidden></p>
+        <p class="confirm-note" id="confirmQualified"></p>
+        <p class="confirm-note">Demonstration checkout: no payment occurred and nothing will be charged.</p>
+        <p class="confirm-forward">Payments route through the Orvanna orchestration layer in a later phase.</p>
+        <a class="btn btn-solid" href="shop.html">Back to the catalog</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+</main>
+
+<!-- ============ CART DRAWER ============ -->
+<div class="drawer-overlay" id="drawerOverlay"></div>
+<aside class="cart-drawer" id="cartDrawer" aria-label="Cart" aria-hidden="true">
+  <div class="drawer-head">
+    <h2 class="drawer-title">Your cart</h2>
+    <button class="drawer-close" id="drawerClose" type="button" aria-label="Close cart">
+      <svg viewBox="0 0 14 14" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M 2 2 L 12 12 M 12 2 L 2 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot">
+    <div class="pv-meter" id="drawerMeter">
+      <div class="pv-meter-label">
+        <span>Qualified month</span>
+        <span class="pv-now" id="drawerMeterNow">0 / 100 PV</span>
+      </div>
+      <div class="pv-track"><div class="pv-fill" id="drawerMeterFill"></div></div>
+      <p class="pv-meter-note" id="drawerMeterNote">A qualified month needs 100 PV.</p>
+    </div>
+    <div class="total-row" id="drawerRowOne" hidden>
+      <span>One time <span class="row-hint">billed today</span></span>
+      <span class="total-num" id="drawerOne">$0.00</span>
+    </div>
+    <div class="total-row" id="drawerRowSub" hidden>
+      <span>Monthly</span>
+      <span class="total-num" id="drawerSub">$0.00</span>
+    </div>
+    <div class="total-row">
+      <span>Total PV</span>
+      <span class="total-pv-num" id="drawerPv">0 PV</span>
+    </div>
+    <button class="btn btn-solid btn-block" id="checkoutButton" type="button" disabled>Checkout</button>
+  </div>
+</aside>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4 class="footer-head">Shop</h4>
+        <span class="flink">Domain agents</span>
+        <span class="flink">Support agents</span>
+        <span class="flink">Pricing</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Learn</h4>
+        <span class="flink">About us</span>
+        <span class="flink">Our story</span>
+        <span class="flink">Frequently asked questions</span>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Support</h4>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Careers</h4>
+        <span class="flink">Open roles</span>
+        <span class="flink">How we work</span>
+        <span class="flink">Internships</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <div class="footer-contact">
+        <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+        <div class="socials" aria-hidden="true">
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 12 A 4.2 4.2 0 1 0 12 16.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 8 L 16.2 13.4 A 2.6 2.6 0 0 0 21.4 13.4 L 21.4 12 A 9.4 9.4 0 1 0 12 21.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 6 h 16 v 11 h -9 l -4 3 v -3 h -3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="9"  cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="13" cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="17" cy="11.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/catalog.js?v=4.1"></script>
+<script>
+/* ============================================================
+   Orvanna shop, round 4. The catalog lives in js/catalog.js
+   (single source of truth). This script renders the catalog,
+   runs the mode-aware cart (subscription default, one-time via
+   the product page), and the four-step checkout: account,
+   billing address, activation, payment. Everything local,
+   nothing on the network, no console noise.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var O = window.ORVANNA;
+  var fmtMoney = O.fmtMoney;
+  var fmtPv = O.fmtPv;
+
+  var cart = O.loadCart();
+  function persist() { O.saveCart(cart); }
+
+  /* ---------- catalog render ---------- */
+
+  function badgeFor(p) {
+    if (p.tier === 'domain')  return '<span class="tier-badge badge-domain">Domain</span>';
+    if (p.tier === 'support') return '<span class="tier-badge">Support</span>';
+    if (p.tier === 'bundle')  return '<span class="tier-badge badge-bundle">Bundle</span>';
+    return '<span class="tier-badge badge-bundle">Pack</span>';
+  }
+
+  function includesList(p) {
+    if (!p.includes) return '';
+    return '<div class="product-includes"><span class="includes-label">Includes:</span> ' +
+      p.includes.map(function (sku) { return O.get(sku).name; }).join(', ') +
+      '</div>';
+  }
+
+  function productCard(p) {
+    var cyan = (p.tier === 'domain' || p.tier === 'bundle' || p.tier === 'pack');
+    return '' +
+      '<article class="product glass' + (cyan ? ' glass-cyan' : '') + '" data-tier="' + p.tier + '">' +
+        '<span class="accent-bar' + (cyan ? ' bar-cyan' : '') + '" aria-hidden="true"></span>' +
+        '<div class="product-top">' +
+          '<a class="product-icon" href="product.html?sku=' + p.sku + '" aria-hidden="true" tabindex="-1">' + p.icon + '</a>' +
+          badgeFor(p) +
+        '</div>' +
+        '<h3 class="product-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a></h3>' +
+        '<p class="product-desc">' + p.blurb + '</p>' +
+        includesList(p) +
+        '<div class="product-price-row">' +
+          '<span class="product-price">' + fmtMoney(p.sub.price) + ' <span class="per">/ month</span></span>' +
+          '<span class="product-pv">' + fmtPv(p.sub.pv) + '</span>' +
+        '</div>' +
+        '<div class="product-once-hint">Own it outright: ' + fmtMoney(p.once.price) + '</div>' +
+        '<button class="btn-add" type="button" data-add="' + p.sku + '" aria-label="Add ' + p.name + ' monthly subscription to cart">' +
+          '<span class="add-label-default">Add to cart</span>' +
+          '<svg class="add-check" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
+            '<path d="M 2.5 8.5 L 6.5 12.5 L 13.5 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
+          '</svg>' +
+          '<span class="add-label-added" hidden>Added</span>' +
+        '</button>' +
+      '</article>';
+  }
+
+  function renderGrid(id, tiers) {
+    document.getElementById(id).innerHTML = O.PRODUCTS
+      .filter(function (p) { return tiers.indexOf(p.tier) >= 0; })
+      .map(productCard).join('');
+  }
+
+  renderGrid('gridDomain', ['domain']);
+  renderGrid('gridSupport', ['support']);
+  renderGrid('gridBundles', ['bundle', 'pack']);
+
+  /* ---------- tier filter ---------- */
+
+  var pills = document.querySelectorAll('.filter-pill');
+  var bands = {
+    domain: document.getElementById('tierDomain'),
+    support: document.getElementById('tierSupport'),
+    bundles: document.getElementById('tierBundles')
+  };
+
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      var f = pill.getAttribute('data-filter');
+      pills.forEach(function (x) { x.setAttribute('aria-pressed', String(x === pill)); });
+      Object.keys(bands).forEach(function (k) {
+        bands[k].style.display = (f === 'all' || f === k) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ---------- add to cart (catalog adds the subscription mode) ---------- */
+
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var cartCount = document.getElementById('cartCount');
+
+  function addToCart(sku, mode) {
+    var key = sku + '|' + (mode === 'one' ? 'one' : 'sub');
+    cart[key] = Math.min((cart[key] || 0) + 1, 99);
+    persist();
+    renderAll();
+  }
+
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest ? e.target.closest('[data-add]') : null;
+    if (!btn) return;
+    addToCart(btn.getAttribute('data-add'), 'sub');
+
+    /* the drawer opens on add so the PV meter's movement is SEEN */
+    openDrawer();
+
+    btn.classList.add('is-added');
+    btn.querySelector('.add-label-added').hidden = false;
+    if (!reduce.matches) {
+      cartCount.classList.add('bump');
+      window.setTimeout(function () { cartCount.classList.remove('bump'); }, 220);
+    }
+    window.setTimeout(function () {
+      btn.classList.remove('is-added');
+      btn.querySelector('.add-label-added').hidden = true;
+    }, 1100);
+  });
+
+  /* ---------- drawer open, close ---------- */
+
+  var drawer = document.getElementById('cartDrawer');
+  var overlay = document.getElementById('drawerOverlay');
+  var cartButton = document.getElementById('cartButton');
+
+  function openDrawer() {
+    drawer.classList.add('is-open');
+    overlay.classList.add('is-open');
+    drawer.setAttribute('aria-hidden', 'false');
+    document.getElementById('drawerClose').focus();
+  }
+
+  function closeDrawer() {
+    drawer.classList.remove('is-open');
+    overlay.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden', 'true');
+    cartButton.focus();
+  }
+
+  cartButton.addEventListener('click', openDrawer);
+  document.getElementById('drawerClose').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', closeDrawer);
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && drawer.classList.contains('is-open')) closeDrawer();
+  });
+
+  /* ---------- cart drawer render (mode-aware lines) ---------- */
+
+  var drawerBody = document.getElementById('drawerBody');
+  var checkoutButton = document.getElementById('checkoutButton');
+
+  var EMPTY_HEX = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + O.HEX +
+    '<circle cx="32" cy="32" r="4" fill="#22D3EE"/></svg>';
+
+  function modeBadge(mode) {
+    return mode === 'one'
+      ? '<span class="mode-badge mode-one">One-time</span>'
+      : '<span class="mode-badge mode-sub">Monthly</span>';
+  }
+
+  /* bundle and pack children: indented display rows, one per
+     included agent, each $0.00 (the parent's price carries the
+     whole bundle, and the parent's PV carries all the PV). The
+     parent quantity shows once per child as a multiplier. */
+  function childRows(p, q) {
+    if (!p.includes) return '';
+    return '<div class="cart-children">' + p.includes.map(function (childSku) {
+      var c = O.get(childSku);
+      return '<div class="cart-child">' +
+        '<a class="child-name" href="product.html?sku=' + c.sku + '">' + c.name + '</a>' +
+        (q > 1 ? '<span class="child-qty">&times; ' + q + '</span>' : '') +
+        '<span class="child-amt">$0.00</span>' +
+        '<span class="child-tag">Included</span>' +
+      '</div>';
+    }).join('') + '</div>';
+  }
+
+  function lineItem(key) {
+    var kp = O.keyParts(key);
+    var p = O.get(kp.sku), q = cart[key];
+    var price = O.priceOf(p, kp.mode) * q;
+    var pv = O.pvOf(p, kp.mode) * q;
+    var priceText = kp.mode === 'one'
+      ? fmtMoney(price) + ' billed once'
+      : fmtMoney(price) + ' / month';
+    return '' +
+      '<div class="cart-line' + (p.includes ? ' has-children' : '') + '" data-line="' + key + '">' +
+        '<div class="line-icon" aria-hidden="true">' + p.icon + '</div>' +
+        '<div class="line-info">' +
+          '<div class="line-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a></div>' +
+          '<div class="line-badges">' + modeBadge(kp.mode) + '</div>' +
+          '<div class="line-meta">' + priceText + ', <span class="line-pv">' + fmtPv(pv) + '</span></div>' +
+        '</div>' +
+        '<div class="line-controls">' +
+          '<div class="qty-group" aria-label="Quantity for ' + p.name + '">' +
+            '<button class="qty-btn" type="button" data-dec="' + key + '" aria-label="Decrease quantity"' + (q <= 1 ? ' disabled' : '') + '>&#8722;</button>' +
+            '<span class="qty-val" aria-live="polite">' + q + '</span>' +
+            '<button class="qty-btn" type="button" data-inc="' + key + '" aria-label="Increase quantity"' + (q >= 99 ? ' disabled' : '') + '>+</button>' +
+          '</div>' +
+          '<button class="line-remove" type="button" data-remove="' + key + '">Remove</button>' +
+        '</div>' +
+      '</div>' +
+      childRows(p, q);
+  }
+
+  function renderMeter(prefix, pv) {
+    var fill = document.getElementById(prefix + 'Fill');
+    var now = document.getElementById(prefix + 'Now');
+    var note = document.getElementById(prefix + 'Note');
+    var meter = document.getElementById(prefix);
+    if (!fill) return;
+    var pct = Math.min(100, pv);
+    fill.style.width = pct + '%';
+    now.textContent = pv.toLocaleString('en-US') + ' / 100 PV';
+    if (pv >= 100) {
+      meter.classList.add('is-qualified');
+      note.textContent = 'Qualified month reached at ' + fmtPv(pv) + '.';
+    } else {
+      meter.classList.remove('is-qualified');
+      note.textContent = pv === 0
+        ? 'A qualified month needs 100 PV.'
+        : (100 - pv) + ' PV more to a qualified month.';
+    }
+  }
+
+  function renderDrawer() {
+    var keys = Object.keys(cart);
+    if (keys.length === 0) {
+      drawerBody.innerHTML =
+        '<div class="cart-empty">' +
+          '<div class="empty-hex" aria-hidden="true">' + EMPTY_HEX + '</div>' +
+          'Your cart is empty.<br>Add an agent from the catalog to begin.' +
+        '</div>';
+    } else {
+      drawerBody.innerHTML = keys.map(lineItem).join('');
+    }
+    var t = O.cartTotals(cart);
+    var rowOne = document.getElementById('drawerRowOne');
+    var rowSub = document.getElementById('drawerRowSub');
+    rowOne.hidden = t.oneMoney === 0;
+    rowSub.hidden = t.subMoney === 0;
+    document.getElementById('drawerOne').textContent = fmtMoney(t.oneMoney);
+    document.getElementById('drawerSub').textContent = fmtMoney(t.subMoney) + ' / month';
+    document.getElementById('drawerPv').textContent = fmtPv(t.pv);
+    renderMeter('drawerMeter', t.pv);
+    checkoutButton.disabled = keys.length === 0;
+  }
+
+  drawerBody.addEventListener('click', function (e) {
+    if (!e.target.closest) return;
+    var inc = e.target.closest('[data-inc]');
+    var dec = e.target.closest('[data-dec]');
+    var rem = e.target.closest('[data-remove]');
+    if (inc) {
+      var kI = inc.getAttribute('data-inc');
+      cart[kI] = Math.min(cart[kI] + 1, 99);
+    } else if (dec) {
+      var kD = dec.getAttribute('data-dec');
+      if (cart[kD] > 1) cart[kD] -= 1;
+    } else if (rem) {
+      delete cart[rem.getAttribute('data-remove')];
+    } else {
+      return;
+    }
+    persist();
+    renderAll();
+  });
+
+  /* ---------- nav badge ---------- */
+
+  function renderBadge() {
+    cartCount.textContent = String(O.cartTotals(cart).count);
+  }
+
+  /* ---------- views ---------- */
+
+  var views = {
+    catalog: document.getElementById('viewCatalog'),
+    checkout: document.getElementById('viewCheckout'),
+    confirm: document.getElementById('viewConfirm')
+  };
+
+  function showView(name) {
+    Object.keys(views).forEach(function (k) {
+      views[k].classList.toggle('is-active', k === name);
+    });
+    window.scrollTo(0, 0);
+  }
+
+  /* ============================================================
+     CHECKOUT
+     ============================================================ */
+
+  /* ---------- step 1: account ---------- */
+
+  var SYNTHETIC_ADDRESS = {
+    name: 'Jordan Avery',
+    street: '4821 Meridian Loop',
+    city: 'Cedar Falls',
+    state: 'Iowa',
+    zip: '50613'
+  };
+
+  var accountMode = null;  /* null | 'member' | 'guest' */
+
+  var accountChooser = document.getElementById('accountChooser');
+  var accountSignin = document.getElementById('accountSignin');
+  var accountDone = document.getElementById('accountDone');
+  var accountStatus = document.getElementById('accountStatus');
+  var checkoutRest = document.getElementById('checkoutRest');
+
+  function setAccountStage(stage) {
+    accountChooser.hidden = stage !== 'chooser';
+    accountSignin.hidden = stage !== 'signin';
+    accountDone.hidden = stage !== 'done';
+    checkoutRest.hidden = stage !== 'done';
+  }
+
+  function setAddress(a) {
+    document.getElementById('billName').value = a.name;
+    document.getElementById('billStreet').value = a.street;
+    document.getElementById('billCity').value = a.city;
+    document.getElementById('billState').value = a.state;
+    document.getElementById('billZip').value = a.zip;
+  }
+
+  document.getElementById('chooseSignin').addEventListener('click', function () {
+    setAccountStage('signin');
+    document.getElementById('acctUser').focus();
+  });
+
+  document.getElementById('chooseGuest').addEventListener('click', function () {
+    accountMode = 'guest';
+    setAddress({ name: '', street: '', city: '', state: '', zip: '' });
+    accountStatus.textContent = 'Checking out as a guest. Enter your billing address below.';
+    setAccountStage('done');
+  });
+
+  document.getElementById('signinContinue').addEventListener('click', function () {
+    accountMode = 'member';
+    setAddress(SYNTHETIC_ADDRESS);
+    accountStatus.textContent = 'Signed in as ' + SYNTHETIC_ADDRESS.name + '. Your saved billing address is filled in below.';
+    setAccountStage('done');
+  });
+
+  document.getElementById('signinBack').addEventListener('click', function () {
+    setAccountStage('chooser');
+  });
+
+  document.getElementById('accountSwitch').addEventListener('click', function () {
+    accountMode = null;
+    setAccountStage('chooser');
+  });
+
+  /* ---------- step 3: activation (delivery method) ---------- */
+
+  var DELIVERY = {
+    priority: { label: 'Priority activation', price: 25 },
+    standard: { label: 'Standard activation', price: 0 }
+  };
+
+  function deliveryChoice() {
+    var checked = document.querySelector('input[name="delivery"]:checked');
+    return checked ? checked.value : 'standard';
+  }
+
+  document.querySelectorAll('input[name="delivery"]').forEach(function (radio) {
+    radio.addEventListener('change', renderSummary);
+  });
+
+  /* ---------- step 4: payment method ---------- */
+
+  var PAY_LABELS = {
+    applepay: 'Apple Pay',
+    googlepay: 'Google Pay',
+    paypal: 'PayPal',
+    card: 'Credit card'
+  };
+
+  var payMethod = 'card';
+  var payButtons = document.querySelectorAll('.pay-btn');
+  var cardFields = document.getElementById('cardFields');
+  var walletNote = document.getElementById('walletNote');
+  var placeOrderBtn = document.getElementById('placeOrderBtn');
+
+  function setPayMethod(method) {
+    payMethod = method;
+    payButtons.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-pay') === method));
+    });
+    var isCard = method === 'card';
+    cardFields.hidden = !isCard;
+    walletNote.hidden = isCard;
+    if (!isCard) {
+      walletNote.textContent = PAY_LABELS[method] + ' needs no card details here. Place the order to finish.';
+    }
+    placeOrderBtn.textContent = isCard ? 'Place order' : 'Place order with ' + PAY_LABELS[method];
+  }
+
+  payButtons.forEach(function (b) {
+    b.addEventListener('click', function () {
+      setPayMethod(b.getAttribute('data-pay'));
+    });
+  });
+
+  /* ---------- tax ---------- */
+
+  var taxIdInput = document.getElementById('taxId');
+  taxIdInput.addEventListener('input', renderSummary);
+
+  function taxExempt() {
+    return /\d/.test(taxIdInput.value);
+  }
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+
+  /* ---------- order summary (live) ---------- */
+
+  function summaryLineHtml(key) {
+    var kp = O.keyParts(key);
+    var p = O.get(kp.sku), q = cart[key];
+    var amt = O.priceOf(p, kp.mode) * q;
+    var html = '<div class="summary-line">' +
+      '<span class="sl-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a> <span class="sl-qty">&times; ' + q + '</span> ' + modeBadge(kp.mode) + '</span>' +
+      '<span class="sl-amt">' + fmtMoney(amt) + (kp.mode === 'sub' ? '<span class="sl-per"> / mo</span>' : '') + '</span>' +
+    '</div>';
+    /* bundle and pack children, $0.00 each: the parent line above
+       already carries the full price and the full PV */
+    if (p.includes) {
+      html += p.includes.map(function (childSku) {
+        var c = O.get(childSku);
+        return '<div class="summary-line summary-child">' +
+          '<span class="sl-name"><a class="product-name-link" href="product.html?sku=' + c.sku + '">' + c.name + '</a>' +
+          (q > 1 ? ' <span class="sl-qty">&times; ' + q + '</span>' : '') +
+          ' <span class="child-tag">Included</span></span>' +
+          '<span class="sl-amt">$0.00</span>' +
+        '</div>';
+      }).join('');
+    }
+    return html;
+  }
+
+  function orderMath() {
+    var t = O.cartTotals(cart);
+    var delivery = DELIVERY[deliveryChoice()].price;
+    var taxable = t.oneMoney + t.subMoney + delivery;
+    var tax = taxExempt() ? 0 : round2(taxable * 0.05);
+    var total = round2(taxable + tax);
+    return { t: t, delivery: delivery, tax: tax, total: total };
+  }
+
+  function renderSummary() {
+    document.getElementById('checkoutLines').innerHTML =
+      Object.keys(cart).map(summaryLineHtml).join('');
+
+    var m = orderMath();
+    document.getElementById('rowOneSub').hidden = m.t.oneMoney === 0;
+    document.getElementById('rowSubSub').hidden = m.t.subMoney === 0;
+    document.getElementById('sumOne').textContent = fmtMoney(m.t.oneMoney);
+    document.getElementById('sumSub').textContent = fmtMoney(m.t.subMoney);
+    document.getElementById('sumDeliveryName').textContent = DELIVERY[deliveryChoice()].label.replace(' activation', '');
+    document.getElementById('sumDelivery').textContent = m.delivery === 0 ? 'Free' : fmtMoney(m.delivery);
+    var taxLabel = document.getElementById('taxLabel');
+    if (taxExempt()) {
+      taxLabel.innerHTML = 'Tax exempt';
+      document.getElementById('sumTax').textContent = '$0.00';
+    } else {
+      taxLabel.innerHTML = 'Tax <span class="row-hint">5 percent</span>';
+      document.getElementById('sumTax').textContent = fmtMoney(m.tax);
+    }
+    document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
+    document.getElementById('summaryRenews').hidden = m.t.subMoney === 0;
+    document.getElementById('checkoutPv').textContent = fmtPv(m.t.pv);
+    renderMeter('checkoutMeter', m.t.pv);
+  }
+
+  checkoutButton.addEventListener('click', function () {
+    if (Object.keys(cart).length === 0) return;
+    closeDrawer();
+    accountMode = null;
+    setAccountStage('chooser');
+    setPayMethod('card');
+    renderSummary();
+    showView('checkout');
+  });
+
+  document.getElementById('backToShop').addEventListener('click', function () {
+    showView('catalog');
+  });
+
+  /* ---------- place order: always succeeds ---------- */
+
+  function orderNumber() {
+    var d = new Date();
+    var y = d.getFullYear();
+    var m = String(d.getMonth() + 1);
+    if (m.length < 2) m = '0' + m;
+    /* collision-safe without a backend: milliseconds since local
+       midnight in base36, uppercase, padded to a constant six
+       characters. Unique per millisecond, resets each day. */
+    var ms = ((d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds()) * 1000 + d.getMilliseconds();
+    var token = ms.toString(36).toUpperCase();
+    while (token.length < 6) token = '0' + token;
+    return 'ORV-' + y + '-' + m + '-' + token;
+  }
+
+  document.getElementById('checkoutForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (Object.keys(cart).length === 0) { showView('catalog'); return; }
+
+    var m = orderMath();
+    var choice = deliveryChoice();
+
+    document.getElementById('confirmLines').innerHTML =
+      Object.keys(cart).map(summaryLineHtml).join('');
+
+    var rows = '';
+    if (m.t.oneMoney > 0) {
+      rows += '<div class="total-row"><span>Subtotal, one time <span class="row-hint">billed today</span></span><span class="total-num">' + fmtMoney(m.t.oneMoney) + '</span></div>';
+    }
+    if (m.t.subMoney > 0) {
+      rows += '<div class="total-row"><span>Subtotal, monthly</span><span class="total-num">' + fmtMoney(m.t.subMoney) + '</span></div>';
+    }
+    rows += '<div class="total-row"><span>' + DELIVERY[choice].label + '</span><span class="total-num">' + (m.delivery === 0 ? 'Free' : fmtMoney(m.delivery)) + '</span></div>';
+    rows += taxExempt()
+      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">$0.00</span></div>'
+      : '<div class="total-row"><span>Tax <span class="row-hint">5 percent</span></span><span class="total-num">' + fmtMoney(m.tax) + '</span></div>';
+    rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + fmtMoney(m.total) + '</span></div>';
+    rows += '<div class="total-row"><span>Payment method</span><span class="total-num">' + PAY_LABELS[payMethod] + '</span></div>';
+    rows += '<div class="total-row"><span>Total PV</span><span class="total-pv-num">' + fmtPv(m.t.pv) + '</span></div>';
+    document.getElementById('confirmTotals').innerHTML = rows;
+
+    var renews = document.getElementById('confirmRenews');
+    if (m.t.subMoney > 0) {
+      renews.hidden = false;
+      renews.textContent = 'Your subscription items renew monthly at ' + fmtMoney(m.t.subMoney) + ' until cancelled.';
+    } else {
+      renews.hidden = true;
+    }
+
+    document.getElementById('orderNumber').textContent = orderNumber();
+    document.getElementById('confirmQualified').textContent = m.t.pv >= 100
+      ? 'This order carries ' + fmtPv(m.t.pv) + ': a qualified month.'
+      : 'This order carries ' + fmtPv(m.t.pv) + ' of the 100 PV qualified month.';
+
+    /* the order is placed: the cart clears */
+    cart = {};
+    persist();
+    renderAll();
+    showView('confirm');
+  });
+
+  /* ---------- render everything ---------- */
+
+  function renderAll() {
+    renderBadge();
+    renderDrawer();
+  }
+
+  renderAll();
+
+  /* product.html sends its View cart link here with #cart */
+  if (window.location.hash === '#cart') {
+    openDrawer();
+  }
+})();
+</script>
+
+</body>
+</html>
