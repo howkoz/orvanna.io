@@ -278,7 +278,13 @@ a.nav-link.is-active::after { transform: scaleX(1); }
 .nav-link.is-active { color: #FFFFFF; }
 
 .nav-link.is-soon {
-  color: #64748B;
+  /* #7C8AA0 (the .legal tone) instead of #64748B: the old value
+     computed 4.13 to 1 against the nav field, under the 4.5 to 1
+     floor. This one computes 5.61 to 1 on solid navy and 5.48 to 1
+     over the strongest glow wash, and still sits well below the
+     live links (Sign In 7.66, nav links 12.64), so the pill keeps
+     its muted "not yet" register. */
+  color: #7C8AA0;
   cursor: default;
 }
 
@@ -288,7 +294,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   padding: 1px 7px 2px;
   font-size: 0.6rem;
   letter-spacing: 0.18em;
-  border: 1px solid rgba(100, 116, 139, 0.55);
+  border: 1px solid rgba(124, 138, 160, 0.7);
   border-radius: 999px;
   vertical-align: 2px;
 }
@@ -873,6 +879,213 @@ a.nav-link.is-active::after { transform: scaleX(1); }
 }
 
 /* ============================================================
+   TEAM PAGE (team.html): the real roster. One human founder,
+   nine artificial intelligence (AI) agents, and the build story.
+   Marks are inline scalable vector graphics (SVG): the human is
+   the one circle, every agent is a hexagon.
+   ============================================================ */
+
+/* small chips that say what each member is */
+.role-tag {
+  display: inline-block;
+  padding: 3px 12px 4px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  border-radius: 999px;
+  border: 1px solid rgba(129, 140, 248, 0.45);
+  color: var(--indigo-l);
+}
+
+.role-tag.tag-human {
+  border-color: rgba(34, 211, 238, 0.55);
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+}
+
+/* wide leadership cards: founder first, manager second */
+.profile-card {
+  display: grid;
+  grid-template-columns: 156px minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+  padding: 42px 40px;
+}
+
+.profile-card + .profile-card { margin-top: 28px; }
+
+.profile-mark {
+  width: 132px;
+  height: 132px;
+  margin: 0 auto;
+  filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.3));
+}
+
+.profile-card.is-manager .profile-mark {
+  width: 112px;
+  height: 112px;
+  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.35));
+}
+
+.profile-name {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #F1F5F9;
+  margin: 10px 0 2px;
+}
+
+.profile-role {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--indigo-l);
+  margin-bottom: 14px;
+}
+
+.profile-bio { font-size: 0.95rem; color: var(--muted-d); max-width: 56em; }
+
+/* the eight specialists */
+.member-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+}
+
+.member {
+  padding: 30px 22px 26px;
+  text-align: center;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.member:hover {
+  transform: translateY(-6px);
+  border-color: rgba(129, 140, 248, 0.55);
+  box-shadow: 0 0 38px rgba(79, 70, 229, 0.26),
+              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+.member-mark {
+  width: 82px;
+  height: 82px;
+  margin: 0 auto 16px;
+  filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.35));
+}
+
+.member-name {
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: #F1F5F9;
+  margin-bottom: 2px;
+}
+
+.member-role {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--indigo-l);
+  margin-bottom: 10px;
+}
+
+.member-bio { font-size: 0.85rem; color: var(--muted-d); }
+
+.member .role-tag { margin-top: 14px; }
+
+/* build story: the two-gate figure and the phase rail */
+.gate-figure {
+  max-width: 720px;
+  margin: 0 auto 60px;
+  filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.12));
+}
+
+.gate-caption {
+  text-align: center;
+  font-size: 0.82rem;
+  color: var(--muted-d);
+  letter-spacing: 0.04em;
+  margin: -34px auto 56px;
+  max-width: 44em;
+}
+
+.phase-rail {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 26px;
+}
+
+.phase { padding: 28px 24px 24px; }
+
+.phase-num {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  margin-bottom: 12px;
+}
+
+.phase-num::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  box-shadow: 0 0 10px rgba(34, 211, 238, 0.65);
+  flex-shrink: 0;
+}
+
+.phase-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #F1F5F9;
+  margin-bottom: 8px;
+}
+
+.phase-body { font-size: 0.85rem; color: var(--muted-d); }
+
+/* index teaser panel: ten small marks and one door to team.html */
+.team-teaser {
+  text-align: center;
+  padding: 44px 36px 40px;
+}
+
+.teaser-marks {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin: 8px 0 26px;
+}
+
+.teaser-marks svg {
+  width: 46px;
+  height: 46px;
+  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.35));
+}
+
+.teaser-note {
+  font-size: 0.9rem;
+  color: var(--muted-d);
+  max-width: 40em;
+  margin: 0 auto 28px;
+}
+
+/* footer links that actually go somewhere */
+a.flink { text-decoration: none; cursor: pointer; }
+a.flink:hover { color: var(--cyan); }
+
+/* ============================================================
    REDUCED MOTION: static everything, content fully visible
    ============================================================ */
 
@@ -891,6 +1104,8 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   .origin-grid { grid-template-columns: 1fr; gap: 44px; }
   .origin-art { order: -1; max-width: 240px; margin: 0; }
   .leaders { grid-template-columns: repeat(2, 1fr); }
+  .member-grid { grid-template-columns: repeat(2, 1fr); }
+  .phase-rail { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 760px) {
@@ -913,4 +1128,9 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   .leaders { grid-template-columns: 1fr; }
   .footer-contact { justify-content: center; }
   .login-card { padding: 36px 24px 30px; }
+  .member-grid { grid-template-columns: 1fr; }
+  .phase-rail { grid-template-columns: 1fr; }
+  .profile-card { grid-template-columns: 1fr; gap: 24px; text-align: center; padding: 34px 24px 30px; }
+  .profile-bio { margin: 0 auto; }
+  .gate-caption { margin-top: -14px; }
 }

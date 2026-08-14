@@ -1,10 +1,10 @@
-/* ============================================================
+﻿/* ============================================================
    Orvanna catalog: the single source of truth for every item
    the shop sells. Loaded by shop.html and product.html; nothing
    else defines a price, a Personal Volume (PV) figure, or an
    icon. Round 4 (Phase 4C.2).
 
-   Billing modes, per Howard's rule:
+   Billing modes, per the house pricing rule:
    - Subscription is the DEFAULT mode on every item.
    - The one-time alternative uses the 10x rule: the one-time
      price shows what the product is WORTH without subscription.
