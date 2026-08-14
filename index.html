@@ -252,12 +252,19 @@
     <div class="team-teaser glass glass-cyan reveal">
       <span class="accent-bar bar-cyan" aria-hidden="true"></span>
       <div class="teaser-marks" aria-hidden="true">
+        <!-- The founder's mark carries his photograph here as it does on the
+             team page: everyone else is a drawn hexagon, the one human is a
+             face. Ring, rim, and the single cyan node are unchanged. -->
         <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="teaserFounderClip"><circle cx="48" cy="48" r="34"/></clipPath>
+          </defs>
           <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="1.4" opacity="0.35" stroke-dasharray="2 6"/>
           <circle cx="48" cy="48" r="34" fill="#4F46E5"/>
+          <image href="assets/hk.jpg" x="14" y="14" width="68" height="68"
+                 clip-path="url(#teaserFounderClip)" preserveAspectRatio="xMidYMid slice"/>
           <circle cx="48" cy="48" r="34" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.7"/>
           <circle cx="79" cy="26" r="5.5" fill="#22D3EE"/>
-          <text x="48" y="57" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="26" font-weight="600" fill="#FFFFFF" letter-spacing="2">HK</text>
         </svg>
         <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
           <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
