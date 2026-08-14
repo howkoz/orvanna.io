@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Team</title>
-<meta name="description" content="The real Orvanna team: one human founder and nine artificial intelligence agents who built this property. Demonstration company, all data synthetic.">
+<meta name="description" content="The real Orvanna team: one human founder and ten artificial intelligence agents who plan, build, verify, and support this property. Demonstration company, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="css/corporate.css?v=5.2">
 <script>document.documentElement.classList.add('js');</script>
@@ -35,8 +35,8 @@
   <div class="wrap">
     <div class="reveal">
       <p class="kicker">The team</p>
-      <h1 class="section-title">One human. Nine agents.</h1>
-      <p class="lead">Orvanna sells artificial intelligence (AI) agents, and its own staff are AI agents. One human owns the company and makes every user-visible decision; nine named agents planned, built, verified, and styled everything you see here. This page introduces each of them, and the rule that kept them honest.</p>
+      <h1 class="section-title">One human. Ten agents.</h1>
+      <p class="lead">Orvanna sells artificial intelligence (AI) agents, and its own staff are AI agents. One human owns the company and makes every user-visible decision; ten named agents do the rest. Eight of them planned, built, verified, and styled everything you see here, one manages those eight, and the newest one answers visitors. This page introduces each of them, and the rule that kept them honest.</p>
     </div>
   </div>
 </section>
@@ -52,13 +52,21 @@
     <!-- Howard: the one human, the one circle among hexagons -->
     <article class="profile-card glass glass-cyan reveal">
       <span class="accent-bar bar-cyan" aria-hidden="true"></span>
+      <!-- The founder's mark carries his photograph, which is the point of the
+           page: everyone else is a drawn hexagon, the one human is a face. The
+           dashed orbit ring, the indigo rim, and the single cyan node are kept
+           exactly as drawn, so the design language survives the change. -->
       <div class="profile-mark" aria-hidden="true">
         <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <clipPath id="founderPortraitClip"><circle cx="48" cy="48" r="34"/></clipPath>
+          </defs>
           <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="1.4" opacity="0.35" stroke-dasharray="2 6"/>
           <circle cx="48" cy="48" r="34" fill="#4F46E5"/>
+          <image href="assets/hk.jpg" x="14" y="14" width="68" height="68"
+                 clip-path="url(#founderPortraitClip)" preserveAspectRatio="xMidYMid slice"/>
           <circle cx="48" cy="48" r="34" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.7"/>
           <circle cx="79" cy="26" r="5.5" fill="#22D3EE"/>
-          <text x="48" y="57" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="26" font-weight="600" fill="#FFFFFF" letter-spacing="2">HK</text>
         </svg>
       </div>
       <div>
@@ -94,7 +102,7 @@
         <span class="role-tag">AI agent, manager</span>
         <h3 class="profile-name">Fable</h3>
         <p class="profile-role">Chief Information Officer (CIO)</p>
-        <p class="profile-bio">Fable manages the eight specialists below: writes their charters, sequences the build phases, and routes every result through both verification gates. It owns the deployment pipeline that put this site on orvanna.io, makes the calls Howard has delegated, and brings him the ones he has not. Above everything, it enforces the one rule the whole build ran on: the builder never grades its own work.</p>
+        <p class="profile-bio">Fable manages the specialists below: writes their charters, sequences the build phases, and routes every result through both verification gates. It owns the deployment pipeline that put this site on orvanna.io, makes the calls Howard has delegated, and brings him the ones he has not. Above everything, it enforces the one rule the whole build ran on: the builder never grades its own work.</p>
       </div>
     </article>
   </div>
@@ -105,8 +113,8 @@
   <div class="wrap">
     <div class="reveal">
       <p class="kicker kicker-light">The specialists</p>
-      <h2 class="section-title">Eight agents, eight jobs</h2>
-      <p class="lead">Each agent owns exactly one job and is named for it. The marks below are their working identities, not mascots.</p>
+      <h2 class="section-title">Nine agents, nine jobs</h2>
+      <p class="lead">Each agent owns exactly one job and is named for it. The first eight built this property; the ninth answers questions about it. The marks below are their working identities, not mascots.</p>
     </div>
     <div class="member-grid stagger reveal">
 
@@ -257,6 +265,25 @@
         <h3 class="member-name">mlm-qa</h3>
         <p class="member-role">Head of Quality Assurance</p>
         <p class="member-bio">The second independent gate: runs the Quality Assurance (QA) acceptance checklist, promises first, evidence second. No phase closes until every claim traces to a working artifact.</p>
+        <span class="role-tag">AI agent</span>
+      </article>
+
+      <!-- orvanna-concierge: a speech bubble whose last dot is the lit node,
+           the one agent a visitor actually talks to -->
+      <article class="member glass">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <div class="member-mark" aria-hidden="true">
+          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
+            <path d="M32 33 h32 a5 5 0 0 1 5 5 v17 a5 5 0 0 1 -5 5 h-17 l-9 8 v-8 h-6 a5 5 0 0 1 -5 -5 v-17 a5 5 0 0 1 5 -5 z" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linejoin="round"/>
+            <circle cx="39" cy="46.5" r="2.7" fill="#818CF8"/>
+            <circle cx="48" cy="46.5" r="2.7" fill="#818CF8"/>
+            <circle cx="57" cy="46.5" r="4" fill="#22D3EE"/>
+          </svg>
+        </div>
+        <h3 class="member-name">orvanna-concierge</h3>
+        <p class="member-role">Head of Visitor Support</p>
+        <p class="member-bio">Answers visitors in the chat window that opens from Support in the navigation above, using the company's own name: it greets you as Orvanna. It fields pricing questions, explains how the site and the member portal work, helps when a page misbehaves, and collects demonstration requests, which is all it promises, because the founder is the only human here.</p>
         <span class="role-tag">AI agent</span>
       </article>
 
