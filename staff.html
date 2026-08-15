@@ -1341,6 +1341,12 @@
     resumeSave({ order_number: staffLive.orderNumber, saw_challenge: true });
     focusBeforeChallenge = document.activeElement;
     byId('ccOrderNum').textContent = staffLive.orderNumber || 'not yet issued';
+    /* End of <body> before showing, so this bar paints ON TOP of the
+       widget's full-screen bank frame rather than behind it. Same
+       reasoning as the shop; the note lives in shop.css. On this page
+       the stakes are higher: the line the agent must not miss is the
+       one telling them never to ask the caller for a code. */
+    try { document.body.appendChild(challengeChrome); } catch (e) { /* best effort */ }
     challengeChrome.hidden = false;
     setOrderInert(true);
     showAwaitAuth();

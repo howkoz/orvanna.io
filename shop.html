@@ -1389,6 +1389,15 @@
     resumeSave({ order_number: liveState.orderNumber, saw_challenge: true });
     focusBeforeChallenge = document.activeElement;
     ccOrderNum.textContent = liveState.orderNumber || 'not yet issued';
+    /* Move this bar to the very end of <body> before showing it.
+       The widget appends its full-screen bank frame to the body when
+       the challenge starts, so by then that frame is AFTER us in
+       document order. Both elements sit at the maximum z-index a
+       browser will honour (see the note in shop.css), and at equal
+       z-index the later element wins. Without this line the bar is
+       painted behind the bank frame and the shopper never sees the
+       order number, the test-mode notice, or the way out. */
+    try { document.body.appendChild(challengeChrome); } catch (e) { /* best effort */ }
     challengeChrome.hidden = false;
     setPaymentInert(true);
     liveStatus('Your bank is asking you to approve this payment. Finish in the window from your bank. Nothing has been charged yet.');

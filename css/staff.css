@@ -982,7 +982,12 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 2147483000;
+  /* Matches the maximum a browser will honour, because the payment
+     widget's full-screen bank frame asks for 422222133323 and gets
+     clamped to 2147483647. Ties are broken by document order, so
+     openChallengeChrome() also moves this element to the end of
+     <body>. See the fuller note in shop.css. */
+  z-index: 2147483647;
   background: #0A1226;
   border-bottom: 1px solid #FACC15;
   box-shadow: 0 6px 26px rgba(2, 6, 20, 0.7);

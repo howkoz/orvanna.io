@@ -1509,7 +1509,19 @@ body.payment-in-flight .pay-btn {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 2147483000;          /* above the widget's full screen frame */
+  /* The payment widget paints its full-screen bank frame with an
+     inline z-index of 422222133323. That looks unbeatable but is not:
+     browsers clamp z-index to a signed 32-bit integer, so it lands at
+     2147483647, the maximum. We therefore match the maximum rather
+     than try to exceed it, and openChallengeChrome() moves this
+     element to the end of <body> so that, at equal z-index, the later
+     element in document order paints on top. Both halves are
+     required. With the old 2147483000 this bar rendered BEHIND the
+     bank frame, which meant the order number, the test-mode notice
+     and the cancel button were all invisible exactly when they
+     mattered. Found 2026-08-15, before the challenge had ever fired
+     in front of a shopper. */
+  z-index: 2147483647;
   background: #0A1226;
   border-bottom: 1px solid var(--cyan);
   box-shadow: 0 6px 26px rgba(2, 6, 20, 0.7);
