@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Member Portal, Demo Mode</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/portal.css?v=a5e470859ae9">
+<link rel="stylesheet" href="css/portal.css?v=ea38c0d0932a">
 </head>
 <body>
 
@@ -18,6 +18,7 @@
     <nav class="site-links" aria-label="Orvanna sites">
       <a class="site-link" href="../index.html">Orvanna Home</a>
       <a class="site-link" href="../shop.html">Shop</a>
+      <a class="site-link" href="../library.html" title="The Conductor Library: what every agent does, the tiers, the packs, and how to choose">Library</a>
       <a class="site-link" href="../staff.html" title="Staff call console (demonstration; it needs the staff sign-in)">Staff</a>
       <button class="site-link site-support" type="button" data-orvanna-support>Support</button>
       <a class="site-link" id="signOutLink" href="../index.html" title="End this portal session and return to the Orvanna home page">Sign out</a>
@@ -104,7 +105,7 @@
   document.getElementById('signOutLink').addEventListener('click', clearSession);
 
   var portal = document.createElement('script');
-  portal.src = 'js/app.js?v=a5e470859ae9';
+  portal.src = 'js/app.js?v=ea38c0d0932a';
   document.body.appendChild(portal);
 })();
 </script>

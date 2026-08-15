@@ -1,0 +1,2428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Conductor Library</title>
+<meta name="description" content="The Orvanna Conductor Library: the full product catalog, the four tiers, the packs and the bundle, and an honest guide to choosing. Demonstration company, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+<!-- Theme boot. Runs before paint so a saved choice never flashes the other
+     theme. With nothing saved the page follows the reader's system setting. -->
+<script>
+(function () {
+  try {
+    var saved = window.localStorage.getItem('orvannaLibraryTheme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch (err) {
+    /* storage blocked: the page simply follows the system setting */
+  }
+  document.documentElement.classList.add('js');
+})();
+</script>
+
+<style>
+/* ============================================================
+   ORVANNA CONDUCTOR LIBRARY (library.html)
+
+   Self-contained on purpose: one file, inline style, inline
+   script, no framework, no build step, no third-party request.
+   The values below are the real design system tokens, taken from
+   css/corporate.css and css/shop.css, not reinvented.
+
+   THEMING, per the system rule "a colour is never defined only
+   inside a media query or a data-theme block":
+     1. Bare :root carries the COMPLETE light palette.
+     2. A guarded dark media query RESTATES only what changes, so
+        an explicit light choice still wins over a dark system.
+     3. :root[data-theme="dark"] restates the same tokens again,
+        so the in-page toggle wins in both directions.
+
+   One deliberate exception, stated plainly: the navigation bar
+   and the footer keep the brand's dark field in BOTH themes.
+   Those tokens are declared once on bare :root and never
+   restated. The reason is the logo. assets/logo-header-dark.svg
+   draws its wordmark in white, the brand rules forbid recolouring
+   a logo variant by hand, and no light variant is deployed in
+   www/assets. A permanently dark chrome around a theme-aware
+   reading surface is the honest way to hold that rule.
+   ============================================================ */
+
+:root {
+  /* ---------- reading surface: the COMPLETE light palette ---------- */
+  --bg:            #FFFFFF;
+  --bg-2:          #F1F4FA;   /* raised band */
+  --panel:         #FFFFFF;
+  --panel-2:       #F8FAFC;
+  --heading:       #0F172A;
+  --text:          #263244;
+  --muted:         #5B6472;   /* 6.0 to 1 on white */
+  --quiet:         #6B7280;
+  --line:          rgba(15, 23, 42, 0.13);
+  --line-lit:      rgba(79, 70, 229, 0.32);
+  --accent:        #0E7490;   /* the single lit accent, light form. 5.36 to 1 on white */
+  --accent-ink:    #FFFFFF;   /* label on an accent field */
+  --accent-soft:   rgba(14, 116, 144, 0.08);
+  --indigo-t:      #4338CA;   /* indigo as text on light. 7.4 to 1 on white */
+  --violet-t:      #6D28D9;
+  --icon:          #4F46E5;   /* structural stroke in product artwork */
+  --icon-lit:      #0E7490;   /* the one lit node */
+  --panel-shadow:  0 4px 14px rgba(15, 23, 42, 0.10);
+  --panel-lift:    0 10px 26px rgba(15, 23, 42, 0.14);
+  --rule:          linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(79, 70, 229, 0.28), transparent);
+
+  /* ---------- chrome: dark in both themes, declared once ---------- */
+  --chrome-bg:     rgba(6, 11, 24, 0.92);
+  --chrome-solid:  #060B18;
+  --chrome-foot:   #050914;
+  --chrome-head:   #F1F5F9;
+  --chrome-text:   #C7D0DE;
+  --chrome-muted:  #94A3B8;
+  --chrome-quiet:  #7C8AA0;   /* 5.61 to 1 on navy */
+  --chrome-line:   rgba(129, 140, 248, 0.18);
+  --chrome-accent: #22D3EE;
+
+  /* ---------- geometry ---------- */
+  --maxw:          1100px;
+}
+
+/* Dark, restated for a dark system setting. The guard means an
+   explicit light choice on the toggle still wins here. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:           #060B18;
+    --bg-2:         #0A1226;
+    --panel:        #101A31;
+    --panel-2:      #0C1424;
+    --heading:      #F1F5F9;
+    --text:         #C7D0DE;
+    --muted:        #94A3B8;
+    --quiet:        #7C8AA0;
+    --line:         rgba(129, 140, 248, 0.18);
+    --line-lit:     rgba(34, 211, 238, 0.38);
+    --accent:       #22D3EE;
+    --accent-ink:   #05121C;
+    --accent-soft:  rgba(34, 211, 238, 0.08);
+    --indigo-t:     #A5B4FC;
+    --violet-t:     #A78BFA;
+    --icon:         #818CF8;
+    --icon-lit:     #22D3EE;
+    --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --panel-lift:   0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    --rule:         linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
+  }
+}
+
+/* Dark, chosen explicitly on the toggle. Same tokens again. */
+:root[data-theme="dark"] {
+  --bg:           #060B18;
+  --bg-2:         #0A1226;
+  --panel:        #101A31;
+  --panel-2:      #0C1424;
+  --heading:      #F1F5F9;
+  --text:         #C7D0DE;
+  --muted:        #94A3B8;
+  --quiet:        #7C8AA0;
+  --line:         rgba(129, 140, 248, 0.18);
+  --line-lit:     rgba(34, 211, 238, 0.38);
+  --accent:       #22D3EE;
+  --accent-ink:   #05121C;
+  --accent-soft:  rgba(34, 211, 238, 0.08);
+  --indigo-t:     #A5B4FC;
+  --violet-t:     #A78BFA;
+  --icon:         #818CF8;
+  --icon-lit:     #22D3EE;
+  --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-lift:   0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --rule:         linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
+}
+
+/* ---------- reset and page field ---------- */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; overflow-x: clip; }
+
+body {
+  font-family: "Segoe UI", "Segoe UI Variable Text", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  background: var(--bg);
+  overflow-x: clip;   /* the page itself never scrolls sideways */
+}
+
+img, svg { max-width: 100%; display: block; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.wrap {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+/* Available to a screen reader, absent from the page. Used on the
+   table captions, which name each table for anyone who cannot see
+   the heading it sits under. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 100;
+  padding: 12px 20px;
+  background: var(--chrome-accent);
+  color: #05121C;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.skip-link:focus { left: 0; }
+
+/* ============================================================
+   NAVIGATION: the brand chrome, dark in both themes
+   ============================================================ */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--chrome-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--chrome-line);
+}
+
+.nav-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.nav-brand { display: block; flex-shrink: 0; }
+.nav-logo  { height: 30px; width: auto; }
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.nav-link {
+  position: relative;
+  font-size: 0.84rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  color: var(--chrome-text);
+  padding-bottom: 3px;
+  transition: color 0.15s ease;
+}
+
+a.nav-link:hover { color: #FFFFFF; }
+
+a.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--chrome-accent), #818CF8);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s ease;
+}
+a.nav-link:hover::after { transform: scaleX(1); }
+
+.nav-link.is-active {
+  color: #FFFFFF;
+}
+.nav-link.is-active::after { transform: scaleX(1); }
+
+.nav-link.is-soon { color: var(--chrome-quiet); cursor: default; }
+
+.soon-pill {
+  display: inline-block;
+  margin-left: 7px;
+  padding: 1px 7px 2px;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  border: 1px solid rgba(124, 138, 160, 0.7);
+  border-radius: 999px;
+  vertical-align: 2px;
+}
+
+.nav-signin {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+  color: var(--chrome-muted);
+  border-left: 1px solid var(--chrome-line);
+  padding-left: 22px;
+  transition: color 0.15s ease, text-shadow 0.15s ease;
+}
+.nav-signin:hover {
+  color: var(--chrome-accent);
+  text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+}
+
+/* ---------- theme control ---------- */
+
+.theme-set {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px;
+  border: 1px solid var(--chrome-line);
+  border-radius: 999px;
+}
+
+.theme-legend {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--chrome-quiet);
+  padding: 0 8px 0 10px;
+}
+
+.theme-btn {
+  font: inherit;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--chrome-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  padding: 5px 11px 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+.theme-btn:hover { color: #FFFFFF; }
+.theme-btn[aria-pressed="true"] {
+  color: #05121C;
+  background: var(--chrome-accent);
+}
+
+/* ============================================================
+   TYPE, per the design system scale
+   ============================================================ */
+
+.kicker {
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.34em;
+  color: var(--accent);
+  margin-bottom: 18px;
+}
+
+.page-title {
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  line-height: 1.22;
+  color: var(--heading);
+  margin-bottom: 22px;
+}
+
+.section-title {
+  font-size: clamp(1.45rem, 3vw, 2.05rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  line-height: 1.25;
+  color: var(--heading);
+  margin-bottom: 18px;
+}
+
+.sub-title {
+  font-size: 1.02rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--heading);
+  margin-bottom: 10px;
+}
+
+.lead {
+  max-width: 46em;
+  color: var(--muted);
+  margin-bottom: 26px;
+}
+
+.body-copy { max-width: 48em; }
+.body-copy + .body-copy { margin-top: 16px; }
+
+.rule {
+  height: 1px;
+  border: 0;
+  margin: 16px 0 36px;
+  background: var(--rule);
+}
+
+/* ============================================================
+   BANDS
+   ============================================================ */
+
+.band { padding: 84px 0; }
+.band-alt { background: var(--bg-2); }
+.band + .band { border-top: 1px solid var(--line); }
+
+section { scroll-margin-top: 150px; }
+
+/* ---------- hero ---------- */
+
+.hero { padding: 76px 0 56px; border-bottom: 1px solid var(--line); }
+
+.hero-sub {
+  max-width: 44em;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+/* ---------- contents rail ---------- */
+
+.rail {
+  position: sticky;
+  top: 60px;
+  z-index: 40;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+
+.rail-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 10px 28px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;         /* wide content scrolls inside its own container */
+  scrollbar-width: thin;
+}
+
+.rail-link {
+  flex: 0 0 auto;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--muted);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 6px 14px 7px;
+  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+.rail-link:hover {
+  color: var(--accent);
+  border-color: var(--line-lit);
+}
+.rail-link.is-current {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ============================================================
+   PANELS
+   ============================================================ */
+
+.panel {
+  position: relative;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--panel-shadow);
+  padding: 30px 28px 26px;
+}
+
+.accent-bar {
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--icon), var(--accent));
+  opacity: 0.9;
+}
+
+.panel-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.panel-row-2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px;
+}
+
+/* ============================================================
+   BADGES
+   ============================================================ */
+
+.badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding: 4px 11px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--line-lit);
+  color: var(--indigo-t);
+  white-space: nowrap;
+}
+
+.badge-domain { border-color: var(--accent); color: var(--accent); }
+.badge-group  { border-color: var(--violet-t); color: var(--violet-t); }
+
+.tag-soon {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  padding: 4px 11px 5px;
+  border-radius: 999px;
+  border: 1px solid var(--quiet);
+  color: var(--quiet);
+  white-space: nowrap;
+}
+
+/* ============================================================
+   CATALOG: filter pills and entries
+   ============================================================ */
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 4px 0 30px;
+}
+
+.filter-pill {
+  font: inherit;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 8px 20px;
+  cursor: pointer;
+  transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
+}
+.filter-pill:hover { border-color: var(--line-lit); color: var(--accent); }
+.filter-pill[aria-pressed="true"] {
+  color: var(--accent-ink);
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.entry-list { display: flex; flex-direction: column; gap: 26px; }
+
+.entry { padding: 28px 28px 26px; }
+.entry[hidden] { display: none; }
+
+.entry-head {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) minmax(0, 280px);
+  gap: 20px;
+  align-items: start;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ico {
+  width: 62px;
+  height: 62px;
+  color: var(--icon);
+}
+
+.entry-name {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--heading);
+  margin: 8px 0 6px;
+}
+
+.entry-blurb { color: var(--muted); font-size: 0.94rem; }
+
+/* ---------- price block ---------- */
+
+.price {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.price-label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--indigo-t);
+}
+
+.price-amt {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--heading);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.price-amt .per {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.price-pv {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- entry body ---------- */
+
+.entry-body {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px 26px;
+  padding-top: 22px;
+}
+
+.facet-wide { grid-column: 1 / -1; }
+
+.facet h4 {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--indigo-t);
+  margin-bottom: 8px;
+}
+
+.facet p { font-size: 0.92rem; color: var(--text); }
+
+.handles {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 26px;
+}
+
+.handles li {
+  position: relative;
+  padding-left: 20px;
+  font-size: 0.92rem;
+  color: var(--text);
+}
+
+.handles li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.72em;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.inside-list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inside-list a {
+  display: inline-block;
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 14px 6px;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.inside-list a:hover { color: var(--accent); border-color: var(--line-lit); }
+
+.entry-foot {
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: 0.84rem;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 22px;
+  align-items: baseline;
+}
+
+.entry-foot a {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+
+.filter-empty {
+  padding: 30px 0;
+  color: var(--muted);
+  font-size: 0.94rem;
+}
+
+/* ============================================================
+   TABLES: wide content scrolls inside its own container
+   ============================================================ */
+
+.table-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  box-shadow: var(--panel-shadow);
+}
+
+table {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+}
+
+thead th {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--indigo-t);
+  white-space: nowrap;
+}
+
+tbody tr:last-child th,
+tbody tr:last-child td { border-bottom: 0; }
+
+td.num, th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+tbody th {
+  font-weight: 700;
+  color: var(--heading);
+  white-space: nowrap;
+}
+
+.table-note { font-size: 0.82rem; color: var(--muted); margin-top: 12px; }
+
+/* ============================================================
+   HOW TO CHOOSE
+   ============================================================ */
+
+.situations { display: flex; flex-direction: column; gap: 18px; }
+
+.situation {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 26px;
+  padding: 24px 26px;
+}
+
+.situation-q {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--heading);
+  line-height: 1.5;
+}
+
+.situation-a { font-size: 0.94rem; color: var(--text); }
+.situation-a strong { color: var(--accent); font-weight: 700; }
+.situation-a p + p { margin-top: 10px; }
+
+/* ============================================================
+   COMING SOON PLACEHOLDERS
+   ============================================================ */
+
+.soon-card {
+  padding: 26px 26px 24px;
+  border-style: dashed;
+  background: var(--panel-2);
+}
+
+.soon-card .sub-title { margin-bottom: 6px; }
+.soon-card p { font-size: 0.92rem; color: var(--muted); margin-top: 10px; }
+.soon-card .tag-soon { margin-bottom: 12px; }
+
+/* ============================================================
+   CALLOUT
+   ============================================================ */
+
+.callout {
+  border-left: 3px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+  background: var(--accent-soft);
+  padding: 18px 22px;
+  margin: 26px 0;
+  max-width: 52em;
+}
+
+.callout .sub-title { font-size: 0.82rem; letter-spacing: 0.16em; margin-bottom: 6px; }
+.callout p { font-size: 0.92rem; }
+.callout p + p { margin-top: 10px; }
+
+/* ============================================================
+   FOOTER: brand chrome, dark in both themes
+   ============================================================ */
+
+.footer {
+  background: var(--chrome-foot);
+  border-top: 1px solid var(--chrome-line);
+  padding: 56px 0 36px;
+  color: var(--chrome-muted);
+}
+
+.footer-cols {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 28px;
+  margin-bottom: 44px;
+}
+
+.footer-head {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--chrome-head);
+  margin-bottom: 14px;
+}
+
+.flink {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--chrome-muted);
+  padding: 3px 0;
+  cursor: default;
+}
+
+a.flink {
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.15s ease;
+}
+a.flink:hover { color: var(--chrome-accent); }
+
+.footer-meta {
+  border-top: 1px solid var(--chrome-line);
+  padding-top: 26px;
+}
+
+.footer-mail {
+  color: var(--chrome-text);
+  text-decoration: none;
+  font-size: 0.92rem;
+  letter-spacing: 0.04em;
+  transition: color 0.15s ease;
+}
+.footer-mail:hover { color: var(--chrome-accent); }
+
+.legal {
+  font-size: 0.78rem;
+  color: var(--chrome-quiet);
+  letter-spacing: 0.02em;
+  margin-top: 14px;
+}
+
+/* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+
+@media (max-width: 980px) {
+  .entry-head { grid-template-columns: 52px minmax(0, 1fr); }
+  .entry-head .price { grid-column: 1 / -1; }
+  .ico { width: 52px; height: 52px; }
+  .entry-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .panel-row { grid-template-columns: 1fr; }
+  .situation { grid-template-columns: 1fr; gap: 14px; }
+}
+
+@media (max-width: 760px) {
+  .band { padding: 60px 0; }
+  .hero { padding: 52px 0 40px; }
+  .entry-body { grid-template-columns: 1fr; }
+  .handles { grid-template-columns: 1fr; }
+  .panel-row-2 { grid-template-columns: 1fr; }
+  .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  .rail { top: 0; }
+}
+
+@media (max-width: 560px) {
+  .wrap { padding: 0 20px; }
+  .rail-inner { padding: 10px 20px; }
+  .nav-inner { padding: 12px 20px; justify-content: center; }
+  .nav-links { gap: 13px; justify-content: center; }
+  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em; }
+  .nav-signin { padding-left: 13px; border-left: 0; }
+  .price { grid-template-columns: 1fr; }
+  .entry { padding: 22px 20px 20px; }
+  .panel { padding: 24px 20px 22px; }
+  .situation { padding: 20px 20px; }
+}
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to the library</a>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <span class="nav-link is-active" aria-current="page">Library</span>
+      <a class="nav-link" href="team.html">Team</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <div class="theme-set" role="group" aria-label="Page theme">
+        <span class="theme-legend" aria-hidden="true">Theme</span>
+        <button class="theme-btn" type="button" data-theme-set="system" aria-pressed="true">Auto</button>
+        <button class="theme-btn" type="button" data-theme-set="light" aria-pressed="false">Light</button>
+        <button class="theme-btn" type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+<!-- ============ HERO ============ -->
+<section class="hero" aria-labelledby="libTitle">
+  <div class="wrap">
+    <p class="kicker">Conductor library</p>
+    <h1 class="page-title" id="libTitle">Know the product before you talk about it</h1>
+    <p class="hero-sub">The shop is built to sell. This library is built to teach. Everything here is written for Conductors who need to explain an Orvanna agent accurately: what it does on an ordinary Tuesday, who it suits, what it costs, and where its authority stops. Read it once and you will not have to guess in front of a customer.</p>
+  </div>
+</section>
+
+<!-- ============ CONTENTS RAIL ============ -->
+<nav class="rail" aria-label="Library contents">
+  <div class="rail-inner">
+    <a class="rail-link" href="#about">About this library</a>
+    <a class="rail-link" href="#catalog">The catalog</a>
+    <a class="rail-link" href="#tiers">The four tiers</a>
+    <a class="rail-link" href="#groups">Packs and the bundle</a>
+    <a class="rail-link" href="#choose">How to choose</a>
+    <a class="rail-link" href="#coming">Coming next</a>
+  </div>
+</nav>
+
+<!-- ============ ABOUT ============ -->
+<section class="band" id="about" aria-labelledby="aboutTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="aboutTitle">What this library is for</h2>
+    <hr class="rule">
+
+    <p class="lead">A Conductor who knows the product sells differently from one who knows only the pitch. The difference shows up in the second question a customer asks.</p>
+
+    <div class="panel-row">
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">One set of facts</h3>
+        <p>Every price and every Personal Volume (PV) figure on this page comes from the same catalog file the shop reads. If a number changes there, it changes here. Nothing on this page is written from memory.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Written to be repeated</h3>
+        <p>Each agent gets the same six things: what it does, who it is for, the problem it solves, four concrete jobs it handles, how it works beside the other agents, and its price in both billing modes.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Honest about limits</h3>
+        <p>Every agent has an approval boundary, and this library states it. An agent that prepares a tax return does not file it. An agent that drafts a refund does not issue it. Saying so builds more trust than hiding it.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h3 class="sub-title">You are a Conductor</h3>
+      <p>Orvanna sells agents, and the person who leads them is a Conductor. The word was chosen because it does real work: an agent is capable on its own and considerably more useful when someone decides what plays, when, and together with what. That is the job.</p>
+      <p>Two words sit next to it and they must never be swapped, because a reader who confuses them once will stay confused. Your <strong>ensemble</strong> is your agents, the products you run. Your <strong>team</strong>, or your organisation, is the people you have sponsored. Agents are never a team; people are never an ensemble.</p>
+    </div>
+
+    <div class="callout">
+      <h3 class="sub-title">Two words you will use constantly</h3>
+      <p><strong>Personal Volume (PV)</strong> is the point value a purchase carries. At Orvanna the arithmetic is deliberately simple: PV equals dollars, in both billing modes. A $100.00 subscription grants 100 PV every month it stays active. A $1,000.00 one-time purchase grants 1,000 PV once. If you can read the price, you know the PV.</p>
+      <p><strong>Sales Volume (SV)</strong> is all the PV booked to one account in one calendar month. Reach 100.00 SV in a month and that month is qualified. Qualification is a gate in the compensation plan, not a promise of any amount; the plan booklet is the only place that describes what follows from it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE CATALOG ============ -->
+<section class="band band-alt" id="catalog" aria-labelledby="catalogTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="catalogTitle">The product catalog</h2>
+    <hr class="rule">
+
+    <p class="lead">Sixteen items. Six domain agents that run a whole business function, six support agents that fill a staff role beside them, one bundle that manages a trio, and three packs that assemble a formation. There is no physical product, no warehouse, and nothing ships: every item is software that activates on an account.</p>
+
+    <div class="filter-row" role="group" aria-label="Filter the catalog by tier">
+      <button class="filter-pill" type="button" data-filter="all" aria-pressed="true">All sixteen</button>
+      <button class="filter-pill" type="button" data-filter="domain" aria-pressed="false">Domain agents</button>
+      <button class="filter-pill" type="button" data-filter="support" aria-pressed="false">Support agents</button>
+      <button class="filter-pill" type="button" data-filter="bundle" aria-pressed="false">Bundle</button>
+      <button class="filter-pill" type="button" data-filter="pack" aria-pressed="false">Packs</button>
+    </div>
+
+    <div class="entry-list" id="entryList">
+
+      <!-- ---------- PAYMENT AGENT ---------- -->
+      <article class="entry panel" id="agent-payment" data-tier="domain" data-sku="payment"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-payment"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Payment Agent</h3>
+            <p class="entry-blurb">Runs checkout, retries, and settlement without a break.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It watches every transaction from authorization through settlement, sorts declines by the reason the bank gave, and retries the ones worth retrying on a schedule that fits that reason. Then it reconciles what the processor actually paid against what you actually sold.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Any business taking card payments that has never had the time to work a decline queue, and any business whose payout figures and sales figures have quietly stopped agreeing.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>A failed payment is a silent loss. Nothing breaks, no alarm sounds, and the sale simply walks away. Recovering a share of those is usually the fastest money in the catalog.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Reconciles yesterday's settlements against your orders each morning, to the cent</li>
+              <li>Categorizes declines and schedules retries by decline reason, not on a blind timer</li>
+              <li>Assembles refund and chargeback packets with response codes and full history attached</li>
+              <li>Writes an end of day settlement summary you can read in about a minute</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It hands clean payment records to Accounting, dispute evidence to whoever answers disputes, and live transaction facts to Customer Care so support answers are true. Large refunds, new retry rules, and any change to how declines are handled stop at your desk first.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=payment">Payment Agent</a></p>
+      </article>
+
+      <!-- ---------- SHIPPING AGENT ---------- -->
+      <article class="entry panel" id="agent-shipping" data-tier="domain" data-sku="shipping"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-shipping"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Shipping Agent</h3>
+            <p class="entry-blurb">Books carriers, tracks parcels, and clears delays.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It compares carrier rates and delivery estimates order by order, books the shipment, sends the tracking link, and then checks every open parcel several times a day. Anything that stops moving gets chased while it is still fixable.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Anyone shipping physical goods who currently learns about a late parcel from the customer rather than from the carrier.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>A late parcel becomes a support ticket, and the ticket costs more than the postage did. Catching the delay first turns an angry message into a message you sent.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Rate and transit comparison per order, then the booking itself</li>
+              <li>Tracking links out to customers as soon as a label exists</li>
+              <li>Carrier inquiries filed the day a parcel stops scanning</li>
+              <li>Loss claims drafted with the paperwork attached, waiting on your approval</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It feeds delivery status to Customer Care so support never guesses, freight cost to Accounting so it lands in the right column, and inbound arrival dates to Inventory. Carrier changes, claim submissions, and any promise of a refund stay yours to make.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=shipping">Shipping Agent</a></p>
+      </article>
+
+      <!-- ---------- PRICING AGENT ---------- -->
+      <article class="entry panel" id="agent-pricing" data-tier="domain" data-sku="pricing"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-pricing"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Pricing Agent</h3>
+            <p class="entry-blurb">Watches the market and keeps every price sharp.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It tracks your costs and your competitors' listed prices, recomputes margin on every item you sell, and puts anything drifting outside the bands you set on a review list. It proposes; it never reprices on its own.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Businesses whose supplier costs move faster than their price sheet, and anyone who has ever discovered a loss-making item months after it started losing money.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Prices go stale quietly. Nothing announces that last quarter's price is now selling at last quarter's margin, so the discovery is usually accidental and late.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Per item margin recalculated as costs and competitor prices move</li>
+              <li>A live watchlist of items outside the margin bands you defined</li>
+              <li>A weekly price review: raise, hold, or discount, line by line</li>
+              <li>The reasoning shown on every proposal, so approval is a judgement not a leap</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It shares margin figures with Marketing before any promotion is built on them, cost data with Accounting so the books match the shelf, and aging signals from Inventory feed its discount proposals. Your pricing strategy stays yours; it runs the arithmetic and keeps the watchlist.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=pricing">Pricing Agent</a></p>
+      </article>
+
+      <!-- ---------- INVENTORY AGENT ---------- -->
+      <article class="entry panel" id="agent-inventory" data-tier="domain" data-sku="inventory"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-inventory"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Inventory Agent</h3>
+            <p class="entry-blurb">Counts stock and reorders before shelves go bare.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It reconciles stock counts against sales and receipts every night, tracks how fast each item actually moves, and recalculates reorder points as those speeds change. When an item crosses its point, the purchase order is already drafted.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Any business holding stock, where cash is sitting on a shelf and nobody has time to work out which shelf is the expensive one.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Stockouts lose the sale and overstock loses the cash, and most businesses are doing both at once in different items without a way to see it.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Nightly reconciliation of counts against sales and receipts, with every gap investigated</li>
+              <li>Velocity per item, with safety margins that follow the real numbers</li>
+              <li>Purchase orders drafted at the reorder point: supplier, quantity, expected cost filled in</li>
+              <li>Slow movers flagged early, while they are still stock rather than dead stock</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It tells Shipping what is arriving, Pricing what is aging and might justify a discount, and Accounting what the stockroom is worth at month end. Supplier choice and every purchase order remain your call; it never spends money without a yes.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=inventory">Inventory Agent</a></p>
+      </article>
+
+      <!-- ---------- MARKETING AGENT ---------- -->
+      <article class="entry panel" id="agent-marketing" data-tier="domain" data-sku="marketing"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-marketing"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Marketing Agent</h3>
+            <p class="entry-blurb">Writes, schedules, and measures every campaign.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It drafts posts, emails, and product copy in your voice, schedules whatever you approve, and measures what each campaign returned. It learns from your results rather than from a generic playbook.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Owners who market in bursts because there is never a calm week to do it properly, and anyone spending on channels they have never actually measured.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Consistent marketing beats brilliant marketing that ships twice a year. The hard part is not the idea, it is showing up every week with something to send.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>A morning set of drafts in your voice, waiting for your edits</li>
+              <li>Scheduling and sending for anything you approve, on the calendar you set</li>
+              <li>A weekly readout: what ran, what it cost, what came back</li>
+              <li>A proposed fix attached to every underperformer, not just a red number</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It pulls real margin from Pricing before proposing any discount, so a promotion cannot quietly sell at a loss, and it hands warm inquiries to Customer Care with the context attached. Nothing publishes without your approval; the brand voice and the final word stay yours.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=marketing">Marketing Agent</a></p>
+      </article>
+
+      <!-- ---------- TAX AGENT ---------- -->
+      <article class="entry panel" id="agent-tax" data-tier="domain" data-sku="tax"
+               data-sub-price="100" data-sub-pv="100" data-once-price="1000" data-once-pv="1000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-tax"></use></svg>
+          <div>
+            <span class="badge badge-domain">Domain agent</span>
+            <h3 class="entry-name">Tax Agent</h3>
+            <p class="entry-blurb">Prepares every filing on time, ready for your sign-off.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$100.00 <span class="per">/ month</span></span><span class="price-pv">100 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$1,000.00 <span class="per">once</span></span><span class="price-pv">1,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It categorizes transactions for tax treatment as they happen and keeps a live calendar of filing obligations for every region you sell in. Ahead of each date it assembles the return, the supporting schedules, and a plain-language note on what changed.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Businesses selling into more than one place, and any owner whose quarter currently ends in a search for receipts.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Deadlines do not care how busy the quarter was. The work is not hard so much as unforgiving about dates, which is exactly the kind of work software should hold.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>A live filing calendar per region, kept current as you enter new markets</li>
+              <li>Rate changes flagged the day it learns of them, not the week of the filing</li>
+              <li>The return, its schedules, and a summary of what moved since last period</li>
+              <li>Records kept in the shape an auditor asks for, rather than the shape they happened to arrive in</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It draws clean figures from Accounting and payment records from the Payment Agent, so the return matches the books by construction rather than by luck. The boundary is deliberate and worth repeating to customers: it prepares, it never files. Your accountant stays the authority and signs.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=tax">Tax Agent</a></p>
+      </article>
+
+      <!-- ---------- SOFTWARE ENGINEER ---------- -->
+      <article class="entry panel" id="agent-engineer" data-tier="support" data-sku="engineer"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-engineer"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Software Engineer</h3>
+            <p class="entry-blurb">Ships fixes and features on request.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It takes requests written in plain language, scopes each one into a change, writes and tests it against your actual setup, and stages it for your approval. You read a two-line summary, not the code, unless you want the code.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Any business carrying a short list of small software problems that have waited months because none of them felt big enough to hire someone for.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Calling a developer about a broken contact form feels like too much effort, so the form stays broken. The cost is invisible and it compounds.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>A request queue you write in ordinary English, one line per item</li>
+              <li>Bug fixes and small features, tested before you ever see them</li>
+              <li>Connections between the tools you already pay for</li>
+              <li>Error watching on your site and internal tools, usually reported with the fix attached</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It pairs naturally with Quality Assurance, which checks its work before you see it, and it takes escalations from any domain agent that hits a technical wall. Nothing deploys without your go-ahead.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=engineer">Software Engineer</a></p>
+      </article>
+
+      <!-- ---------- QUALITY ASSURANCE ---------- -->
+      <article class="entry panel" id="agent-qa" data-tier="support" data-sku="qa"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-qa"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Quality Assurance</h3>
+            <p class="entry-blurb">Tests everything twice before customers see it.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It runs a test pass on every change to your site and tools, walking the paths your revenue walks through: pages, forms, checkout, and the numbers on screen against the records underneath.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Anyone whose customers are currently the people finding the defects, and anyone shipping changes with nothing between the change and the customer.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>A customer finding a bug is the most expensive way to find it. The same bug found an hour earlier costs almost nothing.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Page loads, form submissions, and checkout completion, checked on every change</li>
+              <li>Difficult-customer testing: wrong inputs, slow connections, small screens, double clicks</li>
+              <li>Findings filed by severity with steps to reproduce and screenshots attached</li>
+              <li>Clean passes reported too, so silence never has to mean untested</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It reviews the Software Engineer agent's changes as a matter of routine, and it takes test requests from you in plain language: check this page, try this flow, break this if you can. It blocks nothing on its own authority; it reports and you decide what ships.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=qa">Quality Assurance</a></p>
+      </article>
+
+      <!-- ---------- SECRETARY ---------- -->
+      <article class="entry panel" id="agent-secretary" data-tier="support" data-sku="secretary"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-secretary"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Secretary</h3>
+            <p class="entry-blurb">Keeps the calendar, notes, and follow-ups straight.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It holds the operational memory a busy owner drops: who you promised to call, what the meeting decided, which follow-up is now overdue. Scheduling stops being correspondence and becomes something that happens.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Owners whose calendar and commitments currently live in their head, and anyone losing a morning a week to arranging times.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>The promise made on Tuesday is the one that quietly does not happen. Not through neglect, just through volume.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Scheduling, including the reschedules, with the blocks you mark as yours protected</li>
+              <li>Routine correspondence drafted, never sent until you say yes</li>
+              <li>Meeting notes with decisions and owners separated out from the discussion</li>
+              <li>One page each morning: appointments, promised follow-ups, and what slips if today ignores it</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It keeps notes any other agent can search later, and it turns commitments made in a Customer Care conversation into real calendar entries. It signs nothing and commits you to nothing; your calendar rules are its law.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=secretary">Secretary</a></p>
+      </article>
+
+      <!-- ---------- CHIEF EXECUTIVE ---------- -->
+      <article class="entry panel" id="agent-executive" data-tier="support" data-sku="executive"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-executive"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Chief Executive</h3>
+            <p class="entry-blurb">Sets direction and keeps every agent aligned.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It reads across sales, costs, and operations, keeps a scorecard against the targets you set, and names drift early, while correcting it is still cheap. Once a week it writes the briefing a chief of staff would write.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>An owner who is always inside the week and never above it, especially one already running several agents whose reports nobody has time to read together.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Nobody in a small business is paid to stand back. The standing-back function is the first thing dropped and the last thing missed.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>A daily read of the figures every other agent produced</li>
+              <li>A scorecard against the targets you stated, not targets it invented</li>
+              <li>A weekly briefing: three numbers that moved, why they moved, one recommendation</li>
+              <li>Priorities passed to the other agents so the whole ensemble pulls in one direction</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It is the only agent that reads from all of them, which is what makes its weekly note worth more than the sum of the individual reports. It recommends and never decides. Strategy, hiring, spending, and direction stay where they belong.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=executive">Chief Executive</a></p>
+      </article>
+
+      <!-- ---------- ACCOUNTING ---------- -->
+      <article class="entry panel" id="agent-accounting" data-tier="support" data-sku="accounting"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-accounting"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Accounting</h3>
+            <p class="entry-blurb">Balances books to the cent, month after month.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It categorizes transactions against your chart of accounts as they occur and reconciles bank and processor balances continuously, rather than in a rush at month end. Anything it cannot place with confidence goes on a short question list for you.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Any business whose month end is currently an excavation, and anyone whose accountant starts each engagement by cleaning up.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Books that are current are rare. Books that are current and correct are rarer. Everything downstream, tax included, inherits whatever state they are in.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Daily categorization, with a short question list rather than a silent guess</li>
+              <li>Bank and processor reconciliation to the cent</li>
+              <li>Month-end statements drafted, with a plain-language note on what changed and why</li>
+              <li>Locked periods that stay locked</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It receives settlement data from Payment, freight costs from Shipping, and stock values from Inventory, then feeds clean figures to Tax. It proposes journal entries; it does not invent them. Anything outside the routine waits for you or your accountant.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=accounting">Accounting</a></p>
+      </article>
+
+      <!-- ---------- CUSTOMER CARE ---------- -->
+      <article class="entry panel" id="agent-care" data-tier="support" data-sku="care"
+               data-sub-price="50" data-sub-pv="50" data-once-price="500" data-once-pv="500">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-care"></use></svg>
+          <div>
+            <span class="badge">Support agent</span>
+            <h3 class="entry-name">Customer Care</h3>
+            <p class="entry-blurb">Answers customers day and night, in any tone.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$50.00 <span class="per">/ month</span></span><span class="price-pv">50 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$500.00 <span class="per">once</span></span><span class="price-pv">500 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It watches your inbox and chat, answers what it can prove from your own records, around the clock and in the tone you choose, and drafts replies for the questions it cannot answer alone.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Anyone answering the same twenty questions every week, and anyone whose hard cases wait behind easy ones.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>The routine inbox eats the hours meant for the business. Clearing it does not just save time, it also gets the difficult cases to you while they are still small.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Order status answered live from real shipping data, not from a guess</li>
+              <li>Round-the-clock first replies in the tone you set</li>
+              <li>A full log: who asked what, what was answered, what is still open</li>
+              <li>A weekly note on repeated questions, because a repeated question is product feedback</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It pulls delivery status from Shipping and transaction facts from Payment so its answers are true, and passes product complaints to whichever agent's domain they touch. It never promises money, credit, or a policy change on its own; those drafts wait for you.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=care">Customer Care</a></p>
+      </article>
+
+      <!-- ---------- MANAGER AGENT (BUNDLE) ---------- -->
+      <article class="entry panel" id="agent-manager" data-tier="bundle" data-sku="manager"
+               data-sub-price="200" data-sub-pv="200" data-once-price="2000" data-once-pv="2000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-manager"></use></svg>
+          <div>
+            <span class="badge badge-group">Bundle</span>
+            <h3 class="entry-name">Manager Agent</h3>
+            <p class="entry-blurb">One agent that runs your back office: engineering, scheduling, and the books, coordinated as a single ensemble.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$200.00 <span class="per">/ month</span></span><span class="price-pv">200 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$2,000.00 <span class="per">once</span></span><span class="price-pv">2,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It runs the Software Engineer, Secretary, and Accounting agents as one small ensemble. You stop dispatching tasks to three separate agents; you say what you need and it decides who does what, in what order, and reports back once.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>Someone already running two or three support agents who has noticed that coordinating them has become a job of its own.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Three useful agents still need sequencing, and right now that someone is you. A management layer is the thing being bought here, not extra capacity.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>What is inside</h4>
+            <ul class="inside-list">
+              <li><a href="#agent-engineer">Software Engineer</a></li>
+              <li><a href="#agent-secretary">Secretary</a></li>
+              <li><a href="#agent-accounting">Accounting</a></li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>One shared task list across its three agents</li>
+              <li>The collisions: the code change that touches the books, the meeting that lands on the monthly close</li>
+              <li>One daily summary instead of three</li>
+              <li>One point of contact for anything the trio produced</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>How it works alongside the other agents</h4>
+            <p>It is the single answer point for its trio, and it takes direction from the Chief Executive agent if you run one. Its authority ends where yours begins: it sequences and delegates inside the trio, and brings anything external, financial, or irreversible to you.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Say this plainly to a customer</h4>
+            <p>This is the one item in the catalog priced above the sum of its parts. Those three support agents bought separately are $150.00 a month. The Manager Agent is $200.00 a month. The extra $50.00 buys the coordination, and pretending otherwise would be the wrong way to sell it.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=manager">Manager Agent</a></p>
+      </article>
+
+      <!-- ---------- IGNITION PACK ---------- -->
+      <article class="entry panel" id="pack-ignition" data-tier="pack" data-sku="ignition"
+               data-sub-price="200" data-sub-pv="200" data-once-price="2000" data-once-pv="2000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-ignition"></use></svg>
+          <div>
+            <span class="badge badge-group">Digital pack</span>
+            <h3 class="entry-name">Ignition Pack</h3>
+            <p class="entry-blurb">The first-storefront trio: take payments, answer customers, keep the calendar straight.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$200.00 <span class="per">/ month</span></span><span class="price-pv">200 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$2,000.00 <span class="per">once</span></span><span class="price-pv">2,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It covers the three jobs that start on day one of a storefront and never stop: the money comes in and is accounted for, the questions get answered, and the commitments get kept.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>A first storefront, or a small business automating for the first time and wanting the smallest set that changes a week.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>New operators usually buy too much or too little. This is a deliberately small starting formation, sized so you can tell what it changed.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>What is inside</h4>
+            <ul class="inside-list">
+              <li><a href="#agent-payment">Payment Agent</a></li>
+              <li><a href="#agent-care">Customer Care</a></li>
+              <li><a href="#agent-secretary">Secretary</a></li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Daily settlement reconciliation and worked declines, from the Payment Agent</li>
+              <li>Round-the-clock inbox answers drawn from your own records, from Customer Care</li>
+              <li>The calendar and the follow-ups, from the Secretary</li>
+              <li>Handoffs between the three: a payment question in the inbox gets a real transaction answer</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Honest guidance</h4>
+            <p>Priced at exactly the sum of its parts: $100.00 plus $50.00 plus $50.00 is $200.00, and the pack is $200.00. You are buying the selection, not a discount. Buy it if the shortlist saves you a decision. Buy the three agents individually if you would rather add and drop them one at a time; the price and the Personal Volume (PV) come out identical either way.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=ignition">Ignition Pack</a></p>
+      </article>
+
+      <!-- ---------- MOMENTUM PACK ---------- -->
+      <article class="entry panel" id="pack-momentum" data-tier="pack" data-sku="momentum"
+               data-sub-price="400" data-sub-pv="400" data-once-price="4000" data-once-pv="4000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-momentum"></use></svg>
+          <div>
+            <span class="badge badge-group">Digital pack</span>
+            <h3 class="entry-name">Momentum Pack</h3>
+            <p class="entry-blurb">Five agents tuned for growth: sell it, promote it, price it, build it, test it.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$400.00 <span class="per">/ month</span></span><span class="price-pv">400 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$4,000.00 <span class="per">once</span></span><span class="price-pv">4,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>It staffs both sides of the seam that growth tears open: demand goes up while margin and quality try to keep pace. Marketing and Pricing work together, the Software Engineer and Quality Assurance work together, and the Payment Agent catches what volume multiplies.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>A business past the starting line and now growing, where campaigns are outrunning margins or changes are outrunning testing.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Growth rarely breaks a business evenly. It breaks it at the seams, and the two most common seams are a promotion sold below margin and a change shipped without a check.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>What is inside</h4>
+            <ul class="inside-list">
+              <li><a href="#agent-payment">Payment Agent</a></li>
+              <li><a href="#agent-marketing">Marketing Agent</a></li>
+              <li><a href="#agent-pricing">Pricing Agent</a></li>
+              <li><a href="#agent-engineer">Software Engineer</a></li>
+              <li><a href="#agent-qa">Quality Assurance</a></li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Campaigns drafted, scheduled, and measured every week</li>
+              <li>Margin checked before any promotion is allowed to be built on it</li>
+              <li>Site and tool changes shipped, then tested before a customer meets them</li>
+              <li>The extra declines that growth produces, worked rather than absorbed</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Honest guidance</h4>
+            <p>Priced at exactly the sum of its parts: three domain agents at $100.00 and two support agents at $50.00 is $400.00, and the pack is $400.00. There is no discount here either. This is the right pack when the growth is already happening; buying it in anticipation usually means paying for capacity before there is work for it.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=momentum">Momentum Pack</a></p>
+      </article>
+
+      <!-- ---------- CONSTELLATION PACK ---------- -->
+      <article class="entry panel" id="pack-constellation" data-tier="pack" data-sku="constellation"
+               data-sub-price="800" data-sub-pv="800" data-once-price="8000" data-once-pv="8000">
+        <div class="entry-head">
+          <svg class="ico" viewBox="0 0 64 64" aria-hidden="true"><use href="#ico-constellation"></use></svg>
+          <div>
+            <span class="badge badge-group">Digital pack</span>
+            <h3 class="entry-name">Constellation Pack</h3>
+            <p class="entry-blurb">The full formation: every domain agent, plus the Manager Agent running support behind them.</p>
+          </div>
+          <div class="price">
+            <div><span class="price-label">Subscription</span><span class="price-amt">$800.00 <span class="per">/ month</span></span><span class="price-pv">800 PV a month</span></div>
+            <div><span class="price-label">One time</span><span class="price-amt">$8,000.00 <span class="per">once</span></span><span class="price-pv">8,000 PV once</span></div>
+          </div>
+        </div>
+        <div class="entry-body">
+          <div class="facet">
+            <h4>What it does</h4>
+            <p>All six domain agents run their own function through the day while the Manager Agent keeps its support trio moving underneath them. The day ends in one combined report, with the exceptions that need you listed first.</p>
+          </div>
+          <div class="facet">
+            <h4>Who it is for</h4>
+            <p>An established operation that would otherwise be hiring across several functions at once, and wants one place to look each morning instead of six.</p>
+          </div>
+          <div class="facet">
+            <h4>The problem it solves</h4>
+            <p>Past a certain size the expensive part is not any single function, it is the ferrying between them. This is the pack where coordination pays the most.</p>
+          </div>
+          <div class="facet facet-wide">
+            <h4>What is inside</h4>
+            <ul class="inside-list">
+              <li><a href="#agent-payment">Payment Agent</a></li>
+              <li><a href="#agent-shipping">Shipping Agent</a></li>
+              <li><a href="#agent-pricing">Pricing Agent</a></li>
+              <li><a href="#agent-inventory">Inventory Agent</a></li>
+              <li><a href="#agent-marketing">Marketing Agent</a></li>
+              <li><a href="#agent-tax">Tax Agent</a></li>
+              <li><a href="#agent-manager">Manager Agent</a></li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Four things it actually handles</h4>
+            <ul class="handles">
+              <li>Settlements flowing to the books without anyone carrying a spreadsheet</li>
+              <li>Stock levels flowing to reorder points, and costs flowing to prices</li>
+              <li>Clean figures flowing to filings, which is why the tax packet is ready early</li>
+              <li>One combined daily report, exceptions first</li>
+            </ul>
+          </div>
+          <div class="facet facet-wide">
+            <h4>Honest guidance</h4>
+            <p>Seven listed items, and ten agents once you count through the Manager Agent's own trio. Priced at exactly the sum of its parts: six domain agents at $100.00 plus the $200.00 Manager Agent is $800.00, and the pack is $800.00. Scale changes nothing about authority: every filing, payment change, and purchase order still stops at your desk for a yes.</p>
+          </div>
+        </div>
+        <p class="entry-foot"><span>Buy or read the shop page:</span> <a href="product.html?sku=constellation">Constellation Pack</a></p>
+      </article>
+
+    </div>
+
+    <p class="filter-empty" id="filterEmpty" hidden>No items match that filter.</p>
+  </div>
+</section>
+
+<!-- ============ THE FOUR TIERS ============ -->
+<section class="band" id="tiers" aria-labelledby="tiersTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="tiersTitle">The four tiers, and why each one exists</h2>
+    <hr class="rule">
+
+    <p class="lead">The tier label on every item is one of four words: domain, support, bundle, pack. The distinction is not decoration. Each tier answers a different question, and knowing which question a customer is asking is most of the sale.</p>
+
+    <div class="panel-row-2">
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Domain agent</h3>
+        <p class="body-copy">A domain agent owns a whole business function, the kind that would otherwise be a department: payments, shipping, pricing, inventory, marketing, tax preparation. It has its own queue of work, its own daily rhythm, and its own approval boundary with the owner.</p>
+        <p class="body-copy">The test is simple. Could you draw a box on an organization chart around what this agent does, and would that box have a budget? If yes, it is a domain agent. It costs the higher of the two prices because it is the thing a business buys first and keeps longest.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Support agent</h3>
+        <p class="body-copy">A support agent fills a staff role rather than a business function. It ships a fix, tests a change, keeps the calendar, balances the books, answers the inbox, or reads the whole picture back to you once a week.</p>
+        <p class="body-copy">On its own it is genuinely useful. It is not a department, and the price says so: exactly half. That is a deliberate piece of arithmetic. Two support agents equal one domain agent in both dollars and Personal Volume (PV), which matters at the qualification line.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Bundle</h3>
+        <p class="body-copy">A bundle is a managed group. There is exactly one in the catalog: the Manager Agent, which contains the Software Engineer, Secretary, and Accounting agents.</p>
+        <p class="body-copy">What you buy on top of those three is the management layer itself: one point of contact, one shared task list, one daily summary instead of three. That is why it is the only item priced above the sum of its parts.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Pack</h3>
+        <p class="body-copy">A pack is a curated formation: a set of agents chosen to cover a stage of business, with no management layer added unless the pack happens to contain the Manager Agent, which Constellation does.</p>
+        <p class="body-copy">Packs are priced at exactly the sum of their parts. No discount, no premium. What you are buying is the shortlist, and saying that plainly is more persuasive than implying a saving that is not there.</p>
+      </div>
+    </div>
+
+    <div class="callout">
+      <h3 class="sub-title">The one sentence that separates bundle from pack</h3>
+      <p>A bundle sells you a manager, so it costs more than its contents. A pack sells you a shortlist, so it costs exactly its contents.</p>
+    </div>
+
+    <h3 class="sub-title" style="margin-top:36px">The tiers side by side</h3>
+    <div class="table-scroll">
+      <table>
+        <caption class="visually-hidden">The four Orvanna catalog tiers with prices and Personal Volume</caption>
+        <thead>
+          <tr>
+            <th scope="col">Tier</th>
+            <th scope="col">Items</th>
+            <th scope="col">What it is</th>
+            <th scope="col" class="num">Subscription</th>
+            <th scope="col" class="num">Personal Volume a month</th>
+            <th scope="col" class="num">One time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Domain agent</th>
+            <td class="num">6</td>
+            <td>A whole business function, end to end</td>
+            <td class="num">$100.00</td>
+            <td class="num">100 PV</td>
+            <td class="num">$1,000.00</td>
+          </tr>
+          <tr>
+            <th scope="row">Support agent</th>
+            <td class="num">6</td>
+            <td>A staff role beside the domain agents</td>
+            <td class="num">$50.00</td>
+            <td class="num">50 PV</td>
+            <td class="num">$500.00</td>
+          </tr>
+          <tr>
+            <th scope="row">Bundle</th>
+            <td class="num">1</td>
+            <td>A managed trio with one point of contact</td>
+            <td class="num">$200.00</td>
+            <td class="num">200 PV</td>
+            <td class="num">$2,000.00</td>
+          </tr>
+          <tr>
+            <th scope="row">Pack</th>
+            <td class="num">3</td>
+            <td>A curated formation for a stage of business</td>
+            <td class="num">$200.00 to $800.00</td>
+            <td class="num">200 to 800 PV</td>
+            <td class="num">$2,000.00 to $8,000.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">Sixteen items in total. Every one-time price is ten times the monthly price, and Personal Volume (PV) equals dollars in both modes.</p>
+  </div>
+</section>
+
+<!-- ============ PACKS AND THE BUNDLE ============ -->
+<section class="band band-alt" id="groups" aria-labelledby="groupsTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="groupsTitle">The packs and the bundle</h2>
+    <hr class="rule">
+
+    <p class="lead">Four items in the catalog contain other items. Here is exactly what is inside each one, what it costs against its contents, and who it actually suits.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption class="visually-hidden">The four grouped items, their contents, and their price against the sum of their parts</caption>
+        <thead>
+          <tr>
+            <th scope="col">Item</th>
+            <th scope="col">Tier</th>
+            <th scope="col">What is inside</th>
+            <th scope="col" class="num">Parts add up to</th>
+            <th scope="col" class="num">Price a month</th>
+            <th scope="col" class="num">Personal Volume</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Manager Agent</th>
+            <td>Bundle</td>
+            <td>Software Engineer, Secretary, Accounting</td>
+            <td class="num">$150.00</td>
+            <td class="num">$200.00</td>
+            <td class="num">200 PV</td>
+          </tr>
+          <tr>
+            <th scope="row">Ignition Pack</th>
+            <td>Pack</td>
+            <td>Payment Agent, Customer Care, Secretary</td>
+            <td class="num">$200.00</td>
+            <td class="num">$200.00</td>
+            <td class="num">200 PV</td>
+          </tr>
+          <tr>
+            <th scope="row">Momentum Pack</th>
+            <td>Pack</td>
+            <td>Payment Agent, Marketing Agent, Pricing Agent, Software Engineer, Quality Assurance</td>
+            <td class="num">$400.00</td>
+            <td class="num">$400.00</td>
+            <td class="num">400 PV</td>
+          </tr>
+          <tr>
+            <th scope="row">Constellation Pack</th>
+            <td>Pack</td>
+            <td>All six domain agents, plus the Manager Agent</td>
+            <td class="num">$800.00</td>
+            <td class="num">$800.00</td>
+            <td class="num">800 PV</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="table-note">The parts column is the sum of the contents bought separately at their own monthly prices.</p>
+
+    <div class="callout">
+      <h3 class="sub-title">Say this, not the other thing</h3>
+      <p>All three packs cost exactly what their contents cost. There is no saving, and a Conductor who implies one will be caught by the first customer who adds it up. What a pack buys is curation: somebody already decided which agents belong together at this stage, and you do not have to.</p>
+      <p>The Manager Agent runs the other way. Its three agents are $150.00 a month bought separately and the bundle is $200.00 a month. The extra $50.00 is the coordination layer, which is the product. Selling it as a discount would be both false and weaker than the truth.</p>
+    </div>
+
+    <div class="panel-row-2" style="margin-top:30px">
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Why included agents show at $0.00</h3>
+        <p class="body-copy">Put the Ignition Pack in a cart and you see four lines: the pack at $200.00, then Payment Agent, Customer Care, and Secretary each at $0.00 with an Included tag. That zero is not a discount and not a fault. It is the statement that the parent line already carries the full price and the full Personal Volume (PV) for the whole group.</p>
+        <p class="body-copy">Two things follow. Money is never charged twice, and volume is never counted twice: the 200 PV on an Ignition Pack is the whole volume for that purchase, not 200 for the pack plus another 200 for the three agents inside.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="sub-title">Pack, or the same agents separately?</h3>
+        <p class="body-copy">Take the pack when the shortlist is doing work for you and you want the whole formation live on the same day. Take the agents individually when you expect to add or drop them one at a time, or when you want the flexibility to swap one out next month.</p>
+        <p class="body-copy">The price and the Personal Volume (PV) come out identical either way. That is the point: a pack is a convenience, never an arbitrage.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HOW TO CHOOSE ============ -->
+<section class="band" id="choose" aria-labelledby="chooseTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="chooseTitle">How to choose</h2>
+    <hr class="rule">
+
+    <p class="lead">Organized by the situation the buyer is actually in, not by the shape of the catalog. Find the sentence that sounds like them, then start there.</p>
+
+    <div class="situations">
+
+      <div class="situation panel">
+        <p class="situation-q">"I am opening a storefront this month and I have never automated anything."</p>
+        <div class="situation-a">
+          <p>Start with the <strong>Ignition Pack</strong> at $200.00 a month. Money in and accounted for, questions answered, commitments kept, and nothing else to learn yet.</p>
+          <p>If the budget is the constraint, the <strong>Payment Agent</strong> alone at $100.00 a month is the single item that most often pays for itself, because worked declines are recovered revenue rather than saved effort.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"I ship physical goods and I find out about late parcels from angry customers."</p>
+        <div class="situation-a">
+          <p><strong>Shipping Agent</strong> first, at $100.00 a month. It is the one that changes who discovers the problem.</p>
+          <p>Add <strong>Customer Care</strong> at $50.00 a month next, because the two together close the loop: shipping catches the delay and care tells the customer before they ask.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"My supplier costs moved and I honestly do not know which items still make money."</p>
+        <div class="situation-a">
+          <p><strong>Pricing Agent</strong>, at $100.00 a month. It recomputes margin per item and gives you a weekly review to approve line by line.</p>
+          <p>Pair it with <strong>Accounting</strong> at $50.00 a month if your books are behind, because a margin calculation is only as good as the cost data underneath it.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"Cash is tied up in stock and I keep running out of the wrong things."</p>
+        <div class="situation-a">
+          <p><strong>Inventory Agent</strong>, at $100.00 a month. Nightly counts, velocity per item, reorder points that move with the numbers, and purchase orders drafted at the line.</p>
+          <p>It reports into Pricing and Accounting on its own, so those two get better the day you add it.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"We are growing and things are starting to break: promotions, prices, the site."</p>
+        <div class="situation-a">
+          <p><strong>Momentum Pack</strong>, at $400.00 a month. It staffs both sides of the seam growth tears open, so campaigns cannot outrun margin and changes cannot outrun testing.</p>
+          <p>Buy it when the growth is already visible. Bought in anticipation it is capacity waiting for work.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"My inbox is the bottleneck. I answer the same questions all week."</p>
+        <div class="situation-a">
+          <p><strong>Customer Care</strong>, at $50.00 a month. It answers what it can prove from your records, around the clock, and escalates the rest with a recommendation attached.</p>
+          <p>Add the <strong>Secretary</strong> at $50.00 a month if the follow-ups you promise in those conversations are the thing that slips. Together they are 100 PV, which is a qualified month.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"Filing dates keep arriving before I am ready for them."</p>
+        <div class="situation-a">
+          <p><strong>Tax Agent</strong>, at $100.00 a month, with <strong>Accounting</strong> at $50.00 a month underneath it. The Tax Agent prepares and never files, so your accountant stays the authority and simply signs earlier.</p>
+          <p>Be clear about that boundary in the conversation. It is a feature, and hiding it invites a complaint later.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"I already run several agents and now I spend my time telling them what to do."</p>
+        <div class="situation-a">
+          <p><strong>Manager Agent</strong>, at $200.00 a month. One task list, one point of contact, one daily summary instead of three.</p>
+          <p>This is the one item that costs more than its parts, and that difference is exactly what the customer is asking to buy.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"I would be hiring across several functions at once if I could afford it."</p>
+        <div class="situation-a">
+          <p><strong>Constellation Pack</strong>, at $800.00 a month. All six domain agents plus the Manager Agent, which is ten agents once the Manager's own trio is counted.</p>
+          <p>The value here is the handoffs. Settlements reach the books, stock levels reach reorders, and costs reach prices without anyone carrying a spreadsheet between them.</p>
+        </div>
+      </div>
+
+      <div class="situation panel">
+        <p class="situation-q">"I just want to understand the smallest purchase that makes a month qualified."</p>
+        <div class="situation-a">
+          <p>A qualified month means Sales Volume (SV) of 100.00 or more, and exactly 100.00 qualifies. So it is one domain agent at 100 Personal Volume (PV), or any two support agents at 50 PV each. A single support agent is 50 PV: enrolled, not qualified.</p>
+          <p>Two things to say carefully. Qualification is a gate in the compensation plan, not a promise of any amount, and the plan booklet is the only place that describes what follows from it. And volume booked from what a customer buys through you counts the same as volume you buy yourself, so the smallest qualifying purchase is not necessarily a purchase you make.</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ COMING NEXT ============ -->
+<section class="band band-alt" id="coming" aria-labelledby="comingTitle">
+  <div class="wrap">
+    <h2 class="section-title" id="comingTitle">Coming to the library</h2>
+    <hr class="rule">
+
+    <p class="lead">Three more sections belong here. They are named now so you know they are planned rather than missing, and they are deliberately empty rather than filled with placeholder text that would have to be unlearned later.</p>
+
+    <div class="panel-row">
+      <div class="panel soon-card">
+        <span class="tag-soon">Not yet written</span>
+        <h3 class="sub-title">Getting started</h3>
+        <p>The first fourteen days: activating your account, setting up your first agent, what to expect in week one, and the handful of settings worth deciding early.</p>
+      </div>
+      <div class="panel soon-card">
+        <span class="tag-soon">Not yet written</span>
+        <h3 class="sub-title">The compensation plan</h3>
+        <p>Personal Volume (PV), Sales Volume (SV), the qualification gate, ranks, and how commissions are calculated. A separate booklet is being written; this section will summarize it and link to it rather than restate it loosely.</p>
+      </div>
+      <div class="panel soon-card">
+        <span class="tag-soon">Not yet written</span>
+        <h3 class="sub-title">Selling resources</h3>
+        <p>Conversation guides by customer type, the objections that come up most, what may and may not be claimed, and a short library of accurate answers to the questions Conductors actually get asked.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h2 class="footer-head">Shop</h2>
+        <a class="flink" href="shop.html">The catalog</a>
+        <a class="flink" href="#tiers">Domain agents</a>
+        <a class="flink" href="#tiers">Support agents</a>
+        <a class="flink" href="#groups">Packs and the bundle</a>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Library</h2>
+        <a class="flink" href="#catalog">The product catalog</a>
+        <a class="flink" href="#choose">How to choose</a>
+        <span class="flink">Getting started</span>
+        <span class="flink">Selling resources</span>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Learn</h2>
+        <a class="flink" href="index.html">About Orvanna</a>
+        <a class="flink" href="team.html">Who builds Orvanna</a>
+        <span class="flink">Frequently asked questions</span>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Support</h2>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     PRODUCT ARTWORK: sixteen inline marks, one per catalog item.
+     Every one is the brand hexagon with a glyph inside it, drawn
+     so the sixteen are distinguishable at a glance rather than
+     decorative. The frame and the glyph take currentColor, which
+     is the --icon token; the single lit element takes --icon-lit.
+     Both tokens restate with the theme, so the marks follow it.
+     ============================================================ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+
+    <symbol id="ico-payment" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="20" y="24" width="24" height="17" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="20" y1="30" x2="44" y2="30" stroke="currentColor" stroke-width="2.4"/>
+      <rect x="24" y="34" width="8" height="4" rx="1.2" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-shipping" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 19 36 h 15 v -10 h -15 z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M 34 30 h 6 l 5 4.5 v 1.5 h -11 z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="25" cy="40" r="2.6" fill="var(--icon-lit)"/>
+      <circle cx="39" cy="40" r="2.6" fill="currentColor"/>
+    </symbol>
+
+    <symbol id="ico-pricing" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 43 21 v 9 l -13 13 l -9 -9 l 13 -13 z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+      <circle cx="38.5" cy="25.5" r="2.5" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-inventory" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="21" y="33" width="9.5" height="9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <rect x="33.5" y="33" width="9.5" height="9.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+      <rect x="27.25" y="21.5" width="9.5" height="9.5" fill="none" stroke="var(--icon-lit)" stroke-width="2.4" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="ico-marketing" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <circle cx="25" cy="32" r="3" fill="var(--icon-lit)"/>
+      <path d="M 31 24 a 10.5 10.5 0 0 1 0 16" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M 36.5 19.5 a 16.5 16.5 0 0 1 0 25" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="ico-tax" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 23 20 h 11 l 7 7 v 17 h -18 z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>
+      <path d="M 34 20 v 7 h 7" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>
+      <line x1="26.5" y1="32" x2="37.5" y2="32" stroke="currentColor" stroke-width="2"/>
+      <circle cx="32" cy="38.5" r="3.4" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-engineer" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 26 25 L 19.5 32 L 26 39" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 38 25 L 44.5 32 L 38 39" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="34.5" y1="23" x2="29.5" y2="41" stroke="var(--icon-lit)" stroke-width="2.6" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="ico-qa" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 21 32.5 L 28.5 40 L 43 24" fill="none" stroke="var(--icon-lit)" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="ico-secretary" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <rect x="21" y="23" width="22" height="19" rx="2.5" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <line x1="21" y1="29.5" x2="43" y2="29.5" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="27" y1="20" x2="27" y2="25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="37" y1="20" x2="37" y2="25" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <rect x="25" y="33.5" width="6" height="5" rx="1.2" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-executive" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 32 19 L 34.8 29.2 L 45 32 L 34.8 34.8 L 32 45 L 29.2 34.8 L 19 32 L 29.2 29.2 Z" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linejoin="round"/>
+      <circle cx="32" cy="32" r="2.8" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-accounting" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="20.5" y1="44" x2="43.5" y2="44" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+      <line x1="25" y1="40" x2="25" y2="32" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="32" y1="40" x2="32" y2="24" stroke="var(--icon-lit)" stroke-width="3.2" stroke-linecap="round"/>
+      <line x1="39" y1="40" x2="39" y2="28" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="ico-care" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 23 36 v -3.5 a 9 9 0 0 1 18 0 V 36" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+      <rect x="20.5" y="34" width="5" height="8.5" rx="2.4" fill="currentColor"/>
+      <rect x="38.5" y="34" width="5" height="8.5" rx="2.4" fill="var(--icon-lit)"/>
+    </symbol>
+
+    <symbol id="ico-manager" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="32" y1="26" x2="22.5" y2="37.5" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="32" y1="26" x2="32" y2="39" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="32" y1="26" x2="41.5" y2="37.5" stroke="currentColor" stroke-width="2.2"/>
+      <circle cx="32" cy="22.5" r="4" fill="var(--icon-lit)"/>
+      <circle cx="21.5" cy="40" r="3.2" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <circle cx="32" cy="42.5" r="3.2" fill="none" stroke="currentColor" stroke-width="2.4"/>
+      <circle cx="42.5" cy="40" r="3.2" fill="none" stroke="currentColor" stroke-width="2.4"/>
+    </symbol>
+
+    <symbol id="ico-ignition" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 23 32 L 32 21 L 41 32" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="32" y1="22" x2="32" y2="37" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
+      <line x1="24" y1="43" x2="40" y2="43" stroke="var(--icon-lit)" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+
+    <symbol id="ico-momentum" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M 22 23 L 31 32 L 22 41" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M 33 23 L 42 32 L 33 41" fill="none" stroke="var(--icon-lit)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="ico-constellation" viewBox="0 0 64 64">
+      <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+      <line x1="32" y1="32" x2="32" y2="21" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="32" y1="32" x2="41.5" y2="26.5" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="32" y1="32" x2="41.5" y2="37.5" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="32" y1="32" x2="32" y2="43" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="32" y1="32" x2="22.5" y2="37.5" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="32" y1="32" x2="22.5" y2="26.5" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="32" cy="21" r="2.4" fill="currentColor"/>
+      <circle cx="41.5" cy="26.5" r="2.4" fill="currentColor"/>
+      <circle cx="41.5" cy="37.5" r="2.4" fill="currentColor"/>
+      <circle cx="32" cy="43" r="2.4" fill="currentColor"/>
+      <circle cx="22.5" cy="37.5" r="2.4" fill="currentColor"/>
+      <circle cx="22.5" cy="26.5" r="2.4" fill="currentColor"/>
+      <circle cx="32" cy="32" r="4" fill="var(--icon-lit)"/>
+    </symbol>
+
+  </defs>
+</svg>
+
+<script>
+/* ============================================================
+   Orvanna Conductor Library: the only script on the page.
+   Three small jobs, none of which the content depends on. The
+   catalog entries are real markup, so the library reads fine
+   with scripting switched off; this file only adds the theme
+   control, the tier filter, and the current-section highlight.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var root = document.documentElement;
+  var STORE_KEY = 'orvannaLibraryTheme';
+
+  /* ---------- theme: auto, light, or dark ---------- */
+
+  var themeButtons = Array.prototype.slice.call(
+    document.querySelectorAll('[data-theme-set]')
+  );
+
+  function readStoredTheme() {
+    try {
+      var value = window.localStorage.getItem(STORE_KEY);
+      return (value === 'light' || value === 'dark') ? value : 'system';
+    } catch (err) {
+      return 'system';
+    }
+  }
+
+  function paintThemeButtons(choice) {
+    themeButtons.forEach(function (button) {
+      var isOn = button.getAttribute('data-theme-set') === choice;
+      button.setAttribute('aria-pressed', String(isOn));
+    });
+  }
+
+  function applyTheme(choice) {
+    if (choice === 'light' || choice === 'dark') {
+      root.setAttribute('data-theme', choice);
+    } else {
+      root.removeAttribute('data-theme');
+    }
+    try {
+      if (choice === 'system') {
+        window.localStorage.removeItem(STORE_KEY);
+      } else {
+        window.localStorage.setItem(STORE_KEY, choice);
+      }
+    } catch (err) {
+      /* storage blocked: the choice still applies for this visit */
+    }
+    paintThemeButtons(choice);
+  }
+
+  themeButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      applyTheme(button.getAttribute('data-theme-set'));
+    });
+  });
+
+  paintThemeButtons(readStoredTheme());
+
+  /* ---------- tier filter ---------- */
+
+  var pills = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
+  var entries = Array.prototype.slice.call(document.querySelectorAll('#entryList .entry'));
+  var emptyNote = document.getElementById('filterEmpty');
+
+  function applyFilter(tier) {
+    var shown = 0;
+    entries.forEach(function (entry) {
+      var match = (tier === 'all') || (entry.getAttribute('data-tier') === tier);
+      entry.hidden = !match;
+      if (match) { shown += 1; }
+    });
+    if (emptyNote) { emptyNote.hidden = shown > 0; }
+    pills.forEach(function (pill) {
+      pill.setAttribute('aria-pressed', String(pill.getAttribute('data-filter') === tier));
+    });
+  }
+
+  pills.forEach(function (pill) {
+    pill.addEventListener('click', function () {
+      applyFilter(pill.getAttribute('data-filter'));
+    });
+  });
+
+  /* A filtered entry must never stay hidden when someone follows an
+     in-page link to it, which happens from every "What is inside"
+     chip and from the contents rail. */
+  window.addEventListener('hashchange', function () {
+    var target = window.location.hash ? document.querySelector(window.location.hash) : null;
+    if (target && target.classList && target.classList.contains('entry') && target.hidden) {
+      applyFilter('all');
+      target.scrollIntoView();
+    }
+  });
+
+  /* ---------- contents rail: highlight the section in view ---------- */
+
+  var railLinks = Array.prototype.slice.call(document.querySelectorAll('.rail-link'));
+  var sections = railLinks
+    .map(function (link) { return document.querySelector(link.getAttribute('href')); })
+    .filter(function (node) { return !!node; });
+
+  if (sections.length && typeof window.IntersectionObserver === 'function') {
+    var observer = new window.IntersectionObserver(function (records) {
+      records.forEach(function (record) {
+        if (!record.isIntersecting) { return; }
+        railLinks.forEach(function (link) {
+          link.classList.toggle('is-current', link.getAttribute('href') === '#' + record.target.id);
+        });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+
+    sections.forEach(function (section) { observer.observe(section); });
+  }
+})();
+</script>
+
+</body>
+</html>

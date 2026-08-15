@@ -99,12 +99,12 @@ window.ORVANNA = (function () {
        above the sum of its parts ($150.00) because the management
        layer itself is the product: one agent that runs the trio. */
     { sku: 'manager', tier: 'bundle', name: 'Manager Agent',
-      blurb: 'One agent that runs your back office: engineering, scheduling, and the books, coordinated as a single team.',
+      blurb: 'One agent that runs your back office: engineering, scheduling, and the books, coordinated as a single ensemble.',
       sub: { price: 200, pv: 200 }, once: { price: 2000, pv: 2000 },
       includes: ['engineer', 'secretary', 'accounting'],
       icon: hexIcon('<circle cx="32" cy="22.5" r="3.6" fill="#22D3EE"/><circle cx="21.5" cy="40" r="3" fill="#818CF8"/><circle cx="32" cy="42.5" r="3" fill="#818CF8"/><circle cx="42.5" cy="40" r="3" fill="#818CF8"/><line x1="32" y1="26" x2="22.5" y2="37.5" stroke="#818CF8" stroke-width="2.2"/><line x1="32" y1="26" x2="32" y2="39" stroke="#818CF8" stroke-width="2.2"/><line x1="32" y1="26" x2="41.5" y2="37.5" stroke="#818CF8" stroke-width="2.2"/>') },
 
-    /* ----- Digital packs: curated teams, even pricing, PV = dollars ----- */
+    /* ----- Digital packs: curated ensembles, even pricing, PV = dollars ----- */
     { sku: 'ignition', tier: 'pack', name: 'Ignition Pack',
       blurb: 'The first-storefront trio: take payments, answer customers, keep the calendar straight.',
       sub: { price: 200, pv: 200 }, once: { price: 2000, pv: 2000 },
@@ -125,9 +125,11 @@ window.ORVANNA = (function () {
   /* ---------- product page prose (Round 1 content pass) ----------
      Written by orvanna-writer. Three sections per item, matching the
      product.html headings: help ("How this helps your business"),
-     day ("What this agent does day to day"), team ("Works with your
-     team"). Text only: prices, PV, and every other fact stay in the
-     PRODUCTS entries above. */
+     day ("What this agent does day to day"), ensemble ("Works with your
+     ensemble"). An ensemble is the set of agents a Conductor owns; the
+     people a Conductor sponsors are their team, which is a different
+     thing and never called an ensemble. Text only: prices, PV, and
+     every other fact stay in the PRODUCTS entries above. */
 
   var PROSE = {
 
@@ -140,7 +142,7 @@ window.ORVANNA = (function () {
         'Each morning it reconciles yesterday\'s settlements against your orders, down to the cent. Through the day it monitors authorizations, categorizes declines, and schedules retries for the ones worth another attempt.',
         'When a refund, chargeback, or mismatch needs a human decision, it escalates to you with the transaction history, the processor\'s response codes, and a drafted reply. It closes the day by writing a settlement summary you can read in one minute.'
       ],
-      team: [
+      ensemble: [
         'It hands clean payment records to the Accounting agent and dispute evidence to whoever answers your disputes. Ask it about any transaction and it answers with the full trail.',
         'You approve anything unusual: large refunds, new retry rules, changes to how declines are handled. The agent proposes; you decide.'
       ]
@@ -155,7 +157,7 @@ window.ORVANNA = (function () {
         'Orders come in; it compares carrier rates and delivery estimates, books the shipment, and sends the tracking link. It checks every open shipment several times a day and marks the ones that stopped moving.',
         'Stalled parcels get a carrier inquiry filed right away. Lost ones get a claim drafted with the paperwork attached, waiting for your approval before it is submitted.'
       ],
-      team: [
+      ensemble: [
         'It feeds delivery status to Customer Care so support answers are current, and shipping costs to Accounting so freight lands in the right column.',
         'Carrier changes, claim submissions, and refund promises stay in your hands. The agent prepares each one and asks.'
       ]
@@ -170,7 +172,7 @@ window.ORVANNA = (function () {
         'It tracks your costs and your competitors\' listed prices through the day and recomputes margin on every item you sell. Items that drift outside the bands you set go on a review list.',
         'Once a week it drafts a full price review: what to raise, what to hold, what to discount, each with the numbers behind it. You approve line by line or all at once.'
       ],
-      team: [
+      ensemble: [
         'It shares margin data with the Marketing agent so promotions are built on real numbers, and cost data with Accounting so the books match the shelf.',
         'Your pricing strategy stays yours. The agent runs the arithmetic, keeps the watchlist, and brings you decisions worth making.'
       ]
@@ -185,7 +187,7 @@ window.ORVANNA = (function () {
         'It reconciles stock counts against sales and receipts every night and investigates any gap. During the day it tracks velocity per item and recalculates reorder points as the numbers move.',
         'When an item crosses its reorder point, it drafts the purchase order with the supplier, quantity, and expected cost filled in. You approve; it sends the order and then tracks the delivery.'
       ],
-      team: [
+      ensemble: [
         'It tells the Shipping agent what is arriving, the Pricing agent what is aging, and Accounting what the stockroom is worth.',
         'Supplier choices and every purchase order remain your call. The agent never spends money without a yes.'
       ]
@@ -200,7 +202,7 @@ window.ORVANNA = (function () {
         'It drafts posts, emails, and product copy in your voice for your review each morning. Approved pieces go out on schedule; the rest wait for your edits.',
         'It watches campaign results through the day and files a weekly readout: what ran, what it cost, what came back. Underperformers come with a proposed fix, not just a red number.'
       ],
-      team: [
+      ensemble: [
         'It pulls margin from the Pricing agent before proposing any discount and hands warm inquiries to Customer Care with context attached.',
         'Nothing publishes without your approval. The agent drafts and measures; the brand voice and the final word are yours.'
       ]
@@ -215,7 +217,7 @@ window.ORVANNA = (function () {
         'It categorizes transactions for tax treatment as they occur and maintains a live calendar of upcoming obligations by region. Rate changes in places you sell get flagged the day it learns of them.',
         'Ahead of each deadline it assembles the return, the supporting schedules, and a plain-language summary of what changed since last period, then hands the packet to your reviewer.'
       ],
-      team: [
+      ensemble: [
         'It draws clean figures from the Accounting agent and payment records from the Payment agent, so the return matches the books by construction.',
         'Your accountant stays the authority. The agent is the preparer that never misses a date and never loses a receipt.'
       ]
@@ -230,7 +232,7 @@ window.ORVANNA = (function () {
         'It works a request queue you write in plain English. Each item becomes a scoped change: written, tested against your setup, and staged for your approval before anything goes live.',
         'It also watches your site and internal tools for errors, and files a short report when something breaks, usually with the fix already attached.'
       ],
-      team: [
+      ensemble: [
         'It pairs naturally with Quality Assurance, which checks its work before you see it, and it takes escalations from any domain agent that hits a technical wall.',
         'Nothing deploys without your go-ahead. You read a two-line summary of each change, not the code, unless you want the code.'
       ]
@@ -245,7 +247,7 @@ window.ORVANNA = (function () {
         'Every change to your site or tools triggers a test pass: does each page load, does each form submit, does checkout complete, do the numbers on screen match the records underneath.',
         'Findings are filed by severity with steps to reproduce and screenshots. A clean pass is reported too, so silence never means untested.'
       ],
-      team: [
+      ensemble: [
         'It reviews the Software Engineer agent\'s changes as a matter of routine, and it takes test requests from you in plain language: check this page, try this flow, break this if you can.',
         'It blocks nothing on its own authority. It reports, you decide what ships.'
       ]
@@ -260,7 +262,7 @@ window.ORVANNA = (function () {
         'It maintains your calendar, drafts your routine mail for approval, and turns meetings into short notes with the decisions and action items pulled out.',
         'Each morning it hands you the day on one page: appointments, promised follow-ups, and the three things that will slip if today ignores them.'
       ],
-      team: [
+      ensemble: [
         'It books around the people you meet, follows up politely so you do not have to, and keeps notes any teammate can search later.',
         'It signs nothing and commits you to nothing. Drafts go out only after your yes, and your calendar rules are its law.'
       ]
@@ -275,8 +277,8 @@ window.ORVANNA = (function () {
         'It reviews the day\'s figures across every agent you run and keeps a scorecard against the targets you set. Drift gets named early, while it is still cheap to correct.',
         'Once a week it writes the briefing you would want from a chief of staff: three numbers that moved, why they moved, and one recommendation with the reasoning shown.'
       ],
-      team: [
-        'It reads from every agent on your account and gives each one priorities that match your stated goals, so the whole team pulls in one direction.',
+      ensemble: [
+        'It reads from every agent on your account and gives each one priorities that match your stated goals, so the whole ensemble pulls in one direction.',
         'It recommends; it never decides. Strategy, hiring, spending, and direction stay where they belong, with you.'
       ]
     },
@@ -290,7 +292,7 @@ window.ORVANNA = (function () {
         'It ingests the day\'s transactions, categorizes them against your chart of accounts, and reconciles bank and processor balances to the cent. Anything it cannot place with confidence goes on a short question list for you.',
         'At each month\'s close it drafts the statements and a plain-language note on what changed and why. Locked periods stay locked.'
       ],
-      team: [
+      ensemble: [
         'It receives settlement data from the Payment agent, freight costs from Shipping, and stock values from Inventory, and it feeds clean figures to the Tax agent.',
         'It proposes journal entries; it does not invent them. You or your accountant approve anything outside the routine.'
       ]
@@ -305,7 +307,7 @@ window.ORVANNA = (function () {
         'It watches your inbox and chat, answers the questions it can prove from your own records, and drafts replies for the ones it cannot. Order status questions get live answers pulled from the Shipping agent.',
         'Everything is logged: who asked what, what was answered, what is still open. Patterns in the questions become a weekly note, because a repeated question is product feedback in disguise.'
       ],
-      team: [
+      ensemble: [
         'It escalates refunds and exceptions to you with a recommendation attached, and passes product complaints to the agents whose domain they touch.',
         'It never promises money, credit, or policy changes on its own. Those drafts wait for your approval, every time.'
       ]
@@ -313,16 +315,16 @@ window.ORVANNA = (function () {
 
     manager: {
       help: [
-        'Three support agents are useful. Three support agents with a manager are a back office. The Manager Agent runs the Software Engineer, Secretary, and Accounting agents as one coordinated team.',
+        'Three support agents are useful. Three support agents with a manager are a back office. The Manager Agent runs the Software Engineer, Secretary, and Accounting agents as one coordinated ensemble.',
         'You stop dispatching tasks to individual agents. You tell the Manager what you need in plain language, and it decides who does what, in what order, and reports back once, when the work is done.'
       ],
       day: [
         'It holds the shared task list, assigns work across its three agents, and resolves the collisions: the code change that affects the books, the meeting that conflicts with the monthly close.',
-        'You get one daily summary instead of three: what the team finished, what is in motion, and the items waiting on your decision.'
+        'You get one daily summary instead of three: what the ensemble finished, what is in motion, and the items waiting on your decision.'
       ],
-      team: [
+      ensemble: [
         'The Manager is the single point of contact for its trio and answers for their combined output. Questions about any of the three go to it.',
-        'Its authority ends where yours begins: it sequences and delegates inside the team, and brings everything external, financial, or irreversible to you.'
+        'Its authority ends where yours begins: it sequences and delegates inside the ensemble, and brings everything external, financial, or irreversible to you.'
       ]
     },
 
@@ -335,7 +337,7 @@ window.ORVANNA = (function () {
         'The Payment Agent reconciles your sales and works your declines. Customer Care answers the inbox from your own records. The Secretary runs the calendar and the follow-ups.',
         'Together they cover the storefront\'s daily heartbeat: money in and accounted for, questions answered, commitments kept.'
       ],
-      team: [
+      ensemble: [
         'The three share what they know: a payment question in the inbox gets answered with real transaction data, and a promised callback lands on your calendar by itself.',
         'Each agent keeps its own approval boundary. Refunds, unusual replies, and new commitments all still come to you.'
       ]
@@ -350,7 +352,7 @@ window.ORVANNA = (function () {
         'Marketing drafts and measures campaigns while Pricing keeps the margins honest underneath them. The Payment Agent recovers the declines that growth multiplies.',
         'The Software Engineer ships the changes your growth demands, and Quality Assurance checks every one before your customers meet it.'
       ],
-      team: [
+      ensemble: [
         'The five trade data constantly: campaign results inform pricing reviews, pricing shapes promotions, and every site change is tested before it can cost a sale.',
         'You set the direction and approve the changes. The pack supplies the throughput a growth push actually needs.'
       ]
@@ -365,7 +367,7 @@ window.ORVANNA = (function () {
         'Each domain agent works its own function through the day, and the Manager keeps its support trio moving underneath: the books current, the small fixes shipped, the calendar clean.',
         'The day ends in one combined report: money, parcels, prices, stock, campaigns, and filing obligations, with the exceptions that need you listed first.'
       ],
-      team: [
+      ensemble: [
         'This is the pack where coordination pays most: settlements flow to the books, stock levels flow to reorders, costs flow to prices, and figures flow to filings without a human ferrying spreadsheets.',
         'Scale changes nothing about authority. Every filing, payment change, and purchase order still stops at your desk for a yes.'
       ]

@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Conductors</title>
+<meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<script>
+/* Applies a stored choice before first paint, so the page never flashes
+   the wrong palette. With no stored choice the attribute stays off and the
+   viewer's own system preference decides, which is the whole point of the
+   guarded media query in the stylesheet below. */
+(function () {
+  'use strict';
+  try {
+    var saved = window.localStorage.getItem('orvanna-conductor-theme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch (err) { /* storage unavailable: the system preference decides */ }
+})();
+</script>
+<style>
+/* ============================================================
+   Orvanna: what is a Conductor.
+   Self contained page. Every rule, every drawing and every
+   script block lives in this file. No framework, no build step,
+   no request leaves the page except the two brand assets that
+   sit beside it on disk.
+
+   THEMING RULE, from the design system: a colour is never
+   defined only inside a media query or a theme block. The
+   complete LIGHT palette is declared on bare :root below. The
+   dark palette only RESTATES tokens that already exist, twice:
+   once under a guarded preference query and once under an
+   explicit selector, so a viewer preference and a deliberate
+   choice both work and the choice wins.
+   ============================================================ */
+
+/* ---------- 1. the complete palette, light, on bare :root ---------- */
+
+:root {
+  --field:        #FFFFFF;
+  --field-2:      #F4F6FB;
+  --field-3:      #EEF1F8;
+  --panel:        #FFFFFF;
+  --panel-border: rgba(79, 70, 229, 0.20);
+  --panel-lit:    rgba(14, 116, 144, 0.34);
+  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --heading:      #0F172A;
+  --body:         #334155;
+  --muted:        #5B6472;
+  --legal:        #5B6472;
+  --accent:       #0E7490;
+  --accent-soft:  rgba(14, 116, 144, 0.10);
+  --indigo:       #4F46E5;
+  --indigo-soft:  #4338CA;
+  --violet:       #6D28D9;
+  --hairline:     rgba(15, 23, 42, 0.12);
+  --chip-bg:      rgba(79, 70, 229, 0.06);
+  --nav-bg:       #FFFFFF;
+  --nav-link:     #334155;
+  --nav-link-on:  #0F172A;
+  --footer-bg:    #F1F5F9;
+  --btn-solid-bg: #0E7490;
+  --btn-solid-fg: #FFFFFF;
+  --btn-solid-hv: #0B5C72;
+  --btn-ghost-bg: #FFFFFF;
+  --btn-ghost-fg: #0F172A;
+  --btn-ghost-bd: rgba(79, 70, 229, 0.45);
+  --glow-a:       rgba(79, 70, 229, 0.06);
+  --glow-b:       rgba(167, 139, 250, 0.06);
+  --glow-c:       rgba(14, 116, 144, 0.06);
+  --mark:         #4F46E5;
+  --mark-lit:     #0E7490;
+  --mark-line:    rgba(15, 23, 42, 0.22);
+  --mark-fill:    rgba(79, 70, 229, 0.07);
+  --logo-dark:    none;
+  --logo-light:   block;
+  --maxw:         1100px;
+}
+
+/* ---------- 2. the dark restatement, guarded preference ---------- */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --field:        #060B18;
+    --field-2:      #0A1226;
+    --field-3:      #080F20;
+    --panel:        linear-gradient(165deg, rgba(30, 41, 59, 0.62), rgba(13, 20, 38, 0.44));
+    --panel-border: rgba(129, 140, 248, 0.26);
+    --panel-lit:    rgba(34, 211, 238, 0.30);
+    --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    --heading:      #F1F5F9;
+    --body:         #C7D0DE;
+    --muted:        #94A3B8;
+    --legal:        #7C8AA0;
+    --accent:       #22D3EE;
+    --accent-soft:  rgba(34, 211, 238, 0.10);
+    --indigo:       #818CF8;
+    --indigo-soft:  #A5B4FC;
+    --violet:       #A78BFA;
+    --hairline:     rgba(129, 140, 248, 0.18);
+    --chip-bg:      rgba(129, 140, 248, 0.10);
+    --nav-bg:       rgba(6, 11, 24, 0.78);
+    --nav-link:     #C7D0DE;
+    --nav-link-on:  #FFFFFF;
+    --footer-bg:    #050914;
+    --btn-solid-bg: #22D3EE;
+    --btn-solid-fg: #05121C;
+    --btn-solid-hv: #67E3F4;
+    --btn-ghost-bg: linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
+    --btn-ghost-fg: #E2E8F0;
+    --btn-ghost-bd: rgba(129, 140, 248, 0.55);
+    --glow-a:       rgba(79, 70, 229, 0.17);
+    --glow-b:       rgba(167, 139, 250, 0.13);
+    --glow-c:       rgba(34, 211, 238, 0.12);
+    --mark:         #818CF8;
+    --mark-lit:     #22D3EE;
+    --mark-line:    rgba(129, 140, 248, 0.40);
+    --mark-fill:    rgba(129, 140, 248, 0.08);
+    --logo-dark:    block;
+    --logo-light:   none;
+  }
+}
+
+/* ---------- 3. the dark restatement, explicit choice ---------- */
+
+:root[data-theme="dark"] {
+  --field:        #060B18;
+  --field-2:      #0A1226;
+  --field-3:      #080F20;
+  --panel:        linear-gradient(165deg, rgba(30, 41, 59, 0.62), rgba(13, 20, 38, 0.44));
+  --panel-border: rgba(129, 140, 248, 0.26);
+  --panel-lit:    rgba(34, 211, 238, 0.30);
+  --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --heading:      #F1F5F9;
+  --body:         #C7D0DE;
+  --muted:        #94A3B8;
+  --legal:        #7C8AA0;
+  --accent:       #22D3EE;
+  --accent-soft:  rgba(34, 211, 238, 0.10);
+  --indigo:       #818CF8;
+  --indigo-soft:  #A5B4FC;
+  --violet:       #A78BFA;
+  --hairline:     rgba(129, 140, 248, 0.18);
+  --chip-bg:      rgba(129, 140, 248, 0.10);
+  --nav-bg:       rgba(6, 11, 24, 0.78);
+  --nav-link:     #C7D0DE;
+  --nav-link-on:  #FFFFFF;
+  --footer-bg:    #050914;
+  --btn-solid-bg: #22D3EE;
+  --btn-solid-fg: #05121C;
+  --btn-solid-hv: #67E3F4;
+  --btn-ghost-bg: linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
+  --btn-ghost-fg: #E2E8F0;
+  --btn-ghost-bd: rgba(129, 140, 248, 0.55);
+  --glow-a:       rgba(79, 70, 229, 0.17);
+  --glow-b:       rgba(167, 139, 250, 0.13);
+  --glow-c:       rgba(34, 211, 238, 0.12);
+  --mark:         #818CF8;
+  --mark-lit:     #22D3EE;
+  --mark-line:    rgba(129, 140, 248, 0.40);
+  --mark-fill:    rgba(129, 140, 248, 0.08);
+  --logo-dark:    block;
+  --logo-light:   none;
+}
+
+/* ---------- 4. reset and page ---------- */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { overflow-x: clip; scroll-behavior: smooth; }
+
+body {
+  font-family: "Segoe UI", "Segoe UI Variable Text", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--body);
+  background: var(--field);
+  overflow-x: clip;
+}
+
+img, svg { max-width: 100%; display: block; }
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+
+.band { padding: 88px 0; position: relative; overflow: hidden; }
+.band + .band { border-top: 1px solid var(--hairline); }
+.band-2 { background: var(--field-2); }
+
+.glow-a::before, .glow-b::before, .glow-c::before {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 680px; height: 680px;
+  border-radius: 50%;
+}
+.glow-a::before { left: -220px; top: -160px; background: radial-gradient(closest-side, var(--glow-a), transparent 70%); }
+.glow-b::before { right: -240px; top: 8%;    background: radial-gradient(closest-side, var(--glow-b), transparent 70%); }
+.glow-c::before { left: 50%; transform: translateX(-50%); bottom: -320px; background: radial-gradient(closest-side, var(--glow-c), transparent 70%); }
+
+.band > .wrap { position: relative; z-index: 1; }
+
+/* ---------- 5. type ---------- */
+
+.kicker {
+  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.34em; color: var(--accent); margin-bottom: 18px;
+}
+
+h1.page-title {
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
+  line-height: 1.18; color: var(--heading); margin-bottom: 26px;
+}
+
+h2.section-title {
+  font-size: clamp(1.45rem, 3vw, 2.05rem);
+  font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em;
+  line-height: 1.25; color: var(--heading); margin-bottom: 22px;
+}
+
+h3.card-title {
+  font-size: 1.02rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: var(--heading); margin-bottom: 10px;
+}
+
+h4.mini-title {
+  font-size: 0.84rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.16em; color: var(--heading); margin-bottom: 8px;
+}
+
+.lead { max-width: 46em; color: var(--muted); font-size: 1.06rem; }
+.copy { max-width: 46em; }
+.copy p + p { margin-top: 16px; }
+.copy p { color: var(--body); }
+.spaced { margin-bottom: 40px; }
+.tight { margin-bottom: 22px; }
+strong { color: var(--heading); font-weight: 650; }
+em.q { font-style: normal; color: var(--accent); font-weight: 600; }
+
+.note {
+  font-size: 0.84rem; color: var(--legal); letter-spacing: 0.02em;
+  max-width: 46em;
+}
+
+/* ---------- 6. buttons ---------- */
+
+.btn {
+  font: inherit; display: inline-block; padding: 12px 26px;
+  font-size: 0.86rem; font-weight: 650; text-transform: uppercase;
+  letter-spacing: 0.14em; text-decoration: none; border-radius: 8px;
+  border: 1.5px solid transparent; background: transparent; color: inherit;
+  cursor: pointer;
+  transition: transform 0.16s ease, background-color 0.16s ease,
+              border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
+}
+.btn-solid { background: var(--btn-solid-bg); color: var(--btn-solid-fg); }
+.btn-solid:hover { background: var(--btn-solid-hv); transform: translateY(-2px); }
+.btn-ghost { background: var(--btn-ghost-bg); color: var(--btn-ghost-fg); border-color: var(--btn-ghost-bd); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+.btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+
+/* ---------- 7. navigation, matching the rest of the site ---------- */
+
+.nav {
+  position: sticky; top: 0; z-index: 50;
+  background: var(--nav-bg);
+  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--hairline);
+}
+.nav-inner {
+  max-width: var(--maxw); margin: 0 auto; padding: 14px 28px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 18px; flex-wrap: wrap;
+}
+.nav-brand { display: block; flex-shrink: 0; }
+.nav-logo { height: 30px; width: auto; }
+.nav-logo.on-dark  { display: var(--logo-dark); }
+.nav-logo.on-light { display: var(--logo-light); }
+
+.nav-links { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+
+.nav-link {
+  position: relative; font-size: 0.84rem; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.14em; text-decoration: none;
+  color: var(--nav-link); padding-bottom: 3px; transition: color 0.15s ease;
+}
+a.nav-link:hover { color: var(--nav-link-on); }
+a.nav-link::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+  height: 2px; border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), var(--indigo));
+  transform: scaleX(0); transform-origin: left center;
+  transition: transform 0.28s ease;
+}
+a.nav-link:hover::after, a.nav-link.is-active::after { transform: scaleX(1); }
+.nav-link.is-active { color: var(--nav-link-on); }
+.nav-link.is-soon { color: var(--legal); cursor: default; }
+
+.soon-pill {
+  display: inline-block; margin-left: 7px; padding: 1px 7px 2px;
+  font-size: 0.6rem; letter-spacing: 0.18em;
+  border: 1px solid var(--legal); border-radius: 999px; vertical-align: 2px;
+}
+
+.nav-signin {
+  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.14em; text-decoration: none; color: var(--muted);
+  border-left: 1px solid var(--hairline); padding-left: 24px;
+  transition: color 0.15s ease;
+}
+.nav-signin:hover { color: var(--accent); }
+
+.theme-btn {
+  font: inherit; display: inline-flex; align-items: center; gap: 7px;
+  padding: 5px 11px; border-radius: 999px;
+  border: 1px solid var(--hairline); background: transparent;
+  color: var(--muted); cursor: pointer;
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.16em;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+.theme-btn:hover { color: var(--accent); border-color: var(--accent); }
+.theme-btn svg { width: 14px; height: 14px; }
+.theme-btn .icon-sun  { display: var(--logo-dark); }
+.theme-btn .icon-moon { display: var(--logo-light); }
+.theme-btn .label-light { display: var(--logo-dark); }
+.theme-btn .label-dark  { display: var(--logo-light); }
+
+/* ---------- 8. panels, cards, rails ---------- */
+
+.panel {
+  position: relative; background: var(--panel);
+  border: 1px solid var(--panel-border); border-radius: 14px;
+  box-shadow: var(--panel-shadow);
+  padding: 30px 32px;
+}
+.panel-lit { border-color: var(--panel-lit); }
+.accent-bar {
+  position: absolute; top: 0; left: 22px; right: 22px; height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--indigo), var(--accent));
+}
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+
+.chip {
+  display: inline-block; padding: 3px 12px 4px; border-radius: 999px;
+  background: var(--chip-bg); border: 1px solid var(--panel-border);
+  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.18em; color: var(--indigo-soft);
+  margin-bottom: 14px; white-space: nowrap;
+}
+.chip-lit { color: var(--accent); border-color: var(--panel-lit); background: var(--accent-soft); }
+
+/* the numbered step rail */
+.steps { list-style: none; counter-reset: step; display: grid; gap: 18px; }
+.step {
+  counter-increment: step;
+  display: grid; grid-template-columns: 54px 1fr; gap: 20px;
+  padding: 22px 26px; border-radius: 14px;
+  background: var(--panel); border: 1px solid var(--panel-border);
+  box-shadow: var(--panel-shadow);
+}
+.step::before {
+  content: counter(step);
+  display: flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 999px;
+  border: 1.5px solid var(--panel-lit); color: var(--accent);
+  font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums;
+}
+.step-when {
+  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--muted); margin-bottom: 6px;
+}
+.step h3 { margin-bottom: 8px; }
+.done {
+  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--hairline);
+  font-size: 0.92rem; color: var(--muted);
+}
+.done b { color: var(--accent); font-weight: 700; text-transform: uppercase;
+          letter-spacing: 0.14em; font-size: 0.72rem; margin-right: 8px; }
+
+/* plain lists */
+ul.plain { list-style: none; display: grid; gap: 12px; }
+ul.plain li { position: relative; padding-left: 26px; color: var(--body); }
+ul.plain li::before {
+  content: ""; position: absolute; left: 0; top: 11px;
+  width: 9px; height: 9px; border-radius: 2px;
+  background: var(--accent); transform: rotate(45deg);
+}
+ul.plain.quiet li::before { background: var(--indigo); }
+
+/* the week table */
+.table-scroll { overflow-x: auto; border-radius: 14px; }
+table.week {
+  width: 100%; border-collapse: collapse; min-width: 560px;
+  background: var(--panel); border: 1px solid var(--panel-border);
+  border-radius: 14px; box-shadow: var(--panel-shadow);
+}
+table.week th, table.week td {
+  text-align: left; padding: 14px 20px;
+  border-bottom: 1px solid var(--hairline); vertical-align: top;
+}
+table.week th {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.14em; color: var(--muted);
+}
+table.week td:nth-child(2) {
+  font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--accent);
+  font-weight: 600;
+}
+table.week tr:last-child td { border-bottom: 0; }
+
+/* the drawing frames */
+.figure { margin: 0 0 12px; }
+.figure-frame {
+  overflow-x: auto; border-radius: 14px;
+  border: 1px solid var(--panel-border); background: var(--panel);
+  box-shadow: var(--panel-shadow); padding: 18px 20px;
+}
+.figure-frame svg { min-width: 640px; height: auto; }
+figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
+
+/* drawing text */
+.d-title { font: 700 15px "Segoe UI", system-ui, sans-serif; letter-spacing: 0.16em; fill: var(--heading); text-transform: uppercase; }
+.d-sub   { font: 400 13px "Segoe UI", system-ui, sans-serif; fill: var(--muted); }
+.d-lab   { font: 600 13px "Segoe UI", system-ui, sans-serif; fill: var(--body); }
+.d-small { font: 400 12px "Segoe UI", system-ui, sans-serif; fill: var(--muted); }
+
+/* the two word callout */
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+.vs .panel h3 { color: var(--heading); }
+.vs .word {
+  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.22em; color: var(--accent); margin-bottom: 6px;
+}
+.oneliner {
+  margin-top: 30px; padding: 20px 26px; border-radius: 14px;
+  border: 1px solid var(--panel-lit); background: var(--accent-soft);
+  color: var(--heading); font-size: 1.06rem;
+}
+
+/* ---------- 9. footer, matching the rest of the site ---------- */
+
+.footer {
+  background: var(--footer-bg); border-top: 1px solid var(--hairline);
+  padding: 64px 0 40px; color: var(--muted);
+}
+.footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-bottom: 48px; }
+.footer-head {
+  font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.2em; color: var(--heading); margin-bottom: 14px;
+}
+.flink { display: block; font-size: 0.9rem; color: var(--muted); padding: 3px 0; cursor: default; transition: color 0.15s ease; }
+a.flink { text-decoration: none; cursor: pointer; }
+a.flink:hover { color: var(--accent); }
+.footer-meta { border-top: 1px solid var(--hairline); padding-top: 28px; }
+.footer-contact { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 18px; }
+.footer-mail { color: var(--body); text-decoration: none; font-size: 0.92rem; letter-spacing: 0.04em; }
+.footer-mail:hover { color: var(--accent); }
+.socials { display: flex; gap: 14px; }
+.social {
+  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--hairline); border-radius: 50%; color: var(--muted);
+}
+.social svg { width: 17px; height: 17px; }
+.legal { font-size: 0.78rem; color: var(--legal); letter-spacing: 0.02em; }
+
+/* ---------- 10. responsive ---------- */
+
+@media (max-width: 920px) {
+  .grid-3 { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 760px) {
+  .band { padding: 64px 0; }
+  .grid-2, .grid-3, .vs { grid-template-columns: 1fr; }
+  .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  .step { grid-template-columns: 1fr; gap: 12px; }
+}
+@media (max-width: 480px) {
+  .wrap { padding: 0 20px; }
+  .nav-inner { padding: 12px 20px; justify-content: center; }
+  .nav-links { gap: 13px; justify-content: center; }
+  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em; }
+  .nav-signin { padding-left: 13px; border-left: 0; }
+  .panel { padding: 24px 22px; }
+  .footer-contact { justify-content: center; }
+}
+
+/* ---------- 11. reduced motion ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ---------- 12. print: force the light palette and drop the chrome ----------
+   The theme block is restated here, including the explicit dark selector,
+   because a media query carries no extra weight of its own and would
+   otherwise lose to a reader who had chosen the dark theme. */
+
+@media print {
+  :root, :root[data-theme="dark"], :root[data-theme="light"] {
+    --field: #FFFFFF; --field-2: #FFFFFF; --field-3: #FFFFFF;
+    --panel: #FFFFFF; --panel-border: #B8BFD0; --panel-lit: #7A8398;
+    --panel-shadow: none;
+    --heading: #000000; --body: #1A1A1A; --muted: #3D3D3D; --legal: #3D3D3D;
+    --accent: #0B5C72; --accent-soft: #FFFFFF;
+    --indigo: #3730A3; --indigo-soft: #3730A3; --violet: #5B21B6;
+    --hairline: #C7CBD6; --chip-bg: #FFFFFF;
+    --nav-bg: #FFFFFF; --footer-bg: #FFFFFF;
+    --glow-a: transparent; --glow-b: transparent; --glow-c: transparent;
+    --mark: #3730A3; --mark-lit: #0B5C72;
+    --mark-line: #6B7280; --mark-fill: #FFFFFF;
+    --logo-dark: none; --logo-light: block;
+  }
+  .nav, .footer .socials, .theme-btn { display: none !important; }
+  .band { padding: 26px 0; break-inside: auto; }
+  .band + .band { border-top: 1px solid #C7CBD6; }
+  .panel, .step, table.week, .figure-frame { break-inside: avoid; }
+  .figure-frame svg { min-width: 0; }
+  .table-scroll, .figure-frame { overflow: visible; }
+  a { color: #000000; }
+  body { font-size: 11.5pt; line-height: 1.5; }
+  @page { margin: 16mm; }
+}
+</style>
+</head>
+<body>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg"  alt="Orvanna" class="nav-logo on-dark">
+      <img src="assets/logo-final-primary.svg" alt="Orvanna" class="nav-logo on-light">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link is-active" href="conductor.html" aria-current="page">Conductors</a>
+      <a class="nav-link" href="team.html">Team</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <button class="theme-btn" type="button" id="themeToggle" aria-label="Switch between the light and dark theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
+            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
+            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
+            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
+          </g>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+        <span class="label-light">Light</span>
+        <span class="label-dark">Dark</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="band glow-a">
+  <div class="wrap">
+    <p class="kicker">The opportunity</p>
+    <h1 class="page-title">What is a Conductor</h1>
+    <div class="copy">
+      <p class="lead">A Conductor is what Orvanna calls the people who sell its artificial intelligence (AI) agents. You find the businesses around you that are drowning in work nobody enjoys, you work out which agents would take that work off them, and you stay on as the human who knows their setup.</p>
+      <p>The name is not decoration. A conductor does not play the instruments. A conductor decides which instruments the piece needs, gets them started together, and keeps them in time when the tempo changes. That is the job, almost exactly.</p>
+    </div>
+    <div class="btn-row">
+      <a class="btn btn-solid" href="shop.html">See what a Conductor sells</a>
+      <a class="btn btn-ghost" href="comp-plan.html">Read the compensation brochure</a>
+    </div>
+    <p class="note" style="margin-top:22px;">Enrollment opens soon. This page describes how the program works, so you can decide before it does.</p>
+  </div>
+</section>
+
+<!-- ============ THE NAME ============ -->
+<section class="band band-2 glow-b">
+  <div class="wrap">
+    <p class="kicker">The name</p>
+    <h2 class="section-title">Why Conductor and not distributor</h2>
+    <div class="copy spaced">
+      <p>Most direct selling companies borrow their word from a warehouse: distributor, dealer, representative. Those words fit when the thing being moved is a box. Orvanna does not ship boxes. Its products are agents that go to work inside somebody else's business, and the person who sold them is still needed on the day after the sale.</p>
+    </div>
+    <div class="grid-3">
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="card-title">You do not play</h3>
+        <p>You do not do the bookkeeping, chase the declined cards, or file the returns. The agents do that. Your hands stay off the instruments, which is what makes the work scale past your own hours.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="card-title">You choose the score</h3>
+        <p>A florist and a freight broker do not need the same agents. Picking the right two or three for a specific business, in the right order, is the part that takes judgment, and it is the part software cannot do for itself.</p>
+      </div>
+      <div class="panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="card-title">You keep time</h3>
+        <p>Businesses change. The ensemble that fit a shop in March is short a player by September, when it starts selling into a second country and suddenly has filings it has never done before.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE TWO WORDS ============ -->
+<section class="band glow-c">
+  <div class="wrap">
+    <p class="kicker">Vocabulary</p>
+    <h2 class="section-title">Two words that must never be confused</h2>
+    <div class="copy spaced">
+      <p>Conductors use these two words constantly and they mean completely different things. Getting them mixed up in front of a business owner is the fastest way to sound like you do not understand what you are selling.</p>
+    </div>
+
+    <figure class="figure">
+      <div class="figure-frame">
+        <svg viewBox="0 0 920 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two drawings side by side. On the left, one person surrounded by five connected hexagons labelled with agent names, titled Your ensemble. On the right, one person at the top of a branching tree of five other people, titled Your team.">
+          <defs>
+            <polygon id="hexmark" points="0,-21 18.2,-10.5 18.2,10.5 0,21 -18.2,10.5 -18.2,-10.5"/>
+            <g id="person">
+              <circle cx="0" cy="-9" r="8.4"/>
+              <path d="M -14 12 a 14 14 0 0 1 28 0 z"/>
+            </g>
+          </defs>
+
+          <!-- left: the ensemble -->
+          <text class="d-title" x="30" y="40">Your ensemble</text>
+          <text class="d-sub"   x="30" y="62">the agents you run</text>
+
+          <g stroke="var(--mark-line)" stroke-width="1.6">
+            <line x1="225" y1="212" x2="105" y2="132"/>
+            <line x1="225" y1="212" x2="225" y2="112"/>
+            <line x1="225" y1="212" x2="345" y2="132"/>
+            <line x1="225" y1="212" x2="120" y2="308"/>
+            <line x1="225" y1="212" x2="330" y2="308"/>
+          </g>
+
+          <circle cx="225" cy="212" r="30" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
+          <use href="#person" x="225" y="214" fill="var(--mark-lit)"/>
+          <text class="d-lab" x="225" y="268" text-anchor="middle">You</text>
+
+          <g fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.2">
+            <use href="#hexmark" x="105" y="132"/>
+            <use href="#hexmark" x="225" y="112"/>
+            <use href="#hexmark" x="345" y="132"/>
+            <use href="#hexmark" x="120" y="308"/>
+            <use href="#hexmark" x="330" y="308"/>
+          </g>
+          <g fill="var(--mark-lit)">
+            <circle cx="105" cy="132" r="4.4"/>
+            <circle cx="225" cy="112" r="4.4"/>
+            <circle cx="345" cy="132" r="4.4"/>
+            <circle cx="120" cy="308" r="4.4"/>
+            <circle cx="330" cy="308" r="4.4"/>
+          </g>
+          <g class="d-small" text-anchor="middle">
+            <text x="105" y="172">Payment</text>
+            <text x="225" y="152">Customer Care</text>
+            <text x="345" y="172">Secretary</text>
+            <text x="120" y="348">Accounting</text>
+            <text x="330" y="348">Tax</text>
+          </g>
+          <text class="d-small" x="30" y="386">Software. Priced in dollars. Carries Personal Volume.</text>
+
+          <!-- divider -->
+          <line x1="460" y1="30" x2="460" y2="370" stroke="var(--mark-line)" stroke-width="1.4" stroke-dasharray="5 7"/>
+
+          <!-- right: the team -->
+          <text class="d-title" x="510" y="40">Your team</text>
+          <text class="d-sub"   x="510" y="62">the people you sponsored</text>
+
+          <g stroke="var(--mark-line)" stroke-width="1.6" fill="none">
+            <path d="M 700 132 V 165 H 590 V 200"/>
+            <path d="M 700 132 V 200"/>
+            <path d="M 700 132 V 165 H 810 V 200"/>
+            <path d="M 590 232 V 262 H 545 V 296"/>
+            <path d="M 590 232 V 262 H 640 V 296"/>
+          </g>
+
+          <circle cx="700" cy="112" r="26" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
+          <use href="#person" x="700" y="114" fill="var(--mark-lit)"/>
+
+          <g>
+            <circle cx="590" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
+            <use href="#person" x="590" y="218" fill="var(--mark)"/>
+            <circle cx="700" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
+            <use href="#person" x="700" y="218" fill="var(--mark)"/>
+            <circle cx="810" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
+            <use href="#person" x="810" y="218" fill="var(--mark)"/>
+            <circle cx="545" cy="312" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
+            <use href="#person" x="545" y="314" fill="var(--mark)"/>
+            <circle cx="640" cy="312" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
+            <use href="#person" x="640" y="314" fill="var(--mark)"/>
+          </g>
+          <text class="d-small" x="700" y="152" text-anchor="middle">You</text>
+          <text class="d-small" x="700" y="258" text-anchor="middle">the Conductors you sponsored</text>
+          <text class="d-small" x="592" y="352" text-anchor="middle">the Conductors they sponsored</text>
+          <text class="d-small" x="510" y="386">People. Nobody is bought. Nobody carries Personal Volume.</text>
+        </svg>
+      </div>
+      <figcaption>Left, an ensemble: agents around one person. Right, a team: people under one person. Both drawings show one Conductor, and they are showing completely different things.</figcaption>
+    </figure>
+
+    <div class="vs" style="margin-top:32px;">
+      <div class="panel panel-lit">
+        <p class="word">Ensemble</p>
+        <h3 class="card-title">The agents</h3>
+        <p>Your ensemble is the set of Orvanna agents running on an account, yours or a customer's. An ensemble is software. It is bought, it is priced in dollars, and every item carries Personal Volume (PV), the number that decides whether a month counts as qualified.</p>
+      </div>
+      <div class="panel">
+        <p class="word">Team</p>
+        <h3 class="card-title">The people</h3>
+        <p>Your team, also called your organization, is the people you sponsored, the people they sponsored, and so on down. A team is people. Nobody in it is bought, nobody in it carries Personal Volume, and nothing is ever paid for adding a name to it.</p>
+      </div>
+    </div>
+
+    <p class="oneliner">Say it once and it stays straight: <em class="q">an ensemble plays, a team sells.</em></p>
+  </div>
+</section>
+
+<!-- ============ WHAT YOU ARE SELLING ============ -->
+<section class="band band-2 glow-a">
+  <div class="wrap">
+    <p class="kicker">The actual product</p>
+    <h2 class="section-title">You are not selling software</h2>
+    <div class="copy spaced">
+      <p>Nobody wakes up wanting to buy software. What people want is for a specific, hated, recurring job to stop being theirs. That is what is actually being sold here, and a Conductor who understands that outsells one who has memorized the catalog.</p>
+    </div>
+
+    <div class="panel spaced">
+      <span class="accent-bar" aria-hidden="true"></span>
+      <span class="chip">An illustration, not a customer story</span>
+      <h3 class="card-title">A plumbing company with two vans</h3>
+      <div class="copy">
+        <p>The owner quotes all day and invoices at night. Three invoices a month go unpaid and nobody chases them until the bank balance makes it urgent. Every quarter the tax return happens in a panic across a weekend, from a shoebox of receipts.</p>
+        <p>A weak Conductor opens the catalog and starts at Payment Agent. A good one asks which of those three things they would pay to never think about again, and listens. If the answer is the quarterly weekend, the answer is the Tax Agent, on its own, and nothing else this month. One agent. Set up in an afternoon. The next quarter ends with a prepared return waiting for their accountant instead of a shoebox.</p>
+        <p>That is the whole sale. The second and third agents come later, after the owner has watched the first one work and starts naming the next thing they hate.</p>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="panel">
+        <h4 class="mini-title">Lead with their week</h4>
+        <p>The opening question is what ate the most time last week, not which tier they want. If you cannot name the hour you are giving back, you do not have a sale yet.</p>
+      </div>
+      <div class="panel">
+        <h4 class="mini-title">Sell one thing first</h4>
+        <p>A business with one loud problem does not need twelve agents. Overselling the first order is the most common way a Conductor loses the second one.</p>
+      </div>
+      <div class="panel">
+        <h4 class="mini-title">Be honest about the boundary</h4>
+        <p>Orvanna agents propose and the owner approves. Nothing is filed, paid, published, or ordered without a human yes. Cautious owners buy because of that line, so never blur it to sound impressive.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE WORK ============ -->
+<section class="band glow-b">
+  <div class="wrap">
+    <p class="kicker">The work</p>
+    <h2 class="section-title">What a Conductor actually does</h2>
+    <div class="copy spaced">
+      <p>Five activities, and there is not a sixth. Everything a working Conductor does in a week is one of these.</p>
+    </div>
+
+    <div class="grid-2 spaced">
+      <div class="panel">
+        <h3 class="card-title">1. Listen for the bottleneck</h3>
+        <p>Conversations with owners you already have a reason to talk to, about their week rather than about Orvanna. You are looking for the recurring job that costs them evenings. Most of these conversations end without a sale, and that is the normal result, not a failure.</p>
+      </div>
+      <div class="panel">
+        <h3 class="card-title">2. Fit the ensemble</h3>
+        <p>Match the bottleneck to the smallest set of agents that fixes it. Read the product page for what an agent does day to day and check that it matches what you heard. If nothing fits, say so. Some problems are hiring problems, not agent problems.</p>
+      </div>
+      <div class="panel">
+        <h3 class="card-title">3. Set it up and stay a week</h3>
+        <p>Connect the agent to the tools it needs, agree the approval boundaries with the owner, and read the first outputs together. The first week is where an ensemble either becomes part of how they work or quietly gets ignored.</p>
+      </div>
+      <div class="panel">
+        <h3 class="card-title">4. Check in when things change</h3>
+        <p>A quarterly note, not a monthly pitch. New country, new season, new staff member, first employee: each of those changes which agents make sense. You are the person who already knows their setup, which is why the second sale is easier than the first.</p>
+      </div>
+      <div class="panel panel-lit" style="grid-column: 1 / -1;">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="card-title">5. Sponsor people who want to do the same</h3>
+        <p>Sponsoring means somebody joins Orvanna underneath you and starts conducting their own ensembles and their own customers. You teach them the only way that works: you do one setup alongside them, then you watch them do the next one and say nothing. People you sponsor become your team, and their work is what opens the deeper levels of the compensation plan.</p>
+      </div>
+    </div>
+
+    <h3 class="card-title" style="margin-top:44px;">A week that is actually typical</h3>
+    <p class="copy tight">Honest hours, not aspirational ones.</p>
+    <div class="table-scroll">
+      <table class="week">
+        <thead>
+          <tr><th scope="col">When</th><th scope="col">Roughly</th><th scope="col">What happens</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Monday morning</td><td>20 minutes</td><td>Read what your own agents filed over the weekend. You run what you sell, so this doubles as product knowledge.</td></tr>
+          <tr><td>Two or three times a week</td><td>30 minutes each</td><td>A conversation with a business owner about their week. Some weeks none of them go anywhere.</td></tr>
+          <tr><td>When a setup lands</td><td>About 2 hours, spread over the first week</td><td>Sitting with a new owner while their first agent runs, adjusting the approval boundaries.</td></tr>
+          <tr><td>Weekly, per person on your team</td><td>10 minutes</td><td>A short check in with someone you sponsored. Usually one question they are stuck on.</td></tr>
+          <tr><td>Month end</td><td>15 minutes</td><td>Check your own Personal Volume (PV) for the month, then read the statements when the monthly run closes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin-top:16px;">A few hours a week keeps a Conductor's business alive. Building one faster takes more, and no amount of hours is a promise of anything.</p>
+  </div>
+</section>
+
+<!-- ============ THE FIRST NINETY DAYS ============ -->
+<section class="band band-2 glow-c">
+  <div class="wrap">
+    <p class="kicker">Getting started</p>
+    <h2 class="section-title">The first ninety days</h2>
+    <div class="copy spaced">
+      <p>In order. Skipping ahead is the most common mistake, and the most expensive one is skipping the first step, because you cannot fit an ensemble you have never run.</p>
+    </div>
+
+    <ol class="steps">
+      <li class="step">
+        <div>
+          <p class="step-when">Week 1</p>
+          <h3 class="card-title">Run one agent yourself</h3>
+          <p>Pick the agent that fixes your own worst recurring hour, subscribe to it, and use it properly. Not a demonstration account. The real thing, on your own work, with your own approval boundaries set.</p>
+          <p class="done"><b>Done when</b> you have read one of its outputs and changed something you actually do because of it.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Weeks 1 to 2</p>
+          <h3 class="card-title">Learn three agents properly</h3>
+          <p>Three, not twelve. Read each one's product page end to end, including the day to day section and where its authority stops. Being able to describe three agents precisely beats being able to list all of them.</p>
+          <p class="done"><b>Done when</b> you can explain each of the three, out loud, without the page in front of you.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Week 2</p>
+          <h3 class="card-title">Write your list of twenty</h3>
+          <p>Twenty businesses you already have a reason to speak to: people you buy from, people you have worked with, people you know socially who run something. Next to each name, write the one job you suspect eats their week.</p>
+          <p class="done"><b>Done when</b> the list exists in writing and every name carries a guess.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Weeks 2 to 6</p>
+          <h3 class="card-title">Have ten conversations</h3>
+          <p>Work the list. The conversation is about their week, and your job is to find out whether your guess was right. Do not present the catalog. Expect most of the ten to go nowhere, and keep notes on all of them, because a no this quarter is often a yes after their next busy season.</p>
+          <p class="done"><b>Done when</b> ten conversations have happened and at least one person has asked what it costs.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Weeks 4 to 8</p>
+          <h3 class="card-title">Do your first setup, and stay through the first week</h3>
+          <p>One agent for one business. Get it connected, agree what it may do alone and what it must bring to the owner, and check in on days two, four and seven. This week is the entire difference between a customer who renews and one who forgets they subscribed.</p>
+          <p class="done"><b>Done when</b> the owner has approved something the agent proposed, without you in the room.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Every calendar month</p>
+          <h3 class="card-title">Reach a qualified month</h3>
+          <p>One hundred Personal Volume (PV) booked to your account inside one calendar month makes that month qualified, and qualification is what makes you eligible to be paid at all. Volume comes from your own subscriptions or from customers who buy through you, in any combination. It resets on the first of every month.</p>
+          <p class="done"><b>Done when</b> your account shows 100 PV or more before the month ends.</p>
+        </div>
+      </li>
+      <li class="step">
+        <div>
+          <p class="step-when">Weeks 8 to 12</p>
+          <h3 class="card-title">Sponsor your first Conductor</h3>
+          <p>Usually somebody who watched you do steps 4 and 5 and wanted the same thing. Teach by repetition, not by talking: do one setup beside them, then attend their next one silently. Then send them back to step 1, because the sequence works for them for the same reason it worked for you.</p>
+          <p class="done"><b>Done when</b> they have run a setup you did not speak during.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============ HOW A CONDUCTOR IS PAID ============ -->
+<section class="band glow-a">
+  <div class="wrap">
+    <p class="kicker">Earning</p>
+    <h2 class="section-title">How a Conductor is paid</h2>
+    <div class="copy spaced">
+      <p>The mechanisms, in plain English. Every rate, every threshold and a full worked example live in the compensation brochure, which is the only document that governs. Nothing on this page is a promise of income, and no figures are quoted here on purpose: the brochure is the source of truth and a second copy of a number is just a chance for the two to disagree.</p>
+    </div>
+
+    <div class="grid-2 spaced">
+      <div class="panel">
+        <span class="chip">Mechanism one</span>
+        <h3 class="card-title">Volume pays, not signatures</h3>
+        <p>Nothing is ever paid for enrolling a person. What pays is what people buy: your own customers, the Conductors you sponsored, and the people they sponsored. Every product carries Personal Volume, a share of that volume is commissionable, and the commissionable part is what percentages are applied to.</p>
+      </div>
+      <div class="panel">
+        <span class="chip">Mechanism two</span>
+        <h3 class="card-title">Rank buys reach, not rate</h3>
+        <p>Advancing in rank does not increase what you earn on the people you sponsored directly. It opens levels further down your organization that you were not paid on before. This is worth understanding early, because it means rank is about helping the people under you stay active, never about buying your way up.</p>
+      </div>
+      <div class="panel">
+        <span class="chip">Mechanism three</span>
+        <h3 class="card-title">Customers count toward your month</h3>
+        <p>Someone can buy agents through you without joining Orvanna at all. That order books to your account, so its volume counts toward your qualified month. A Conductor's qualification can therefore rest on what they sold, not only on what they bought.</p>
+      </div>
+      <div class="panel panel-lit">
+        <span class="chip chip-lit">Coming</span>
+        <h3 class="card-title">Instant Payout</h3>
+        <p>Orvanna has adopted Instant Payout, an immediate payment on a first order rather than waiting for the month to close. The terms are not finalized and no rate has been set. Until they are published in the compensation brochure, no Conductor should describe it as available or attach a number to it.</p>
+      </div>
+    </div>
+
+    <figure class="figure">
+      <div class="figure-frame">
+        <svg viewBox="0 0 960 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A four stop timeline: volume books through the month, the month ends, one commission run is calculated, then statements lock.">
+          <line x1="70" y1="96" x2="890" y2="96" stroke="var(--mark-line)" stroke-width="2"/>
+
+          <circle cx="120" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
+          <circle cx="390" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
+          <circle cx="650" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
+          <circle cx="840" cy="96" r="13" fill="var(--mark-lit)" stroke="var(--mark-lit)" stroke-width="2.4"/>
+
+          <text class="d-lab" x="120" y="148" text-anchor="middle">Through the month</text>
+          <text class="d-small" x="120" y="172" text-anchor="middle">Subscriptions bill.</text>
+          <text class="d-small" x="120" y="192" text-anchor="middle">Customers buy.</text>
+          <text class="d-small" x="120" y="212" text-anchor="middle">Volume books to accounts.</text>
+
+          <text class="d-lab" x="390" y="148" text-anchor="middle">The month ends</text>
+          <text class="d-small" x="390" y="172" text-anchor="middle">The calendar closes it.</text>
+          <text class="d-small" x="390" y="192" text-anchor="middle">Nothing enters it</text>
+          <text class="d-small" x="390" y="212" text-anchor="middle">afterward.</text>
+
+          <text class="d-lab" x="650" y="148" text-anchor="middle">One run</text>
+          <text class="d-small" x="650" y="172" text-anchor="middle">Commissions are</text>
+          <text class="d-small" x="650" y="192" text-anchor="middle">calculated once, from</text>
+          <text class="d-small" x="650" y="212" text-anchor="middle">that month's volume.</text>
+
+          <text class="d-lab" x="840" y="148" text-anchor="middle">Statements lock</text>
+          <text class="d-small" x="840" y="172" text-anchor="middle">Your statement is</text>
+          <text class="d-small" x="840" y="192" text-anchor="middle">fixed, and traceable</text>
+          <text class="d-small" x="840" y="212" text-anchor="middle">to the run behind it.</text>
+
+          <text class="d-title" x="70" y="44">The month</text>
+          <text class="d-sub"   x="70" y="66">commissions run once, at the end of each calendar month</text>
+        </svg>
+      </div>
+      <figcaption>There is no running balance to refresh during the month. Volume accumulates, the month closes, one run computes every statement, and those statements are then fixed.</figcaption>
+    </figure>
+
+    <div class="btn-row">
+      <a class="btn btn-solid" href="comp-plan.html">Read the compensation brochure</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ HONEST LIMITS ============ -->
+<section class="band band-2 glow-b">
+  <div class="wrap">
+    <p class="kicker">Before you decide</p>
+    <h2 class="section-title">What this is not</h2>
+    <div class="copy spaced">
+      <p>Anyone who has sat through a direct selling presentation before is waiting for this section, and most decks do not have one. Here is ours.</p>
+    </div>
+    <div class="panel">
+      <span class="accent-bar" aria-hidden="true"></span>
+      <ul class="plain">
+        <li><strong>No income is promised, implied, or described as typical.</strong> This page explains mechanisms. It contains no earnings figures, and you should be suspicious of any Conductor who quotes you one.</li>
+        <li><strong>Buying more agents than you use is not a strategy.</strong> Your own purchases make your month qualified and they pay the people above you. They do not pay you. If an ensemble is not doing work you would otherwise pay a person to do, do not buy it.</li>
+        <li><strong>Rank does not carry over.</strong> Every rank is recomputed from scratch each month. There is no highest ever title and no grace period.</li>
+        <li><strong>An unqualified month pays nothing.</strong> Not reduced, not deferred, and no catch up payment later. However large your organization is, missing your own qualification in a month means no commission for that month.</li>
+        <li><strong>Some problems are not agent problems.</strong> Part of the job is telling a business owner that what they need is a bookkeeper, a second van, or a hard conversation with a supplier. Say it. It is the reason they will call you next year.</li>
+        <li><strong>The compensation brochure governs.</strong> If any sentence on this page disagrees with it, this page is the one that is wrong.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ============ IS THIS YOU ============ -->
+<section class="band glow-c">
+  <div class="wrap">
+    <p class="kicker">Fit</p>
+    <h2 class="section-title">Is this you</h2>
+    <div class="grid-2">
+      <div class="panel panel-lit">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h3 class="card-title">It tends to suit people who</h3>
+        <ul class="plain">
+          <li>Already spend time around small business owners, in any trade.</li>
+          <li>Would rather explain one thing properly than pitch twelve.</li>
+          <li>Are patient enough to sit through somebody else's first week.</li>
+          <li>Are comfortable being the person who is called when something breaks.</li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3 class="card-title">It tends not to suit people who</h3>
+        <ul class="plain quiet">
+          <li>Are looking for income that arrives without contact with customers.</li>
+          <li>Find it hard to say that something is not right for somebody.</li>
+          <li>Want to sell a product they have not personally used.</li>
+          <li>Need a predictable amount by a particular date.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ NEXT ============ -->
+<section class="band band-2 glow-a">
+  <div class="wrap">
+    <p class="kicker">Next</p>
+    <h2 class="section-title">Three things worth doing now</h2>
+    <div class="copy spaced">
+      <p>Enrollment is not open yet. Everything else is, and the first step of the ninety days does not need an enrollment to begin.</p>
+    </div>
+    <div class="grid-3">
+      <div class="panel">
+        <h4 class="mini-title">Read the catalog properly</h4>
+        <p>Pick three agents and read what each does day to day, including where its authority stops.</p>
+        <p style="margin-top:14px;"><a class="btn btn-ghost" href="shop.html">Open the catalog</a></p>
+      </div>
+      <div class="panel">
+        <h4 class="mini-title">Read the compensation brochure</h4>
+        <p>Every rate, threshold, rank requirement and worked example, in one document that governs.</p>
+        <p style="margin-top:14px;"><a class="btn btn-ghost" href="comp-plan.html">Open the brochure</a></p>
+      </div>
+      <div class="panel">
+        <h4 class="mini-title">Meet who you would be working with</h4>
+        <p>Orvanna's own staff are agents. The team page introduces every one of them by name.</p>
+        <p style="margin-top:14px;"><a class="btn btn-ghost" href="team.html">See the team</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h4 class="footer-head">Shop</h4>
+        <a class="flink" href="shop.html">Domain agents</a>
+        <a class="flink" href="shop.html">Support agents</a>
+        <span class="flink">Pricing</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Learn</h4>
+        <a class="flink" href="conductor.html">What is a Conductor</a>
+        <a class="flink" href="team.html">The team</a>
+        <span class="flink">About us</span>
+        <span class="flink">Our story</span>
+        <span class="flink">Frequently asked questions</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Support</h4>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-head">Careers</h4>
+        <span class="flink">Open roles</span>
+        <span class="flink">How we work</span>
+        <span class="flink">Internships</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <div class="footer-contact">
+        <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+        <div class="socials" aria-hidden="true">
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 12 A 4.2 4.2 0 1 0 12 16.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 8 L 16.2 13.4 A 2.6 2.6 0 0 0 21.4 13.4 L 21.4 12 A 9.4 9.4 0 1 0 12 21.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 6 h 16 v 11 h -9 l -4 3 v -3 h -3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="9"  cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="13" cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="17" cy="11.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   The only behaviour on this page: the theme switch.
+   It writes data-theme on the root element, which is the same
+   mechanism the member portal uses, and remembers the choice.
+   Everything else here is static markup and Cascading Style
+   Sheets (CSS), so the page works with scripting turned off.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var STORE_KEY = 'orvanna-conductor-theme';
+  var root = document.documentElement;
+  var btn = document.getElementById('themeToggle');
+  if (!btn) { return; }
+
+  function systemPrefersDark() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  /* The theme in force right now: an explicit choice if one is set,
+     otherwise whatever the viewer's system asks for. Nothing is stored
+     until somebody actually presses the button, so a page that has never
+     been switched keeps following the system. */
+  function current() {
+    var set = root.getAttribute('data-theme');
+    if (set === 'light' || set === 'dark') { return set; }
+    return systemPrefersDark() ? 'dark' : 'light';
+  }
+
+  function paint() {
+    btn.setAttribute('aria-label', current() === 'dark'
+      ? 'Switch to the light theme'
+      : 'Switch to the dark theme');
+  }
+
+  paint();
+
+  btn.addEventListener('click', function () {
+    var next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    paint();
+    try { window.localStorage.setItem(STORE_KEY, next); } catch (err) { /* private mode: the choice lasts for this visit */ }
+  });
+
+  /* If the viewer never chose, follow the system when it changes. */
+  if (window.matchMedia) {
+    var query = window.matchMedia('(prefers-color-scheme: dark)');
+    var onChange = function () { if (!root.getAttribute('data-theme')) { paint(); } };
+    if (query.addEventListener) { query.addEventListener('change', onChange); }
+    else if (query.addListener) { query.addListener(onChange); }
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1757 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Compensation Plan</title>
+<meta name="description" content="The Orvanna compensation plan, version 1.3: how a Conductor earns, every term defined, every earning mechanism with worked arithmetic, the rank ladder, and the qualification rules. Demonstration document, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<style>
+/* ==========================================================================
+   Orvanna compensation plan brochure.
+   Self contained on purpose: one file, inline style, inline script, no
+   framework, no build step, no network request. It has to survive being
+   opened from a memory stick, a static server, and a printer.
+
+   THEMING RULE, from the design system: a colour is never defined only
+   inside a media query or a data-theme block. The complete palette is
+   declared on bare :root in its LIGHT form, because a brochure's resting
+   state is paper. The dark blocks only RESTATE tokens that already exist.
+   ========================================================================== */
+
+:root {
+  /* --- surfaces and text, light --- */
+  --paper:        #FFFFFF;
+  --band-a:       #FFFFFF;
+  --band-b:       #F4F6FB;
+  --surface:      #F7F8FC;
+  --surface-2:    #EEF0FF;
+  --ink:          #0F172A;
+  --body:         #334155;
+  --muted:        #5B6472;
+  --line:         #D8DCE5;
+  --hairline:     rgba(79, 70, 229, 0.20);
+  --code-bg:      #F1F5F9;
+  --shadow:       0 4px 14px rgba(15, 23, 42, 0.10);
+  --shadow-lift:  0 8px 22px rgba(15, 23, 42, 0.14);
+
+  /* --- accents, light --- */
+  --indigo:       #4F46E5;
+  --indigo-soft:  #6366F1;
+  --violet:       #6D28D9;
+  --accent:       #0E7490;   /* the single lit accent, light-safe cyan */
+  --accent-bg:    #E7F6FB;
+  --accent-line:  rgba(14, 116, 144, 0.35);
+  --good:         #065F46;
+  --good-bg:      #E3F5EE;
+  --bad:          #B91C1C;
+  --bad-bg:       #FDE8E6;
+  --amber:        #B45309;
+  --amber-bg:     #FEF3C7;
+
+  /* --- drawing tokens: every diagram resolves its colour through these,
+         so a diagram restates itself with the theme instead of being
+         redrawn twice --- */
+  --d-line:        #9AA3B2;
+  --d-node-bg:     #F7F8FC;
+  --d-node-stroke: #9AA3B2;
+  --d-text:        #0F172A;
+  --d-muted:       #5B6472;
+  --d-lit-bg:      #E7F6FB;
+  --d-lit-stroke:  #0E7490;
+  --d-key-bg:      #EEF0FF;
+  --d-key-stroke:  #4F46E5;
+  --d-bad-bg:      #FDE8E6;
+  --d-bad-stroke:  #B91C1C;
+  --d-good-bg:     #E3F5EE;
+  --d-good-stroke: #065F46;
+  --d-hatch:       #C7CDDA;
+
+  /* --- chrome that never themes: the navigation strip and the cover are
+         dark in both themes, the way a printed brochure's cover is a fixed
+         object rather than a preference --- */
+  --chrome:       #060B18;
+  --chrome-2:     #0A1226;
+  --chrome-text:  #C7D0DE;
+  --chrome-head:  #F1F5F9;
+  --chrome-muted: #94A3B8;
+  --chrome-line:  rgba(129, 140, 248, 0.18);
+  --chrome-lit:   #22D3EE;
+  --chrome-ind:   #A5B4FC;
+
+  --maxw: 1100px;
+}
+
+/* Dark, by system preference, unless the reader has explicitly asked for light. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:       #060B18;
+    --band-a:      #060B18;
+    --band-b:      #080F20;
+    --surface:     #0A1226;
+    --surface-2:   rgba(30, 41, 59, 0.55);
+    --ink:         #F1F5F9;
+    --body:        #C7D0DE;
+    --muted:       #94A3B8;
+    --line:        rgba(129, 140, 248, 0.22);
+    --hairline:    rgba(129, 140, 248, 0.18);
+    --code-bg:     #0A1226;
+    --shadow:      0 0 26px rgba(79, 70, 229, 0.14);
+    --shadow-lift: 0 0 38px rgba(34, 211, 238, 0.16);
+
+    --indigo:      #818CF8;
+    --indigo-soft: #A5B4FC;
+    --violet:      #A78BFA;
+    --accent:      #22D3EE;
+    --accent-bg:   rgba(34, 211, 238, 0.10);
+    --accent-line: rgba(34, 211, 238, 0.38);
+    --good:        #6EE7B7;
+    --good-bg:     rgba(52, 211, 153, 0.13);
+    --bad:         #FCA5A5;
+    --bad-bg:      rgba(248, 113, 113, 0.14);
+    --amber:       #FDE68A;
+    --amber-bg:    rgba(250, 204, 21, 0.13);
+
+    --d-line:        rgba(129, 140, 248, 0.45);
+    --d-node-bg:     rgba(30, 41, 59, 0.62);
+    --d-node-stroke: rgba(129, 140, 248, 0.45);
+    --d-text:        #F1F5F9;
+    --d-muted:       #94A3B8;
+    --d-lit-bg:      rgba(34, 211, 238, 0.12);
+    --d-lit-stroke:  #22D3EE;
+    --d-key-bg:      rgba(79, 70, 229, 0.24);
+    --d-key-stroke:  #818CF8;
+    --d-bad-bg:      rgba(248, 113, 113, 0.14);
+    --d-bad-stroke:  #FCA5A5;
+    --d-good-bg:     rgba(52, 211, 153, 0.13);
+    --d-good-stroke: #6EE7B7;
+    --d-hatch:       rgba(129, 140, 248, 0.30);
+  }
+}
+
+/* Dark, chosen explicitly. Same restatements, so the toggle wins both ways. */
+:root[data-theme="dark"] {
+  --paper:       #060B18;
+  --band-a:      #060B18;
+  --band-b:      #080F20;
+  --surface:     #0A1226;
+  --surface-2:   rgba(30, 41, 59, 0.55);
+  --ink:         #F1F5F9;
+  --body:        #C7D0DE;
+  --muted:       #94A3B8;
+  --line:        rgba(129, 140, 248, 0.22);
+  --hairline:    rgba(129, 140, 248, 0.18);
+  --code-bg:     #0A1226;
+  --shadow:      0 0 26px rgba(79, 70, 229, 0.14);
+  --shadow-lift: 0 0 38px rgba(34, 211, 238, 0.16);
+
+  --indigo:      #818CF8;
+  --indigo-soft: #A5B4FC;
+  --violet:      #A78BFA;
+  --accent:      #22D3EE;
+  --accent-bg:   rgba(34, 211, 238, 0.10);
+  --accent-line: rgba(34, 211, 238, 0.38);
+  --good:        #6EE7B7;
+  --good-bg:     rgba(52, 211, 153, 0.13);
+  --bad:         #FCA5A5;
+  --bad-bg:      rgba(248, 113, 113, 0.14);
+  --amber:       #FDE68A;
+  --amber-bg:    rgba(250, 204, 21, 0.13);
+
+  --d-line:        rgba(129, 140, 248, 0.45);
+  --d-node-bg:     rgba(30, 41, 59, 0.62);
+  --d-node-stroke: rgba(129, 140, 248, 0.45);
+  --d-text:        #F1F5F9;
+  --d-muted:       #94A3B8;
+  --d-lit-bg:      rgba(34, 211, 238, 0.12);
+  --d-lit-stroke:  #22D3EE;
+  --d-key-bg:      rgba(79, 70, 229, 0.24);
+  --d-key-stroke:  #818CF8;
+  --d-bad-bg:      rgba(248, 113, 113, 0.14);
+  --d-bad-stroke:  #FCA5A5;
+  --d-good-bg:     rgba(52, 211, 153, 0.13);
+  --d-good-stroke: #6EE7B7;
+  --d-hatch:       rgba(129, 140, 248, 0.30);
+}
+
+/* ---------------------------------------------------------------- reset */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; overflow-x: clip; }
+
+body {
+  font-family: "Segoe UI", "Segoe UI Variable Text", system-ui, -apple-system, sans-serif;
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--body);
+  background: var(--paper);
+  overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+}
+
+img, svg { max-width: 100%; display: block; }
+
+.wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
+.narrow { max-width: 760px; }
+
+/* ------------------------------------------------------- navigation strip */
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  background: rgba(6, 11, 24, 0.92);
+  border-bottom: 1px solid var(--chrome-line);
+  backdrop-filter: blur(9px);
+}
+.nav-inner {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: 12px 28px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.nav-logo { height: 30px; width: auto; }
+.nav-links {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.nav-link {
+  color: var(--chrome-text);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.16s ease;
+}
+.nav-link:hover { color: var(--chrome-lit); }
+.nav-link.is-active { color: var(--chrome-lit); }
+.nav-link.is-soon { color: #7C8AA0; cursor: default; }
+.soon-pill {
+  margin-left: 7px;
+  font-size: 0.58rem;
+  letter-spacing: 0.18em;
+  border: 1px solid #7C8AA0;
+  border-radius: 999px;
+  padding: 1px 7px;
+}
+.nav-signin {
+  color: var(--chrome-lit);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.chrome-btn {
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--chrome-head);
+  background: transparent;
+  border: 1px solid var(--chrome-line);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+.chrome-btn:hover { color: var(--chrome-lit); border-color: var(--accent-line); }
+.chrome-btn:focus-visible { outline: 2px solid var(--chrome-lit); outline-offset: 2px; }
+
+/* -------------------------------------------------------------- the cover */
+
+.cover {
+  background: var(--chrome);
+  color: var(--chrome-text);
+  padding: 84px 0 76px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before,
+.cover::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  width: 640px; height: 640px;
+  border-radius: 50%;
+}
+.cover::before {
+  left: -240px; top: -280px;
+  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.22), transparent 70%);
+}
+.cover::after {
+  right: -260px; bottom: -340px;
+  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.12), transparent 70%);
+}
+.cover .wrap { position: relative; z-index: 1; }
+.cover-mark { display: flex; align-items: center; gap: 20px; margin-bottom: 34px; }
+.cover-kicker {
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.34em;
+  text-transform: uppercase; color: var(--chrome-lit); margin-bottom: 16px;
+}
+.cover h1 {
+  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
+  font-weight: 700; letter-spacing: 0.09em; line-height: 1.15;
+  text-transform: uppercase; color: var(--chrome-head);
+}
+.cover-sub {
+  margin-top: 20px; max-width: 42em; color: var(--chrome-muted); font-size: 1.05rem;
+}
+.stamps { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 30px; }
+.stamp {
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--chrome-ind); border: 1px solid var(--chrome-line);
+  border-radius: 999px; padding: 5px 14px; white-space: nowrap;
+}
+.cover-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+
+/* --------------------------------------------------------------- sections */
+
+.band { padding: 72px 0; background: var(--band-a); }
+.band.alt { background: var(--band-b); }
+.band + .band { border-top: 1px solid var(--hairline); }
+section { scroll-margin-top: 72px; }
+
+.kicker {
+  font-size: 0.74rem; font-weight: 600; letter-spacing: 0.30em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 14px;
+}
+h2 {
+  font-size: clamp(1.3rem, 2.6vw, 1.85rem);
+  font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  line-height: 1.25; color: var(--ink); margin-bottom: 18px;
+}
+h3 {
+  font-size: 1.02rem; font-weight: 700; letter-spacing: 0.10em;
+  text-transform: uppercase; color: var(--ink); margin: 30px 0 10px;
+}
+h4 {
+  font-size: 0.9rem; font-weight: 700; letter-spacing: 0.04em;
+  color: var(--ink); margin: 20px 0 6px;
+}
+p { margin: 12px 0; max-width: 46em; }
+p.lead { font-size: 1.06rem; color: var(--muted); }
+ul, ol { margin: 12px 0 12px 24px; max-width: 46em; }
+li { margin: 7px 0; }
+strong { color: var(--ink); font-weight: 700; }
+a { color: var(--accent); }
+.small { font-size: 0.86rem; color: var(--muted); }
+.num, .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
+code, .mono {
+  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+  font-size: 0.9em; background: var(--code-bg); border-radius: 4px; padding: 1px 6px;
+}
+
+/* ----------------------------------------------------------- panels, notes */
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 26px 28px;
+  box-shadow: var(--shadow);
+  margin: 22px 0;
+}
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+
+.note {
+  background: var(--surface-2);
+  border-left: 5px solid var(--indigo);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 20px;
+  margin: 20px 0;
+  max-width: 46em;
+}
+.note.lit { background: var(--accent-bg); border-left-color: var(--accent); }
+.note.warn { background: var(--amber-bg); border-left-color: var(--amber); }
+.note.stop { background: var(--bad-bg); border-left-color: var(--bad); }
+.note > :first-child { margin-top: 0; }
+.note > :last-child { margin-bottom: 0; }
+
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+/* A grid item defaults to min-width auto, which lets a wide table inside it
+   push the whole column past the viewport instead of scrolling in its own
+   frame. This one line is what keeps the rank ladder column honest. */
+.grid-2 > *, .grid-3 > * { min-width: 0; }
+
+.chip {
+  display: inline-block;
+  font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+  border-radius: 999px; padding: 3px 12px; white-space: nowrap;
+  border: 1px solid currentColor;
+}
+.chip.ok    { color: var(--good); background: var(--good-bg); }
+.chip.no    { color: var(--bad);  background: var(--bad-bg); }
+.chip.soon  { color: var(--amber); background: var(--amber-bg); }
+.chip.info  { color: var(--indigo); background: var(--surface-2); }
+
+/* ---------------------------------------------------------------- tables */
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  margin: 20px 0;
+  background: var(--paper);
+}
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; min-width: 520px; }
+thead th {
+  position: sticky; top: 0;
+  background: var(--surface);
+  color: var(--ink);
+  text-align: left;
+  font-size: 0.68rem; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+}
+td { padding: 9px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tbody tr:last-child td { border-bottom: 0; }
+tbody tr:hover td { background: var(--surface); }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tfoot td { font-weight: 700; color: var(--ink); background: var(--surface); border-top: 2px solid var(--line); }
+
+/* --------------------------------------------------------------- figures */
+
+.figure { margin: 26px 0; }
+.figure svg { margin: 0 auto; height: auto; }
+.figure figcaption {
+  font-size: 0.84rem; color: var(--muted); text-align: center;
+  margin-top: 12px; max-width: 42em; margin-left: auto; margin-right: auto;
+}
+/* Every diagram is authored at 360 user units wide and is never allowed to
+   render narrower than that, so its text keeps its designed size on a phone
+   instead of shrinking to eight pixels. On a narrow screen the frame scrolls
+   the last few pixels; the page itself never does. */
+.fig-narrow, .fig-mid { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.fig-narrow svg { max-width: 420px; min-width: 360px; width: 100%; }
+.fig-mid svg    { max-width: 480px; min-width: 360px; width: 100%; }
+.fig-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--paper);
+}
+.fig-scroll svg { min-width: 880px; }
+.svg-t  { font-size: 13px; }
+.svg-b  { font-size: 13px; font-weight: 700; }
+.svg-s  { font-size: 12px; }
+
+/* --------------------------------------------------------- contents list */
+
+.toc { list-style: none; margin-left: 0; counter-reset: toc; }
+.toc li { counter-increment: toc; margin: 0; border-bottom: 1px solid var(--line); }
+.toc li:last-child { border-bottom: 0; }
+.toc a {
+  display: flex; gap: 14px; align-items: baseline;
+  padding: 11px 4px; text-decoration: none; color: var(--ink);
+}
+.toc a:hover { color: var(--accent); }
+.toc a::before {
+  content: counter(toc, decimal-leading-zero);
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem; font-weight: 700; letter-spacing: 0.08em;
+  color: var(--accent); min-width: 2.2em;
+}
+.toc .toc-note { margin-left: auto; font-size: 0.78rem; color: var(--muted); text-align: right; }
+
+/* ----------------------------------------------------------- definitions */
+
+.deflist { display: grid; grid-template-columns: minmax(180px, 15em) 1fr; gap: 0; margin: 20px 0; }
+.deflist dt {
+  font-weight: 700; color: var(--ink); padding: 11px 16px 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.deflist dd { padding: 11px 0; border-bottom: 1px solid var(--line); }
+
+/* -------------------------------------------------------------- details */
+
+details.ledger {
+  border: 1px solid var(--line); border-radius: 12px;
+  background: var(--surface); margin: 22px 0; padding: 0 20px;
+}
+details.ledger > summary {
+  cursor: pointer; padding: 16px 0; font-weight: 700; color: var(--ink);
+  font-size: 0.86rem; letter-spacing: 0.10em; text-transform: uppercase;
+}
+details.ledger > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+details.ledger[open] { padding-bottom: 18px; }
+
+/* --------------------------------------------------------------- footer */
+
+.foot {
+  background: var(--chrome);
+  color: var(--chrome-muted);
+  padding: 48px 0 40px;
+  font-size: 0.86rem;
+}
+.foot a { color: var(--chrome-ind); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 22px; margin-bottom: 18px; }
+.foot-links a { text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
+.legal { color: #7C8AA0; max-width: 62em; }
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .band { padding: 52px 0; }
+  .cover { padding: 56px 0 52px; }
+  .wrap { padding: 0 20px; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .deflist { grid-template-columns: 1fr; }
+  .deflist dt { border-bottom: 0; padding-bottom: 0; }
+  .deflist dd { padding-top: 4px; }
+  .nav-links { gap: 13px; }
+  .nav-link, .nav-signin { font-size: 0.7rem; letter-spacing: 0.1em; }
+  .toc a { flex-wrap: wrap; }
+  .toc .toc-note { margin-left: 3.2em; text-align: left; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  * { transition: none !important; animation: none !important; }
+}
+
+/* ------------------------------------------------------------------ print
+   A brochure gets printed. Force the paper palette, drop the chrome, keep
+   figures and tables from being split across a page break. */
+
+@media print {
+  :root,
+  :root[data-theme="dark"],
+  :root[data-theme="light"] {
+    --paper: #FFFFFF; --band-a: #FFFFFF; --band-b: #FFFFFF;
+    --surface: #F7F8FC; --surface-2: #EEF0FF;
+    --ink: #0F172A; --body: #1F2937; --muted: #4B5563;
+    --line: #C8CEDA; --hairline: #C8CEDA; --code-bg: #F1F5F9;
+    --shadow: none; --shadow-lift: none;
+    --indigo: #4338CA; --indigo-soft: #4F46E5; --violet: #6D28D9;
+    --accent: #0E7490; --accent-bg: #E7F6FB; --accent-line: #0E7490;
+    --good: #065F46; --good-bg: #E3F5EE;
+    --bad: #B91C1C; --bad-bg: #FDE8E6;
+    --amber: #92400E; --amber-bg: #FEF3C7;
+    --d-line: #9AA3B2; --d-node-bg: #FFFFFF; --d-node-stroke: #9AA3B2;
+    --d-text: #0F172A; --d-muted: #4B5563;
+    --d-lit-bg: #E7F6FB; --d-lit-stroke: #0E7490;
+    --d-key-bg: #EEF0FF; --d-key-stroke: #4F46E5;
+    --d-bad-bg: #FDE8E6; --d-bad-stroke: #B91C1C;
+    --d-good-bg: #E3F5EE; --d-good-stroke: #065F46;
+    --d-hatch: #C7CDDA;
+  }
+  @page { margin: 15mm 14mm; }
+  body { background: #FFFFFF; color: #1F2937; font-size: 11pt; line-height: 1.5; }
+  .nav, .cover-actions, .no-print { display: none !important; }
+  .cover { background: #FFFFFF; color: #0F172A; padding: 0 0 18px; border-bottom: 2px solid #4F46E5; }
+  .cover::before, .cover::after { display: none; }
+  .cover h1 { color: #0F172A; }
+  .cover-sub { color: #4B5563; }
+  .cover-kicker { color: #0E7490; }
+  .stamp { color: #4338CA; border-color: #C8CEDA; }
+  .logo-dark { display: none !important; }
+  .logo-light { display: block !important; width: 260px; }
+  .band { padding: 20px 0; border-top: 1px solid #C8CEDA; background: #FFFFFF; }
+  .wrap { max-width: none; padding: 0; }
+  h2 { page-break-after: avoid; break-after: avoid; }
+  h3, h4 { page-break-after: avoid; break-after: avoid; }
+  .panel, .note, .figure, .table-scroll, tr { page-break-inside: avoid; break-inside: avoid; }
+  .table-scroll, .fig-scroll, .fig-narrow, .fig-mid { overflow: visible; }
+  table { min-width: 0; font-size: 9.5pt; }
+  .fig-scroll svg, .fig-narrow svg, .fig-mid svg { min-width: 0; }
+  thead th { position: static; }
+  details.ledger { border: 1px solid #C8CEDA; }
+  details.ledger > summary { list-style: none; }
+  .foot { background: #FFFFFF; color: #4B5563; border-top: 2px solid #4F46E5; padding: 14px 0 0; }
+  .foot a, .foot-links { color: #1F2937; }
+  .legal { color: #4B5563; }
+  a { color: #0F172A; text-decoration: none; }
+}
+
+.logo-light { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===================== NAVIGATION ===================== -->
+<header class="nav no-print">
+  <div class="nav-inner">
+    <a href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link is-active" href="comp-plan.html" aria-current="page">Plan</a>
+      <a class="nav-link" href="team.html">Team</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <button class="chrome-btn" type="button" id="themeToggle" aria-pressed="false">Dark</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ===================== COVER ===================== -->
+<section class="cover" id="cover">
+  <div class="wrap">
+    <div class="cover-mark">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
+      <img src="assets/logo-final-primary.svg" alt="Orvanna" class="logo-light">
+    </div>
+    <p class="cover-kicker">The compensation plan</p>
+    <h1>Build an ensemble.<br>Build a team.</h1>
+    <p class="cover-sub">Orvanna sells artificial intelligence (AI) agents by subscription. A <strong style="color:#F1F5F9">Conductor</strong> runs an ensemble of those agents and helps other people do the same. This brochure explains, with the arithmetic in plain sight, exactly how a Conductor is paid for that.</p>
+    <div class="stamps">
+      <span class="stamp">Plan version 1.3</span>
+      <span class="stamp">Effective month 2026-08</span>
+      <span class="stamp">Read start to finish</span>
+    </div>
+    <div class="cover-actions">
+      <button class="chrome-btn" type="button" id="printBtn">Print this brochure</button>
+      <a class="chrome-btn" href="#contents" style="text-decoration:none;">Contents</a>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== HOW TO USE + CONTENTS ===================== -->
+<section class="band" id="contents">
+  <div class="wrap">
+    <p class="kicker">Before you start</p>
+    <h2>How to use this brochure</h2>
+    <div class="grid-2">
+      <div>
+        <p>This document is built to be read like a short book, from the first page to the last. It starts with the words, then the volume, then the one gate that decides whether anybody gets paid at all, and only then the money. Read it in that order once and the rest of it stops needing explanation.</p>
+        <p>Every example shows its arithmetic. Nothing is rounded off behind the scenes and nothing is described in a percentage without also being shown in dollars. If a number here disagrees with a number anywhere else, the compensation plan booklet is the document that governs.</p>
+        <p class="small">Acronym key for this page: Personal Volume (PV), Sales Volume (SV), Commissionable Volume (CV), Team Volume (TV), artificial intelligence (AI), Quality Assurance (QA), Coordinated Universal Time (UTC).</p>
+      </div>
+      <div>
+        <div class="note stop">
+          <p><strong>Demonstration document.</strong> Orvanna is a demonstration company and its Conductor program is a working prototype running on synthetic data. Every figure in this brochure is real to the demonstration's commission engine and to nothing else. No actual earnings, accounts, or payments exist.</p>
+          <p><strong>Not an income claim.</strong> The worked examples exist to show how the arithmetic runs. They are illustrations, not projections, and nothing here promises or implies that any person would earn any amount.</p>
+        </div>
+      </div>
+    </div>
+
+    <h3>Contents</h3>
+    <ol class="toc">
+      <li><a href="#in-one-paragraph">How a Conductor earns, in one paragraph<span class="toc-note">the whole model</span></a></li>
+      <li><a href="#who">Conductors, customers, and the two things called yours<span class="toc-note">ensemble vs team</span></a></li>
+      <li><a href="#words">Every word, defined before it is used<span class="toc-note">short list</span></a></li>
+      <li><a href="#volume">Volume, and the eighty percent rule<span class="toc-note">read this twice</span></a></li>
+      <li><a href="#qualify">The qualified month: the single gate<span class="toc-note">100 SV</span></a></li>
+      <li><a href="#cast">One organisation, every example<span class="toc-note">ten people</span></a></li>
+      <li><a href="#m1">Earning one: your frontline, at ten percent<span class="toc-note">worked</span></a></li>
+      <li><a href="#m2">Earning two: depth, which rank unlocks<span class="toc-note">worked</span></a></li>
+      <li><a href="#m3">Earning three: customer sales rolling up<span class="toc-note">worked</span></a></li>
+      <li><a href="#m4">Earning four: Instant Payout<span class="toc-note">proposed terms</span></a></li>
+      <li><a href="#ranks">The rank ladder<span class="toc-note">five rungs</span></a></li>
+      <li><a href="#month">A complete month, to the cent<span class="toc-note">every line</span></a></li>
+      <li><a href="#calendar">The calendar, rounding, and finality<span class="toc-note">operations</span></a></li>
+      <li><a href="#limits">What version 1.3 does not do<span class="toc-note">the honest page</span></a></li>
+      <li><a href="#glossary">Key terms and definitions<span class="toc-note">full glossary</span></a></li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================== 1. ONE PARAGRAPH ===================== -->
+<section class="band alt" id="in-one-paragraph">
+  <div class="wrap">
+    <p class="kicker">Section one</p>
+    <h2>How a Conductor earns, in one paragraph</h2>
+    <div class="panel">
+      <p style="max-width:52em;">A Conductor subscribes to one or more Orvanna agents, and every agent carries a Personal Volume (PV) figure equal to its price in dollars. Everything bought on that account in a calendar month adds up to their Sales Volume (SV), and 80 percent of that becomes Commissionable Volume (CV), which is the only number any commission is ever calculated from. Each month the company walks up the sponsorship tree from every buyer and pays a slice of that buyer's CV to the Conductors above them: 10 percent to the direct sponsor, then 5, 5, 3 and 2 percent to the next four up. Two gates decide whether a given Conductor actually receives their slice. First, they must be <strong>qualified</strong>, meaning their own SV that month was 100.00 or more. Second, the level must sit inside their <strong>paid depth</strong>, which their rank sets: a Member reaches one level down, a Builder two, a Leader three, a Director four, an Executive five. Anything that fails either gate is paid to nobody. That is the whole earning model: one mechanism, two gates, no bonus pools, no matching bonuses, no fast start, and no rebate on your own purchases.</p>
+    </div>
+
+    <figure class="figure fig-narrow">
+      <svg viewBox="0 0 360 636" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="flowTitle flowDesc">
+        <title id="flowTitle">How one order turns into commission</title>
+        <desc id="flowDesc">A single one hundred dollar order becomes one hundred Personal Volume, then eighty Commissionable Volume, which the five levels above the buyer share at ten, five, five, three and two percent, for a maximum of twenty dollars, subject to two gates.</desc>
+        <g fill="none" stroke="var(--d-line)" stroke-width="1.6">
+          <path d="M180 52 L180 68"/><path d="M180 110 L180 126"/>
+          <path d="M180 168 L180 184"/><path d="M180 236 L180 252"/>
+        </g>
+        <g fill="var(--d-line)">
+          <path d="M180 72 l-4 -8 h8 z"/><path d="M180 130 l-4 -8 h8 z"/>
+          <path d="M180 188 l-4 -8 h8 z"/><path d="M180 256 l-4 -8 h8 z"/>
+        </g>
+
+        <rect x="6" y="10" width="348" height="42" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
+        <text class="svg-b" x="180" y="28" text-anchor="middle" fill="var(--d-text)">One order: Payment Agent, $100.00</text>
+        <text class="svg-s" x="180" y="44" text-anchor="middle" fill="var(--d-muted)">a monthly agent subscription</text>
+
+        <rect x="6" y="68" width="348" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <text class="svg-b" x="180" y="86" text-anchor="middle" fill="var(--d-text)">Personal Volume 100</text>
+        <text class="svg-s" x="180" y="102" text-anchor="middle" fill="var(--d-muted)">volume always equals dollars</text>
+
+        <rect x="6" y="126" width="348" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <text class="svg-b" x="180" y="144" text-anchor="middle" fill="var(--d-text)">Sales Volume 100.00</text>
+        <text class="svg-s" x="180" y="160" text-anchor="middle" fill="var(--d-muted)">every order on the account this month</text>
+
+        <rect x="6" y="184" width="348" height="52" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <text class="svg-b" x="180" y="204" text-anchor="middle" fill="var(--d-text)">Commissionable Volume 80.00</text>
+        <text class="svg-s" x="180" y="220" text-anchor="middle" fill="var(--d-muted)">0.80 x 100.00. Every percentage below</text>
+        <text class="svg-s" x="180" y="232" text-anchor="middle" fill="var(--d-muted)">applies to this number, not to the price</text>
+
+        <text class="svg-s" x="6" y="272" fill="var(--d-muted)">WHAT THE FIVE LEVELS ABOVE THE BUYER SHARE</text>
+
+        <g>
+          <rect x="6" y="280" width="348" height="26" rx="6" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.4"/>
+          <text class="svg-t" x="16" y="298" fill="var(--d-text)">Level 1, the sponsor</text>
+          <text class="svg-t" x="228" y="298" fill="var(--d-muted)">10%</text>
+          <text class="svg-b" x="346" y="298" text-anchor="end" fill="var(--d-text)">8.00</text>
+
+          <rect x="6" y="310" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <text class="svg-t" x="16" y="328" fill="var(--d-text)">Level 2</text>
+          <text class="svg-t" x="228" y="328" fill="var(--d-muted)">5%</text>
+          <text class="svg-b" x="346" y="328" text-anchor="end" fill="var(--d-text)">4.00</text>
+
+          <rect x="6" y="340" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <text class="svg-t" x="16" y="358" fill="var(--d-text)">Level 3</text>
+          <text class="svg-t" x="228" y="358" fill="var(--d-muted)">5%</text>
+          <text class="svg-b" x="346" y="358" text-anchor="end" fill="var(--d-text)">4.00</text>
+
+          <rect x="6" y="370" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <text class="svg-t" x="16" y="388" fill="var(--d-text)">Level 4</text>
+          <text class="svg-t" x="228" y="388" fill="var(--d-muted)">3%</text>
+          <text class="svg-b" x="346" y="388" text-anchor="end" fill="var(--d-text)">2.40</text>
+
+          <rect x="6" y="400" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <text class="svg-t" x="16" y="418" fill="var(--d-text)">Level 5</text>
+          <text class="svg-t" x="228" y="418" fill="var(--d-muted)">2%</text>
+          <text class="svg-b" x="346" y="418" text-anchor="end" fill="var(--d-text)">1.60</text>
+        </g>
+
+        <rect x="6" y="436" width="348" height="42" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <text class="svg-b" x="16" y="454" fill="var(--d-text)">Most this order can ever pay</text>
+        <text class="svg-b" x="346" y="454" text-anchor="end" fill="var(--d-text)">20.00</text>
+        <text class="svg-s" x="16" y="470" fill="var(--d-muted)">25 percent of the volume, 20 percent of the price</text>
+
+        <text class="svg-s" x="6" y="500" fill="var(--d-muted)">AND THEN TWO GATES DECIDE WHO ACTUALLY RECEIVES IT</text>
+
+        <rect x="6" y="508" width="348" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="16" y="526" fill="var(--d-text)">Gate A: the earner is qualified</text>
+        <text class="svg-s" x="16" y="540" fill="var(--d-muted)">their own Sales Volume was 100.00 or more</text>
+
+        <rect x="6" y="552" width="348" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="16" y="570" fill="var(--d-text)">Gate B: the level is inside their paid depth</text>
+        <text class="svg-s" x="16" y="584" fill="var(--d-muted)">how deep they reach is set by their rank</text>
+
+        <rect x="6" y="596" width="348" height="34" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="180" y="613" text-anchor="middle" fill="var(--d-text)">Anything that fails a gate is paid to nobody</text>
+        <text class="svg-s" x="180" y="625" text-anchor="middle" fill="var(--d-muted)">the plan calls that breakage</text>
+      </svg>
+      <figcaption>One order through the monthly commission run, followed the whole way. Check the arithmetic yourself: 10 + 5 + 5 + 3 + 2 is 25 percent of Commissionable Volume, and Commissionable Volume is 0.80 of the price, so 0.25 x 0.80 is 0.20, which is $20.00 on a $100.00 order. That is 8.00 + 4.00 + 4.00 + 2.40 + 1.60 exactly.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== 2. WHO ===================== -->
+<section class="band" id="who">
+  <div class="wrap">
+    <p class="kicker">Section two</p>
+    <h2>Conductors, customers, and the two things called yours</h2>
+    <p class="lead">Two roles exist in this plan, and one word does a lot of work, so it is worth spending a page on before any money moves.</p>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h4>Conductor</h4>
+        <p>Somebody who has enrolled and holds a place in the sponsorship tree. A Conductor runs their own ensemble of agents, may sponsor other people, holds a rank each month, and can be paid commissions. Every person named in this brochure is a Conductor.</p>
+      </div>
+      <div class="panel">
+        <h4>Customer</h4>
+        <p>Somebody who subscribes to Orvanna agents through a referring Conductor without joining the tree. A customer pays the same prices and gets the same agents. A customer never holds a rank, never qualifies, and never earns. Their receipts always name them as the buyer.</p>
+      </div>
+    </div>
+
+    <div class="note lit">
+      <p><strong>The distinction that matters most in this document.</strong> Your <strong>ensemble</strong> is your agents, the software you subscribe to. Your <strong>team</strong> is your people, the Conductors you sponsored and everyone below them. The plan pays on both, but through completely different numbers: your ensemble drives your own volume and your qualification, while your team drives your Team Volume, your rank, and the commissions you receive. The two are never interchangeable, and this brochure never uses one word for the other.</p>
+    </div>
+
+    <figure class="figure fig-mid">
+      <svg viewBox="0 0 360 500" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="twoTitle twoDesc">
+        <title id="twoTitle">Ensemble compared with team</title>
+        <desc id="twoDesc">Above, a Conductor's ensemble of agents drives Personal Volume, Sales Volume and qualification. Below, a Conductor's team of sponsored people drives Team Volume, rank and every commission received.</desc>
+
+        <!-- panel one: the ensemble -->
+        <rect x="4" y="4" width="352" height="236" rx="12" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <text class="svg-s" x="18" y="26" fill="var(--d-muted)">YOUR ENSEMBLE: THE AGENTS</text>
+
+        <circle cx="46" cy="80" r="18" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <text class="svg-s" x="46" y="84" text-anchor="middle" fill="var(--d-text)">YOU</text>
+        <g stroke="var(--d-line)" stroke-width="1.4" fill="none">
+          <path d="M64 80 L96 54"/><path d="M64 80 L96 88"/><path d="M64 80 L96 122"/>
+        </g>
+
+        <rect x="96" y="40" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <text class="svg-t" x="108" y="59" fill="var(--d-text)">Payment Agent</text>
+        <text class="svg-s" x="330" y="59" text-anchor="end" fill="var(--d-muted)">100 PV</text>
+
+        <rect x="96" y="74" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <text class="svg-t" x="108" y="93" fill="var(--d-text)">Pricing Agent</text>
+        <text class="svg-s" x="330" y="93" text-anchor="end" fill="var(--d-muted)">100 PV</text>
+
+        <rect x="96" y="108" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <text class="svg-t" x="108" y="127" fill="var(--d-text)">Accounting Agent</text>
+        <text class="svg-s" x="330" y="127" text-anchor="end" fill="var(--d-muted)">50 PV</text>
+
+        <rect x="18" y="146" width="324" height="80" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="32" y="166" fill="var(--d-muted)">DRIVES</text>
+        <text class="svg-t" x="32" y="186" fill="var(--d-text)">Personal Volume, Sales Volume,</text>
+        <text class="svg-t" x="32" y="204" fill="var(--d-text)">and your qualified month</text>
+        <text class="svg-s" x="32" y="220" fill="var(--d-muted)">buying agents never pays you directly</text>
+
+        <!-- panel two: the team -->
+        <rect x="4" y="256" width="352" height="240" rx="12" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <text class="svg-s" x="18" y="278" fill="var(--d-muted)">YOUR TEAM: THE PEOPLE</text>
+
+        <circle cx="46" cy="330" r="18" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <text class="svg-s" x="46" y="334" text-anchor="middle" fill="var(--d-text)">YOU</text>
+        <g stroke="var(--d-line)" stroke-width="1.4" fill="none">
+          <path d="M64 330 L94 304"/><path d="M64 330 L94 356"/><path d="M124 356 L152 356"/>
+        </g>
+        <circle cx="110" cy="300" r="16" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="110" y="304" text-anchor="middle" fill="var(--d-text)">L1</text>
+        <circle cx="110" cy="356" r="16" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="110" y="360" text-anchor="middle" fill="var(--d-text)">L1</text>
+        <circle cx="168" cy="356" r="16" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="168" y="360" text-anchor="middle" fill="var(--d-text)">L2</text>
+        <text class="svg-s" x="196" y="304" fill="var(--d-muted)">the ones you sponsored</text>
+        <text class="svg-s" x="196" y="360" fill="var(--d-muted)">and everyone below them</text>
+
+        <rect x="18" y="396" width="324" height="86" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="32" y="416" fill="var(--d-muted)">DRIVES</text>
+        <text class="svg-t" x="32" y="436" fill="var(--d-text)">Team Volume, your rank,</text>
+        <text class="svg-t" x="32" y="454" fill="var(--d-text)">and every commission you receive</text>
+        <text class="svg-s" x="32" y="472" fill="var(--d-muted)">this is the side the money comes from</text>
+      </svg>
+      <figcaption>Two different things, two different numbers. Agents above qualify you. People below pay you.</figcaption>
+    </figure>
+
+    <div class="note">
+      <p><strong>One naming note, so nothing reads as a contradiction later.</strong> The lowest of the five ranks is titled <strong>Member</strong>. That is a rank name, not a second kind of person. Everybody in the plan is a Conductor; a Conductor who has not yet met a higher rung holds the rank of Member.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 3. WORDS ===================== -->
+<section class="band alt" id="words">
+  <div class="wrap">
+    <p class="kicker">Section three</p>
+    <h2>Every word, defined before it is used</h2>
+    <p class="lead">One sentence each, with no jargon inside the definitions. The full glossary is at the back of the brochure; this short list is the working set.</p>
+
+    <dl class="deflist">
+      <dt>Sponsor</dt><dd>The one Conductor directly above you, the person who enrolled you.</dd>
+      <dt>Upline</dt><dd>Everybody above you: your sponsor, their sponsor, and so on to the top of the tree.</dd>
+      <dt>Downline</dt><dd>Everybody below you, at any depth, however far it goes.</dd>
+      <dt>Frontline</dt><dd>The Conductors you personally sponsored, and only those.</dd>
+      <dt>Leg</dt><dd>One frontline Conductor plus that person's entire downline, treated as a single branch.</dd>
+      <dt>Level</dt><dd>Plain distance down the tree from you: your frontline is level 1, their frontline is level 2, and so on.</dd>
+      <dt>Personal Volume (PV)</dt><dd>The volume figure printed on a product, which at Orvanna always equals its price in dollars.</dd>
+      <dt>Sales Volume (SV)</dt><dd>The total PV booked to your account in one calendar month, whether you bought it or one of your customers did.</dd>
+      <dt>Commissionable Volume (CV)</dt><dd>80 percent of your SV, rounded to two decimals, and the only number any commission percentage is ever applied to.</dd>
+      <dt>Team Volume (TV)</dt><dd>The SV of everybody strictly below you, added up across your whole downline at every depth; it never includes your own SV.</dd>
+      <dt>Qualified month</dt><dd>A month in which your own SV reached 100.00 or more.</dd>
+      <dt>Active leg</dt><dd>A leg whose frontline Conductor is qualified this month; volume deeper in the leg never rescues it.</dd>
+      <dt>Rank</dt><dd>The title you hold for one month, recomputed from scratch each month, which sets how deep you are paid.</dd>
+      <dt>Paid depth</dt><dd>How many levels of your downline you are paid on: Member 1, Builder 2, Leader 3, Director 4, Executive 5.</dd>
+      <dt>Breakage</dt><dd>Commission that the percentages describe but nobody receives, because the person who would have received it failed a gate.</dd>
+      <dt>Commission run</dt><dd>One numbered, versioned batch calculation for one month, which produces every statement and is locked once it is final.</dd>
+    </dl>
+
+    <div class="note">
+      <p><strong>Team Volume excludes you.</strong> If your downline produced 2,500.00 of Sales Volume and you personally produced 200.00, your Team Volume is 2,500.00, not 2,700.00. Your own volume qualifies you; it never counts toward your own team requirement.</p>
+      <p><strong>A leg is judged by its top person only.</strong> The plan asks whether your frontline Conductor is qualified, not whether the branch below them produced volume. That is deliberate: a rank is built by helping the people you personally sponsored stay active, not by sitting above one lucky branch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 4. VOLUME ===================== -->
+<section class="band" id="volume">
+  <div class="wrap">
+    <p class="kicker">Section four</p>
+    <h2>Volume, and the eighty percent rule</h2>
+    <p class="lead">The catalog is where volume comes from, so the catalog is where the plan starts. There are two tiers of agent, and volume equals dollars, one to one, always.</p>
+
+    <div class="table-scroll">
+      <table>
+        <caption class="small" style="text-align:left;padding:12px 14px;color:var(--muted);">The twelve agents the compensation plan recognises</caption>
+        <thead>
+          <tr><th>Tier</th><th>The agents</th><th class="num">Price per month</th><th class="num">PV per month</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Domain agents</strong><br><span class="small">run one business function end to end</span></td>
+            <td>Payment, Shipping, Pricing, Inventory, Marketing, Tax</td>
+            <td class="num">$100.00</td><td class="num">100</td>
+          </tr>
+          <tr>
+            <td><strong>Support agents</strong><br><span class="small">staff roles that assist the business</span></td>
+            <td>Software Engineer, Quality Assurance (QA), Secretary, Chief Executive, Accounting, Customer Care</td>
+            <td class="num">$50.00</td><td class="num">50</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">A subscription bills and grants its volume every month it stays active. Cancel it and the volume stops from the cancellation month forward; months already billed keep their volume.</p>
+
+    <h3>The three volume numbers</h3>
+    <ol>
+      <li><strong>Personal Volume (PV)</strong> is printed on the product. The Payment Agent is 100 PV because it costs $100.00.</li>
+      <li><strong>Sales Volume (SV)</strong> is your month. Add the PV of everything booked to your account in one calendar month, your own subscriptions and your customers' subscriptions together.</li>
+      <li><strong>Commissionable Volume (CV)</strong> is 80 percent of your SV. It is the base for every percentage in this plan, without exception.</li>
+    </ol>
+
+    <div class="note lit">
+      <p><strong>Read this twice, because it is the number one misreading of any plan of this kind.</strong></p>
+      <p>Every percentage in this document is a percentage of <strong>Commissionable Volume</strong>, and Commissionable Volume is 80 percent of the money. So a 10 percent level 1 is not 10 percent of what the person spent. It is 10 percent of 80 percent, which is <strong>8 percent of what they spent</strong>.</p>
+      <p>Worked in dollars: somebody you sponsored spends $150.00 this month. Their CV is 0.80 x 150.00 = 120.00. Your level 1 line is 0.10 x 120.00 = <strong>12.00</strong>. As a fraction of their $150.00, that is 12.00 / 150.00 = 8 percent. The plan says this out loud here rather than letting anybody discover it on a statement later.</p>
+    </div>
+
+    <h4>Why 80 and not 100</h4>
+    <p>The 20 cents on every dollar that Commissionable Volume leaves behind never enters the commission calculation at all. It is the company's margin, decided before any percentage is applied. That is also why the plan can say truthfully that the ceiling on an order in the monthly commission run is 20 percent of the price: the five level percentages add to 25 percent of Commissionable Volume, and 25 percent of 80 percent is 20 percent.</p>
+    <p class="small">That ceiling describes the monthly run, which is where every mechanism in sections seven, eight and nine is settled. The proposed Instant Payout in section ten would sit on top of it, on a first order only. See that section.</p>
+  </div>
+</section>
+
+<!-- ===================== 5. QUALIFY ===================== -->
+<section class="band alt" id="qualify">
+  <div class="wrap">
+    <p class="kicker">Section five</p>
+    <h2>The qualified month: the single gate</h2>
+    <p class="lead">Before any money is paid to anybody, one test runs. It is the only qualification test in the plan, and the same number does two separate jobs.</p>
+
+    <div class="note lit">
+      <p style="font-size:1.1rem;"><strong>Qualified means your own Sales Volume reached 100.00 in that calendar month.</strong> That is the whole test. Exactly 100.00 qualifies; every threshold in this plan is "or more", never "more than".</p>
+    </div>
+
+    <div class="grid-2">
+      <div class="panel">
+        <h4>Job one: it decides whether you can be paid</h4>
+        <p>Commissions for a month are paid only to Conductors who were qualified in that month. An unqualified month means no commission lines are created for you at all. Not reduced, not deferred, and never made up later.</p>
+      </div>
+      <div class="panel">
+        <h4>Job two: it decides whether your leg counts</h4>
+        <p>Rank requirements count <strong>active</strong> legs, and your leg is active for your sponsor only when you are qualified. Your sponsor's rank therefore depends on you staying active, which is the whole reason sponsors help.</p>
+      </div>
+    </div>
+
+    <h3>Ways to reach 100</h3>
+    <ul>
+      <li>One domain agent at 100 PV.</li>
+      <li>Two support agents at 50 PV each.</li>
+      <li>Any mix of agents that reaches 100.</li>
+      <li>Customer subscriptions booked to your account, which count exactly the same as your own.</li>
+      <li>Any combination of the above.</li>
+    </ul>
+
+    <div class="note">
+      <p><strong>Qualification can rest on what you sell, not only on what you buy.</strong> A Conductor with no subscriptions of their own and two customers each holding one support agent has 100 SV and is fully qualified. This matters beyond the arithmetic: plans where the only route to qualification is buying your own product are the ones regulators call pay to play. This is the structural answer to that, and it is the reason the customer role exists at all.</p>
+    </div>
+
+    <h4>If you do not qualify in a month</h4>
+    <ol>
+      <li>You are paid nothing that month.</li>
+      <li>Your leg does not count as active for your sponsor's rank, however much volume sits below you.</li>
+      <li>You cannot hold any rank above Member, even if your Team Volume and leg counts would otherwise reach Leader or Director.</li>
+      <li>Your own volume still pays your upline in full. Losing qualification costs you, not the people above you.</li>
+    </ol>
+    <p class="small">Qualification resets every month. There are no grace months in this version; a qualified March does nothing for April.</p>
+  </div>
+</section>
+
+<!-- ===================== 6. CAST ===================== -->
+<section class="band" id="cast">
+  <div class="wrap">
+    <p class="kicker">Section six</p>
+    <h2>One organisation, every example</h2>
+    <p class="lead">Every worked example from here to the end of the brochure comes out of the same ten person organisation, so you never have to learn a new cast. It is drawn once, here. The labels M1 to M10 are the same labels the plan specification uses, so anything here can be checked against it line by line.</p>
+
+    <figure class="figure">
+      <div class="fig-scroll">
+      <svg viewBox="0 0 880 452" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="treeTitle treeDesc">
+        <title id="treeTitle">The ten person organisation used by every example</title>
+        <desc id="treeDesc">M1 sponsors M2, M3 and M4. M2 sponsors M5 and M6. M3 sponsors M7 and M8. M5 sponsors M9. M8 sponsors M10. M1 holds Leader, M3 holds Builder, and M5 and M10 are not qualified.</desc>
+        <g stroke="var(--d-line)" stroke-width="1.6" fill="none">
+          <path d="M440 92 L200 140"/><path d="M440 92 L468 140"/><path d="M440 92 L716 140"/>
+          <path d="M200 196 L112 244"/><path d="M200 196 L288 244"/>
+          <path d="M468 196 L480 244"/><path d="M468 196 L668 244"/>
+          <path d="M112 300 L112 348"/>
+          <path d="M668 300 L668 348"/>
+        </g>
+
+        <g>
+          <rect x="350" y="46" width="180" height="46" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
+          <text class="svg-b" x="440" y="66" text-anchor="middle" fill="var(--d-text)">M1, LEADER</text>
+          <text class="svg-s" x="440" y="82" text-anchor="middle" fill="var(--d-muted)">SV 200.00, reaches 3 levels</text>
+
+          <rect x="110" y="140" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="200" y="160" text-anchor="middle" fill="var(--d-text)">M2, Member</text>
+          <text class="svg-s" x="200" y="176" text-anchor="middle" fill="var(--d-muted)">SV 150.00, reaches 1 level</text>
+
+          <rect x="378" y="140" width="180" height="46" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.4"/>
+          <text class="svg-b" x="468" y="160" text-anchor="middle" fill="var(--d-text)">M3, BUILDER</text>
+          <text class="svg-s" x="468" y="176" text-anchor="middle" fill="var(--d-muted)">SV 100.00, reaches 2 levels</text>
+
+          <rect x="626" y="140" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="716" y="160" text-anchor="middle" fill="var(--d-text)">M4, Member</text>
+          <text class="svg-s" x="716" y="176" text-anchor="middle" fill="var(--d-muted)">SV 100.00, all from customers</text>
+
+          <rect x="22" y="244" width="180" height="46" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
+          <text class="svg-b" x="112" y="264" text-anchor="middle" fill="var(--d-text)">M5, NOT QUALIFIED</text>
+          <text class="svg-s" x="112" y="280" text-anchor="middle" fill="var(--d-muted)">SV 50.00, earns nothing</text>
+
+          <rect x="198" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="288" y="264" text-anchor="middle" fill="var(--d-text)">M6, Member</text>
+          <text class="svg-s" x="288" y="280" text-anchor="middle" fill="var(--d-muted)">SV 150.00</text>
+
+          <rect x="390" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="480" y="264" text-anchor="middle" fill="var(--d-text)">M7, Member</text>
+          <text class="svg-s" x="480" y="280" text-anchor="middle" fill="var(--d-muted)">SV 1,500.00, the big ensemble</text>
+
+          <rect x="578" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="668" y="264" text-anchor="middle" fill="var(--d-text)">M8, Member</text>
+          <text class="svg-s" x="668" y="280" text-anchor="middle" fill="var(--d-muted)">SV 100.00</text>
+
+          <rect x="22" y="348" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="112" y="368" text-anchor="middle" fill="var(--d-text)">M9, Member</text>
+          <text class="svg-s" x="112" y="384" text-anchor="middle" fill="var(--d-muted)">SV 300.00</text>
+
+          <rect x="578" y="348" width="180" height="46" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
+          <text class="svg-b" x="668" y="368" text-anchor="middle" fill="var(--d-text)">M10, NOT QUALIFIED</text>
+          <text class="svg-s" x="668" y="384" text-anchor="middle" fill="var(--d-muted)">SV 50.00, still pays upline</text>
+        </g>
+
+        <g>
+          <text class="svg-s" x="20" y="424" fill="var(--d-muted)">Lines run from sponsor down to the person they enrolled.</text>
+          <text class="svg-s" x="20" y="440" fill="var(--d-muted)">M1 reaches Leader at exactly 2,500.00 Team Volume. M2 misses Builder because the M5 leg is not active. M10's 50.00 still pays M8.</text>
+        </g>
+      </svg>
+      </div>
+      <figcaption>The organisation is wider than a phone, so it scrolls sideways inside its own frame. The page itself never does.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- ===================== 7. MECHANISM 1 ===================== -->
+<section class="band alt" id="m1">
+  <div class="wrap">
+    <p class="kicker">Earning one</p>
+    <h2>Your frontline, at ten percent</h2>
+    <p class="lead">This is where most of the money in the plan is made, because level 1 pays 10 percent, twice the rate of any other level.</p>
+
+    <div class="note">
+      <p><strong>The rule.</strong> You are paid 10 percent of the Commissionable Volume of every Conductor you personally sponsored, for as long as you are qualified that month. Their own qualification does not matter. If they bought, you are paid on it.</p>
+    </div>
+
+    <h3>Worked, every step</h3>
+    <p>Take M2 and M6 out of the organisation. M2 sponsored M6. This month M6 subscribed to the Marketing Agent and the Customer Care agent.</p>
+
+    <figure class="figure fig-narrow">
+      <svg viewBox="0 0 360 192" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="m1Title m1Desc">
+        <title id="m1Title">Level one pay, worked</title>
+        <desc id="m1Desc">M6 has Sales Volume of 150, Commissionable Volume of 120. M2, the sponsor above, is paid ten percent of 120, which is twelve dollars.</desc>
+        <rect x="70" y="8" width="220" height="46" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <text class="svg-b" x="180" y="28" text-anchor="middle" fill="var(--d-text)">M2, qualified, the sponsor</text>
+        <text class="svg-s" x="180" y="44" text-anchor="middle" fill="var(--d-muted)">is paid 12.00 on this line</text>
+
+        <path d="M180 116 L180 62" stroke="var(--d-line)" stroke-width="1.8" fill="none"/>
+        <path d="M180 58 l-4.5 9 h9 z" fill="var(--d-line)"/>
+        <text class="svg-t" x="192" y="84" fill="var(--d-text)">level 1, 10 percent</text>
+        <text class="svg-s" x="192" y="100" fill="var(--d-muted)">0.10 x 120.00 = 12.00</text>
+
+        <rect x="70" y="116" width="220" height="68" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="180" y="136" text-anchor="middle" fill="var(--d-text)">M6, sponsored by M2</text>
+        <text class="svg-s" x="180" y="152" text-anchor="middle" fill="var(--d-muted)">Marketing 100 PV + Customer Care 50 PV</text>
+        <text class="svg-s" x="180" y="166" text-anchor="middle" fill="var(--d-muted)">Sales Volume 150.00</text>
+        <text class="svg-s" x="180" y="178" text-anchor="middle" fill="var(--d-text)">Commissionable Volume 120.00</text>
+      </svg>
+    </figure>
+
+    <ol>
+      <li>Marketing Agent, $100.00, 100 PV. Customer Care agent, $50.00, 50 PV.</li>
+      <li>M6's Sales Volume for the month is 100 + 50 = <strong class="num">150.00</strong>.</li>
+      <li>M6's Commissionable Volume is 0.80 x 150.00 = <strong class="num">120.00</strong>.</li>
+      <li>M2 is qualified this month, and level 1 sits inside every rank's paid depth, so both gates pass.</li>
+      <li>M2's commission line is 0.10 x 120.00 = <strong class="num">12.00</strong>.</li>
+    </ol>
+    <p>That is $12.00 on $150.00 of buying, which is 8 percent of what M6 actually spent. Not 10 percent, because the 10 percent applies to Commissionable Volume.</p>
+
+    <h3>The same rule when the person below is not qualified</h3>
+    <p>M8 sponsored M10. M10 subscribed to the Secretary agent only.</p>
+    <ol>
+      <li>M10's Sales Volume is <strong class="num">50.00</strong>, so M10's Commissionable Volume is 0.80 x 50.00 = <strong class="num">40.00</strong>.</li>
+      <li>M10 is not qualified, because 50.00 is below 100.00. That does not matter here.</li>
+      <li>M8 is qualified, so M8's level 1 line is 0.10 x 40.00 = <strong class="num">4.00</strong>.</li>
+    </ol>
+    <div class="note">
+      <p>M10 earns nothing that month and M10's leg does not count as active for M8's rank, but M10's volume still pays M8 in full. That asymmetry is deliberate and it is written into the plan: all Commissionable Volume pays upline, whoever generated it.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 8. MECHANISM 2 ===================== -->
+<section class="band" id="m2">
+  <div class="wrap">
+    <p class="kicker">Earning two</p>
+    <h2>Depth, which rank unlocks</h2>
+    <p class="lead">Levels 2 through 5 pay 5, 5, 3 and 2 percent of that person's Commissionable Volume, and you only reach them if your rank says you do. Paid depth is a hard cut: at depth 2 you are paid on levels 1 and 2 and you see nothing from level 3, however much volume is sitting there.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th class="num">Level</th><th class="num">Rate</th><th>Reached by</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td class="num">10 percent</td><td>every rank, including Member</td></tr>
+          <tr><td class="num">2</td><td class="num">5 percent</td><td>Builder and above</td></tr>
+          <tr><td class="num">3</td><td class="num">5 percent</td><td>Leader and above</td></tr>
+          <tr><td class="num">4</td><td class="num">3 percent</td><td>Director and above</td></tr>
+          <tr><td class="num">5</td><td class="num">2 percent</td><td>Executive only</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Worked, every step</h3>
+    <p>M3 is a Builder, so M3's paid depth is 2. Underneath M3 sit M7 and M8 on the frontline, and M10 one level further down beneath M8.</p>
+
+    <figure class="figure fig-mid">
+      <svg viewBox="0 0 360 318" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="m2Title m2Desc">
+        <title id="m2Title">Depth pay, worked for a Builder</title>
+        <desc id="m2Desc">M3, a Builder with paid depth two, earns one hundred and twenty dollars from M7 and eight dollars from M8 at level one, and two dollars from M10 at level two, totalling one hundred and thirty dollars. A Member would stop before level two and lose the two dollars.</desc>
+
+        <rect x="80" y="6" width="200" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.2"/>
+        <text class="svg-b" x="180" y="26" text-anchor="middle" fill="var(--d-text)">M3, BUILDER</text>
+        <text class="svg-s" x="180" y="42" text-anchor="middle" fill="var(--d-muted)">qualified, paid depth 2</text>
+
+        <path d="M180 50 L180 76" stroke="var(--d-line)" stroke-width="1.6" fill="none"/>
+        <path d="M180 80 l-4.5 -9 h9 z" fill="var(--d-line)"/>
+
+        <text class="svg-s" x="8" y="74" fill="var(--d-muted)">LEVEL 1, 10 PERCENT</text>
+        <rect x="8" y="80" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="22" y="100" fill="var(--d-text)">M7, your frontline</text>
+        <text class="svg-s" x="22" y="116" fill="var(--d-muted)">CV 1,200.00, at 10 percent</text>
+        <text class="svg-b" x="338" y="108" text-anchor="end" fill="var(--d-text)">120.00</text>
+
+        <rect x="8" y="130" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="22" y="150" fill="var(--d-text)">M8, your frontline</text>
+        <text class="svg-s" x="22" y="166" fill="var(--d-muted)">CV 80.00, at 10 percent</text>
+        <text class="svg-b" x="338" y="158" text-anchor="end" fill="var(--d-text)">8.00</text>
+
+        <text class="svg-s" x="8" y="194" fill="var(--d-bad-stroke)">A MEMBER'S REACH STOPS HERE, AT DEPTH 1</text>
+        <path d="M8 202 L352 202" stroke="var(--d-bad-stroke)" stroke-width="1.6" stroke-dasharray="7 5"/>
+
+        <text class="svg-s" x="8" y="220" fill="var(--d-muted)">LEVEL 2, 5 PERCENT</text>
+        <rect x="8" y="226" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="22" y="246" fill="var(--d-text)">M10, sponsored by M8</text>
+        <text class="svg-s" x="22" y="262" fill="var(--d-muted)">CV 40.00, at 5 percent</text>
+        <text class="svg-b" x="338" y="254" text-anchor="end" fill="var(--d-text)">2.00</text>
+
+        <rect x="8" y="276" width="344" height="36" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
+        <text class="svg-b" x="22" y="299" fill="var(--d-text)">M3's total for the month</text>
+        <text class="svg-b" x="338" y="299" text-anchor="end" fill="var(--d-text)">130.00</text>
+      </svg>
+    </figure>
+
+    <ol>
+      <li>M7 subscribed to twelve domain agents and six support agents. Sales Volume = (12 x 100) + (6 x 50) = <strong class="num">1,500.00</strong>, so Commissionable Volume = 0.80 x 1,500.00 = <strong class="num">1,200.00</strong>.</li>
+      <li>M8 subscribed to two support agents. Sales Volume = <strong class="num">100.00</strong>, Commissionable Volume = <strong class="num">80.00</strong>.</li>
+      <li>M10 subscribed to one support agent. Sales Volume = <strong class="num">50.00</strong>, Commissionable Volume = <strong class="num">40.00</strong>.</li>
+      <li>M7 is level 1 for M3: 0.10 x 1,200.00 = <strong class="num">120.00</strong>.</li>
+      <li>M8 is level 1 for M3: 0.10 x 80.00 = <strong class="num">8.00</strong>.</li>
+      <li>M10 is level 2 for M3: 0.05 x 40.00 = <strong class="num">2.00</strong>.</li>
+      <li>M3's total is 120.00 + 8.00 + 2.00 = <strong class="num">130.00</strong>.</li>
+    </ol>
+
+    <div class="note warn">
+      <p><strong>Now change one thing and nothing else.</strong> Suppose M3 held the rank of Member instead of Builder, so paid depth 1. M10 is out of reach. M3 earns 120.00 + 8.00 = <strong class="num">128.00</strong>, and the 2.00 is breakage. It is not pushed to the person above and it is not held for later. Nobody receives it.</p>
+    </div>
+
+    <div class="note lit">
+      <p><strong>The teaching point: rank buys reach, not rate.</strong> Going from Member to Builder does not increase what you earn on your frontline by a single cent. It opens a new row of people underneath them.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 9. MECHANISM 3 ===================== -->
+<section class="band alt" id="m3">
+  <div class="wrap">
+    <p class="kicker">Earning three</p>
+    <h2>Customer sales rolling up</h2>
+    <p class="lead">Anybody can subscribe to Orvanna agents as a customer of a referring Conductor, without joining the tree. That order books onto the Conductor's account, tagged as a customer purchase with the customer's own identity kept on it so the receipt stays theirs.</p>
+
+    <div class="note">
+      <p><strong>The rule.</strong> The full Personal Volume of a customer purchase counts in the referring Conductor's Sales Volume. The customer never qualifies, never holds a rank, and never earns. In this version the referring Conductor does not receive a separate retail commission on the sale; the benefit is that the volume counts toward their own qualification, feeds their Commissionable Volume, and feeds their upline's Team Volume.</p>
+    </div>
+
+    <h3>Worked, every step</h3>
+    <p>M4 has no subscriptions at all this month. Two of M4's customers each subscribe to one support agent: one takes the Quality Assurance (QA) agent, the other takes the Secretary agent.</p>
+
+    <figure class="figure fig-mid">
+      <svg viewBox="0 0 360 262" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="m3Title m3Desc">
+        <title id="m3Title">Customer volume rolling up</title>
+        <desc id="m3Desc">Two customers each buy a fifty volume agent. Both orders book to M4's account, giving M4 one hundred Sales Volume, which qualifies M4. M4's eighty Commissionable Volume pays M1 eight dollars at level one, while M4 earns nothing directly.</desc>
+
+        <rect x="8" y="6" width="166" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <text class="svg-b" x="91" y="26" text-anchor="middle" fill="var(--d-text)">Customer C1</text>
+        <text class="svg-s" x="91" y="42" text-anchor="middle" fill="var(--d-muted)">QA agent, 50 PV</text>
+
+        <rect x="186" y="6" width="166" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <text class="svg-b" x="269" y="26" text-anchor="middle" fill="var(--d-text)">Customer C2</text>
+        <text class="svg-s" x="269" y="42" text-anchor="middle" fill="var(--d-muted)">Secretary, 50 PV</text>
+
+        <g stroke="var(--d-line)" stroke-width="1.6" fill="none">
+          <path d="M91 50 L150 72"/><path d="M269 50 L210 72"/>
+        </g>
+
+        <rect x="8" y="74" width="344" height="62" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <text class="svg-b" x="180" y="94" text-anchor="middle" fill="var(--d-text)">M4, the referring Conductor</text>
+        <text class="svg-s" x="180" y="111" text-anchor="middle" fill="var(--d-muted)">Sales Volume 50 + 50 = 100.00, so QUALIFIED</text>
+        <text class="svg-s" x="180" y="127" text-anchor="middle" fill="var(--d-text)">Commissionable Volume 80.00, earns 0.00</text>
+
+        <path d="M180 176 L180 142" stroke="var(--d-line)" stroke-width="1.8" fill="none"/>
+        <path d="M180 138 l-4.5 9 h9 z" fill="var(--d-line)"/>
+        <text class="svg-s" x="190" y="164" fill="var(--d-muted)">level 1: 0.10 x 80.00 = 8.00</text>
+
+        <rect x="8" y="176" width="344" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+        <text class="svg-b" x="180" y="196" text-anchor="middle" fill="var(--d-text)">M1, M4's sponsor</text>
+        <text class="svg-s" x="180" y="212" text-anchor="middle" fill="var(--d-muted)">is paid 8.00 on this line</text>
+
+        <text class="svg-s" x="8" y="240" fill="var(--d-muted)">M4 bought nothing this month and is still</text>
+        <text class="svg-s" x="8" y="256" fill="var(--d-muted)">qualified. That is the point of this mechanism.</text>
+      </svg>
+    </figure>
+
+    <ol>
+      <li>QA agent $50.00, 50 PV. Secretary agent $50.00, 50 PV.</li>
+      <li>Both orders book to M4's account, so M4's Sales Volume is 50 + 50 = <strong class="num">100.00</strong>.</li>
+      <li>100.00 reaches the gate, so M4 is <strong>qualified this month</strong> without having bought anything personally.</li>
+      <li>M4's Commissionable Volume is 0.80 x 100.00 = <strong class="num">80.00</strong>.</li>
+      <li>M4 earns nothing directly on these two sales. M4's sponsor, M1, earns 0.10 x 80.00 = <strong class="num">8.00</strong> at level 1.</li>
+      <li>Because M4 is now qualified, M4's leg counts as active for M1's rank, and M4 is eligible to be paid on anybody in M4's own downline.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ===================== 10. MECHANISM 4: INSTANT PAYOUT ===================== -->
+<section class="band" id="m4">
+  <div class="wrap">
+    <p class="kicker">Earning four</p>
+    <h2>Instant Payout <span class="chip soon" style="vertical-align:middle;font-size:0.6rem;">proposed terms</span></h2>
+
+    <div class="note stop">
+      <p><strong>PROPOSED TERMS AWAITING APPROVAL. NOT YET BUILT.</strong></p>
+      <p>Instant Payout has been adopted as the fourth way a Conductor earns, and the terms set out on this page are the recommended package. They have <strong>not been approved</strong>, and no software computes them yet. Nothing in this section is available today. Nobody should describe Instant Payout to a prospective Conductor as though it already pays, and no figure below should be quoted as settled policy.</p>
+    </div>
+
+    <p class="lead">Every other payout in this plan resolves once, at the end of a calendar month. Instant Payout is the exception by design: it pays on the day, because the gap between doing the work and seeing the reward is what stops most new Conductors before they start.</p>
+
+    <h3>The proposed terms</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Term</th><th>The proposed rule</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Who is paid</strong></td><td>The <strong>sponsor</strong>, meaning the Conductor who personally enrolled the buyer. Not the buyer. This mechanism pays for selling, not for buying.</td></tr>
+          <tr><td><strong>What triggers it</strong></td><td>The <strong>first order ever</strong> placed by a Conductor you sponsored, placed <strong>within 30 days of that person's enrolment date</strong>. One Instant Payout per sponsored Conductor, ever.</td></tr>
+          <tr><td><strong>Basis</strong></td><td>The <strong>order price</strong>, excluding tax and any activation fee.</td></tr>
+          <tr><td><strong>Rate</strong></td><td><strong>20 percent of that price.</strong></td></tr>
+          <tr><td><strong>Cap on one event</strong></td><td>The basis is capped at <span class="num">$250.00</span>, so no single Instant Payout ever exceeds <span class="num">$50.00</span>.</td></tr>
+          <tr><td><strong>Cap on one sponsor</strong></td><td>At most <strong>3</strong> Instant Payouts to one sponsor in one calendar month.</td></tr>
+          <tr><td><strong>Who is eligible to receive it</strong></td><td>The sponsor must already have at least one completed purchase of their own. No monthly qualification gate applies, because a qualified month cannot be known at the instant a payment succeeds.</td></tr>
+          <tr><td><strong>When it is paid</strong></td><td>At the moment the payment succeeds, not at month end.</td></tr>
+          <tr><td><strong>Against the rest of the plan</strong></td><td><strong>In addition</strong> to level 1 pay, never instead of it. No ordinary commission line is suppressed and nothing in sections seven to nine changes.</td></tr>
+          <tr><td><strong>Against volume</strong></td><td>It consumes no volume. Sales Volume, Commissionable Volume, Team Volume and every rank are completely untouched by it.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note lit">
+      <p><strong>Read this sentence carefully, because Instant Payout breaks the rule the rest of this brochure taught you.</strong> Everywhere else, a percentage sits on Commissionable Volume, which is 80 percent of the money. Instant Payout is the one exception: its 20 percent sits on the <strong>order price itself</strong>. On a $150.00 first order that is 0.20 x 150.00 = <strong class="num">$30.00</strong>, not 0.20 x 120.00 = $24.00. A reader who assumes the usual basis will underestimate this mechanism by a quarter.</p>
+    </div>
+
+    <h3>Worked, every step</h3>
+    <p>You sponsor somebody. Nineteen days after they enrol, they place their first order, a $150.00 subscription. You have bought agents of your own before, and this is your first Instant Payout this month.</p>
+
+    <figure class="figure fig-mid">
+      <svg viewBox="0 0 360 336" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ipTitle ipDesc">
+        <title id="ipTitle">Instant Payout on a first order, as proposed</title>
+        <desc id="ipDesc">A sponsored Conductor enrols, then places a first order of one hundred and fifty dollars within thirty days. The sponsor is paid twenty percent of that price, thirty dollars, the same day, and still receives the ordinary level one commission of twelve dollars at month end, for forty two dollars in total.</desc>
+
+        <rect x="8" y="6" width="344" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-b" x="22" y="26" fill="var(--d-text)">Day 0: they enrol</text>
+        <text class="svg-s" x="22" y="42" fill="var(--d-muted)">you are their sponsor</text>
+
+        <path d="M180 50 L180 68" stroke="var(--d-line)" stroke-width="1.8" fill="none"/>
+        <path d="M180 72 l-4.5 -9 h9 z" fill="var(--d-line)"/>
+        <text class="svg-s" x="192" y="66" fill="var(--d-muted)">day 19</text>
+
+        <rect x="8" y="76" width="344" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+        <text class="svg-b" x="22" y="96" fill="var(--d-text)">Their first order: $150.00</text>
+        <text class="svg-s" x="22" y="112" fill="var(--d-muted)">placed inside the 30 day window</text>
+
+        <path d="M180 120 L180 138" stroke="var(--d-line)" stroke-width="1.8" fill="none"/>
+        <path d="M180 142 l-4.5 -9 h9 z" fill="var(--d-line)"/>
+
+        <rect x="8" y="146" width="344" height="60" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <text class="svg-s" x="22" y="165" fill="var(--d-muted)">SAME DAY, PAID TO YOU</text>
+        <text class="svg-b" x="22" y="184" fill="var(--d-text)">Instant Payout: 0.20 x 150.00</text>
+        <text class="svg-s" x="22" y="200" fill="var(--d-muted)">20 percent of the price, not of volume</text>
+        <text class="svg-b" x="338" y="184" text-anchor="end" fill="var(--d-text)">30.00</text>
+
+        <rect x="8" y="216" width="344" height="60" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-s" x="22" y="235" fill="var(--d-muted)">AT MONTH END, STILL PAID TO YOU</text>
+        <text class="svg-b" x="22" y="254" fill="var(--d-text)">Level 1: 0.10 x 120.00</text>
+        <text class="svg-s" x="22" y="270" fill="var(--d-muted)">their CV is 0.80 x 150.00 = 120.00</text>
+        <text class="svg-b" x="338" y="254" text-anchor="end" fill="var(--d-text)">12.00</text>
+
+        <rect x="8" y="286" width="344" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="2"/>
+        <text class="svg-b" x="22" y="310" fill="var(--d-text)">You receive, on that first order</text>
+        <text class="svg-b" x="338" y="310" text-anchor="end" fill="var(--d-text)">42.00</text>
+      </svg>
+    </figure>
+
+    <ol>
+      <li>The order price is <strong class="num">$150.00</strong>, which is below the $250.00 basis cap, so the whole price counts.</li>
+      <li>Instant Payout = 0.20 x 150.00 = <strong class="num">30.00</strong>, paid to you the day the payment succeeds.</li>
+      <li>At month end the ordinary plan still runs. Their Commissionable Volume is 0.80 x 150.00 = <strong class="num">120.00</strong>.</li>
+      <li>Your level 1 line is 0.10 x 120.00 = <strong class="num">12.00</strong>, exactly as it would have been without Instant Payout.</li>
+      <li>Total to you on that first order: 30.00 + 12.00 = <strong class="num">42.00</strong>.</li>
+    </ol>
+
+    <h4>How the cap behaves</h4>
+    <p>Suppose the first order had been $400.00 instead. The basis is capped at $250.00, so the Instant Payout is 0.20 x 250.00 = <strong class="num">50.00</strong>, which is the most any single Instant Payout can ever pay. The level 1 commission at month end is unaffected by the cap and is still calculated on the full order.</p>
+
+    <div class="note warn">
+      <p><strong>One consequence to be honest about.</strong> Section four of this brochure says the most a single order can pay through the monthly run is 20 percent of its price. That remains true of the monthly run. If Instant Payout is approved, a Conductor's <em>first</em> order would additionally carry up to 20 percent of its price paid on the day, so a first order could pay more than 20 percent in total. Every other order in the plan is unaffected.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 11. RANKS ===================== -->
+<section class="band alt" id="ranks">
+  <div class="wrap">
+    <p class="kicker">Section eleven</p>
+    <h2>The rank ladder</h2>
+    <p class="lead">Five rungs. Each one adds a level of reach, and nothing else. The percentages never change.</p>
+
+    <div class="grid-2" style="align-items:start;">
+      <figure class="figure fig-narrow" style="margin-top:0;">
+        <svg viewBox="0 0 360 362" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="ladderTitle ladderDesc">
+          <title id="ladderTitle">The five rank rungs and how deep each one reaches</title>
+          <desc id="ladderDesc">Member reaches one level, Builder two, Leader three, Director four, Executive five. Each rung is wider than the one below it, and the filled dots show the reach.</desc>
+
+          <!-- Executive -->
+          <rect x="14" y="10" width="332" height="52" rx="10" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+          <text class="svg-b" x="28" y="32" fill="var(--d-text)">EXECUTIVE</text>
+          <text class="svg-s" x="28" y="49" fill="var(--d-muted)">Team Volume 40,000.00 or more</text>
+          <g><circle cx="252" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="272" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="292" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="312" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="332" cy="36" r="6" fill="var(--d-lit-stroke)"/></g>
+
+          <!-- Director -->
+          <rect x="14" y="76" width="286" height="52" rx="10" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+          <text class="svg-b" x="28" y="98" fill="var(--d-text)">DIRECTOR</text>
+          <text class="svg-s" x="28" y="115" fill="var(--d-muted)">Team Volume 10,000.00 or more</text>
+          <g><circle cx="206" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="226" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="246" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="266" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="286" cy="102" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
+
+          <!-- Leader -->
+          <rect x="14" y="142" width="240" height="52" rx="10" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
+          <text class="svg-b" x="28" y="164" fill="var(--d-text)">LEADER</text>
+          <text class="svg-s" x="28" y="181" fill="var(--d-muted)">Team Volume 2,500.00 or more</text>
+          <g><circle cx="180" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="200" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="220" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="240" cy="168" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
+
+          <!-- Builder -->
+          <rect x="14" y="208" width="194" height="52" rx="10" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="28" y="230" fill="var(--d-text)">BUILDER</text>
+          <text class="svg-s" x="28" y="247" fill="var(--d-muted)">2 or more active legs</text>
+          <g><circle cx="154" cy="234" r="6" fill="var(--d-key-stroke)"/><circle cx="174" cy="234" r="6" fill="var(--d-key-stroke)"/><circle cx="194" cy="234" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
+
+          <!-- Member -->
+          <rect x="14" y="274" width="148" height="52" rx="10" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="28" y="296" fill="var(--d-text)">MEMBER</text>
+          <text class="svg-s" x="28" y="313" fill="var(--d-muted)">enrolled</text>
+          <g><circle cx="128" cy="300" r="6" fill="var(--d-key-stroke)"/><circle cx="148" cy="300" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
+
+          <text class="svg-s" x="14" y="342" fill="var(--d-muted)">A filled dot is a level you are paid on.</text>
+          <text class="svg-s" x="14" y="357" fill="var(--d-muted)">An open dot is one you are not.</text>
+        </svg>
+      </figure>
+
+      <div>
+        <div class="table-scroll" style="margin-top:0;">
+          <table>
+            <thead><tr><th>Rank</th><th>Everything below must hold in the same month</th><th class="num">Reach</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Member</strong></td><td>enrolled</td><td class="num">1 level</td></tr>
+              <tr><td><strong>Builder</strong></td><td>qualified, and 2 or more active legs</td><td class="num">2 levels</td></tr>
+              <tr><td><strong>Leader</strong></td><td>qualified, Team Volume 2,500.00 or more, and 3 or more active legs</td><td class="num">3 levels</td></tr>
+              <tr><td><strong>Director</strong></td><td>qualified, Team Volume 10,000.00 or more, and 2 or more legs each containing a Builder or higher</td><td class="num">4 levels</td></tr>
+              <tr><td><strong>Executive</strong></td><td>qualified, Team Volume 40,000.00 or more, and 2 or more legs each containing a Leader or higher</td><td class="num">5 levels</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">"A leg containing a Builder" means anybody inside that leg, at any depth, held Builder or higher this month.</p>
+      </div>
+    </div>
+
+    <h3>The rules that govern the ladder</h3>
+    <ul>
+      <li><strong>Every requirement on a rung must hold in the same month.</strong> There is no mixing of a good January with a good March.</li>
+      <li><strong>You hold the highest rung you meet.</strong> Nobody is stuck on a lower rung because of the order things are evaluated in.</li>
+      <li><strong>Ranks recompute from scratch every month.</strong> There is no retention, no highest ever achieved title, and no grace period. You are what you did this month.</li>
+      <li><strong>Every threshold is inclusive.</strong> Exactly 100.00 qualifies. Exactly 2,500.00 of Team Volume makes Leader.</li>
+      <li><strong>Every rank above Member requires your own qualified month.</strong> A large team alone never carries a title.</li>
+    </ul>
+
+    <div class="note lit">
+      <p><strong>The top two rungs are counted differently, on purpose.</strong> For Leader you count active legs, which asks whether your frontline is qualified. For Director you count legs that contain a Builder or higher anywhere inside, and for Executive, legs that contain a Leader or higher. That is what makes the top of this ladder about developing other leaders rather than about accumulating volume.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 12. THE MONTH ===================== -->
+<section class="band" id="month">
+  <div class="wrap">
+    <p class="kicker">Section twelve</p>
+    <h2>A complete month, to the cent</h2>
+    <p class="lead">The same ten people, one month, with nothing left out. This is not an illustration invented for a brochure: it is the plan's acceptance test, and the commission engine is required to reproduce every number below exactly.</p>
+
+    <h3>Volumes and qualification</h3>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Who</th><th>Ensemble held this month</th><th class="num">SV</th><th class="num">CV</th><th>Qualified</th><th class="num">TV</th><th>Rank</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>M1</td><td>Payment + Pricing</td><td class="num">200.00</td><td class="num">160.00</td><td><span class="chip ok">yes</span></td><td class="num">2,500.00</td><td><strong>Leader</strong></td></tr>
+          <tr><td>M2</td><td>Payment + Software Engineer</td><td class="num">150.00</td><td class="num">120.00</td><td><span class="chip ok">yes</span></td><td class="num">500.00</td><td>Member</td></tr>
+          <tr><td>M3</td><td>Shipping</td><td class="num">100.00</td><td class="num">80.00</td><td><span class="chip ok">yes</span></td><td class="num">1,650.00</td><td><strong>Builder</strong></td></tr>
+          <tr><td>M4</td><td>QA + Secretary, both held by M4's customers</td><td class="num">100.00</td><td class="num">80.00</td><td><span class="chip ok">yes</span></td><td class="num">0.00</td><td>Member</td></tr>
+          <tr><td>M5</td><td>Accounting</td><td class="num">50.00</td><td class="num">40.00</td><td><span class="chip no">no</span></td><td class="num">300.00</td><td>Member</td></tr>
+          <tr><td>M6</td><td>Marketing + Customer Care</td><td class="num">150.00</td><td class="num">120.00</td><td><span class="chip ok">yes</span></td><td class="num">0.00</td><td>Member</td></tr>
+          <tr><td>M7</td><td>12 domain agents + 6 support agents</td><td class="num">1,500.00</td><td class="num">1,200.00</td><td><span class="chip ok">yes</span></td><td class="num">0.00</td><td>Member</td></tr>
+          <tr><td>M8</td><td>Software Engineer + Accounting</td><td class="num">100.00</td><td class="num">80.00</td><td><span class="chip ok">yes</span></td><td class="num">50.00</td><td>Member</td></tr>
+          <tr><td>M9</td><td>Payment + Shipping + Pricing</td><td class="num">300.00</td><td class="num">240.00</td><td><span class="chip ok">yes</span></td><td class="num">0.00</td><td>Member</td></tr>
+          <tr><td>M10</td><td>Secretary</td><td class="num">50.00</td><td class="num">40.00</td><td><span class="chip no">no</span></td><td class="num">0.00</td><td>Member</td></tr>
+        </tbody>
+        <tfoot>
+          <tr><td colspan="2">Totals for the month</td><td class="num">2,700.00</td><td class="num">2,160.00</td><td colspan="3"></td></tr>
+        </tfoot>
+      </table>
+    </div>
+    <p class="small">Cross check the Commissionable Volume column: 160 + 120 + 80 + 80 + 40 + 120 + 1,200 + 80 + 240 + 40 = 2,160.00, which is exactly 0.80 x 2,700.00.</p>
+
+    <div class="grid-2">
+      <div class="note">
+        <p><strong>The M2 case.</strong> M2 is qualified, has two frontline Conductors, and has 500.00 of Team Volume, and is still a plain Member. One of those two legs is headed by M5, whose own Sales Volume is 50.00. The 300.00 of volume sitting under M5 in M9 does not rescue it. A leg is judged by its top person.</p>
+      </div>
+      <div class="note">
+        <p><strong>The M8 case.</strong> M8 is qualified but has zero active legs, because M8's only frontline Conductor, M10, produced 50.00. M8 still earns 4.00, because being paid at level 1 requires only that M8 is qualified. Rank and earning are two different tests.</p>
+      </div>
+    </div>
+
+    <details class="ledger">
+      <summary>Show every commission line in the run, all fifteen</summary>
+      <div class="table-scroll" style="margin-top:0;">
+        <table>
+          <thead><tr><th>Earner</th><th>Source</th><th class="num">Level</th><th class="num">Source CV</th><th class="num">Rate</th><th>Arithmetic</th><th class="num">Amount</th></tr></thead>
+          <tbody>
+            <tr><td>M1</td><td>M2</td><td class="num">1</td><td class="num">120.00</td><td class="num">10%</td><td class="num">0.10 x 120.00</td><td class="num">12.00</td></tr>
+            <tr><td>M1</td><td>M3</td><td class="num">1</td><td class="num">80.00</td><td class="num">10%</td><td class="num">0.10 x 80.00</td><td class="num">8.00</td></tr>
+            <tr><td>M1</td><td>M4</td><td class="num">1</td><td class="num">80.00</td><td class="num">10%</td><td class="num">0.10 x 80.00</td><td class="num">8.00</td></tr>
+            <tr><td>M1</td><td>M5</td><td class="num">2</td><td class="num">40.00</td><td class="num">5%</td><td class="num">0.05 x 40.00</td><td class="num">2.00</td></tr>
+            <tr><td>M1</td><td>M6</td><td class="num">2</td><td class="num">120.00</td><td class="num">5%</td><td class="num">0.05 x 120.00</td><td class="num">6.00</td></tr>
+            <tr><td>M1</td><td>M7</td><td class="num">2</td><td class="num">1,200.00</td><td class="num">5%</td><td class="num">0.05 x 1,200.00</td><td class="num">60.00</td></tr>
+            <tr><td>M1</td><td>M8</td><td class="num">2</td><td class="num">80.00</td><td class="num">5%</td><td class="num">0.05 x 80.00</td><td class="num">4.00</td></tr>
+            <tr><td>M1</td><td>M9</td><td class="num">3</td><td class="num">240.00</td><td class="num">5%</td><td class="num">0.05 x 240.00</td><td class="num">12.00</td></tr>
+            <tr><td>M1</td><td>M10</td><td class="num">3</td><td class="num">40.00</td><td class="num">5%</td><td class="num">0.05 x 40.00</td><td class="num">2.00</td></tr>
+            <tr><td>M2</td><td>M5</td><td class="num">1</td><td class="num">40.00</td><td class="num">10%</td><td class="num">0.10 x 40.00</td><td class="num">4.00</td></tr>
+            <tr><td>M2</td><td>M6</td><td class="num">1</td><td class="num">120.00</td><td class="num">10%</td><td class="num">0.10 x 120.00</td><td class="num">12.00</td></tr>
+            <tr><td>M3</td><td>M7</td><td class="num">1</td><td class="num">1,200.00</td><td class="num">10%</td><td class="num">0.10 x 1,200.00</td><td class="num">120.00</td></tr>
+            <tr><td>M3</td><td>M8</td><td class="num">1</td><td class="num">80.00</td><td class="num">10%</td><td class="num">0.10 x 80.00</td><td class="num">8.00</td></tr>
+            <tr><td>M3</td><td>M10</td><td class="num">2</td><td class="num">40.00</td><td class="num">5%</td><td class="num">0.05 x 40.00</td><td class="num">2.00</td></tr>
+            <tr><td>M8</td><td>M10</td><td class="num">1</td><td class="num">40.00</td><td class="num">10%</td><td class="num">0.10 x 40.00</td><td class="num">4.00</td></tr>
+          </tbody>
+          <tfoot><tr><td colspan="6">Company payout for the month</td><td class="num">264.00</td></tr></tfoot>
+        </table>
+      </div>
+    </details>
+
+    <h3>Statements</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Conductor</th><th>How it adds up</th><th class="num">Statement total</th></tr></thead>
+        <tbody>
+          <tr><td><strong>M1</strong>, Leader, reaches 3 levels</td><td class="num">28.00 at level 1, 72.00 at level 2, 14.00 at level 3</td><td class="num">114.00</td></tr>
+          <tr><td><strong>M3</strong>, Builder, reaches 2 levels</td><td class="num">120.00 + 8.00 + 2.00</td><td class="num">130.00</td></tr>
+          <tr><td><strong>M2</strong>, Member, reaches 1 level</td><td class="num">4.00 + 12.00</td><td class="num">16.00</td></tr>
+          <tr><td><strong>M8</strong>, Member, reaches 1 level</td><td class="num">4.00</td><td class="num">4.00</td></tr>
+          <tr><td>M4, M5, M6, M7, M9, M10</td><td class="num">no line reached them</td><td class="num">0.00</td></tr>
+        </tbody>
+        <tfoot><tr><td colspan="2">Paid to 4 Conductors of 10</td><td class="num">264.00</td></tr></tfoot>
+      </table>
+    </div>
+    <p>264.00 out of 2,160.00 of Commissionable Volume is 12.22 percent. Out of the 2,700.00 that came in the door it is 9.78 percent.</p>
+
+    <h3>Where the rest of the money went</h3>
+    <p>The structural ceiling is 25 percent of Commissionable Volume across five levels. On 2,160.00 that would describe 540.00. Only 264.00 was paid, and every dollar of the difference has a reason.</p>
+
+    <figure class="figure fig-mid">
+      <svg viewBox="0 0 360 216" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="reconTitle reconDesc">
+        <title id="reconTitle">Where the ceiling went</title>
+        <desc id="reconDesc">Of the five hundred and forty dollars the percentages could describe, two hundred and sixty four was paid, thirty six was breakage at the two gates, and two hundred and forty never existed because this tree has no upline above the top people.</desc>
+        <text class="svg-s" x="8" y="22" fill="var(--d-muted)">THE STRUCTURAL CEILING: 540.00</text>
+
+        <rect x="8" y="32" width="344" height="30" rx="7" fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="8" y="32" width="168" height="30" rx="7" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
+        <rect x="176" y="32" width="23" height="30" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <rect x="199" y="32" width="153" height="30" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+
+        <g>
+          <rect x="8" y="78" width="13" height="13" rx="3" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+          <text class="svg-t" x="30" y="89" fill="var(--d-text)">264.00 paid to Conductors</text>
+          <text class="svg-s" x="30" y="104" fill="var(--d-muted)">four of the ten, every line listed above</text>
+
+          <rect x="8" y="118" width="13" height="13" rx="3" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+          <text class="svg-t" x="30" y="129" fill="var(--d-text)">36.00 breakage at the two gates</text>
+          <text class="svg-s" x="30" y="144" fill="var(--d-muted)">24.00 because M5 is not qualified,</text>
+          <text class="svg-s" x="30" y="159" fill="var(--d-muted)">12.00 out of M2's reach at depth 1</text>
+
+          <rect x="8" y="173" width="13" height="13" rx="3" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-t" x="30" y="184" fill="var(--d-text)">240.00 never existed</text>
+          <text class="svg-s" x="30" y="199" fill="var(--d-muted)">most people have fewer than five</text>
+          <text class="svg-s" x="30" y="212" fill="var(--d-muted)">levels of upline above them</text>
+        </g>
+      </svg>
+      <figcaption>540.00 = 264.00 paid + 36.00 breakage + 240.00 that no tree this small could ever produce. In a deeper organisation the third slice shrinks, which is why real payout rates rise as an organisation matures.</figcaption>
+    </figure>
+
+    <div class="note warn">
+      <p><strong>There is no compression in this version, and it is worth being blunt about what that means.</strong> If the plan compressed, M5 being unqualified would let M2 slide into M5's place and collect the 24.00. It does not. In this version an unqualified Conductor is a wall in the tree, not a hole. Compression is named as the flagship change for a future version.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 13. CALENDAR ===================== -->
+<section class="band alt" id="calendar">
+  <div class="wrap">
+    <p class="kicker">Section thirteen</p>
+    <h2>The calendar, rounding, and finality</h2>
+
+    <div class="grid-2">
+      <div>
+        <h3>How a month closes</h3>
+        <ol>
+          <li><strong>Every order is stamped</strong> with the month it counts toward at the moment it is created, in Coordinated Universal Time (UTC). Subscription orders always stamp the first day of the month. The stamp never moves afterward, so a late edit can never shift volume between months.</li>
+          <li><strong>Cutoff</strong> is the end of the calendar month. Nothing enters a closed month.</li>
+          <li><strong>The run</strong> computes volumes, qualification, ranks, and every commission line for that month.</li>
+          <li><strong>Finalisation</strong> locks the run. A final run's statements cannot be edited, deleted, or quietly added to.</li>
+          <li><strong>A recomputation never edits history.</strong> It creates a new numbered run, and the old one stays on record marked superseded. Every statement traces to the exact run that produced it.</li>
+        </ol>
+      </div>
+      <div>
+        <h3>How the arithmetic is rounded</h3>
+        <p>Rounding happens in exactly two places and nowhere else:</p>
+        <ol>
+          <li>Once per Conductor per month, when Commissionable Volume is computed as 0.80 x Sales Volume.</li>
+          <li>Once per commission line, when the rate is applied to the source Commissionable Volume.</li>
+        </ol>
+        <p>Rounding is half up, so at exactly half a cent the Conductor gets the extra cent. <strong>Totals are never rounded twice.</strong> Your statement total is the sum of your already rounded lines, and the company total is the sum of the already rounded statements. That is what stops a statement from failing to add up.</p>
+        <p class="small">With the current catalog, rounding never actually fires: every price is a multiple of $50.00, so every Commissionable Volume is a multiple of 40, and every rate lands exactly on a cent.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><strong>Same data, same plan version, same answer.</strong> The organisation is photographed once at the start of a run and every later step reads that photograph, so editing the tree while a run is in flight cannot change that run's output. Every figure is fixed point decimal, never floating point. Run the same month twice and it agrees to the cent.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 14. LIMITS ===================== -->
+<section class="band" id="limits">
+  <div class="wrap">
+    <p class="kicker">Section fourteen</p>
+    <h2>What version 1.3 does not do</h2>
+    <p class="lead">A compensation plan is judged as much by what it declines to promise as by what it pays. Everything below is absent from this version on purpose, and each one will be published here before it changes.</p>
+
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th>Not in this version</th><th>What that means for a Conductor today</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Compression</strong></td><td>An unqualified Conductor blocks the levels below them rather than being skipped over. Volume that nobody is paid on is breakage and stays with the company.</td></tr>
+          <tr><td><strong>Refunds and clawbacks</strong></td><td>No rule yet exists for reversing volume or reclaiming paid commission. The rule will be published before refunds exist.</td></tr>
+          <tr><td><strong>A retail commission on customer sales</strong></td><td>Customer volume rolls up into your Sales Volume, but no separate percentage is paid to you on it.</td></tr>
+          <tr><td><strong>Grace months and rank retention</strong></td><td>Ranks are strictly monthly. There is no highest ever achieved title and no month of protection after a quiet month.</td></tr>
+          <tr><td><strong>Bundles, packs, and one time purchases</strong></td><td>The catalog sells curated bundles and packs, and offers one time purchase on every product. Version 1.3 of this plan recognises volume from the twelve individual agents only. Bundle, pack, and one time volume is not yet part of Sales Volume.</td></tr>
+          <tr><td><strong>The activation fee</strong></td><td>The checkout's priority activation fee is not a product, carries no volume, and pays no commission.</td></tr>
+          <tr><td><strong>Disbursement</strong></td><td>This system computes and locks statements. It does not move money. It should never be described as a payout system.</td></tr>
+          <tr><td><strong>Instant Payout</strong></td><td>Adopted as a rule of the plan. The terms in section ten are proposed and awaiting approval, and no software computes them. It pays nothing today.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">On refunds and Instant Payout: if an order that triggered an Instant Payout is later refunded or charged back, the amount is recovered from the sponsor's next monthly commission run.</p>
+  </div>
+</section>
+
+<!-- ===================== 15. GLOSSARY ===================== -->
+<section class="band alt" id="glossary">
+  <div class="wrap">
+    <p class="kicker">Section fifteen</p>
+    <h2>Key terms and definitions</h2>
+    <p class="lead">The full list, in alphabetical order, including every term used anywhere in this brochure.</p>
+
+    <div class="grid-2">
+      <div>
+        <dl class="deflist" style="grid-template-columns:1fr;">
+          <dt>Active leg</dt><dd>A leg whose frontline Conductor is qualified this month. A leg with a large downline and an unqualified frontline Conductor is not active.</dd>
+          <dt>Breakage</dt><dd>Commission that the level percentages describe but nobody receives, because the person who would have received it was not qualified or the level was outside their paid depth.</dd>
+          <dt>Commissionable Volume (CV)</dt><dd>80 percent of Sales Volume, rounded to two decimals. The only base any commission percentage is ever applied to.</dd>
+          <dt>Commission run</dt><dd>One numbered, versioned batch calculation for one month. It produces every statement and is locked once it is marked final.</dd>
+          <dt>Compression</dt><dd>Skipping over an unqualified Conductor so the next qualified person moves into their slot. This version of the plan does not do it.</dd>
+          <dt>Conductor</dt><dd>Somebody who has enrolled and holds a place in the sponsorship tree. Conductors run an ensemble of agents, may sponsor other Conductors, hold a rank each month, and can be paid.</dd>
+          <dt>Customer</dt><dd>Somebody who subscribes through a referring Conductor without joining the tree. A customer never qualifies, never holds a rank, and never earns.</dd>
+          <dt>Downline</dt><dd>Everybody below you in the tree, at any depth.</dd>
+          <dt>Ensemble</dt><dd>The set of Orvanna agents a Conductor subscribes to. The ensemble drives that Conductor's own volume. It is never the word for their people.</dd>
+          <dt>Frontline</dt><dd>The Conductors you personally sponsored, and only those.</dd>
+          <dt>Leg</dt><dd>One frontline Conductor together with that person's entire downline, treated as one branch.</dd>
+        </dl>
+      </div>
+      <div>
+        <dl class="deflist" style="grid-template-columns:1fr;">
+          <dt>Level</dt><dd>Plain distance down the tree from you to somebody in your downline. Your frontline is level 1, their frontline is level 2, and so on. Levels never skip in this version.</dd>
+          <dt>Paid depth</dt><dd>How many levels of your downline you are paid on, set by your rank: Member 1, Builder 2, Leader 3, Director 4, Executive 5.</dd>
+          <dt>Personal Volume (PV)</dt><dd>The volume figure carried by a product, which at Orvanna always equals its price in dollars.</dd>
+          <dt>Qualified month</dt><dd>A month in which your own Sales Volume reached 100.00 or more. The single gate for being paid and for your leg counting as active.</dd>
+          <dt>Rank</dt><dd>The title you hold for one month, recomputed from scratch each month, which sets your paid depth. The five ranks are Member, Builder, Leader, Director and Executive.</dd>
+          <dt>Sales Volume (SV)</dt><dd>The total Personal Volume booked to your account in one calendar month, whether you bought it or one of your customers did.</dd>
+          <dt>Sponsor</dt><dd>The one Conductor directly above you, the person who enrolled you.</dd>
+          <dt>Team</dt><dd>The Conductors you sponsored and everybody below them. The team drives Team Volume and rank. It is never the word for your agents.</dd>
+          <dt>Team Volume (TV)</dt><dd>The Sales Volume of everybody strictly below you, added across your whole downline at every depth. It never includes your own Sales Volume.</dd>
+          <dt>Upline</dt><dd>Everybody above you: your sponsor, their sponsor, and so on to the top of the tree.</dd>
+          <dt>Volume month</dt><dd>The calendar month an order counts toward, stamped when the order is created and never moved afterward.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><strong>Which document governs.</strong> The compensation plan booklet is the single statement of this plan that Conductors are given. This brochure explains the same rules and the same figures in a form built to be handed to somebody, but where any wording differs, the booklet and its version stamp govern. Rule changes take effect at the start of a stated month and are never applied backward.</p>
+    </div>
+
+    <p class="no-print"><a href="#top">Back to the top of the brochure</a></p>
+  </div>
+</section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-links no-print">
+      <a href="index.html">Learn</a>
+      <a href="shop.html">Shop</a>
+      <a href="comp-plan.html">Plan</a>
+      <a href="team.html">Team</a>
+      <a href="login.html">Sign In</a>
+    </div>
+    <p>Orvanna compensation plan, version 1.3, effective month 2026-08. Acronyms used above: Personal Volume (PV), Sales Volume (SV), Commissionable Volume (CV), Team Volume (TV), Quality Assurance (QA), Coordinated Universal Time (UTC).</p>
+    <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist. The worked examples in this brochure show how the arithmetic runs and are not projections of income; nothing here promises or implies that any person would earn any amount. The Instant Payout section sets out proposed terms that have not been approved and describes a mechanism that is not built and pays nothing today.</p>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Two small things, and nothing else runs on this page.
+   1. The theme toggle writes data-theme on <html>, so the
+      explicit choice beats the system preference in both
+      directions, and remembers the choice for next time.
+   2. The print button, which is the whole reason a brochure
+      has a print stylesheet.
+   ============================================================ */
+(function () {
+  var root = document.documentElement;
+  var toggle = document.getElementById('themeToggle');
+  var store = null;
+
+  try { store = window.localStorage; } catch (err) { store = null; }
+
+  function systemPrefersDark() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function isDark() {
+    var set = root.getAttribute('data-theme');
+    if (set === 'dark') { return true; }
+    if (set === 'light') { return false; }
+    return systemPrefersDark();
+  }
+
+  function paintToggle() {
+    if (!toggle) { return; }
+    var dark = isDark();
+    toggle.textContent = dark ? 'Light' : 'Dark';
+    toggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    toggle.setAttribute('aria-label', dark ? 'Switch to the light theme' : 'Switch to the dark theme');
+  }
+
+  var saved = null;
+  if (store) {
+    try { saved = store.getItem('orvanna-comp-plan-theme'); } catch (err) { saved = null; }
+  }
+  if (saved === 'dark' || saved === 'light') {
+    root.setAttribute('data-theme', saved);
+  }
+  paintToggle();
+
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      if (store) {
+        try { store.setItem('orvanna-comp-plan-theme', next); } catch (err) { /* private mode, carry on */ }
+      }
+      paintToggle();
+    });
+  }
+
+  if (window.matchMedia) {
+    var query = window.matchMedia('(prefers-color-scheme: dark)');
+    var onChange = function () { if (!root.getAttribute('data-theme')) { paintToggle(); } };
+    if (query.addEventListener) { query.addEventListener('change', onChange); }
+    else if (query.addListener) { query.addListener(onChange); }
+  }
+
+  var printBtn = document.getElementById('printBtn');
+  if (printBtn) {
+    printBtn.addEventListener('click', function () { window.print(); });
+  }
+
+  /* A collapsed section prints as nothing, which would silently drop the
+     fifteen commission lines from a printed copy. Open every collapsed
+     section for the print, then put it back exactly as the reader left it. */
+  var reopened = [];
+  window.addEventListener('beforeprint', function () {
+    reopened = [];
+    var boxes = document.querySelectorAll('details');
+    for (var i = 0; i < boxes.length; i++) {
+      if (!boxes[i].open) { boxes[i].open = true; reopened.push(boxes[i]); }
+    }
+  });
+  window.addEventListener('afterprint', function () {
+    for (var j = 0; j < reopened.length; j++) { reopened[j].open = false; }
+    reopened = [];
+  });
+})();
+</script>
+</body>
+</html>

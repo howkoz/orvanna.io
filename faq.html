@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en" id="top">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Frequently Asked Questions</title>
+<meta name="description" content="Short, straight answers about the Orvanna Conductor program: the agents, the two purchase modes, how earning works, what makes a month qualified, and when commissions run. Demonstration company, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/corporate.css?v=ea38c0d0932a">
+<style>
+/* ============================================================
+   FREQUENTLY ASKED QUESTIONS: page styles.
+
+   The chrome (sticky navigation, footer, .wrap) comes from
+   corporate.css so this page cannot drift from the rest of the
+   site. Everything below the navigation is styled here, from
+   tokens, so the reading surface works in a light theme and a
+   dark one.
+
+   THEME RULE FOLLOWED HERE. Every colour has its value on bare
+   :root, which is the light palette. The dark theme only
+   REDEFINES tokens, twice: once under the system preference
+   (guarded so an explicit light choice still wins) and once
+   under an explicit dark selector. No colour is defined only
+   inside a media query.
+
+   The navigation and the footer stay dark in both themes. They
+   are the site's chrome, they carry the dark-theme logo lockup,
+   and they are shared with every other page.
+   ============================================================ */
+
+:root {
+  /* surfaces */
+  --faq-bg:          #FFFFFF;
+  --faq-bg-alt:      #F4F6FB;
+  --faq-card:        #FFFFFF;
+  --faq-card-hover:  #FAFBFF;
+  --faq-border:      rgba(79, 70, 229, 0.22);
+  --faq-border-soft: #E3E8F0;
+  --faq-shadow:      0 1px 2px rgba(15, 23, 42, 0.07);
+
+  /* text */
+  --faq-heading:     #0F172A;
+  --faq-text:        #2B3444;
+  --faq-muted:       #5B6472;
+
+  /* accents */
+  --faq-accent:      #4F46E5;   /* the readable accent: links, kickers */
+  --faq-accent-soft: rgba(79, 70, 229, 0.09);
+  --faq-focus:       #4F46E5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --faq-bg:          #060B18;
+    --faq-bg-alt:      #0A1226;
+    --faq-card:        rgba(30, 41, 59, 0.52);
+    --faq-card-hover:  rgba(30, 41, 59, 0.72);
+    --faq-border:      rgba(129, 140, 248, 0.26);
+    --faq-border-soft: rgba(129, 140, 248, 0.16);
+    --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
+
+    --faq-heading:     #F1F5F9;
+    --faq-text:        #C7D0DE;
+    --faq-muted:       #94A3B8;
+
+    --faq-accent:      #22D3EE;
+    --faq-accent-soft: rgba(34, 211, 238, 0.10);
+    --faq-focus:       #22D3EE;
+  }
+}
+
+:root[data-theme="dark"] {
+  --faq-bg:          #060B18;
+  --faq-bg-alt:      #0A1226;
+  --faq-card:        rgba(30, 41, 59, 0.52);
+  --faq-card-hover:  rgba(30, 41, 59, 0.72);
+  --faq-border:      rgba(129, 140, 248, 0.26);
+  --faq-border-soft: rgba(129, 140, 248, 0.16);
+  --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
+
+  --faq-heading:     #F1F5F9;
+  --faq-text:        #C7D0DE;
+  --faq-muted:       #94A3B8;
+
+  --faq-accent:      #22D3EE;
+  --faq-accent-soft: rgba(34, 211, 238, 0.10);
+  --faq-focus:       #22D3EE;
+}
+
+/* corporate.css paints the body navy for the dark-only pages.
+   This page owns its own field, so it restates both properties
+   from its own tokens rather than inheriting one of them. */
+body {
+  background: var(--faq-bg);
+  color: var(--faq-text);
+}
+
+/* ---------- shared focus treatment ---------- */
+
+.faq-page a:focus-visible,
+.faq-page button:focus-visible,
+.faq-page summary:focus-visible {
+  outline: 2px solid var(--faq-focus);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* The navigation and the footer are dark bands in both themes, so
+   the light theme's indigo focus ring would be hard to see against
+   them. Those two regions keep the cyan ring the rest of the site
+   uses. */
+.faq-page .nav a:focus-visible,
+.faq-page .nav button:focus-visible,
+.faq-page .footer a:focus-visible {
+  outline-color: #22D3EE;
+}
+
+/* ---------- theme control, in the navigation ----------
+   The navigation is dark in both themes, so this control is
+   coloured for a dark field rather than from the page tokens. */
+
+.faq-theme-btn {
+  font: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: #C7D0DE;
+  background: transparent;
+  border: 1px solid rgba(129, 140, 248, 0.3);
+  border-radius: 999px;
+  padding: 5px 13px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.16s ease, border-color 0.16s ease;
+}
+
+.faq-theme-btn:hover {
+  color: #22D3EE;
+  border-color: rgba(34, 211, 238, 0.5);
+}
+
+/* ---------- hero ---------- */
+
+.faq-hero {
+  background: var(--faq-bg-alt);
+  border-bottom: 1px solid var(--faq-border-soft);
+  padding: 72px 0 60px;
+}
+
+.faq-kicker {
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+  color: var(--faq-accent);
+  margin-bottom: 16px;
+}
+
+.faq-title {
+  font-size: clamp(1.5rem, 3.4vw, 2.1rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  line-height: 1.25;
+  color: var(--faq-heading);
+  margin-bottom: 20px;
+}
+
+.faq-intro {
+  max-width: 46em;
+  color: var(--faq-muted);
+  margin-bottom: 30px;
+}
+
+/* ---------- acronym key ---------- */
+
+.faq-key {
+  background: var(--faq-card);
+  border: 1px solid var(--faq-border);
+  border-radius: 12px;
+  box-shadow: var(--faq-shadow);
+  padding: 22px 24px 18px;
+  max-width: 46em;
+}
+
+.faq-key h2 {
+  font-size: 0.74rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--faq-heading);
+  margin-bottom: 12px;
+}
+
+.faq-key dl {
+  display: grid;
+  grid-template-columns: 12.5em 1fr;
+  gap: 6px 18px;
+  font-size: 0.93rem;
+}
+
+.faq-key dt { font-weight: 650; color: var(--faq-heading); }
+.faq-key dd { color: var(--faq-muted); }
+
+/* ---------- jump list ---------- */
+
+.faq-jump {
+  background: var(--faq-bg);
+  border-bottom: 1px solid var(--faq-border-soft);
+  padding: 24px 0;
+}
+
+.faq-jump-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.faq-jump-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--faq-muted);
+  margin-right: 6px;
+}
+
+.faq-chip {
+  display: inline-block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--faq-accent);
+  background: var(--faq-accent-soft);
+  border: 1px solid var(--faq-border);
+  border-radius: 999px;
+  padding: 6px 14px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.faq-chip:hover { background: var(--faq-card-hover); }
+
+.faq-expand {
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  color: var(--faq-accent);
+  background: transparent;
+  border: 1.5px solid var(--faq-border);
+  border-radius: 999px;
+  padding: 6px 16px;
+  cursor: pointer;
+  margin-left: auto;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.faq-expand:hover { background: var(--faq-accent-soft); }
+
+/* ---------- question groups ---------- */
+
+.faq-group { padding: 54px 0 12px; }
+.faq-group:nth-of-type(even) { background: var(--faq-bg-alt); }
+.faq-group { scroll-margin-top: 84px; }
+
+.faq-group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+
+.faq-group-num {
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--faq-accent);
+}
+
+.faq-group-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--faq-heading);
+}
+
+.faq-group-note {
+  color: var(--faq-muted);
+  font-size: 0.94rem;
+  max-width: 44em;
+  margin-bottom: 24px;
+}
+
+.faq-list { max-width: 52em; padding-bottom: 42px; }
+
+/* ---------- one question ---------- */
+
+.faq-item {
+  background: var(--faq-card);
+  border: 1px solid var(--faq-border-soft);
+  border-radius: 12px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.faq-item[open] { border-color: var(--faq-border); box-shadow: var(--faq-shadow); }
+.faq-item:hover { background: var(--faq-card-hover); }
+
+.faq-item > summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px 20px;
+}
+
+.faq-item > summary::-webkit-details-marker { display: none; }
+
+.faq-q {
+  font-size: 1rem;
+  font-weight: 650;
+  line-height: 1.5;
+  color: var(--faq-heading);
+  margin: 0;
+}
+
+.faq-sign {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 4px;
+  position: relative;
+}
+
+.faq-sign::before,
+.faq-sign::after {
+  content: "";
+  position: absolute;
+  background: var(--faq-accent);
+  border-radius: 1px;
+  transition: transform 0.18s ease, opacity 0.18s ease;
+}
+
+.faq-sign::before { left: 0; right: 0; top: 8px; height: 2px; }
+.faq-sign::after  { top: 0; bottom: 0; left: 8px; width: 2px; }
+
+.faq-item[open] .faq-sign::after { transform: scaleY(0); opacity: 0; }
+
+.faq-a {
+  padding: 0 20px 18px 52px;
+  color: var(--faq-text);
+  font-size: 0.96rem;
+}
+
+.faq-a p { margin-bottom: 10px; }
+.faq-a p:last-child { margin-bottom: 0; }
+
+.faq-more {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 0.87rem;
+  font-weight: 600;
+  color: var(--faq-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--faq-accent);
+  padding-bottom: 1px;
+}
+
+.faq-more:hover { border-bottom-color: transparent; }
+
+/* ---------- closing contact block ---------- */
+
+.faq-contact {
+  background: var(--faq-bg-alt);
+  border-top: 1px solid var(--faq-border-soft);
+  padding: 56px 0 64px;
+}
+
+.faq-contact-card {
+  background: var(--faq-card);
+  border: 1px solid var(--faq-border);
+  border-radius: 14px;
+  box-shadow: var(--faq-shadow);
+  padding: 30px 30px 26px;
+  max-width: 46em;
+}
+
+.faq-contact-card h2 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--faq-heading);
+  margin-bottom: 12px;
+}
+
+.faq-contact-card p { color: var(--faq-muted); margin-bottom: 16px; }
+
+.faq-mailto {
+  display: inline-block;
+  font-weight: 650;
+  color: var(--faq-accent);
+  text-decoration: none;
+  border-bottom: 1px solid var(--faq-accent);
+  padding-bottom: 1px;
+}
+
+.faq-disclaimer {
+  max-width: 46em;
+  margin-top: 22px;
+  font-size: 0.87rem;
+  color: var(--faq-muted);
+  border-left: 3px solid var(--faq-accent);
+  padding-left: 14px;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 700px) {
+  .faq-hero { padding: 52px 0 44px; }
+  .faq-group { padding: 40px 0 10px; }
+  .faq-key dl { grid-template-columns: 1fr; gap: 2px; }
+  .faq-key dd { margin-bottom: 8px; }
+  .faq-expand { margin-left: 0; }
+  .faq-a { padding-left: 20px; }
+  .faq-group-head { flex-wrap: wrap; gap: 6px 14px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq-item, .faq-sign::before, .faq-sign::after, .faq-chip, .faq-expand {
+    transition: none;
+  }
+}
+
+/* ---------- print: every answer visible on paper ----------
+   A closed <details> prints as a bare question. The script at
+   the foot of this page opens every item before printing and
+   restores the reader's own open and closed state afterwards,
+   which is more dependable across browsers than trying to
+   override the closed state in a stylesheet. These rules do the
+   rest: flat ink, no chrome, no chevrons. */
+
+@media print {
+  .nav, .footer, .faq-jump, .faq-sign { display: none !important; }
+  body { background: #FFFFFF; color: #111111; }
+  .faq-hero, .faq-group, .faq-contact { background: #FFFFFF; padding: 18px 0; }
+  .faq-item { border: 0; border-bottom: 1px solid #CCCCCC; border-radius: 0; margin: 0; }
+  .faq-item > summary { padding: 10px 0 4px; }
+  .faq-a { padding: 0 0 10px 0; }
+  .faq-q, .faq-title, .faq-group-title { color: #111111; }
+  .faq-a, .faq-intro, .faq-group-note { color: #222222; }
+}
+</style>
+</head>
+<body class="faq-page">
+
+<!-- ============ STICKY NAV (glass) ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link" href="team.html">Team</a>
+      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <button class="faq-theme-btn" type="button" id="themeToggle" aria-pressed="false">Dark</button>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+<!-- ============ HERO ============ -->
+<section class="faq-hero">
+  <div class="wrap">
+    <p class="faq-kicker">Frequently asked questions</p>
+    <h1 class="faq-title">Short answers, including the awkward ones</h1>
+    <p class="faq-intro">These are the questions Conductors and shoppers actually ask, answered in a few sentences each. Where a question deserves more than a few sentences, the answer says so and points at the compensation brochure or the library. Where the honest answer is no, or not yet, it says that too.</p>
+
+    <div class="faq-key">
+      <h2>Acronym key</h2>
+      <dl>
+        <dt>Conductor</dt>
+        <dd>Somebody enrolled in the Orvanna program, with a place in the sponsorship tree.</dd>
+        <dt>Artificial Intelligence (AI)</dt>
+        <dd>The technology every Orvanna product is built on.</dd>
+        <dt>Personal Volume (PV)</dt>
+        <dd>The volume figure printed on a product. At Orvanna it always equals the price in dollars.</dd>
+        <dt>Sales Volume (SV)</dt>
+        <dd>The total Personal Volume booked to one account in one calendar month.</dd>
+        <dt>Commissionable Volume (CV)</dt>
+        <dd>80 percent of Sales Volume. Every commission percentage applies to this number.</dd>
+        <dt>Team Volume (TV)</dt>
+        <dd>The Sales Volume of everybody below you, added up. It never includes your own.</dd>
+        <dt>Quality Assurance (QA)</dt>
+        <dd>One of the support agents in the catalog, named for the job it does.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<!-- ============ JUMP LIST ============ -->
+<nav class="faq-jump" aria-label="Question groups">
+  <div class="wrap faq-jump-inner">
+    <span class="faq-jump-label">Jump to</span>
+    <a class="faq-chip" href="#starting">Getting started</a>
+    <a class="faq-chip" href="#agents">The agents</a>
+    <a class="faq-chip" href="#earning">How earning works</a>
+    <a class="faq-chip" href="#qualifying">Qualifying</a>
+    <a class="faq-chip" href="#paid">Getting paid</a>
+    <a class="faq-chip" href="#account">Your account</a>
+    <a class="faq-chip" href="#straight">Straight answers</a>
+    <button class="faq-expand" type="button" id="expandAll" aria-expanded="false">Expand all</button>
+  </div>
+</nav>
+
+<!-- ============ 1. GETTING STARTED ============ -->
+<section class="faq-group" id="starting" aria-labelledby="starting-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">01</span>
+      <h2 class="faq-group-title" id="starting-title">Getting started and joining</h2>
+    </div>
+    <p class="faq-group-note">What Orvanna is, what a Conductor is, and where the program currently stands.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Why do you call us Conductors?</h3></summary>
+        <div class="faq-a">
+          <p>Because the job is leading an ensemble of agents, not selling a product off a shelf. A Conductor chooses which Orvanna artificial intelligence (AI) agents to run, directs them, and answers for what they produce. The name is meant to describe the work rather than dress it up.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What does Orvanna actually sell?</h3></summary>
+        <div class="faq-a">
+          <p>Artificial intelligence (AI) agents, each of which does one job for a small business. Six domain agents run a whole business function end to end, covering payments, shipping, pricing, inventory, marketing and tax preparation, and six support agents fill a staff role beside them. There is nothing to ship and no stock to hold, because every product is software billed like any other subscription.</p>
+          <a class="faq-more" href="shop.html">See the full catalog</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">How do I become a Conductor?</h3></summary>
+        <div class="faq-a">
+          <p>Enrollment is not open yet, which is why the Enroll link in the navigation is marked soon. You can shop today, and if a Conductor gave you a referral code, entering it at checkout attaches your order to them. This page will change the day enrollment opens.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is the difference between a Conductor and a customer?</h3></summary>
+        <div class="faq-a">
+          <p>A Conductor holds a place in the sponsorship tree, can hold a rank, and can earn. A customer buys agents through a Conductor without joining the tree, so a customer never qualifies, never holds a rank and never earns anything. The volume from a customer's order books to the Conductor who referred them.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Do I have to buy anything to hold my place?</h3></summary>
+        <div class="faq-a">
+          <p>No purchase is required to keep your place in the tree. Buying matters for one reason: a month counts as qualified when 100 Personal Volume (PV) or more is booked to your account, and that volume can come from your customers' orders rather than your own. Everything about qualifying is in group four below.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2. THE AGENTS ============ -->
+<section class="faq-group" id="agents" aria-labelledby="agents-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">02</span>
+      <h2 class="faq-group-title" id="agents-title">The agents, the two purchase modes, and the packs</h2>
+    </div>
+    <p class="faq-group-note">What things cost, what a one-time purchase really buys, and whether a pack is a discount.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What do the agents cost?</h3></summary>
+        <div class="faq-a">
+          <p>Domain agents are $100.00 per month and carry 100 Personal Volume (PV). Support agents are $50.00 per month and carry 50 PV. The Manager Agent bundle is $200.00, and the three packs are $200.00, $400.00 and $800.00 per month.</p>
+          <p>Personal Volume always equals dollars, one for one, on every item and in both purchase modes.</p>
+          <a class="faq-more" href="shop.html">Prices for every item</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is the difference between a subscription and a one-time purchase?</h3></summary>
+        <div class="faq-a">
+          <p>A subscription bills every month and grants its volume every month it runs. A one-time purchase costs ten times the monthly price and carries ten times the volume, and that volume is recognised one tenth per month across ten months, starting with the month you buy.</p>
+          <p>In money, in volume and in qualification the two are exactly equivalent. A one-time purchase is ten months of subscription, paid at once.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">So a one-time purchase gives me one big month of volume?</h3></summary>
+        <div class="faq-a">
+          <p>No, and that is deliberate. The volume arrives one tenth at a time, so in any single month a one-time purchase is worth exactly what the subscription it replaces would have been worth. Nobody can buy a rank in one transaction, and every threshold in the plan stays an honest monthly number.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Do the packs save me money?</h3></summary>
+        <div class="faq-a">
+          <p>No. Each pack is priced at exactly the sum of its parts, so what you are buying is the selection and not a discount. Ignition is $200.00 against $200.00 of separate agents, Momentum $400.00 against $400.00, Constellation $800.00 against $800.00.</p>
+          <p>The one item priced above its contents is the Manager Agent bundle, $200.00 against $150.00 for its three agents bought separately. The extra $50.00 is the management layer, which is the thing that bundle actually sells.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is in each pack?</h3></summary>
+        <div class="faq-a">
+          <p>Ignition, $200.00, is the first-storefront trio: Payment Agent, Customer Care, Secretary. Momentum, $400.00, is the growth five: Payment, Marketing, Pricing, Software Engineer and Quality Assurance (QA). Constellation, $800.00, is the full formation: all six domain agents plus the Manager Agent running the back office behind them.</p>
+          <a class="faq-more" href="shop.html">Open a pack and read what it does</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Is my ensemble of agents the same thing as my team?</h3></summary>
+        <div class="faq-a">
+          <p>No, and it is worth keeping the two words apart. Your ensemble is the set of agents you run: products you bought, working for your business. Your team, or organisation, is the people you sponsored and the people they sponsored, and that is the side of things the compensation plan pays on.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. HOW EARNING WORKS ============ -->
+<section class="faq-group" id="earning" aria-labelledby="earning-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">03</span>
+      <h2 class="faq-group-title" id="earning-title">How earning works</h2>
+    </div>
+    <p class="faq-group-note">One mechanism and two gates. The brochure has every worked example; these are the short versions.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">How does a Conductor earn?</h3></summary>
+        <div class="faq-a">
+          <p>You earn on what the people in your organisation buy, never on what you buy yourself. Each month the company walks up the tree from every buyer and pays 10 percent to their sponsor, then 5, 5, 3 and 2 percent to the next four Conductors above.</p>
+          <p>Those five percentages apply to Commissionable Volume (CV), not to the price on the receipt.</p>
+          <a class="faq-more" href="comp-plan.html">Read the compensation brochure</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is Commissionable Volume, and why is it not the full price?</h3></summary>
+        <div class="faq-a">
+          <p>Commissionable Volume (CV) is 80 percent of the Sales Volume booked to an account in a month, and it is the only number any percentage is ever applied to. The other 20 cents in every dollar is the company's margin, set before any commission is calculated.</p>
+          <p>So 10 percent of a $100.00 order is $8.00, not $10.00. Reading the percentages against the price is the single most common way to misread this plan.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Do I earn anything on my own purchases?</h3></summary>
+        <div class="faq-a">
+          <p>No. Your own buying does two things and no more: it counts toward your qualified month, and it pays the Conductors above you. There is no rebate, no retail markup and no commission on yourself.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">How far down my organisation do I get paid?</h3></summary>
+        <div class="faq-a">
+          <p>Your rank sets your paid depth. The first rung is paid one level down, the second two, the third three, the fourth four and the fifth five. Volume sitting deeper than your paid depth pays you nothing, however much of it there is.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Does a higher rank pay a higher percentage?</h3></summary>
+        <div class="faq-a">
+          <p>No. Rank buys reach, not rate. Climbing a rung does not change what you earn on the Conductors you personally sponsored by a single cent; it opens the row underneath them.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What are the ranks?</h3></summary>
+        <div class="faq-a">
+          <p>Five rungs: Member, Builder, Leader, Director and Executive. Member is simply the name of the first rung, which everybody in the tree holds by default.</p>
+          <p>The requirements climb from a qualified month with two active legs, up to Team Volume (TV) of 40,000.00 with two legs each holding a Leader or higher. Every requirement on a rung has to be met in the same month.</p>
+          <a class="faq-more" href="comp-plan.html">Every rank requirement in full</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Do I earn on what my customers buy?</h3></summary>
+        <div class="faq-a">
+          <p>Not directly, in this version of the plan. A customer's order books to your account, so it counts toward your qualified month and toward your own Commissionable Volume, and it then pays the Conductors above you in the ordinary way.</p>
+          <p>A separate commission on customer sales is not part of the plan today. If that changes it will be published before it takes effect.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 4. QUALIFYING ============ -->
+<section class="faq-group" id="qualifying" aria-labelledby="qualifying-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">04</span>
+      <h2 class="faq-group-title" id="qualifying-title">Qualifying each month</h2>
+    </div>
+    <p class="faq-group-note">One number decides both whether you can be paid and whether your leg counts for the Conductor above you.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What makes a month qualified?</h3></summary>
+        <div class="faq-a">
+          <p>One number: 100.00 or more of Sales Volume (SV) booked to your account in that calendar month. Sales Volume is the total Personal Volume of everything booked to you, whether you bought it or one of your customers did.</p>
+          <p>Exactly 100.00 qualifies. Every threshold in this plan counts the number itself, never only what is above it.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is the cheapest way to qualify?</h3></summary>
+        <div class="faq-a">
+          <p>One domain agent at $100.00, or two support agents at $50.00 each, or any mix that reaches 100 Personal Volume. Customer orders count exactly the same as your own, so a month can be qualified entirely on what you sold rather than on what you bought.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Does qualifying carry over to next month?</h3></summary>
+        <div class="faq-a">
+          <p>No. It resets on the first of every month, and there are no grace months in this version of the plan. A qualified March does nothing at all for April.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is an active leg?</h3></summary>
+        <div class="faq-a">
+          <p>A leg is one Conductor you personally sponsored plus everybody below that person. The leg counts as active in a month when that top person is qualified, and only then, no matter how much volume sits underneath them.</p>
+          <p>Active legs are what the rank requirements count, which is why ranks are built by helping the people you sponsored stay active.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">If a one-time purchase spreads over ten months, does each slice still qualify me?</h3></summary>
+        <div class="faq-a">
+          <p>Yes. Each month's slice is ordinary Sales Volume on your account, so ten months of slices means ten months of volume, exactly as ten months of subscription would.</p>
+          <p>You are qualified for ten months because you paid for ten months, which is the same reason a subscriber is.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 5. GETTING PAID ============ -->
+<section class="faq-group" id="paid" aria-labelledby="paid-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">05</span>
+      <h2 class="faq-group-title" id="paid-title">When and how you get paid</h2>
+    </div>
+    <p class="faq-group-note">One run, at the end of the month, covering that month and nothing else.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">When are commissions calculated?</h3></summary>
+        <div class="faq-a">
+          <p>Once, after the calendar month ends. A single run covers the whole month, produces every Conductor's statement, and is then locked. There is no weekly cycle and no mid-month advance.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Does anything roll over into the next month?</h3></summary>
+        <div class="faq-a">
+          <p>No. Volume, qualification, rank and commission are all computed from one month's activity and resolve inside that month. Nothing accumulates and nothing is carried forward, which is what makes a statement checkable against a single month of orders.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Can a statement change after it is published?</h3></summary>
+        <div class="faq-a">
+          <p>Once a run is finalized, its rows are frozen and cannot be edited. If a month ever has to be recomputed, a new numbered run is created and the old one is kept and marked superseded, so every statement traces back to the exact run that produced it.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is Instant Payout?</h3></summary>
+        <div class="faq-a">
+          <p>It is an immediate payout on a first order, adopted as a rule of the plan and not yet built. The terms are still being settled, so there is no rate to quote and no date to promise.</p>
+          <p>When they are settled they will be published here and in the compensation brochure before anybody is paid under them. Anyone quoting you a number for it today is guessing.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. ACCOUNT AND BACK OFFICE ============ -->
+<section class="faq-group" id="account" aria-labelledby="account-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">06</span>
+      <h2 class="faq-group-title" id="account-title">Your account and the back office</h2>
+    </div>
+    <p class="faq-group-note">What you can see when you sign in, and the practical questions about orders.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What can I see when I sign in?</h3></summary>
+        <div class="faq-a">
+          <p>Your rank for the month, your Sales Volume, your Commissionable Volume, your Team Volume, and every line on your statement with the person and the level that produced it. The figures shown are the ones the monthly run computed, not a running estimate.</p>
+          <a class="faq-more" href="login.html">Sign in</a>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">How does somebody order through me?</h3></summary>
+        <div class="faq-a">
+          <p>Give them your Conductor code. There is one field for it at checkout, and entering it books the order's volume to your account. If that field is left blank, the order is not attributed to anybody and no Conductor receives the volume.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Can I cancel a subscription?</h3></summary>
+        <div class="faq-a">
+          <p>Yes. The volume stops from the cancellation month forward, and months already billed keep the volume they carried. Cancelling never reaches backwards into a month that has already been run.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What is the activation fee?</h3></summary>
+        <div class="faq-a">
+          <p>Standard activation is free. Priority activation is $25.00, and it is a service charge rather than a product: it carries no Personal Volume and it pays no commission to anybody.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Is sales tax added to my order?</h3></summary>
+        <div class="faq-a">
+          <p>Yes, calculated at checkout against the destination on the order, so the rate depends on where you are. Tax is never part of Personal Volume, so it never enters any commission calculation.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7. STRAIGHT ANSWERS ============ -->
+<section class="faq-group" id="straight" aria-labelledby="straight-title">
+  <div class="wrap">
+    <div class="faq-group-head">
+      <span class="faq-group-num">07</span>
+      <h2 class="faq-group-title" id="straight-title">The straight answers</h2>
+    </div>
+    <p class="faq-group-note">The questions a program gets asked when somebody is being careful. None of them is dodged here.</p>
+
+    <div class="faq-list">
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What happens if I do not qualify one month?</h3></summary>
+        <div class="faq-a">
+          <p>Four things. You are paid nothing for that month, neither reduced nor deferred. Your leg does not count as active for the Conductor above you. You cannot hold any rank above the first rung.</p>
+          <p>And your own volume still pays the Conductors above you in full. Missing a month costs you, and only you.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Do I have to buy something every month?</h3></summary>
+        <div class="faq-a">
+          <p>There is no purchase requirement to keep your place. There is a consequence: a month with less than 100.00 of Sales Volume booked to you is an unqualified month, and an unqualified month pays nothing.</p>
+          <p>That volume can come from customer orders instead of your own, which is the honest answer to whether this plan makes you buy your own product. It does not, but it does require volume.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Can I lose my rank?</h3></summary>
+        <div class="faq-a">
+          <p>Yes. Rank is recomputed from scratch every month, so it can fall as easily as it rose. There is no retention, no grace period and no highest-ever title that stays on your account after the month that earned it.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What happens if a customer refunds?</h3></summary>
+        <div class="faq-a">
+          <p>The refund rule has not been published, and this version of the plan does not process refunds at all. That is a real gap and it is stated here rather than hidden.</p>
+          <p>The rule will be published before the first refund is ever processed, because reversing volume and reclaiming paid commission are decisions that should be written down before they are needed, not after.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">What happens to commission that nobody can be paid?</h3></summary>
+        <div class="faq-a">
+          <p>It is paid to nobody, and the plan calls that breakage. If a Conductor above a sale is unqualified, or the sale sits deeper than their rank reaches, that slice is not passed to the next person up and it is not held for later.</p>
+          <p>This version of the plan does not compress the tree. An unqualified Conductor is a wall, not a hole.</p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Where can I read the actual rules rather than a summary?</h3></summary>
+        <div class="faq-a">
+          <p>The compensation brochure is the one document that governs. If any page on this site disagrees with it, including this one, the brochure is right and the page is wrong.</p>
+          <a class="faq-more" href="comp-plan.html">The compensation brochure</a>
+          <p><a class="faq-more" href="library.html">The library, for everything else</a></p>
+        </div>
+      </details>
+
+      <details class="faq-item">
+        <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Is any of this real money?</h3></summary>
+        <div class="faq-a">
+          <p>No. Orvanna is a demonstration company, every figure on this site is synthetic, and the system computes and locks statements rather than paying them out. There is no bank detail, no disbursement and no real offer anywhere on this site.</p>
+        </div>
+      </details>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="faq-contact" id="ask" aria-labelledby="ask-title">
+  <div class="wrap">
+    <div class="faq-contact-card">
+      <h2 id="ask-title">Still have a question?</h2>
+      <p>If the answer is not here, ask and it will be added. Questions that turn up more than twice belong on this page.</p>
+      <a class="faq-mailto" href="mailto:support@orvanna.io">support@orvanna.io</a>
+    </div>
+    <p class="faq-disclaimer">Nothing on this page is an earnings claim. The compensation plan describes how commissions are calculated; it does not predict what anybody will earn, and no figure here should be read as one.</p>
+  </div>
+</section>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h3 class="footer-head">Shop</h3>
+        <span class="flink">Domain agents</span>
+        <span class="flink">Support agents</span>
+        <span class="flink">Pricing</span>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-head">Learn</h3>
+        <a class="flink" href="team.html">The team</a>
+        <span class="flink">About us</span>
+        <span class="flink">Our story</span>
+        <a class="flink" href="faq.html">Frequently asked questions</a>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-head">Support</h3>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+      <div class="footer-col">
+        <h3 class="footer-head">Careers</h3>
+        <span class="flink">Open roles</span>
+        <span class="flink">How we work</span>
+        <span class="flink">Internships</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <div class="footer-contact">
+        <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+        <div class="socials" aria-hidden="true">
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <ellipse cx="12" cy="12" rx="4" ry="9" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" stroke-width="1.6"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 12 A 4.2 4.2 0 1 0 12 16.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+              <path d="M 16.2 8 L 16.2 13.4 A 2.6 2.6 0 0 0 21.4 13.4 L 21.4 12 A 9.4 9.4 0 1 0 12 21.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <span class="social">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 4 6 h 16 v 11 h -9 l -4 3 v -3 h -3 z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              <circle cx="9"  cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="13" cy="11.5" r="1.1" fill="currentColor"/>
+              <circle cx="17" cy="11.5" r="1.1" fill="currentColor"/>
+            </svg>
+          </span>
+        </div>
+      </div>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ============================================================
+   Four small behaviours, all optional. With scripting off the
+   page is still complete: every question opens and closes on
+   its own, because the accordions are native details elements,
+   and the theme still follows the reader's system setting.
+
+   1. Expand all, which also keeps its own label and its
+      aria-expanded state honest.
+   2. Print handling: open everything before printing, then put
+      the reader's own open and closed state back afterwards.
+   3. The Support control in the navigation, which on this page
+      sends the reader to the contact block at the foot rather
+      than opening the chat widget the other pages carry.
+   4. The theme control, written the same way as the one on the
+      compensation brochure: it sets data-theme on the root
+      element so an explicit choice beats the system preference
+      in both directions, and remembers that choice.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var items = Array.prototype.slice.call(document.querySelectorAll('.faq-item'));
+
+  /* ---------- 1. expand all ---------- */
+
+  var toggle = document.getElementById('expandAll');
+
+  function allOpen() {
+    return items.length > 0 && items.every(function (item) { return item.open; });
+  }
+
+  function syncToggle() {
+    if (!toggle) return;
+    var open = allOpen();
+    toggle.textContent = open ? 'Collapse all' : 'Expand all';
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+
+  if (toggle) {
+    toggle.addEventListener('click', function () {
+      var open = !allOpen();
+      items.forEach(function (item) { item.open = open; });
+      syncToggle();
+    });
+  }
+
+  items.forEach(function (item) {
+    item.addEventListener('toggle', syncToggle);
+  });
+
+  syncToggle();
+
+  /* ---------- 2. print ---------- */
+
+  var restore = null;
+
+  function openForPrint() {
+    restore = items.map(function (item) { return item.open; });
+    items.forEach(function (item) { item.open = true; });
+  }
+
+  function restoreAfterPrint() {
+    if (!restore) return;
+    items.forEach(function (item, i) { item.open = restore[i]; });
+    restore = null;
+    syncToggle();
+  }
+
+  window.addEventListener('beforeprint', openForPrint);
+  window.addEventListener('afterprint', restoreAfterPrint);
+
+  /* Safari and older engines fire the media query listener rather
+     than the print events, so both paths are wired. */
+  if (window.matchMedia) {
+    var mql = window.matchMedia('print');
+    var onChange = function (event) {
+      if (event.matches) { openForPrint(); } else { restoreAfterPrint(); }
+    };
+    if (typeof mql.addEventListener === 'function') {
+      mql.addEventListener('change', onChange);
+    } else if (typeof mql.addListener === 'function') {
+      mql.addListener(onChange);
+    }
+  }
+
+  /* ---------- 3. Support control ---------- */
+
+  var ask = document.getElementById('ask');
+  var mail = ask ? ask.querySelector('.faq-mailto') : null;
+
+  Array.prototype.forEach.call(
+    document.querySelectorAll('[data-orvanna-support]'),
+    function (trigger) {
+      trigger.addEventListener('click', function (event) {
+        event.preventDefault();
+        if (!ask) return;
+        ask.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (mail) { mail.focus({ preventScroll: true }); }
+      });
+    }
+  );
+
+  /* ---------- 4. theme control ---------- */
+
+  var root = document.documentElement;
+  var themeBtn = document.getElementById('themeToggle');
+  var store = null;
+
+  try { store = window.localStorage; } catch (err) { store = null; }
+
+  function systemPrefersDark() {
+    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  }
+
+  function isDark() {
+    var set = root.getAttribute('data-theme');
+    if (set === 'dark') { return true; }
+    if (set === 'light') { return false; }
+    return systemPrefersDark();
+  }
+
+  function paintThemeBtn() {
+    if (!themeBtn) { return; }
+    var dark = isDark();
+    themeBtn.textContent = dark ? 'Light' : 'Dark';
+    themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
+    themeBtn.setAttribute('aria-label', dark ? 'Switch to the light theme' : 'Switch to the dark theme');
+  }
+
+  var saved = null;
+  if (store) {
+    try { saved = store.getItem('orvanna-faq-theme'); } catch (err) { saved = null; }
+  }
+  if (saved === 'dark' || saved === 'light') {
+    root.setAttribute('data-theme', saved);
+  }
+  paintThemeBtn();
+
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function () {
+      var next = isDark() ? 'light' : 'dark';
+      root.setAttribute('data-theme', next);
+      if (store) {
+        try { store.setItem('orvanna-faq-theme', next); } catch (err) { /* private mode, carry on */ }
+      }
+      paintThemeBtn();
+    });
+  }
+
+  if (window.matchMedia) {
+    var themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    var onSchemeChange = function () {
+      if (!root.getAttribute('data-theme')) { paintThemeBtn(); }
+    };
+    if (typeof themeQuery.addEventListener === 'function') {
+      themeQuery.addEventListener('change', onSchemeChange);
+    } else if (typeof themeQuery.addListener === 'function') {
+      themeQuery.addListener(onSchemeChange);
+    }
+  }
+})();
+</script>
+</body>
+</html>
