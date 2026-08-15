@@ -1062,6 +1062,11 @@
     document.getElementById('summaryRenews').hidden = m.t.subMoney === 0;
     document.getElementById('checkoutPv').textContent = fmtPv(m.t.pv);
     renderMeter('checkoutMeter', m.t.pv);
+    /* Every control that can move the total ends up here, which makes
+       this the one honest place to open, or re-open, the payment. See
+       liveEnsureCheckout for why a moved total must discard the
+       payment that was opened against the old one. */
+    if (typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
   checkoutButton.addEventListener('click', function () {
@@ -1310,6 +1315,10 @@
   /* clear any in-flight payment; an optional message stays on
      screen (used for the decline copy, cart untouched) */
   function liveResetPayment(message) {
+    /* the discarded payment's amount signature goes with it, so the
+       next call to liveEnsureCheckout opens a fresh one */
+    liveOpenedFor = null;
+    if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
     liveState.orderNumber = null;
     liveState.clientSecret = null;
     liveState.hyper = null;
@@ -1364,6 +1373,85 @@
       livePayArea.hidden = false;
       livePayStatus.hidden = false;
     }
+  }
+
+  /* ============================================================
+     THE CARD FORM IS THE PAYMENT STEP
+
+     Howard's ruling 2026-08-15: the shopper should meet the card
+     form on arrival at the payment step, not after pressing a button
+     that merely promises one. So the payment is opened automatically
+     rather than on a click.
+
+     THE HAZARD THIS CREATES, AND HOW IT IS CLOSED. A payment carries
+     an AMOUNT, fixed at the moment it is created. Opening it on
+     arrival means the shopper can afterwards switch to priority
+     activation, or enter a tax identifier, either of which changes
+     the total. A stale payment would then take the OLD amount while
+     the page displayed the new one, which is the worst class of bug
+     this checkout could have.
+
+     So: every amount-affecting control already funnels through
+     renderSummary, and renderSummary now calls this. Any change to
+     the signature below throws the opened payment away and opens a
+     fresh one, and the SERVER reprices the cart from scratch each
+     time, so an amount can never originate from this page.
+
+     Debounced, because a tax identifier is typed one character at a
+     time while the demo allows only five creates a minute per
+     visitor. If an automatic open is refused, the button is still
+     there and still works: the label stays honest and pressing it
+     retries by hand.
+     ============================================================ */
+  var liveOpenTimer = null;
+  var liveOpenedFor = null;
+
+  function liveAmountSignature() {
+    return JSON.stringify({
+      items: cartPayload(),
+      activation: deliveryChoice(),
+      tax_exempt: taxExempt(),
+      member_code: document.getElementById('memberCode').value.trim()
+    });
+  }
+
+  function liveEnsureCheckout() {
+    if (!LIVE_PAYMENTS) return;
+    /* renderSummary is defined ABOVE the live payment state and calls
+       this, so a future call during page setup would land here before
+       liveState exists. Cheap insurance against a hard error on load. */
+    if (typeof liveState === 'undefined' || !liveState) return;
+    if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
+    if (payMethod !== 'card') return;
+    if (Object.keys(cart).length === 0) return;
+    /* the payment step has to actually be on screen: before the
+       shopper picks guest or sign-in there is nothing to pay for yet */
+    if (placeOrderBtn.offsetParent === null) return;
+    /* never disturb a payment already under way, a resume still
+       resolving, an open bank window, or a finished one being
+       re-checked */
+    if (liveState.busy || liveState.resuming || liveState.checkOnly || challengeOpen) return;
+
+    var signature = liveAmountSignature();
+    if (liveState.clientSecret && liveOpenedFor === signature) return;
+
+    if (liveOpenTimer) window.clearTimeout(liveOpenTimer);
+    liveOpenTimer = window.setTimeout(function () {
+      liveOpenTimer = null;
+      /* re-check everything: nearly a second has passed */
+      if (liveState.busy || liveState.resuming || liveState.checkOnly || challengeOpen) return;
+      if (!views.checkout.classList.contains('is-active')) return;
+      if (payMethod !== 'card' || Object.keys(cart).length === 0) return;
+      var now = liveAmountSignature();
+      if (liveState.clientSecret && liveOpenedFor === now) return;
+      if (liveState.clientSecret) {
+        /* the total moved after this payment was opened: discard it
+           rather than let it settle at the old amount */
+        liveResetPayment('');
+      }
+      liveOpenedFor = now;
+      liveStart();
+    }, 900);
   }
 
   /* ============================================================
