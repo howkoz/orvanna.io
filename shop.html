@@ -1149,6 +1149,11 @@
      regression that loses it quietly is the worst kind. Debounced through the
      same path as every other amount-affecting control. */
   document.getElementById('memberCode').addEventListener('input', function () {
+    /* The member code is not only attribution: it is what the server
+       reads the TAX DESTINATION from. A New York code and a Florida
+       code owe different tax on the same cart, so this field has to
+       re-ask the question as well as re-open the payment. */
+    if (LIVE_PAYMENTS) liveEnsureQuote();
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
@@ -1204,22 +1209,50 @@
     document.getElementById('sumSub').textContent = fmtMoney(m.t.subMoney);
     document.getElementById('sumDeliveryName').textContent = DELIVERY[deliveryChoice()].label.replace(' activation', '');
     document.getElementById('sumDelivery').textContent = m.delivery === 0 ? 'Free' : fmtMoney(m.delivery);
+    /* ------------------------------------------------------------
+       THE TAX ROW HAS THREE STATES, AND SAYS WHICH ONE IT IS IN.
+
+       Howard, 2026-08-15: "no one wants to make a payment and then
+       find out 71 dollars was applied after submitting the card."
+       The figure was in fact already on screen before payment, but
+       only after the payment had opened, and for the seconds before
+       that the row showed a flat five percent in the same position
+       and the same type as the real answer. That is the actual
+       complaint: you could not tell which one you were looking at.
+
+       So the row now distinguishes:
+         known     the tax engine has answered for THIS cart
+         estimate  a placeholder, and it says so, while we ask
+         flat      no engine at all (demo mode), and it says that too
+
+       applyServerTotals paints the known state. This paints the
+       other two, and asks. ------------------------------------- */
     var taxLabel = document.getElementById('taxLabel');
-    if (taxExempt()) {
+    if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
+      /* Already answered for exactly this cart: repaint the real
+         figure rather than flashing the estimate back over it. */
+      applyServerTotals(liveServerTotals);
+    } else if (taxExempt()) {
       taxLabel.innerHTML = 'Tax exempt';
       document.getElementById('sumTax').textContent = '$0.00';
+      document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
     } else {
-      taxLabel.innerHTML = 'Tax <span class="row-hint">5 percent</span>';
+      taxLabel.innerHTML = LIVE_PAYMENTS
+        ? 'Tax <span class="row-hint">estimate, working it out</span>'
+        : 'Tax <span class="row-hint">5 percent</span>';
       document.getElementById('sumTax').textContent = fmtMoney(m.tax);
+      document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
     }
-    document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
     document.getElementById('summaryRenews').hidden = m.t.subMoney === 0;
     document.getElementById('checkoutPv').textContent = fmtPv(m.t.pv);
     renderMeter('checkoutMeter', m.t.pv);
     /* Every control that can move the total ends up here, which makes
-       this the one honest place to open, or re-open, the payment. See
-       liveEnsureCheckout for why a moved total must discard the
-       payment that was opened against the old one. */
+       this the one honest place to ask what tax is owed, and to open
+       or re-open the payment. See liveEnsureCheckout for why a moved
+       total must discard the payment that was opened against the old
+       one, and liveEnsureQuote for why the asking is now separate
+       from the opening. */
+    if (typeof liveEnsureQuote === 'function') liveEnsureQuote();
     if (typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
@@ -1238,10 +1271,18 @@
     if (LIVE_PAYMENTS) liveResetPayment('');
     renderSummary();
     showView('checkout');
-    /* AFTER showView, because liveEnsureCheckout refuses to act unless
-       the checkout view is the active one. This is the early start
-       that spends the payment-open behind the account step instead of
-       in front of the shopper. */
+    /* BOTH OF THESE MUST BE AFTER showView, because both refuse to act
+       unless the checkout view is the active one, and renderSummary
+       above ran while the catalog was still showing. Missing the quote
+       here was caught in local testing 2026-08-15: the summary sat on
+       "estimate" until create-payment answered two seconds later,
+       which is the very delay this work exists to remove.
+
+       The quote is what puts a real tax figure on screen early. The
+       payment open is the separate, slower thing that spends its two
+       seconds behind the account step rather than in front of the
+       shopper. */
+    if (LIVE_PAYMENTS) liveEnsureQuote();
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
@@ -1481,7 +1522,12 @@
     /* the discarded payment's amount signature goes with it, so the
        next call to liveEnsureCheckout opens a fresh one */
     liveOpenedFor = null;
-    liveServerTotals = null;
+    /* Server totals belong to a CART, not to a payment. Discarding a
+       payment because the amount moved must not also discard a tax
+       answer that is still correct for what is on screen, or the row
+       would drop back to "estimate" and re-ask a question already
+       answered. Anything that no longer matches is cleared. */
+    if (!liveTotalsAreCurrent()) liveServerTotals = null;
     if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
     liveState.orderNumber = null;
     liveState.clientSecret = null;
@@ -1586,8 +1632,20 @@
      though it were the figure. */
   var liveServerTotals = null;
 
+  /* Server totals belong to the cart they were computed for. Without
+     this, an answer for a two-item cart could land after a third item
+     was added and paint a stale figure that looks authoritative. The
+     signature is stamped when the answer arrives and checked before it
+     is ever shown again. */
+  function liveTotalsAreCurrent() {
+    if (!liveServerTotals || !liveServerTotals.__sig) return false;
+    if (typeof liveAmountSignature !== 'function') return false;
+    return liveServerTotals.__sig === liveAmountSignature();
+  }
+
   function applyServerTotals(t) {
     if (!t) return;
+    if (!t.__sig) t.__sig = liveAmountSignature();
     liveServerTotals = t;
     var taxLabelEl = document.getElementById('taxLabel');
     /* This string goes into innerHTML and shop.html has no escape helper
@@ -1625,6 +1683,85 @@
       tax_id: taxIdInput.value.trim(),
       member_code: document.getElementById('memberCode').value.trim()
     });
+  }
+
+  /* ============================================================
+     ASKING WHAT TAX IS OWED, WITHOUT STARTING A PAYMENT
+
+     Howard's ruling 2026-08-15: "you need to calculate the tax
+     before payment is sent ... so you will need to do an additional
+     call to get the taxes."
+
+     He was right about the architecture, and the reason is worth
+     stating because it is not obvious from the screen. Tax USED to
+     arrive as a by-product of opening a payment, which meant three
+     bad things at once: nothing could be priced without an order row
+     and a live payment being created at the processor; the seconds
+     before that answer showed a flat guess dressed as the answer;
+     and adding an item threw a perfectly good payment away purely to
+     re-ask what tax was owed.
+
+     So quoting and charging are now separate calls. quote-tax
+     creates nothing: no order, no payment, no tax record. It exists
+     to answer the question on screen. create-payment still prices
+     the cart from scratch when the payment opens, through the very
+     same shared code, and remains the only authority for the amount
+     that is charged.
+
+     WHY A SHORTER DEBOUNCE THAN THE PAYMENT'S 900ms: a quote is
+     cheap and creates nothing, so it can afford to be eager. Its
+     rate limit is its own bucket and deliberately looser, precisely
+     so that a shopper changing their mind repeatedly can still pay
+     at the end of it.
+     ============================================================ */
+  var QUOTE_DEBOUNCE_MS = 350;
+  var liveQuoteTimer = null;
+  var liveQuoteInFlight = null;   /* the signature currently being asked about */
+
+  function liveEnsureQuote() {
+    if (!LIVE_PAYMENTS) return;
+    if (typeof liveState === 'undefined' || !liveState) return;
+    if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
+    if (Object.keys(cart).length === 0) return;
+    /* An open bank window, or a payment already handed over, means the
+       amount is settled and no longer ours to re-quote. */
+    if (liveState.checkOnly || challengeOpen) return;
+
+    var signature = liveAmountSignature();
+    if (liveTotalsAreCurrent()) return;
+    if (liveQuoteInFlight === signature) return;
+
+    if (liveQuoteTimer) window.clearTimeout(liveQuoteTimer);
+    liveQuoteTimer = window.setTimeout(function () {
+      liveQuoteTimer = null;
+      var asking = liveAmountSignature();
+      if (liveTotalsAreCurrent() || liveQuoteInFlight === asking) return;
+      if (Object.keys(cart).length === 0) return;
+      liveQuoteInFlight = asking;
+      fnCall('quote-tax', 'POST', {
+        items: cartPayload(),
+        activation: deliveryChoice(),
+        tax_id: taxIdInput.value.trim(),
+        member_code: document.getElementById('memberCode').value.trim()
+      }).then(function (result) {
+        if (liveQuoteInFlight === asking) liveQuoteInFlight = null;
+        if (result.status !== 200 || !result.data || !result.data.totals) return;
+        /* THE STALENESS CHECK. Between asking and answering the shopper
+           may have changed the cart. An answer to a question nobody is
+           asking any more is dropped, not shown: a wrong figure that
+           looks calculated is worse than an estimate that admits it. */
+        if (liveAmountSignature() !== asking) return;
+        var t = result.data.totals;
+        t.__sig = asking;
+        applyServerTotals(t);
+      }).catch(function () {
+        if (liveQuoteInFlight === asking) liveQuoteInFlight = null;
+        /* Silent on purpose. The estimate is already on screen and
+           already labelled an estimate, and create-payment will price
+           the cart properly a moment later regardless. Shouting about
+           a failed display call would be noise about nothing. */
+      });
+    }, QUOTE_DEBOUNCE_MS);
   }
 
   function liveEnsureCheckout() {
