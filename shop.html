@@ -1481,6 +1481,7 @@
     /* the discarded payment's amount signature goes with it, so the
        next call to liveEnsureCheckout opens a fresh one */
     liveOpenedFor = null;
+    liveServerTotals = null;
     if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
     liveState.orderNumber = null;
     liveState.clientSecret = null;
@@ -1577,12 +1578,51 @@
      ============================================================ */
   var liveOpenTimer = null;
   var liveOpenedFor = null;
+  /* What the server actually opened the payment for. Null until it answers.
+     The page can no longer work tax out for itself: a real engine knows what
+     California charges for software and a browser does not. So this is the
+     authority for the tax row and the pay button once it arrives, and until
+     then the page says "estimate" rather than quietly showing a guess as
+     though it were the figure. */
+  var liveServerTotals = null;
+
+  function applyServerTotals(t) {
+    if (!t) return;
+    liveServerTotals = t;
+    var taxLabelEl = document.getElementById('taxLabel');
+    /* This string goes into innerHTML and shop.html has no escape helper
+       (code quality audit, 2026-08-15). Rather than introduce one for a
+       single use, the value is passed through an allow list: a
+       jurisdiction is only ever letters, spaces and commas, so anything
+       else is dropped and no markup can survive. */
+    var place = String(t.tax_jurisdiction || '').replace(/[^A-Za-z, ]/g, '').slice(0, 40);
+    var where = place ? ' ' + place : '';
+    if (t.tax_cents === 0) {
+      /* A zero is two different facts and the reason is the only thing that
+         separates them. not_collecting means we hold no registration there,
+         which is ours to fix; anything else means the place genuinely does not
+         tax this, which is the right answer. */
+      taxLabelEl.innerHTML = t.tax_reason === 'not_collecting'
+        ? 'Tax <span class="row-hint">not collected' + where + '</span>'
+        : 'Tax <span class="row-hint">none due' + where + '</span>';
+    } else {
+      taxLabelEl.innerHTML = 'Tax <span class="row-hint">' +
+        (t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated' + where) + '</span>';
+    }
+    document.getElementById('sumTax').textContent = fmtMoney(t.tax_cents / 100);
+    document.getElementById('checkoutTotal').textContent = fmtMoney(t.total_cents / 100);
+    if (!placeOrderBtn.hidden && liveState.clientSecret) {
+      placeOrderBtn.textContent = 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode';
+    }
+  }
 
   function liveAmountSignature() {
     return JSON.stringify({
       items: cartPayload(),
       activation: deliveryChoice(),
-      tax_exempt: taxExempt(),
+      /* the identifier itself, not a verdict: the server and Stripe
+         decide what it means (verifier finding, 2026-08-15) */
+      tax_id: taxIdInput.value.trim(),
       member_code: document.getElementById('memberCode').value.trim()
     });
   }
@@ -1933,7 +1973,9 @@
     var payload = {
       items: cartPayload(),
       activation: deliveryChoice(),
-      tax_exempt: taxExempt(),
+      /* the identifier itself, not a verdict: the server and Stripe
+         decide what it means (verifier finding, 2026-08-15) */
+      tax_id: taxIdInput.value.trim(),
       member_code: document.getElementById('memberCode').value.trim(),
       channel: 'shop',
       /* which page the bank should come back to. A page name, never
@@ -1949,6 +1991,7 @@
       }
       liveState.orderNumber = result.data.order_number;
       liveState.clientSecret = result.data.client_secret;
+      applyServerTotals(result.data.totals);
       /* written the moment the order number exists, so it is on
          screen and in storage before anything can go wrong */
       payOrderNum.textContent = liveState.orderNumber;
