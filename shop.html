@@ -1599,12 +1599,67 @@
     try { next.focus(); } catch (err) { /* best effort */ }
   }
 
+  /* ============================================================
+     A BLANK WINDOW IS NOT A CHALLENGE
+
+     3-D Secure 2 has two phases and the payment widget runs BOTH in
+     the same full-screen frame. The first phase is silent: the card's
+     bank looks at the device and the transaction and, most of the
+     time, approves without asking the shopper anything. Only if it
+     wants proof does a second, visible phase draw a passcode form.
+
+     So the frame appearing means "authentication is running", NOT "a
+     challenge is up". Showing it immediately produced exactly what
+     Howard reported on 2026-08-15 with 4242 4242 4242 4242: a blank
+     white window for about two seconds, waiting for a challenge that
+     was never going to come, and our chrome bar announcing an
+     approval the bank had not asked for.
+
+     So the frame is made invisible the moment it appears, and is
+     revealed only if it is STILL THERE a beat later, which is the
+     tell that a real challenge rendered inside it. A frictionless
+     authentication finishes inside that beat and the shopper sees
+     nothing at all, which is the whole point of frictionless.
+
+     The delay is presentation only. It never gates the payment, and
+     the outcome still comes from our server either way.
+     ============================================================ */
+  var challengePendingTimer = null;
+  var CHALLENGE_REVEAL_MS = 1400;
+
+  function setChallengeFrameVisible(frame, visible) {
+    if (!frame) return;
+    frame.style.opacity = visible ? '' : '0';
+    frame.style.pointerEvents = visible ? '' : 'none';
+  }
+
+  function cancelChallengeReveal() {
+    if (challengePendingTimer) {
+      window.clearTimeout(challengePendingTimer);
+      challengePendingTimer = null;
+    }
+  }
+
   /* Watch for the widget's overlay appearing and disappearing. */
   if (window.MutationObserver) {
     new MutationObserver(function () {
-      var present = !!challengeFrame();
-      if (present && !challengeOpen) openChallengeChrome();
-      if (!present && challengeOpen) closeChallengeChrome();
+      var frame = challengeFrame();
+      if (frame && !challengeOpen && !challengePendingTimer) {
+        setChallengeFrameVisible(frame, false);
+        challengePendingTimer = window.setTimeout(function () {
+          challengePendingTimer = null;
+          var still = challengeFrame();
+          /* gone already: the silent phase finished and there was
+             never anything for the shopper to look at */
+          if (!still) return;
+          setChallengeFrameVisible(still, true);
+          openChallengeChrome();
+        }, CHALLENGE_REVEAL_MS);
+      }
+      if (!frame) {
+        cancelChallengeReveal();
+        if (challengeOpen) closeChallengeChrome();
+      }
     }).observe(document.body, { childList: true, subtree: true });
   }
 
@@ -1801,6 +1856,13 @@
         '. Fix the card details and press the button again. Nothing was charged.');
       return;
     }
+    /* The card has been handed over and the only question left is what
+       the server says. From here the card form must not come back on
+       screen, whether or not a bank window was involved: it reappearing
+       for a second on the way to the receipt reads as a failure that
+       then changed its mind. Cleared on every ending by
+       liveResetPayment and by the timeout branch. */
+    liveSetFinishing(true);
     livePollReceipt(0, Date.now());
   }
 

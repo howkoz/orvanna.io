@@ -1390,11 +1390,49 @@
     try { next.focus(); } catch (err) { /* best effort */ }
   }
 
+  /* A BLANK WINDOW IS NOT A CHALLENGE. The payment widget runs BOTH
+     phases of 3-D Secure in the same full-screen frame: a silent one
+     that usually approves without asking the cardholder anything, and
+     a visible one that asks for a passcode. So the frame appearing
+     means authentication is running, not that a challenge is up.
+     Announcing a challenge that never comes matters more here than on
+     the shop, because this page's script tells an agent on a live
+     call what the cardholder is being asked to do. The frame is
+     therefore hidden until it proves itself by still being present a
+     beat later. Full reasoning in shop.html. */
+  var challengePendingTimer = null;
+  var CHALLENGE_REVEAL_MS = 1400;
+
+  function setChallengeFrameVisible(frame, visible) {
+    if (!frame) return;
+    frame.style.opacity = visible ? '' : '0';
+    frame.style.pointerEvents = visible ? '' : 'none';
+  }
+
+  function cancelChallengeReveal() {
+    if (challengePendingTimer) {
+      window.clearTimeout(challengePendingTimer);
+      challengePendingTimer = null;
+    }
+  }
+
   if (window.MutationObserver) {
     new MutationObserver(function () {
-      var present = !!challengeFrame();
-      if (present && !challengeOpen) openChallengeChrome();
-      if (!present && challengeOpen) closeChallengeChrome();
+      var frame = challengeFrame();
+      if (frame && !challengeOpen && !challengePendingTimer) {
+        setChallengeFrameVisible(frame, false);
+        challengePendingTimer = window.setTimeout(function () {
+          challengePendingTimer = null;
+          var still = challengeFrame();
+          if (!still) return;
+          setChallengeFrameVisible(still, true);
+          openChallengeChrome();
+        }, CHALLENGE_REVEAL_MS);
+      }
+      if (!frame) {
+        cancelChallengeReveal();
+        if (challengeOpen) closeChallengeChrome();
+      }
     }).observe(document.body, { childList: true, subtree: true });
   }
 
