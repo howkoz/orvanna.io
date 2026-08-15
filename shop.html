@@ -1557,33 +1557,25 @@
     checkoutWidget.mount('#hyperswitchMount');
     cardFields.hidden = true;
     walletNote.hidden = true;
-    /* CARD HINT. Every number here was confirmed against the live
-       rail on 2026-08-14, not copied from a vendor page, because
-       vendor pages have already misled this build twice.
+    /* CARD HINT. Every number here was run end to end against the
+       live rail on 2026-08-15 before this text was written. The
+       cards changed today because the PROCESSOR changed: the
+       account now runs Braintree in sandbox, and each processor
+       publishes its own test numbers.
 
-       What the rail actually does, top to bottom:
-         4242 4242 4242 4242  approved
-         4000 0000 0000 0002  declined, and the decline is shown
-       Both were run end to end through the sandbox before this
-       text was written.
+       What the rail does now:
+         4111 1111 1111 1111  bank approval screen, then approved
+         4000 1111 1111 1115  declined, and the decline is shown
+       The approval screen is real. It is the card network's
+       identity check, requested on every payment, and it now
+       appears because Braintree can raise one where the simulators
+       we used before could not.
 
-       Why no bank approval screen yet. An approval screen needs a
-       real processor in test mode. The processor connected today
-       is a simulator, which does payments and refunds only and
-       answers "Card not supported" to any 3-D Secure (3DS) test
-       card. A real Stripe test account was wired up and could not
-       replace it: Stripe refuses card numbers sent straight to its
-       application programming interface (API) unless a merchant
-       asks Stripe support to unlock that, which is a ticket and
-       not a setting. The authentication provider (3DSecure.io) is
-       correctly connected and attached to the business profile, so
-       the approval screen turns on the day a processor that accepts
-       raw test cards is connected. No site code changes for that.
        Full matrix: docs/TEST-CARDS.html. See also ROADMAP.md. */
     livePayNote.textContent =
-      'Test mode, any future expiry date and any three digit security code. ' +
-      'Use 4242 4242 4242 4242 to see an approval, or ' +
-      '4000 0000 0000 0002 to see a decline handled. ' +
+      'Test mode, expiry 01/29 and any three digit security code. ' +
+      'Use 4111 1111 1111 1111 to see the approval screen, or ' +
+      '4000 1111 1111 1115 to see a decline handled. ' +
       'Nothing is ever charged.';
     liveStatus('');
     /* label only: the button shows this page's total, and the
