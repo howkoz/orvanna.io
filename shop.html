@@ -1139,6 +1139,19 @@
   var taxIdInput = document.getElementById('taxId');
   taxIdInput.addEventListener('input', renderSummary);
 
+  /* H2, verifier audit 2026-08-15: a typed member code was silently thrown
+     away. This field credits the order to a sponsoring member, and it is part
+     of the amount signature, but nothing listened to it. That did not matter
+     while the payment was opened by pressing a button AFTER the field was
+     filled. It broke the moment the payment started opening on arrival: the
+     code was created empty, typing changed nothing, and the order was credited
+     to nobody. Attribution is the whole subject of this project, so a
+     regression that loses it quietly is the worst kind. Debounced through the
+     same path as every other amount-affecting control. */
+  document.getElementById('memberCode').addEventListener('input', function () {
+    if (LIVE_PAYMENTS) liveEnsureCheckout();
+  });
+
   function taxExempt() {
     return /\d/.test(taxIdInput.value);
   }
@@ -1995,12 +2008,38 @@
     placeOrderBtn.textContent = 'Pay ' + fmtMoney(orderMath().total) + ' now, test mode';
     placeOrderBtn.disabled = false;
     liveState.busy = false;
+    /* H1, verifier audit 2026-08-15. liveEnsureCheckout refuses to act while a
+       payment is being opened, and used to leave nothing behind when it did.
+       So a total changed DURING those two seconds was never noticed: the
+       signature still matched the payment that had just been opened at the old
+       amount, and the card form mounted showing the new total. Re-checking here,
+       the moment the open finishes, closes that window. It cannot loop: the
+       signature was recorded before the open, so an unchanged total returns
+       immediately. */
+    liveEnsureCheckout();
   }
 
   /* step three: hand the card to the provider, then ask OUR
      server for the truth; the browser's own callback result is
      never trusted (spec section 4) */
   function liveConfirm() {
+    /* THE LAST GUARD BEFORE A CARD IS HANDED OVER.
+
+       Everything above tries to keep the open payment matching the total on
+       screen. This refuses to pay if they ever disagree anyway. It is cheap,
+       it is the only check that sits directly in front of the money, and it
+       does not depend on any of the machinery above having worked.
+
+       The shopper is not scolded and loses nothing: the stale payment is
+       discarded, a fresh one opens at the amount they can actually see, and
+       they press the button again. The server reprices independently in any
+       case, so this protects the shopper from a confusing charge rather than
+       protecting the total, which was never the browser's to decide. */
+    if (liveState.clientSecret && liveOpenedFor !== liveAmountSignature()) {
+      liveResetPayment('Your order changed while we were getting ready, so we have started that step again. Nothing was charged. Press the button once more when the card form appears.');
+      liveEnsureCheckout();
+      return;
+    }
     liveState.busy = true;
     placeOrderBtn.disabled = true;
     setPaymentInert(true);
@@ -2565,6 +2604,19 @@
   function renderAll() {
     renderBadge();
     renderDrawer();
+    /* M1, verifier audit 2026-08-15. The cart drawer can be opened and edited
+       while standing on the checkout, and this never told the checkout about
+       it: the order summary kept the totals from whenever the step was first
+       drawn. Harmless when the payment only opened on a button press after the
+       summary was re-rendered; not harmless now, because renderSummary is also
+       what re-checks the open payment. So a quantity change during checkout
+       moved neither the displayed total nor the payment.
+
+       Guarded on the checkout view being the active one, because renderAll
+       also runs at page load, before the summary's elements are meaningful. */
+    if (views.checkout && views.checkout.classList.contains('is-active')) {
+      renderSummary();
+    }
   }
 
   renderAll();
