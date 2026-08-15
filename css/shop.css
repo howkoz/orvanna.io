@@ -1576,3 +1576,37 @@ body.payment-in-flight .pay-btn {
   .cc-line { flex: 1 1 100%; }
   .resume-actions .btn { flex: 1 1 100%; text-align: center; }
 }
+
+/* ---------- card form placeholder ----------
+   Shown only while the server is opening the payment, which measures
+   about two seconds. It holds the exact vertical space the card form
+   will occupy so nothing jumps when the real form arrives, and it
+   says plainly what is happening. Colours come from the existing
+   palette tokens; the pulse respects a reduced-motion preference. */
+#cardFormSkeleton {
+  display: block;
+  padding: 14px 0 4px;
+}
+#cardFormSkeleton[hidden] { display: none !important; }
+.sk-line {
+  display: block;
+  height: 42px;
+  border-radius: 8px;
+  background: var(--line-d, #1E2A44);
+  animation: skPulse 1.4s ease-in-out infinite;
+}
+.sk-row { display: flex; gap: 12px; margin-top: 12px; }
+.sk-line-half { flex: 1 1 0; }
+.sk-caption {
+  display: block;
+  margin-top: 12px;
+  font-size: 0.78rem;
+  color: var(--text-d, #93A4C4);
+}
+@keyframes skPulse {
+  0%, 100% { opacity: 0.45; }
+  50%      { opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sk-line { animation: none; opacity: 0.55; }
+}

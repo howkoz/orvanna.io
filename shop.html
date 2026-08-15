@@ -263,6 +263,20 @@
                      hyperswitchMount; card data never touches this page's code. -->
                 <div id="livePayArea" hidden>
                   <p class="pay-note" id="livePayNote"></p>
+                  <!-- Placeholder shown while the server opens the payment.
+                       That call takes about two seconds, most of it the
+                       payment service answering, and an empty gap where card
+                       fields belong reads as a broken page rather than a wait.
+                       Purely presentational: it holds the space and says what
+                       is happening, and never claims anything about money. -->
+                  <div id="cardFormSkeleton" hidden aria-hidden="true">
+                    <span class="sk-line sk-line-full"></span>
+                    <span class="sk-row">
+                      <span class="sk-line sk-line-half"></span>
+                      <span class="sk-line sk-line-half"></span>
+                    </span>
+                    <span class="sk-caption">Preparing the secure card form</span>
+                  </div>
                   <div id="hyperswitchMount"></div>
                   <p class="pay-note" id="livePayStatus" hidden role="status" aria-live="polite" tabindex="-1"></p>
                 </div>
@@ -1353,6 +1367,7 @@
       liveStatus('');
     }
     liveSetFinishing(false);
+    setCardSkeleton(false);
     cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
     placeOrderBtn.disabled = false;
     placeOrderBtn.textContent = (LIVE_PAYMENTS && payMethod === 'card')
@@ -1377,6 +1392,14 @@
      the outcome; it is presentation over a wait whose answer still
      comes from the server.
      ============================================================ */
+  /* The placeholder that stands in for the card form while the server
+     opens the payment. Presentation only; it is torn down the instant
+     the real form mounts, and again on any reset. */
+  function setCardSkeleton(on) {
+    var sk = document.getElementById('cardFormSkeleton');
+    if (sk) sk.hidden = !on;
+  }
+
   function liveSetFinishing(on) {
     var mount = document.getElementById('hyperswitchMount');
     if (mount) mount.hidden = !!on;
@@ -1753,6 +1776,9 @@
     liveState.busy = true;
     placeOrderBtn.disabled = true;
     livePayArea.hidden = false;
+    /* hold the space the card form will occupy while the server opens
+       the payment, so the step never looks empty or broken */
+    setCardSkeleton(true);
     liveStatus('Contacting the test payment service...');
     var payload = {
       items: cartPayload(),
@@ -1799,6 +1825,7 @@
     });
     var checkoutWidget = liveState.widgets.create('payment', { layout: 'tabs' });
     checkoutWidget.mount('#hyperswitchMount');
+    setCardSkeleton(false);
     cardFields.hidden = true;
     walletNote.hidden = true;
     /* CARD HINT. Every number here was run end to end against the
