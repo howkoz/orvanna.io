@@ -387,7 +387,7 @@
         <p class="confirm-note" id="confirmRenews" hidden></p>
         <p class="confirm-note" id="confirmQualified"></p>
         <p class="confirm-note" id="confirmDemoNote">Demonstration checkout: no payment occurred and nothing will be charged.</p>
-        <p class="confirm-forward">Payments route through the Orvanna orchestration layer in a later phase.</p>
+        <p class="confirm-forward">This payment ran through the Orvanna orchestration layer in test mode. No real money moved.</p>
         <a class="btn btn-solid" href="shop.html">Back to the catalog</a>
       </div>
 
@@ -2348,6 +2348,32 @@
 
   /* render the confirmation view from the SERVER receipt, not
      from this page's math (spec section 1.2, step 8) */
+  /* THE RECEIPT MUST NAME THE RATE IT ACTUALLY CHARGED.
+
+     This row said "5 percent" no matter what, because that was true for as
+     long as tax was a flat guess. Howard's New York order was charged $8.88
+     on $100.00 and the receipt still called it five percent, which is a
+     receipt stating a figure nobody was charged.
+
+     The rate is DERIVED from the receipt's own numbers rather than passed
+     alongside them, so it cannot disagree with the amount printed beside it,
+     and it keeps working on a resumed page where the checkout's own state is
+     long gone. Where we know the jurisdiction, it is named too: "8.88 percent,
+     NY" says considerably more than a bare number. */
+  function receiptTaxHint(r) {
+    var taxable = (r.subtotal_one_cents || 0) + (r.subtotal_sub_cents || 0) +
+                  (r.activation_fee_cents || 0);
+    if (!taxable || !r.tax_cents) return 'none due';
+    var pct = (r.tax_cents / taxable) * 100;
+    /* two decimals, because a combined rate like New York City's 8.875 is not
+       a whole number and rounding it to 9 would misstate what was charged */
+    var text = pct.toFixed(2).replace(/\.00$/, '') + ' percent';
+    var place = liveServerTotals && liveServerTotals.tax_jurisdiction
+      ? String(liveServerTotals.tax_jurisdiction).replace(/[^A-Za-z, ]/g, '').slice(0, 40)
+      : '';
+    return place ? text + ', ' + place : text;
+  }
+
   function liveRenderConfirmation(r) {
     function cents(c) { return fmtMoney(c / 100); }
 
@@ -2378,7 +2404,8 @@
       (r.activation_fee_cents === 0 ? 'Free' : cents(r.activation_fee_cents)) + '</span></div>';
     rows += r.tax_exempt
       ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">$0.00</span></div>'
-      : '<div class="total-row"><span>Tax <span class="row-hint">5 percent</span></span><span class="total-num">' + cents(r.tax_cents) + '</span></div>';
+      : '<div class="total-row"><span>Tax <span class="row-hint">' +
+          receiptTaxHint(r) + '</span></span><span class="total-num">' + cents(r.tax_cents) + '</span></div>';
     rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + cents(r.total_cents) + '</span></div>';
     rows += '<div class="total-row"><span>Payment method</span><span class="total-num">Credit card, test mode</span></div>';
     rows += '<div class="total-row"><span>Total PV</span><span class="total-pv-num">' + fmtPv(r.pv_total) + '</span></div>';
