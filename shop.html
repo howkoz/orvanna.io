@@ -1106,6 +1106,11 @@
     if (LIVE_PAYMENTS) liveResetPayment('');
     renderSummary();
     showView('checkout');
+    /* AFTER showView, because liveEnsureCheckout refuses to act unless
+       the checkout view is the active one. This is the early start
+       that spends the payment-open behind the account step instead of
+       in front of the shopper. */
+    if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
   document.getElementById('backToShop').addEventListener('click', function () {
@@ -1459,9 +1464,15 @@
     if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
     if (payMethod !== 'card') return;
     if (Object.keys(cart).length === 0) return;
-    /* the payment step has to actually be on screen: before the
-       shopper picks guest or sign-in there is nothing to pay for yet */
-    if (placeOrderBtn.offsetParent === null) return;
+    /* DELIBERATELY NOT GATED ON THE PAYMENT STEP BEING VISIBLE.
+       Opening the payment takes about two seconds, and roughly one of
+       those is the payment service itself, which we cannot make
+       faster. What we CAN do is spend it while the shopper is busy
+       with the account step, so that by the time they choose guest or
+       sign in, the card form is already there. Measured 2026-08-15:
+       the create call is 2.2s, of which HyperSwitch's own create is
+       about 1.0s. Nothing is shown during this: the whole payment
+       step is still hidden, so an early open is invisible. */
     /* never disturb a payment already under way, a resume still
        resolving, an open bank window, or a finished one being
        re-checked */
