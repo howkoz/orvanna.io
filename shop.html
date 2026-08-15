@@ -2295,6 +2295,14 @@
      clock and never calls itself an error */
   function liveHandleReceipt(receipt, startedAt) {
     if (receipt.payment_status === 'succeeded') {
+      /* The sale has completed, so the tax liability is now real and the
+         calculation should be recorded for reporting. Fire and forget, and
+         deliberately AFTER the receipt is rendered: this is bookkeeping, and a
+         shopper whose money has already moved must never wait on it. The job
+         is idempotent and picks up anything missed on its next run, so a
+         failure here costs a retry rather than a lost record. */
+      try { fnCall('record-tax', 'POST', {}).catch(function () { /* next run takes it */ }); }
+      catch (e) { /* never let bookkeeping break a receipt */ }
       liveRenderConfirmation(receipt);
       cart = {};
       persist();
