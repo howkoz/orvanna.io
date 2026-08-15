@@ -6,8 +6,8 @@
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=1d654a2f9ae9">
-<link rel="stylesheet" href="css/staff.css?v=1d654a2f9ae9">
+<link rel="stylesheet" href="css/corporate.css?v=65581ad4d1fe">
+<link rel="stylesheet" href="css/staff.css?v=65581ad4d1fe">
 </head>
 <body class="console-body">
 
@@ -275,7 +275,7 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=1d654a2f9ae9"></script>
+<script src="js/catalog.js?v=65581ad4d1fe"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -1287,7 +1287,7 @@
     [].slice.call(document.querySelectorAll(
       '#productSelect, #qtyInput, #addLineBtn, #modeSub, #modeOne, ' +
       '#taxIdInput, #lookupInput, input[name="payChoice"], ' +
-      '.line-qty, .line-drop, #newCallBtn, #sameCallerBtn'
+      '.qty-step, .line-remove-btn, #newCallBtn, #sameCallerBtn'
     )).forEach(function (el) {
       if (on) {
         if (el.disabled) el.setAttribute('data-was-disabled', '1');
@@ -1407,6 +1407,13 @@
     if (!frame) return;
     frame.style.opacity = visible ? '' : '0';
     frame.style.pointerEvents = visible ? '' : 'none';
+    /* M6, quality assurance audit 2026-08-15. The keyboard trap moves focus
+       between the cancel button and this frame, but an element with no
+       tabindex cannot take focus, so Tab simply stayed on Cancel and a
+       keyboard user could never reach into the bank's window at all. Setting
+       it here rather than in the markup is deliberate: the widget creates this
+       element itself, so this is the only moment we are certain it exists. */
+    if (visible) { try { frame.setAttribute('tabindex', '-1'); } catch (e) { /* best effort */ } }
   }
 
   function cancelChallengeReveal() {

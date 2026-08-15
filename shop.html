@@ -6,8 +6,8 @@
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=1d654a2f9ae9">
-<link rel="stylesheet" href="css/shop.css?v=1d654a2f9ae9">
+<link rel="stylesheet" href="css/corporate.css?v=65581ad4d1fe">
+<link rel="stylesheet" href="css/shop.css?v=65581ad4d1fe">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -566,7 +566,7 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=1d654a2f9ae9"></script>
+<script src="js/catalog.js?v=65581ad4d1fe"></script>
 <script>
 /* ============================================================
    Orvanna shop, round 4. The catalog lives in js/catalog.js
@@ -1809,6 +1809,13 @@
     if (!frame) return;
     frame.style.opacity = visible ? '' : '0';
     frame.style.pointerEvents = visible ? '' : 'none';
+    /* M6, quality assurance audit 2026-08-15. The keyboard trap moves focus
+       between the cancel button and this frame, but an element with no
+       tabindex cannot take focus, so Tab simply stayed on Cancel and a
+       keyboard user could never reach into the bank's window at all. Setting
+       it here rather than in the markup is deliberate: the widget creates this
+       element itself, so this is the only moment we are certain it exists. */
+    if (visible) { try { frame.setAttribute('tabindex', '-1'); } catch (e) { /* best effort */ } }
   }
 
   function cancelChallengeReveal() {

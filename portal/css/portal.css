@@ -48,8 +48,15 @@ html[data-theme="light"] {
      it, exactly as the comment above already said it should. This darker teal
      measures 5.36:1 on white and 4.89:1 on the page background. */
   --cyan: #0E7490;
-  --good: #059669;
-  --bad: #DC2626;
+  /* Darkened 2026-08-15. These carry the portal's most important signal,
+     QUALIFIED and NOT QUALIFIED, and they are drawn on TINTED chips rather
+     than on the page background, which the lighter pair was never checked
+     against: 3.28:1 and 4.12:1 composited. This is the same mistake as the
+     cyan token fixed this morning, missed because only cyan was swept.
+     Computed now: #065F46 on the green chip is 6.72:1 and on the page 7.34:1;
+     #B91C1C on the red chip is 5.53:1. */
+  --good: #065F46;
+  --bad: #B91C1C;
   --amber: #B45309;
   --violet: #7C3AED;
   --shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
