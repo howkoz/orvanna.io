@@ -864,6 +864,14 @@
     accountSignin.hidden = stage !== 'signin';
     accountDone.hidden = stage !== 'done';
     checkoutRest.hidden = stage !== 'done';
+    /* This is the moment the payment step first becomes reachable,
+       for both the guest and the sign-in paths. Entering checkout is
+       too early: everything below is still hidden then, so
+       liveEnsureCheckout correctly refuses to open a payment for a
+       step nobody can see yet. */
+    if (stage === 'done' && typeof liveEnsureCheckout === 'function') {
+      liveEnsureCheckout();
+    }
   }
 
   function setAddress(a) {
