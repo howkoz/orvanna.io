@@ -1083,6 +1083,10 @@
     accountMode = null;
     setAccountStage('chooser');
     setPayMethod('card');
+    /* start fetching the card-form script now, in parallel with the
+       account step, so it is already in hand when the payment step
+       asks for it */
+    warmHyperLoader();
     /* a fresh checkout entry always starts a fresh payment: any
        earlier client_secret belongs to a possibly stale cart */
     if (LIVE_PAYMENTS) liveResetPayment('');
@@ -1444,6 +1448,13 @@
     if (liveState.clientSecret && liveOpenedFor === signature) return;
 
     if (liveOpenTimer) window.clearTimeout(liveOpenTimer);
+    /* The debounce exists to stop a create per keystroke while a tax
+       identifier is typed. That only applies when a payment is being
+       REPLACED. The first open has nothing to debounce, and making a
+       shopper wait most of a second before the card form even starts
+       loading is exactly the delay Howard reported. So: replace
+       slowly, open immediately. */
+    var openDelay = liveState.clientSecret ? 900 : 0;
     liveOpenTimer = window.setTimeout(function () {
       liveOpenTimer = null;
       /* re-check everything: nearly a second has passed */
@@ -1453,13 +1464,14 @@
       var now = liveAmountSignature();
       if (liveState.clientSecret && liveOpenedFor === now) return;
       if (liveState.clientSecret) {
+        /* replacing a payment opened against a total that has moved */
         /* the total moved after this payment was opened: discard it
            rather than let it settle at the old amount */
         liveResetPayment('');
       }
       liveOpenedFor = now;
       liveStart();
-    }, 900);
+    }, openDelay);
   }
 
   /* ============================================================
@@ -1679,17 +1691,39 @@
 
   /* load HyperLoader.js, the one sanctioned external script,
      only on demand and only when the flag is true */
+  /* Cached, so calling this more than once cannot append a second
+     copy of the script. That matters now that it is deliberately
+     started EARLY as well as on demand. */
+  var hyperLoaderPromise = null;
+
   function loadHyperLoader() {
-    return new Promise(function (resolve, reject) {
-      if (window.Hyper) { resolve(); return; }
+    if (window.Hyper) return Promise.resolve();
+    if (hyperLoaderPromise) return hyperLoaderPromise;
+    hyperLoaderPromise = new Promise(function (resolve, reject) {
       var s = document.createElement('script');
       s.src = LIVE_CONFIG.hyperLoaderUrl;
       s.onload = function () { resolve(); };
       s.onerror = function () {
+        /* let a later attempt try again rather than failing forever */
+        hyperLoaderPromise = null;
         reject(new Error('The secure card form could not load. Nothing was charged. Please try again.'));
       };
       document.head.appendChild(s);
     });
+    return hyperLoaderPromise;
+  }
+
+  /* Start fetching the card-form script the moment a shopper enters
+     checkout, which is a second or two before the payment step can
+     possibly need it. Before this, the download did not begin until
+     the server had already answered, so the shopper watched an empty
+     space while two waits ran one after the other instead of at the
+     same time. Failure here is deliberately ignored: the real attempt
+     later reports it properly. */
+  function warmHyperLoader() {
+    if (!LIVE_PAYMENTS) return;
+    try { loadHyperLoader().catch(function () { /* reported at use */ }); }
+    catch (e) { /* never let warming break checkout */ }
   }
 
   function liveSubmit() {
