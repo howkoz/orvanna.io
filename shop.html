@@ -2189,10 +2189,26 @@
       '4000 0000 0000 2701 approves with no passcode at all. ' +
       'Nothing is ever charged.';
     liveStatus('');
-    /* label only: the button shows this page's total, and the
-       server's mirror computes the identical figure (the verifier
-       gate proves the two tables match fact for fact) */
-    placeOrderBtn.textContent = 'Pay ' + fmtMoney(orderMath().total) + ' now, test mode';
+    /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE.
+
+       This line used to read fmtMoney(orderMath().total) under a
+       comment saying the page and the server compute the identical
+       figure. That was true only while both applied a flat five
+       percent. The moment a real tax engine arrived it became false,
+       and it showed: a New York cart displayed $326.63 in the summary
+       while this button offered to charge $315.00. The charge would
+       have been the correct $326.63, so the button was the liar, which
+       is the exact "shown one number, charged another" fault this
+       whole day of work exists to remove.
+
+       The page cannot know what New York charges for software. Only
+       the server can, so only the server's figure goes here. The page
+       math survives as a fallback for the case where no server answer
+       exists yet, and it is the same figure the summary is showing at
+       that moment, so the two can never disagree on screen. */
+    placeOrderBtn.textContent = 'Pay ' + fmtMoney(
+      liveTotalsAreCurrent() ? liveServerTotals.total_cents / 100 : orderMath().total
+    ) + ' now, test mode';
     placeOrderBtn.disabled = false;
     liveState.busy = false;
     /* H1, verifier audit 2026-08-15. liveEnsureCheckout refuses to act while a
