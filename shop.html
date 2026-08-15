@@ -1572,19 +1572,29 @@
        account now runs Braintree in sandbox, and each processor
        publishes its own test numbers.
 
-       What the rail does now:
-         4111 1111 1111 1111  bank approval screen, then approved
-         4000 1111 1111 1115  declined, and the decline is shown
-       The approval screen is real. It is the card network's
-       identity check, requested on every payment, and it now
-       appears because Braintree can raise one where the simulators
-       we used before could not.
+       CORRECTED 2026-08-15 (second time today) against Braintree's
+       published 3-D Secure 2 table, after Howard found that the card
+       we were recommending could never finish. Two mistakes were in
+       the earlier hint: 4111 1111 1111 1111 is not a 3-D Secure test
+       card at all, and 4000 1111 1111 1115 DOES raise the approval
+       screen but is a decline card, so a correct passcode still ends
+       in a refusal. That reads as if the passcode was ignored.
 
-       Full matrix: docs/TEST-CARDS.html. See also ROADMAP.md. */
+       Braintree's real table, expiry month 01 and year = current + 3:
+         4000 0000 0000 2503  approval screen, passcode, then APPROVED
+         4000 0000 0000 2370  approval screen, authentication fails
+         4000 0000 0000 2701  no screen at all, approved (frictionless)
+         4000 1111 1111 1115  approval screen, then the card declines
+       The passcode the sandbox displays on its own screen is 1234.
+
+       Only the first of those shows the whole journey ending in a
+       sale, so it leads the hint. Full matrix: docs/TEST-CARDS.html.
+       See also ROADMAP.md. */
     livePayNote.textContent =
-      'Test mode, expiry 01/29 and any three digit security code. ' +
-      'Use 4111 1111 1111 1111 to see the approval screen, or ' +
-      '4000 1111 1111 1115 to see a decline handled. ' +
+      'Test mode, expiry 01/29, any three digit security code. ' +
+      '4000 0000 0000 2503 asks your bank for the passcode 1234 and then approves. ' +
+      '4000 0000 0000 2370 asks, and the approval fails. ' +
+      '4000 0000 0000 2701 approves with no passcode at all. ' +
       'Nothing is ever charged.';
     liveStatus('');
     /* label only: the button shows this page's total, and the
@@ -1713,6 +1723,34 @@
     if (authApproved(receipt)) {
       return 'Your bank confirmed it was you, then declined the payment itself.' + bankSaid +
         ' Nothing was charged and your cart is unchanged. This is usually a limit or a hold on the card, so a different card will often work.';
+    }
+    /* THE PASSCODE MUST NEVER LOOK IGNORED.
+
+       The four branches above all depend on the authentication
+       object, and the processor's OWN 3-D Secure (which is what this
+       rail uses today) does not populate it. So a shopper who typed a
+       correct passcode and was then declined used to land on a bare
+       "Declined.", which reads as though the approval step did
+       nothing. Howard hit exactly that on 2026-08-15.
+
+       What this page knows first-hand is whether the approval window
+       opened, because it watched it open. That fact alone does not
+       say whether the approval SUCCEEDED, so the wording is decided
+       by what the processor actually said: a plain processor decline
+       means the money was refused after the approval step, whereas
+       anything else may well be the approval step itself failing. We
+       stop short of claiming the bank confirmed the shopper's
+       identity, because on this rail we genuinely cannot see that. */
+    if (liveState.sawChallenge) {
+      var declinedByCard =
+        /processor.?declined|do not honou?r|insufficient|card.?declined/i
+          .test((receipt.processor && receipt.processor.error_message) || '');
+      if (declinedByCard) {
+        return 'You finished the approval step, and the payment was then declined by the card itself.' + bankSaid +
+          ' Nothing was charged and your cart is unchanged. That is the card refusing the amount rather than the approval failing, so a different card will often work.';
+      }
+      return 'The approval step did not complete, so the payment stopped there.' + bankSaid +
+        ' Nothing was charged and your cart is unchanged. You can try again, or use a different card.';
     }
     return 'Declined.' + bankSaid +
       ' Nothing was charged and your cart is unchanged. Press Place order to try again with a different card.';
