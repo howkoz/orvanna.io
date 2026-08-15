@@ -970,12 +970,21 @@
       b.setAttribute('aria-pressed', String(b.getAttribute('data-pay') === method));
     });
     var isCard = method === 'card';
-    cardFields.hidden = !isCard;
+    /* THE CARD IS TYPED ONCE, NEVER TWICE.
+       These fields belong to the FAKE checkout. When live payments
+       are on, the real card form is the payment provider's own
+       secure frame, which mounts lower down the page, and card data
+       must never touch this page's inputs anyway. Showing both meant
+       a shopper filled in a card, pressed the button, and was handed
+       a second empty card form. Howard hit that on 2026-08-15. */
+    cardFields.hidden = !isCard || LIVE_PAYMENTS;
     walletNote.hidden = isCard;
     if (!isCard) {
       walletNote.textContent = PAY_LABELS[method] + ' needs no card details here. Place the order to finish.';
     }
-    placeOrderBtn.textContent = isCard ? 'Place order' : 'Place order with ' + PAY_LABELS[method];
+    placeOrderBtn.textContent = isCard
+      ? (LIVE_PAYMENTS ? 'Continue to card details' : 'Place order')
+      : 'Place order with ' + PAY_LABELS[method];
   }
 
   payButtons.forEach(function (b) {
@@ -1322,9 +1331,39 @@
       livePayArea.hidden = true;
       liveStatus('');
     }
-    cardFields.hidden = payMethod !== 'card';
+    liveSetFinishing(false);
+    cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
     placeOrderBtn.disabled = false;
-    placeOrderBtn.textContent = 'Place order';
+    placeOrderBtn.textContent = (LIVE_PAYMENTS && payMethod === 'card')
+      ? 'Continue to card details'
+      : 'Place order';
+  }
+
+  /* ============================================================
+     THE FINISHING STATE
+
+     Between the bank's approval window closing and our server
+     saying what happened, there are a few seconds of waiting. The
+     provider's card form is still mounted underneath, so without
+     this the shopper watches the page snap back to an empty card
+     form and then jump to the receipt, which reads as though the
+     payment failed and then changed its mind. Howard described it
+     exactly: "it stops for a second back at the card entry and then
+     finishes at the complete page."
+
+     So while we are finishing, the card form and the button go
+     away and only the status line remains. Nothing here decides
+     the outcome; it is presentation over a wait whose answer still
+     comes from the server.
+     ============================================================ */
+  function liveSetFinishing(on) {
+    var mount = document.getElementById('hyperswitchMount');
+    if (mount) mount.hidden = !!on;
+    placeOrderBtn.hidden = !!on;
+    if (on) {
+      livePayArea.hidden = false;
+      livePayStatus.hidden = false;
+    }
   }
 
   /* ============================================================
@@ -1410,6 +1449,17 @@
     challengeOpen = false;
     challengeChrome.hidden = true;
     document.removeEventListener('keydown', challengeKeydown, true);
+    /* The bank's window has gone but the payment is still in flight.
+       Put the page into the finishing state so the card form does not
+       reappear for a second on the way to the receipt. Deliberately
+       says nothing about the outcome: the shopper may have approved,
+       failed, or closed the window, and only the server knows which.
+       The cancel handler writes its own message straight after this,
+       which correctly replaces this one. */
+    if (liveState.busy) {
+      liveSetFinishing(true);
+      liveStatus('Finishing your order, one moment. Nothing is charged until this settles.');
+    }
     /* focus must never be left on the control that just disappeared.
        It goes back where it came from when that is still a real,
        usable control, and otherwise to the status line, which is
@@ -1840,6 +1890,9 @@
     liveState.busy = false;
     liveState.checkOnly = true;
     setPaymentInert(false);
+    /* leaving the finishing state on here would hide the very button
+       this message tells the shopper to press */
+    liveSetFinishing(false);
     placeOrderBtn.disabled = false;
     placeOrderBtn.textContent = 'Check this order again';
     liveStatus('This is taking longer than usual and we still do not have an answer. ' +
