@@ -126,15 +126,25 @@
             </div>
 
             <div id="accountSignin" hidden>
-              <label class="field-label" for="acctUser">Username</label>
-              <input class="field" type="text" id="acctUser" autocomplete="off" spellcheck="false">
+              <label class="field-label" for="acctUser">Member code</label>
+              <input class="field" type="text" id="acctUser" autocomplete="off" spellcheck="false" placeholder="GW-000014">
               <label class="field-label" for="acctPass">Password</label>
               <input class="field" type="password" id="acctPass" autocomplete="off">
               <div class="account-choices">
-                <button class="btn btn-solid" type="button" id="signinContinue">Continue</button>
+                <button class="btn btn-solid" type="button" id="signinContinue">Sign in</button>
                 <button class="btn btn-ghost" type="button" id="signinBack">Back</button>
               </div>
-              <p class="field-hint hint-loose">Demonstration sign in: any credentials continue.</p>
+              <p class="account-status" id="signinError" role="status" aria-live="polite" hidden></p>
+              <!-- The password below is PUBLIC ON PURPOSE. A visitor to a
+                   demonstration has to be able to sign in. It guards nothing:
+                   the roster it opens is already public, and it cannot open
+                   the member portal or the staff console, which demand
+                   different roles. What it does prove is that the sign-in is
+                   real: the code and password are checked against bcrypt
+                   hashes inside the database, a wrong password is refused,
+                   and the order that follows is attributed to that actual
+                   member. -->
+              <p class="field-hint hint-loose">Demonstration accounts: any member code from the roster, for example <b>GW-000014</b>, with the password <b>OrvannaDemo2026</b>. Checked against the database, not this page. Your order is credited to that member.</p>
             </div>
 
             <div id="accountDone" hidden>
@@ -901,18 +911,118 @@
     document.getElementById('acctUser').focus();
   });
 
+  /* Leaving a signed-in account must also give the member code back,
+     otherwise a guest order would still be credited to whoever signed
+     in a moment ago. */
+  function clearSignedInMember() {
+    var codeField = document.getElementById('memberCode');
+    if (!codeField) return;
+    if (codeField.readOnly) { codeField.value = ''; }
+    codeField.readOnly = false;
+  }
+
   document.getElementById('chooseGuest').addEventListener('click', function () {
     accountMode = 'guest';
+    clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
     accountStatus.textContent = 'Checking out as a guest. Enter your billing address below.';
     setAccountStage('done');
   });
 
-  document.getElementById('signinContinue').addEventListener('click', function () {
-    accountMode = 'member';
-    setAddress(SYNTHETIC_ADDRESS);
-    accountStatus.textContent = 'Signed in as ' + SYNTHETIC_ADDRESS.name + '. Your saved billing address is filled in below.';
-    setAccountStage('done');
+  /* ============================================================
+     REAL MEMBER SIGN-IN
+
+     This used to accept anything at all and then fill in a person who
+     does not exist in the roster. Howard, 2026-08-15: "i want to move
+     to next phase and it not be theater."
+
+     What is real now: the member code and password go to the
+     demo-login function, which compares them against bcrypt hashes in
+     app.demo_users, a table the public key cannot read. A wrong
+     password is refused by the server. The account that comes back is
+     a genuine row in app.members, and the member code is written into
+     the order so create-payment credits that member.
+
+     What is NOT claimed: this is not a security boundary for the
+     shop. It decides whose name is on the order, not what anyone is
+     allowed to see. The credential is printed on the page on purpose.
+     The role check below is a courtesy so an admin credential does
+     not silently become a shopper; the server-side role gate is what
+     actually keeps a member out of the portal and the console.
+     ============================================================ */
+  var signinError = document.getElementById('signinError');
+  var signinContinueBtn = document.getElementById('signinContinue');
+
+  function showSigninError(message) {
+    signinError.textContent = message;
+    signinError.hidden = false;
+  }
+
+  function memberDisplayName(code) {
+    return fetch(
+      LIVE_CONFIG.restBase + '/v_demo_members?select=display_name,rank_name&member_code=eq.' +
+        encodeURIComponent(code),
+      { headers: { apikey: LIVE_CONFIG.anonKey, Authorization: 'Bearer ' + LIVE_CONFIG.anonKey } }
+    ).then(function (r) { return r.json(); })
+     .then(function (rows) { return (rows && rows[0]) || null; })
+     .catch(function () { return null; });
+  }
+
+  signinContinueBtn.addEventListener('click', function () {
+    var code = document.getElementById('acctUser').value.trim();
+    var pass = document.getElementById('acctPass').value;
+    signinError.hidden = true;
+    if (code === '' || pass === '') {
+      showSigninError('Enter a member code and the password.');
+      return;
+    }
+    signinContinueBtn.disabled = true;
+    signinContinueBtn.textContent = 'Checking...';
+    fnCall('demo-login', 'POST', { username: code, password: pass })
+      .then(function (result) {
+        signinContinueBtn.disabled = false;
+        signinContinueBtn.textContent = 'Sign in';
+        if (result.status !== 200) {
+          showSigninError(friendlyError(result,
+            'That member code and password do not match an account.'));
+          return;
+        }
+        if (result.data.role !== 'member') {
+          showSigninError('That is a staff or administrator account. Use a member code here, or continue as a guest.');
+          return;
+        }
+        var signedInCode = result.data.username;
+        return memberDisplayName(signedInCode).then(function (row) {
+          var name = (row && row.display_name) || signedInCode;
+          accountMode = 'member';
+          /* the billing address stays synthetic, because this demo
+             holds no real addresses; the NAME is the member's own */
+          setAddress({
+            name: name,
+            street: SYNTHETIC_ADDRESS.street,
+            city: SYNTHETIC_ADDRESS.city,
+            state: SYNTHETIC_ADDRESS.state,
+            zip: SYNTHETIC_ADDRESS.zip
+          });
+          /* this is what actually credits the order: create-payment
+             resolves it against app.members server side */
+          var codeField = document.getElementById('memberCode');
+          codeField.value = signedInCode;
+          codeField.readOnly = true;
+          accountStatus.textContent = 'Signed in as ' + name + ' (' + signedInCode + ')' +
+            (row && row.rank_name ? ', ' + row.rank_name : '') +
+            '. This order will be credited to that member.';
+          setAccountStage('done');
+          /* the member code is part of the amount signature, so the
+             payment must be reopened against the signed-in member */
+          if (LIVE_PAYMENTS) liveEnsureCheckout();
+        });
+      })
+      .catch(function () {
+        signinContinueBtn.disabled = false;
+        signinContinueBtn.textContent = 'Sign in';
+        showSigninError('Could not reach the sign-in service. Please try again.');
+      });
   });
 
   document.getElementById('signinBack').addEventListener('click', function () {
@@ -921,6 +1031,7 @@
 
   document.getElementById('accountSwitch').addEventListener('click', function () {
     accountMode = null;
+    clearSignedInMember();
     setAccountStage('chooser');
   });
 
@@ -964,6 +1075,14 @@
        the database; it only lets the browser invoke the
        functions. Same key the portal pages already ship. */
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw',
+    /* The read-only data interface, used ONLY to turn a signed-in
+       member code into that member's display name. It reaches the
+       same seven public v_demo_* views the portal already reads with
+       the same public key, so this adds no new surface. The sign-in
+       credential itself is never checked here: that happens inside
+       the demo-login function, against bcrypt hashes in a table the
+       public key cannot read. */
+    restBase: 'https://oiyibdczkokegaxkwulv.supabase.co/rest/v1',
     /* The sanctioned external script (spec section 1.4). Pinned
        from the HyperSwitch documentation at wiring time; confirm
        against the dashboard docs before flipping the flag and
