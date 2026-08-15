@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Member Portal, Demo Mode</title>
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/portal.css?v=65581ad4d1fe">
+<link rel="stylesheet" href="css/portal.css?v=a5e470859ae9">
 </head>
 <body>
 
@@ -60,10 +60,18 @@
 
 <script>
 /* ---------- session gate ----------
-   Runs before the portal's own script is even requested, so a
-   visitor without a valid member session triggers no database
-   call. The token was signed by the server; the browser cannot
-   mint or edit one. This gate is inlined rather than shared with
+   Runs before the portal's own script is even requested, so an
+   ordinary visitor without a member session triggers no database
+   call.
+
+   KNOWN GAP, do not read this gate as security. The session token
+   is NOT verified here or anywhere else. This code only reads what
+   is already in session storage and trusts it, so a hand-written
+   session object opens this page. The real gate is the role check
+   the server performs on every function call. Treat this one as
+   convenience and routing, never as a security control.
+
+   This gate is inlined rather than shared with
    the staff console because the two pages live in folders the
    deploy script moves apart, and a shared file would need a path
    that survives that move. */
@@ -96,7 +104,7 @@
   document.getElementById('signOutLink').addEventListener('click', clearSession);
 
   var portal = document.createElement('script');
-  portal.src = 'js/app.js?v=65581ad4d1fe';
+  portal.src = 'js/app.js?v=a5e470859ae9';
   document.body.appendChild(portal);
 })();
 </script>

@@ -403,7 +403,7 @@ function srTable(caption, headers, rows) {
    touching the ranking logic. They name a rule of the plan, never a
    verdict about the person: "Blocks your rank" beside somebody's name is
    the strongest possible instruction to lean on that person, which is the
-   pattern Howard ruled out. Severity still reads through rank order, the
+   pattern this design rules out. Severity still reads through rank order, the
    length of the open gap, and the shape of the mark. */
 const TIER_WORD = { 1: "Rank rule unmet", 2: "Leg not counted", 3: "Inside paid depth" };
 

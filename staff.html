@@ -6,8 +6,8 @@
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=65581ad4d1fe">
-<link rel="stylesheet" href="css/staff.css?v=65581ad4d1fe">
+<link rel="stylesheet" href="css/corporate.css?v=a5e470859ae9">
+<link rel="stylesheet" href="css/staff.css?v=a5e470859ae9">
 </head>
 <body class="console-body">
 
@@ -146,7 +146,7 @@
                 </label>
                 <label class="pay-choice">
                   <input type="radio" name="payChoice" value="new">
-                  <span>Key the card here, telephone order <span class="pc-note">key it while they read; repeat back the last four only. No bank approval is possible on this path.</span></span>
+                  <span>Key the card here, telephone order <span class="pc-note">key it while they read; repeat back the last four only. The bank usually will not ask for an approval on this path, but it can, and if it does only the cardholder can complete it.</span></span>
                 </label>
                 <label class="pay-choice">
                   <input type="radio" name="payChoice" value="onfile" checked>
@@ -205,10 +205,10 @@
             <div class="totals-box">
               <div class="t-row" id="rowSub" hidden><span>Monthly <span class="t-hint">renews monthly</span></span><span class="t-num" id="sumSub">$0.00</span></div>
               <div class="t-row" id="rowOne" hidden><span>One-time <span class="t-hint">billed today</span></span><span class="t-num" id="sumOne">$0.00</span></div>
-              <div class="t-row"><span id="taxLabel">Tax <span class="t-hint">5 percent</span></span><span class="t-num" id="sumTax">$0.00</span></div>
+              <div class="t-row"><span id="taxLabel">Tax <span class="t-hint">estimate, the server sets the charged figure</span></span><span class="t-num" id="sumTax">$0.00</span></div>
               <div class="taxid-line">
                 <label for="taxIdInput">Tax ID</label>
-                <input class="taxid-input" id="taxIdInput" type="text" placeholder="Optional, any digit exempts" autocomplete="off" spellcheck="false">
+                <input class="taxid-input" id="taxIdInput" type="text" placeholder="Optional, the tax service decides" autocomplete="off" spellcheck="false">
               </div>
               <div class="t-row t-main"><span>Order total</span><span class="t-num" id="sumTotal">$0.00</span></div>
               <div class="t-row"><span>Order PV</span><span class="t-pv" id="sumPv">0 PV</span></div>
@@ -275,7 +275,7 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=65581ad4d1fe"></script>
+<script src="js/catalog.js?v=a5e470859ae9"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -289,9 +289,16 @@
   'use strict';
 
   /* ---------- session gate ----------
-     Runs before anything else on this page, so a visitor without a
-     valid staff session triggers no database call at all. The token
-     was signed by the server; the browser cannot mint or edit one.
+     Runs before anything else on this page, so an ordinary visitor
+     without a staff session triggers no database call at all.
+
+     KNOWN GAP, do not read this gate as security. The session token
+     is NOT verified here or anywhere else. This code only reads what
+     is already in session storage and trusts it, so a hand-written
+     session object opens this page. The real gate is the role check
+     the server performs on every function call. Treat this one as
+     convenience and routing, never as a security control.
+
      The gate is inlined rather than shared with the member portal
      because the two pages live in folders the deploy script moves
      apart, and a shared file would need a path that survives that
@@ -807,17 +814,116 @@
       '<tbody>' + rows + '</tbody></table>';
   }
 
-  /* ---------- totals, tax, qualified meter ---------- */
+  /* ============================================================
+     TOTALS AND TAX
+
+     DELIBERATE SECOND COPY, 2026-08-15. Everything from here down to
+     the end of staffEnsureQuote is a knowing duplicate of the same
+     machinery in www/shop.html: liveAmountSignature,
+     liveTotalsAreCurrent, applyServerTotals and liveEnsureQuote. The
+     duplication is on purpose and under protest. The right fix is to
+     lift it into a shared www/js/payments.js that both pages load, and
+     every audit has said so; that extraction is a large refactor and
+     was explicitly deferred rather than attempted late at night beside
+     a live payment rail. UNTIL IT HAPPENS, THE TWO COPIES MUST BE
+     CHANGED TOGETHER. If you edit one, edit the other in the same
+     commit.
+
+     WHY THE COPY HAD TO BE MADE NOW. This console used to work tax out
+     for itself at a flat five percent while the server priced the very
+     same order through a real tax engine. So an agent could read one
+     figure aloud to a caller and a different figure could go through
+     the card. Howard, about the same fault on the shop side earlier
+     the same day: "no one wants to make a payment and then find out 71
+     dollars was applied after submitting the card." On a phone call it
+     is worse, because the wrong number has already been said out loud.
+     ============================================================ */
 
   var taxIdInput = byId('taxIdInput');
   taxIdInput.addEventListener('input', renderTotals);
+
+  /* Kept ONLY to choose the optimistic interim label while the server
+     is being asked. It is not a verdict any more and it is never sent.
+     The identifier goes to the server as TEXT and Stripe decides what
+     it means; the old tax_exempt boolean let the caller of the API
+     zero their own tax and the server now ignores it. */
   function taxExempt() { return /\d/.test(taxIdInput.value); }
 
+  /* What the SERVER priced, once it has answered. Null until then, and
+     stamped with a signature of the order it was computed for, so a
+     late answer about an order nobody is placing any more can never be
+     painted as though it were current. */
+  var staffServerTotals = null;
+  /* The signature the currently open payment was created against. */
+  var staffOpenedFor = null;
+
+  function staffCartPayload() {
+    return Object.keys(order).map(function (key) {
+      var kp = O.keyParts(key);
+      return { sku: kp.sku, mode: kp.mode, quantity: order[key] };
+    });
+  }
+
+  /* Everything that can move the amount. Phone orders are always
+     standard activation, so that value is fixed rather than read. */
+  function staffAmountSignature() {
+    return JSON.stringify({
+      items: staffCartPayload(),
+      activation: 'standard',
+      tax_id: taxIdInput.value.trim(),
+      member_code: caller ? caller.code : ''
+    });
+  }
+
+  function staffTotalsAreCurrent() {
+    if (!staffServerTotals || !staffServerTotals.__sig) return false;
+    return staffServerTotals.__sig === staffAmountSignature();
+  }
+
+  /* The page's own arithmetic. It survives only as the figure shown
+     while the server is still being asked, and it is labelled an
+     estimate the whole time it is on screen. It never reaches a
+     caller's ear as a total and it never reaches the pay button. */
   function orderMath() {
     var t = O.cartTotals(order);
     var taxable = t.oneMoney + t.subMoney;
     var tax = taxExempt() ? 0 : round2(taxable * 0.05);
     return { t: t, tax: tax, total: round2(taxable + tax) };
+  }
+
+  /* Paint the figures the SERVER priced. This is the only place a
+     calculated tax figure or a real order total reaches this screen. */
+  function applyStaffServerTotals(t) {
+    if (!t) return;
+    if (!t.__sig) t.__sig = staffAmountSignature();
+    staffServerTotals = t;
+    /* A jurisdiction is only ever letters, spaces and commas. This
+       string goes into innerHTML, so it passes through the page's own
+       escape helper with an allow list in front of it as a second belt. */
+    var place = String(t.tax_jurisdiction || '').replace(/[^A-Za-z, ]/g, '').slice(0, 40);
+    var where = place ? ' ' + esc(place) : '';
+    var label;
+    if (t.tax_cents === 0) {
+      /* A zero is two different facts and the reason is the only thing
+         that separates them. "not_collecting" means we hold no
+         registration in that place, which is ours to fix; anything else
+         means the place genuinely does not tax this, which is the right
+         answer. An agent asked "why is there no tax?" can now answer. */
+      label = t.tax_reason === 'not_collecting'
+        ? 'Tax <span class="t-hint">not collected' + where + '</span>'
+        : 'Tax <span class="t-hint">none due' + where + '</span>';
+    } else {
+      label = 'Tax <span class="t-hint">' +
+        (t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated' + where) + '</span>';
+    }
+    byId('taxLabel').innerHTML = label;
+    byId('sumTax').textContent = fmtMoney(t.tax_cents / 100);
+    byId('sumTotal').textContent = fmtMoney(t.total_cents / 100);
+    /* The button must never offer a figure the server is not charging. */
+    if (staffLive && staffLive.clientSecret && !staffLive.checkOnly) {
+      byId('placeOrderBtn').textContent =
+        'Take ' + fmtMoney(t.total_cents / 100) + ' now, test mode';
+    }
   }
 
   function renderTotals() {
@@ -826,17 +932,135 @@
     byId('rowOne').hidden = m.t.oneMoney === 0;
     byId('sumSub').textContent = fmtMoney(m.t.subMoney) + ' / mo';
     byId('sumOne').textContent = fmtMoney(m.t.oneMoney);
-    if (taxExempt()) {
-      byId('taxLabel').innerHTML = 'Tax exempt';
+    /* ------------------------------------------------------------
+       THE TAX ROW HAS THREE STATES, AND SAYS WHICH ONE IT IS IN.
+         calculated  the tax engine has answered for THIS order
+         estimate    a placeholder, and it says so, while we ask
+         flat        no engine at all (demonstration mode), and it
+                     says that too
+       applyStaffServerTotals paints the first. This paints the other
+       two, and asks. ------------------------------------------- */
+    if (LIVE_PAYMENTS && staffTotalsAreCurrent()) {
+      /* Already answered for exactly this order: repaint the real
+         figure rather than flashing the estimate back over it. */
+      applyStaffServerTotals(staffServerTotals);
+    } else if (taxExempt()) {
+      byId('taxLabel').innerHTML = LIVE_PAYMENTS
+        ? 'Tax <span class="t-hint">exempt if that identifier holds, the tax service decides</span>'
+        : 'Tax exempt';
       byId('sumTax').textContent = '$0.00';
+      byId('sumTotal').textContent = fmtMoney(m.total);
     } else {
-      byId('taxLabel').innerHTML = 'Tax <span class="t-hint">5 percent</span>';
+      byId('taxLabel').innerHTML = LIVE_PAYMENTS
+        ? 'Tax <span class="t-hint">estimate, working it out</span>'
+        : 'Tax <span class="t-hint">5 percent</span>';
       byId('sumTax').textContent = fmtMoney(m.tax);
+      byId('sumTotal').textContent = fmtMoney(m.total);
     }
-    byId('sumTotal').textContent = fmtMoney(m.total);
     byId('sumPv').textContent = fmtPv(m.t.pv);
-    byId('placeOrderBtn').disabled = Object.keys(order).length === 0;
+    /* Never re-disable the button while it is the "check this order
+       again" control, which is reachable with no order lines at all. */
+    if (!(staffLive && staffLive.checkOnly)) {
+      byId('placeOrderBtn').disabled = Object.keys(order).length === 0;
+    }
     renderMeter(m.t.pv);
+    /* Every control that can move the total funnels through here, which
+       makes this the one honest place to ask what tax is owed, and the
+       one place to notice that an already-open payment has gone stale. */
+    if (typeof staffEnsureQuote === 'function') staffEnsureQuote();
+    if (typeof staffWarnIfPaymentStale === 'function') staffWarnIfPaymentStale();
+  }
+
+  /* ============================================================
+     ASKING WHAT TAX IS OWED, WITHOUT STARTING A PAYMENT
+
+     quote-tax prices an order and answers. It creates NOTHING: no
+     order row, no payment at the processor, no tax record. It exists
+     so the figure the agent reads to the caller is the figure the card
+     will be charged, before the card is ever keyed.
+
+     create-payment remains the authority. It reprices the same order
+     from scratch when the payment opens, through the very same shared
+     server code (functions/_shared/tax.ts), and this console defers to
+     its figure the moment it has one.
+
+     The debounce is shorter than the shop's payment debounce for the
+     same reason: a quote is cheap, creates nothing, and sits in its own
+     looser rate limit bucket, so it can afford to be eager.
+     ============================================================ */
+  var QUOTE_DEBOUNCE_MS = 350;
+  var staffQuoteTimer = null;
+  var staffQuoteInFlight = null;   /* the signature currently being asked about */
+
+  function staffEnsureQuote() {
+    if (!LIVE_PAYMENTS) return;
+    /* The tax destination is read server side from the caller's row, so
+       there is nothing to ask about until a caller is on the screen. */
+    if (!caller) return;
+    if (Object.keys(order).length === 0) return;
+    /* A payment already handed over, or a bank window up, means the
+       amount is settled and no longer ours to re-quote. */
+    if (staffLive && (staffLive.busy || staffLive.checkOnly || staffLive.resuming)) return;
+    if (challengeOpen) return;
+    if (staffTotalsAreCurrent()) return;
+
+    var signature = staffAmountSignature();
+    if (staffQuoteInFlight === signature) return;
+
+    if (staffQuoteTimer) window.clearTimeout(staffQuoteTimer);
+    staffQuoteTimer = window.setTimeout(function () {
+      staffQuoteTimer = null;
+      var asking = staffAmountSignature();
+      if (staffTotalsAreCurrent() || staffQuoteInFlight === asking) return;
+      if (Object.keys(order).length === 0) return;
+      staffQuoteInFlight = asking;
+      staffFnCall('quote-tax', {
+        items: staffCartPayload(),
+        activation: 'standard',
+        /* the identifier itself, not a verdict: the server and Stripe
+           decide what it means */
+        tax_id: taxIdInput.value.trim(),
+        member_code: caller ? caller.code : ''
+      }).then(function (result) {
+        if (staffQuoteInFlight === asking) staffQuoteInFlight = null;
+        if (result.status !== 200 || !result.data || !result.data.totals) return;
+        /* THE STALENESS CHECK. Between asking and answering the agent
+           may have changed the order. An answer to a question nobody is
+           asking any more is dropped, not shown: a wrong figure that
+           looks calculated is worse than an estimate that admits it. */
+        if (staffAmountSignature() !== asking) return;
+        var t = result.data.totals;
+        t.__sig = asking;
+        applyStaffServerTotals(t);
+      }).catch(function () {
+        if (staffQuoteInFlight === asking) staffQuoteInFlight = null;
+        /* Silent on purpose. The estimate is already on screen and
+           already labelled an estimate, and create-payment prices the
+           order properly a moment later regardless. */
+      });
+    }, QUOTE_DEBOUNCE_MS);
+  }
+
+  /* ============================================================
+     THE OPEN PAYMENT AND THE MOVING TOTAL (audit finding C-A3)
+
+     A payment carries an AMOUNT, fixed at the moment it is created.
+     The secure card form mounts as soon as the payment opens, and
+     nothing stopped an agent adding a line, or typing a tax
+     identifier, afterwards. The console would then take the payment at
+     the OLD amount while the screen showed the new one, which on a
+     phone call means the agent has already said the wrong number.
+
+     Two layers close it. This is the warning, so the agent is never
+     surprised. The hard rail is in liveStaffConfirm, which refuses to
+     send a card whose payment no longer matches the screen.
+     ============================================================ */
+  function staffWarnIfPaymentStale() {
+    if (!LIVE_PAYMENTS || !staffLive || !staffLive.clientSecret) return;
+    if (staffLive.busy || staffLive.checkOnly || staffLive.resuming || challengeOpen) return;
+    if (staffOpenedFor === staffAmountSignature()) return;
+    staffStatus('The order changed after the payment step opened, so that payment is no longer the right amount. ' +
+      'Press the button and the card form starts again at the amount now on screen. Nothing was charged.');
   }
 
   function renderMeter(orderPv) {
@@ -878,8 +1102,8 @@
   /* ---------- payment choice ---------- */
 
   /* Live payment rail flag and config, mirroring shop.html (Phase 6
-     follow-up: Howard caught the console still faking payments while
-     the rail was live). True = the console places REAL test-mode
+     follow-up 2026-08-14: the console was still faking payments while
+     the rail was live next to it). True = the console places REAL test-mode
      payments through the same three Edge Functions as the shop, with
      channel staff_console and the caller's member code attached. */
   const LIVE_PAYMENTS = true;
@@ -1064,34 +1288,70 @@
         : 'New card, keyed during the call');
   }
 
-  /* Renders the read-aloud confirmation. The demo path feeds it a
-     locally minted number; the live path feeds it the SERVER's order
-     number from the confirmed receipt (the only number that exists in
-     the database). Money figures are this page's math, which the
-     verifier gate proved identical to the server's mirror. */
-  function renderConfirmationView(numFull, numToken, payLabel) {
+  /* THE CONFIRMATION MUST NAME THE RATE IT ACTUALLY CHARGED.
+     Derived from the receipt's own numbers rather than passed alongside
+     them, so it cannot disagree with the amount printed beside it. Two
+     decimal places, because a combined rate such as New York City's
+     8.875 is not a whole number and rounding it to 9 would misstate
+     what the caller was charged. Where the jurisdiction is known it is
+     named, because "8.88 percent, NY" tells an agent considerably more
+     than a bare number when the caller asks why. */
+  function receiptTaxHint(r) {
+    var taxable = (r.subtotal_one_cents || 0) + (r.subtotal_sub_cents || 0) +
+                  (r.activation_fee_cents || 0);
+    if (!taxable || !r.tax_cents) return 'none due';
+    var pct = (r.tax_cents / taxable) * 100;
+    var text = pct.toFixed(2).replace(/\.00$/, '') + ' percent';
+    var place = staffServerTotals && staffServerTotals.tax_jurisdiction
+      ? String(staffServerTotals.tax_jurisdiction).replace(/[^A-Za-z, ]/g, '').slice(0, 40)
+      : '';
+    return place ? text + ', ' + place : text;
+  }
+
+  /* Renders the read-aloud confirmation. The demonstration path feeds
+     it a locally minted number; the live path feeds it the SERVER's
+     order number and the SERVER's receipt.
+
+     THE MONEY HERE IS SPOKEN OUT LOUD, SO IT COMES FROM THE RECEIPT.
+     These figures used to be this page's own arithmetic, on the
+     reasoning that the verifier gate proved the page and the server
+     mirror identical. That reasoning held only while tax was a flat
+     five percent on both sides. With a real tax engine the server knows
+     what a caller's own state charges and this page does not, so an
+     agent could read a total that was never charged. When a receipt is
+     passed, every figure below is read out of it. */
+  function renderConfirmationView(numFull, numToken, payLabel, receipt) {
     var m = orderMath();
+    var totalNow = receipt ? receipt.total_cents / 100 : m.total;
+    var taxNow = receipt ? receipt.tax_cents / 100 : m.tax;
+    var subNow = receipt ? receipt.subtotal_sub_cents / 100 : m.t.subMoney;
+    var oneNow = receipt ? receipt.subtotal_one_cents / 100 : m.t.oneMoney;
+    var pvNow = receipt ? Number(receipt.pv_total) : m.t.pv;
 
     byId('confOrderNum').textContent = numFull;
     byId('confPhonetic').innerHTML = 'Spell it out: <b>O R V</b>, then <b>' +
       esc(phonetic(numToken)) + '</b>.';
 
-    var totalSay = 'Your total today is ' + fmtMoney(m.total) + ': ' + moneyWords(m.total) + '.';
-    if (m.tax === 0 && taxExempt()) totalSay += ' Tax exempt on the tax ID you gave us.';
+    var totalSay = 'Your total today is ' + fmtMoney(totalNow) + ': ' + moneyWords(totalNow) + '.';
+    if (taxNow === 0) {
+      totalSay += (receipt ? receipt.tax_exempt : taxExempt())
+        ? ' No tax: the tax identifier on this order was accepted as exempt.'
+        : ' No tax was due on this order.';
+    }
     byId('sayTotalText').textContent = totalSay;
 
     var renewRow = byId('sayRenew');
-    if (m.t.subMoney > 0) {
+    if (subNow > 0) {
       renewRow.hidden = false;
-      byId('sayRenewText').textContent = 'Of that, ' + fmtMoney(m.t.subMoney) +
+      byId('sayRenewText').textContent = 'Of that, ' + fmtMoney(subNow) +
         ' renews monthly until you cancel; the rest is a one-time charge.';
-      if (m.t.oneMoney === 0) {
-        byId('sayRenewText').textContent = 'The full ' + fmtMoney(m.t.subMoney) +
+      if (oneNow === 0) {
+        byId('sayRenewText').textContent = 'The full ' + fmtMoney(subNow) +
           ' renews monthly until you cancel.';
       }
     } else renewRow.hidden = true;
 
-    var baseSv = caller.sv, pv = m.t.pv, combined = baseSv + pv;
+    var baseSv = caller.sv, pv = pvNow, combined = baseSv + pv;
     byId('sayQualifyText').textContent = combined >= QUAL_PV
       ? (baseSv < QUAL_PV
         ? 'This order carries ' + fmtPv(pv) + '; it qualifies you for the month.'
@@ -1103,7 +1363,11 @@
       fact('Placed for', esc(caller.code) + ' · ' + esc(caller.name)) +
       fact('Payment', esc(payLabel)) +
       fact('Lines', String(Object.keys(order).length) + ', ' + String(m.t.count) + ' unit' + (m.t.count === 1 ? '' : 's')) +
-      fact('Order PV', fmtPv(pv));
+      fact('Order PV', fmtPv(pv)) +
+      (receipt
+        ? fact('Tax charged', fmtMoney(taxNow) + ' · ' + receiptTaxHint(receipt)) +
+          fact('Figures', 'Read from the server receipt, not from this screen')
+        : '');
 
     function fact(label, value) {
       return '<div class="snap-stat"><div class="st-label">' + label +
@@ -1256,6 +1520,15 @@
   /* clear any in-flight payment; an optional message stays visible
      (the decline copy); the order lines are NEVER touched here */
   function staffResetLive(message) {
+    /* The discarded payment's amount signature goes with it, so the next
+       press opens a fresh one rather than reusing a stale secret. */
+    staffOpenedFor = null;
+    /* Server totals belong to an ORDER, not to a payment. Discarding a
+       payment because the amount moved must not also discard a tax
+       answer that is still correct for what is on screen, or the row
+       would drop back to "estimate" and re-ask a question already
+       answered. Anything that no longer matches is cleared. */
+    if (!staffTotalsAreCurrent()) staffServerTotals = null;
     staffLive.clientSecret = null;
     staffLive.orderNumber = null;
     staffLive.hyper = null;
@@ -1486,13 +1759,22 @@
     var btn = byId('placeOrderBtn');
     btn.disabled = true;
     staffStatus('Contacting the test payment service...');
+    /* Captured BEFORE the call, so a total that moves DURING the two
+       seconds this takes leaves the opened payment correctly marked as
+       stale rather than silently accepted. */
+    var openingSignature = staffAmountSignature();
     var payload = {
-      items: Object.keys(order).map(function (key) {
-        var kp = O.keyParts(key);
-        return { sku: kp.sku, mode: kp.mode, quantity: order[key] };
-      }),
+      items: staffCartPayload(),
       activation: 'standard',
-      tax_exempt: taxExempt(),
+      /* THE IDENTIFIER ITSELF, NOT A VERDICT. This used to send a
+         tax_exempt boolean, which create-payment deliberately ignores:
+         a browser-supplied verdict let any caller of the API zero their
+         own tax. The text goes to the server, the server decides
+         whether it even looks like an identifier, and Stripe decides
+         what it means. Sending the boolean meant this console's Tax ID
+         field exempted nothing at all on the server while the screen
+         showed a zero. */
+      tax_id: taxIdInput.value.trim(),
       member_code: caller ? caller.code : '',
       channel: 'staff_console',
       /* a page name, never a full address: the server builds the
@@ -1507,6 +1789,17 @@
       }
       staffLive.orderNumber = result.data.order_number;
       staffLive.clientSecret = result.data.client_secret;
+      staffOpenedFor = openingSignature;
+      /* THE TOTALS THE SERVER ACTUALLY OPENED THE PAYMENT FOR.
+         Stamped with the signature the call was made against, so if the
+         order moved while the server was answering, staffTotalsAreCurrent
+         reports false and the row honestly drops back to an estimate
+         rather than showing a figure for an order that no longer exists. */
+      if (result.data.totals) {
+        result.data.totals.__sig = openingSignature;
+        staffServerTotals = result.data.totals;
+        if (staffTotalsAreCurrent()) applyStaffServerTotals(result.data.totals);
+      }
       /* the confirmation number exists now, so the agent can give it
          to the caller before anything else can go wrong */
       staffOrderNum.textContent = staffLive.orderNumber;
@@ -1520,7 +1813,22 @@
           'If their bank asks for an approval you cannot complete it for them and you must not ask for any code. ' +
           'Test mode, expiry 01/29: 4000 0000 0000 2503 raises the approval screen and then approves, ' +
           '4000 0000 0000 2701 approves with no approval screen.');
-        btn.textContent = 'Take ' + fmtMoney(orderMath().total) + ' now, test mode';
+        /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE.
+           This line used to read fmtMoney(orderMath().total). That was
+           true only while the page and the server both applied a flat
+           five percent. The moment a real tax engine arrived it became
+           false, and on the shop the identical line offered to charge
+           $315.00 on a New York cart the server had priced at $326.63.
+           The charge would have been the correct figure, so the button
+           was the liar. A browser cannot know what New York charges for
+           software; only the server can, so only the server's figure
+           goes here. The page math survives as the fallback for the
+           case where no server answer exists yet, and that is the same
+           figure the totals box is showing at that moment, so the two
+           can never disagree on screen. */
+        btn.textContent = 'Take ' + fmtMoney(
+          staffTotalsAreCurrent() ? staffServerTotals.total_cents / 100 : orderMath().total
+        ) + ' now, test mode';
         btn.disabled = false;
         staffLive.busy = false;
       });
@@ -1532,6 +1840,28 @@
   }
 
   function liveStaffConfirm() {
+    /* THE LAST GUARD BEFORE A CARD IS HANDED OVER (audit finding C-A3).
+
+       Everything above tries to keep the open payment matching the total
+       on screen. This refuses to send the card if they ever disagree
+       anyway. It is cheap, it is the only check sitting directly in
+       front of the money, and it does not depend on any of the
+       machinery above having worked.
+
+       Nobody loses anything: the stale payment is discarded, the order
+       lines are kept, and the next press opens a fresh payment at the
+       amount now on screen. The server reprices independently in any
+       case, so this protects the caller from being told one figure and
+       charged another, which was never the browser's to decide. */
+    if (staffLive.clientSecret && staffOpenedFor !== staffAmountSignature()) {
+      var amountNow = staffTotalsAreCurrent()
+        ? fmtMoney(staffServerTotals.total_cents / 100)
+        : fmtMoney(orderMath().total);
+      staffResetLive('The order changed while the payment step was open, so it has been started again. ' +
+        'Nothing was charged and the order lines are kept. Tell the caller the total is now ' + amountNow +
+        ', then press the button once more to reopen the card form.');
+      return;
+    }
     staffLive.busy = true;
     var btn = byId('placeOrderBtn');
     btn.disabled = true;
@@ -1703,10 +2033,13 @@
       if (!caller || Object.keys(order).length === 0) {
         staffRenderRecoveredSuccess(receipt);
       } else {
+        /* The receipt is passed so every spoken figure comes from the
+           server record rather than from this screen's arithmetic. */
         renderConfirmationView(receipt.order_number, token,
           staffLive.sawChallenge || authApproved(receipt)
             ? 'New card, approved by the cardholder with their bank'
-            : 'New card, keyed into the secure form during the call');
+            : 'New card, keyed into the secure form during the call',
+          receipt);
       }
       staffResetLive('');
       return;

@@ -6,8 +6,8 @@
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=65581ad4d1fe">
-<link rel="stylesheet" href="css/shop.css?v=65581ad4d1fe">
+<link rel="stylesheet" href="css/corporate.css?v=a5e470859ae9">
+<link rel="stylesheet" href="css/shop.css?v=a5e470859ae9">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -211,7 +211,7 @@
             <div class="checkout-panel glass" id="paymentPanel">
               <span class="accent-bar" aria-hidden="true"></span>
               <h2 class="checkout-panel-title"><span class="step-num">4</span>Payment</h2>
-              <p class="step-intro">Express options place the order in one step. Credit card opens the card form.</p>
+              <p class="step-intro">Credit card is the only payment method open in this phase, and it opens the card form below. The express marks are turned off and place nothing.</p>
 
               <div class="pay-row" role="group" aria-label="Payment method">
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
@@ -247,7 +247,7 @@
                   Credit card
                 </button>
               </div>
-              <p class="pay-note">Demonstration marks, not real payment brands. Nothing is charged.</p>
+              <p class="pay-note">Demonstration marks, not real payment brands. No real money is ever charged on this rail.</p>
 
               <form id="checkoutForm" novalidate>
                 <div id="cardFields">
@@ -303,7 +303,7 @@
                 <button class="btn btn-solid btn-block" type="submit" id="placeOrderBtn">Place order</button>
               </form>
               <p class="pay-lookup-line"><button class="link-btn" type="button" id="openLookup">Started an order that never finished? Look it up by order number.</button></p>
-              <p class="login-note">Demonstration checkout: any values continue, including empty fields.</p>
+              <p class="login-note">Demonstration checkout. The address and contact fields above accept any values. The card form is a real payment form on a test rail, so it needs a valid test card number and it will refuse anything else.</p>
             </div>
 
           </div>
@@ -386,7 +386,7 @@
 
         <p class="confirm-note" id="confirmRenews" hidden></p>
         <p class="confirm-note" id="confirmQualified"></p>
-        <p class="confirm-note" id="confirmDemoNote">Demonstration checkout: no payment occurred and nothing will be charged.</p>
+        <p class="confirm-note" id="confirmDemoNote">Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.</p>
         <p class="confirm-forward">This payment ran through the Orvanna orchestration layer in test mode. No real money moved.</p>
         <a class="btn btn-solid" href="shop.html">Back to the catalog</a>
       </div>
@@ -458,7 +458,7 @@
      and holds the keyboard focus trap while the overlay is up. -->
 <div class="challenge-chrome" id="challengeChrome" role="dialog" aria-modal="true" aria-labelledby="ccTitle" hidden>
   <div class="cc-inner">
-    <p class="cc-line" id="ccTitle"><b>Your bank is asking you to approve this payment.</b> Test mode: this is a simulated approval and no money moves.</p>
+    <p class="cc-line" id="ccTitle"><b>Your bank is asking you to approve this payment.</b> This is a real bank approval step running in test mode. The card is a test card, so nothing is ever charged.</p>
     <p class="cc-line cc-order">Order <span id="ccOrderNum">&mdash;</span>, not yet charged</p>
     <button class="btn btn-ghost btn-sm" type="button" id="ccCancel">Cancel and go back</button>
   </div>
@@ -566,7 +566,7 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=65581ad4d1fe"></script>
+<script src="js/catalog.js?v=a5e470859ae9"></script>
 <script>
 /* ============================================================
    Orvanna shop, round 4. The catalog lives in js/catalog.js
@@ -933,8 +933,8 @@
      REAL MEMBER SIGN-IN
 
      This used to accept anything at all and then fill in a person who
-     does not exist in the roster. Howard, 2026-08-15: "i want to move
-     to next phase and it not be theater."
+     does not exist in the roster. Decision 2026-08-15: the next phase
+     has to be real, not theater.
 
      What is real now: the member code and password go to the
      demo-login function, which compares them against bcrypt hashes in
@@ -1117,7 +1117,7 @@
        secure frame, which mounts lower down the page, and card data
        must never touch this page's inputs anyway. Showing both meant
        a shopper filled in a card, pressed the button, and was handed
-       a second empty card form. Howard hit that on 2026-08-15. */
+       a second empty card form. Reported and reproduced 2026-08-15. */
     cardFields.hidden = !isCard || LIVE_PAYMENTS;
     walletNote.hidden = isCard;
     if (!isCard) {
@@ -1212,9 +1212,9 @@
     /* ------------------------------------------------------------
        THE TAX ROW HAS THREE STATES, AND SAYS WHICH ONE IT IS IN.
 
-       Howard, 2026-08-15: "no one wants to make a payment and then
-       find out 71 dollars was applied after submitting the card."
-       The figure was in fact already on screen before payment, but
+       Reported 2026-08-15: nobody wants to make a payment and then
+       find out that $71.00 of tax was applied after submitting the
+       card. The figure was in fact already on screen before payment, but
        only after the payment had opened, and for the seconds before
        that the row showed a flat five percent in the same position
        and the same type as the real answer. That is the actual
@@ -1567,9 +1567,9 @@
      provider's card form is still mounted underneath, so without
      this the shopper watches the page snap back to an empty card
      form and then jump to the receipt, which reads as though the
-     payment failed and then changed its mind. Howard described it
-     exactly: "it stops for a second back at the card entry and then
-     finishes at the complete page."
+     payment failed and then changed its mind. Reported 2026-08-15,
+     described exactly: it stops for a second back at the card entry
+     and then finishes at the complete page.
 
      So while we are finishing, the card form and the button go
      away and only the status line remains. Nothing here decides
@@ -1597,9 +1597,9 @@
   /* ============================================================
      THE CARD FORM IS THE PAYMENT STEP
 
-     Howard's ruling 2026-08-15: the shopper should meet the card
-     form on arrival at the payment step, not after pressing a button
-     that merely promises one. So the payment is opened automatically
+     Decision 2026-08-15: the shopper should meet the card form on
+     arrival at the payment step, not after pressing a button that
+     merely promises one. So the payment is opened automatically
      rather than on a click.
 
      THE HAZARD THIS CREATES, AND HOW IT IS CLOSED. A payment carries
@@ -1688,11 +1688,11 @@
   /* ============================================================
      ASKING WHAT TAX IS OWED, WITHOUT STARTING A PAYMENT
 
-     Howard's ruling 2026-08-15: "you need to calculate the tax
-     before payment is sent ... so you will need to do an additional
-     call to get the taxes."
+     Decision 2026-08-15: the tax has to be calculated BEFORE the
+     payment is sent, which means an additional call whose only job
+     is to price the tax.
 
-     He was right about the architecture, and the reason is worth
+     That is the right architecture, and the reason is worth
      stating because it is not obvious from the screen. Tax USED to
      arrive as a by-product of opening a payment, which meant three
      bad things at once: nothing could be priced without an order row
@@ -1795,8 +1795,8 @@
        identifier is typed. That only applies when a payment is being
        REPLACED. The first open has nothing to debounce, and making a
        shopper wait most of a second before the card form even starts
-       loading is exactly the delay Howard reported. So: replace
-       slowly, open immediately. */
+       loading is exactly the delay that was reported 2026-08-15.
+       So: replace slowly, open immediately. */
     var openDelay = liveState.clientSecret ? 900 : 0;
     liveOpenTimer = window.setTimeout(function () {
       liveOpenTimer = null;
@@ -1965,7 +1965,7 @@
 
      So the frame appearing means "authentication is running", NOT "a
      challenge is up". Showing it immediately produced exactly what
-     Howard reported on 2026-08-15 with 4242 4242 4242 4242: a blank
+     was reported on 2026-08-15 with 4242 4242 4242 4242: a blank
      white window for about two seconds, waiting for a challenge that
      was never going to come, and our chrome bar announcing an
      approval the bank had not asked for.
@@ -2165,7 +2165,7 @@
        publishes its own test numbers.
 
        CORRECTED 2026-08-15 (second time today) against Braintree's
-       published 3-D Secure 2 table, after Howard found that the card
+       published 3-D Secure 2 table, after review found that the card
        we were recommending could never finish. Two mistakes were in
        the earlier hint: 4111 1111 1111 1111 is not a 3-D Secure test
        card at all, and 4000 1111 1111 1115 DOES raise the approval
@@ -2372,7 +2372,7 @@
        rail uses today) does not populate it. So a shopper who typed a
        correct passcode and was then declined used to land on a bare
        "Declined.", which reads as though the approval step did
-       nothing. Howard hit exactly that on 2026-08-15.
+       nothing. That was hit and reported on 2026-08-15.
 
        What this page knows first-hand is whether the approval window
        opened, because it watched it open. That fact alone does not
@@ -2504,8 +2504,8 @@
   /* THE RECEIPT MUST NAME THE RATE IT ACTUALLY CHARGED.
 
      This row said "5 percent" no matter what, because that was true for as
-     long as tax was a flat guess. Howard's New York order was charged $8.88
-     on $100.00 and the receipt still called it five percent, which is a
+     long as tax was a flat guess. A New York order on 2026-08-15 was charged
+     $8.88 on $100.00 and the receipt still called it five percent, which is a
      receipt stating a figure nobody was charged.
 
      The rate is DERIVED from the receipt's own numbers rather than passed
