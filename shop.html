@@ -187,74 +187,14 @@
                   <input class="field" type="text" id="billCity" autocomplete="off" spellcheck="false">
                 </div>
                 <div>
-                  <label class="field-label" for="billState">State / region</label>
+                  <label class="field-label" for="billState" id="billStateLabel">State</label>
                   <select class="field" id="billState" autocomplete="off">
                     <option value="">Select</option>
-                    <option value="GB">GB, United Kingdom</option>
-                    <option value="IE">IE, Ireland</option>
-                    <option value="CH">CH, Switzerland</option>
-                    <option value="AL">Alabama</option>
-                    <option value="AK">Alaska</option>
-                    <option value="AZ">Arizona</option>
-                    <option value="AR">Arkansas</option>
-                    <option value="CA">California</option>
-                    <option value="CO">Colorado</option>
-                    <option value="CT">Connecticut</option>
-                    <option value="DE">Delaware</option>
-                    <option value="DC">District of Columbia</option>
-                    <option value="FL">Florida</option>
-                    <option value="GA">Georgia</option>
-                    <option value="HI">Hawaii</option>
-                    <option value="ID">Idaho</option>
-                    <option value="IL">Illinois</option>
-                    <option value="IN">Indiana</option>
-                    <option value="IA">Iowa</option>
-                    <option value="KS">Kansas</option>
-                    <option value="KY">Kentucky</option>
-                    <option value="LA">Louisiana</option>
-                    <option value="ME">Maine</option>
-                    <option value="MD">Maryland</option>
-                    <option value="MA">Massachusetts</option>
-                    <option value="MI">Michigan</option>
-                    <option value="MN">Minnesota</option>
-                    <option value="MS">Mississippi</option>
-                    <option value="MO">Missouri</option>
-                    <option value="MT">Montana</option>
-                    <option value="NE">Nebraska</option>
-                    <option value="NV">Nevada</option>
-                    <option value="NH">New Hampshire</option>
-                    <option value="NJ">New Jersey</option>
-                    <option value="NM">New Mexico</option>
-                    <option value="NY">New York</option>
-                    <option value="NC">North Carolina</option>
-                    <option value="ND">North Dakota</option>
-                    <option value="OH">Ohio</option>
-                    <option value="OK">Oklahoma</option>
-                    <option value="OR">Oregon</option>
-                    <option value="PA">Pennsylvania</option>
-                    <option value="RI">Rhode Island</option>
-                    <option value="SC">South Carolina</option>
-                    <option value="SD">South Dakota</option>
-                    <option value="TN">Tennessee</option>
-                    <option value="TX">Texas</option>
-                    <option value="UT">Utah</option>
-                    <option value="VT">Vermont</option>
-                    <option value="VA">Virginia</option>
-                    <option value="WA">Washington</option>
-                    <option value="WV">West Virginia</option>
-                    <option value="WI">Wisconsin</option>
-                    <option value="WY">Wyoming</option>
                   </select>
-                  <!-- Currency and state coherence (quality assurance
-                       finding L-O2, 2026-08-16): under a non-USD display
-                       currency this select is LOCKED to the currency's
-                       demonstration country, because a GBP total priced
-                       "for California" is a display that contradicts
-                       itself. The script sets the lock and this note. -->
-                  <p class="field-hint" id="billStateCurrencyNote" hidden>Locked while a non-USD currency is selected: GBP prices from the United Kingdom, EUR from Ireland, CHF from Switzerland. Switch the currency back to USD to pick a state.</p>
+                  <p class="field-hint" id="billStateCurrencyNote" hidden></p>
                 </div>
                 <div>
-                  <label class="field-label" for="billZip">Postal code</label>
+                  <label class="field-label" for="billZip" id="billZipLabel">ZIP code</label>
                   <input class="field" type="text" id="billZip" autocomplete="off" spellcheck="false">
                 </div>
               </div>
@@ -264,12 +204,12 @@
               <!-- Revised 2026-08-16: the billing address starts blank
                    for both signed-in and guest checkout, and tax/payment
                    wait until the shopper enters State/region and postal code. -->
-              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing State/region and ZIP/postal code so tax can be calculated before payment opens.</p>
+              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing location and postal code so tax can be calculated before payment opens.</p>
               <!-- Revised 2026-08-16 after the checkout walk:
                    shoppers naturally expect the visible billing State/region and postal code
                    fields to drive tax. They now do for both guest and
                    signed-in checkout. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State/region and ZIP/postal code entered above. Tax stays pending until both fields are entered.</p>
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the billing location and postal code entered above. Tax stays pending until both fields are entered.</p>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -413,7 +353,7 @@
                  fields above. This note keeps the tax row honest before
                  those fields are filled. -->
             <div class="taxid-row" id="guestTaxStateRow" hidden>
-              <p class="field-hint">Tax follows the billing State/region and ZIP/postal code fields. The tax line appears after those fields are entered.</p>
+              <p class="field-hint">Tax follows the billing location and postal code fields. The tax line appears after those fields are entered.</p>
             </div>
             <div class="taxid-row currency-row">
               <label class="field-label" for="currencySelect">Currency</label>
@@ -1197,10 +1137,34 @@
   var billCityInput = document.getElementById('billCity');
   var billStateInput = document.getElementById('billState');
   var billZipInput = document.getElementById('billZip');
+  var billStateLabel = document.getElementById('billStateLabel');
+  var billZipLabel = document.getElementById('billZipLabel');
   var CURRENCY_ADDRESS_DEFAULTS = {
+    USD: { street: '', city: '', state: '', zip: '' },
     GBP: { street: '10 Downing Street', city: 'London', state: 'GB', zip: 'SW1A 2AA' },
     EUR: { street: '1 College Green', city: 'Dublin', state: 'IE', zip: 'D02 X285' },
     CHF: { street: 'Bahnhofstrasse 1', city: 'Zurich', state: 'CH', zip: '8001' }
+  };
+  var USD_STATE_OPTIONS = [
+    ['AL', 'Alabama'], ['AK', 'Alaska'], ['AZ', 'Arizona'], ['AR', 'Arkansas'],
+    ['CA', 'California'], ['CO', 'Colorado'], ['CT', 'Connecticut'], ['DE', 'Delaware'],
+    ['DC', 'District of Columbia'], ['FL', 'Florida'], ['GA', 'Georgia'], ['HI', 'Hawaii'],
+    ['ID', 'Idaho'], ['IL', 'Illinois'], ['IN', 'Indiana'], ['IA', 'Iowa'],
+    ['KS', 'Kansas'], ['KY', 'Kentucky'], ['LA', 'Louisiana'], ['ME', 'Maine'],
+    ['MD', 'Maryland'], ['MA', 'Massachusetts'], ['MI', 'Michigan'], ['MN', 'Minnesota'],
+    ['MS', 'Mississippi'], ['MO', 'Missouri'], ['MT', 'Montana'], ['NE', 'Nebraska'],
+    ['NV', 'Nevada'], ['NH', 'New Hampshire'], ['NJ', 'New Jersey'], ['NM', 'New Mexico'],
+    ['NY', 'New York'], ['NC', 'North Carolina'], ['ND', 'North Dakota'], ['OH', 'Ohio'],
+    ['OK', 'Oklahoma'], ['OR', 'Oregon'], ['PA', 'Pennsylvania'], ['RI', 'Rhode Island'],
+    ['SC', 'South Carolina'], ['SD', 'South Dakota'], ['TN', 'Tennessee'], ['TX', 'Texas'],
+    ['UT', 'Utah'], ['VT', 'Vermont'], ['VA', 'Virginia'], ['WA', 'Washington'],
+    ['WV', 'West Virginia'], ['WI', 'Wisconsin'], ['WY', 'Wyoming']
+  ];
+  var CURRENCY_REGION_OPTIONS = {
+    USD: USD_STATE_OPTIONS,
+    GBP: [['GB', 'United Kingdom']],
+    EUR: [['IE', 'Ireland']],
+    CHF: [['CH', 'Switzerland']]
   };
   var GUEST_TAX_STATE_NAMES = {
     GB: 'United Kingdom', IE: 'Ireland', CH: 'Switzerland',
@@ -1263,15 +1227,37 @@
   function guestTaxStateName() {
     var code = guestTaxState();
     var zip = guestTaxZip();
-    var label = (code === 'GB' || code === 'IE' || code === 'CH')
-      ? code
-      : (GUEST_TAX_STATE_NAMES[code] || code);
+    var label = GUEST_TAX_STATE_NAMES[code] || code;
     if (!code) return 'State/region and postal code';
     return label + (zip ? ' ' + zip : '');
   }
 
   function guestTaxAddressReady() {
     return guestTaxState() !== '' && guestTaxZip() !== '';
+  }
+
+  function setRegionOptions(options, placeholder) {
+    var selected = billStateInput.value;
+    billStateInput.innerHTML = '';
+    if (placeholder) {
+      var empty = document.createElement('option');
+      empty.value = '';
+      empty.textContent = 'Select';
+      billStateInput.appendChild(empty);
+    }
+    options.forEach(function (entry) {
+      var opt = document.createElement('option');
+      opt.value = entry[0];
+      opt.textContent = entry[1];
+      billStateInput.appendChild(opt);
+    });
+    if (options.some(function (entry) { return entry[0] === selected; })) {
+      billStateInput.value = selected;
+    } else if (!placeholder && options.length === 1) {
+      billStateInput.value = options[0][0];
+    } else {
+      billStateInput.value = '';
+    }
   }
 
   function applyCurrencyAddressDefault() {
@@ -1283,22 +1269,24 @@
     billZipInput.value = a.zip;
   }
 
-  /* CURRENCY AND STATE COHERENCE (quality assurance finding L-O2,
-     2026-08-16). A persisted GBP display used to accept a United
-     States state pick and paint "estimate, for California" under a
-     GBP total: every money guard held, but the display contradicted
-     itself. Under a non-USD currency the State/region select is now
-     LOCKED to the currency's demonstration country (which
-     applyCurrencyAddressDefault has just set) with an honest note;
-     back on USD it unlocks and the note comes down. The lock plays
-     fair with the payment-state inert machinery: that machinery
-     snapshots and restores the disabled flag around a flight, so a
-     currency lock present before a flight survives it. */
+  /* CURRENCY AND REGION COHERENCE (owner correction, 2026-08-16).
+     The first version locked non-USD currencies to GB/IE/CH, but
+     left those country codes mixed into the same dropdown as U.S.
+     states. That was technically coherent and visually awful. The
+     select is now rebuilt from the currency: USD shows only states,
+     GBP only United Kingdom, EUR only Ireland, CHF only Switzerland. */
   function syncStateFieldForCurrency() {
-    var locked = selectedCurrency() !== 'USD';
+    var currency = selectedCurrency();
+    var locked = currency !== 'USD';
+    setRegionOptions(CURRENCY_REGION_OPTIONS[currency] || USD_STATE_OPTIONS, !locked);
     billStateInput.disabled = locked;
+    if (billStateLabel) billStateLabel.textContent = locked ? 'Country' : 'State';
+    if (billZipLabel) billZipLabel.textContent = locked ? 'Postal code' : 'ZIP code';
     var note = document.getElementById('billStateCurrencyNote');
-    if (note) note.hidden = !locked;
+    if (note) {
+      note.textContent = locked ? 'Country follows the selected currency.' : '';
+      note.hidden = true;
+    }
   }
 
   function taxDestinationReady() {
@@ -1319,7 +1307,7 @@
 
   function taxPendingLabel() {
     return accountMode === 'member' || accountMode === 'guest'
-      ? 'Tax <span class="row-hint">enter State/region and postal code</span>'
+      ? 'Tax <span class="row-hint">enter billing location and postal code</span>'
       : 'Tax <span class="row-hint">after account and billing address</span>';
   }
 
@@ -1949,8 +1937,8 @@
     currencySelect.addEventListener('change', function () {
       displayCurrency = CURRENCIES[currencySelect.value] ? currencySelect.value : 'USD';
       try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
-      applyCurrencyAddressDefault();
       syncStateFieldForCurrency();
+      applyCurrencyAddressDefault();
       updateCurrencyHint();
       syncBankAvailability();
       if (payMethod === 'bank') setPayMethod('bank');
