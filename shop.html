@@ -189,9 +189,9 @@
                   <label class="field-label" for="billState">State / region</label>
                   <select class="field" id="billState" autocomplete="off">
                     <option value="">Select</option>
-                    <option value="GB">United Kingdom</option>
-                    <option value="IE">Ireland</option>
-                    <option value="CH">Switzerland</option>
+                    <option value="GB">GB, United Kingdom</option>
+                    <option value="IE">IE, Ireland</option>
+                    <option value="CH">CH, Switzerland</option>
                     <option value="AL">Alabama</option>
                     <option value="AK">Alaska</option>
                     <option value="AZ">Arizona</option>
@@ -1127,8 +1127,11 @@
   function guestTaxStateName() {
     var code = guestTaxState();
     var zip = guestTaxZip();
+    var label = (code === 'GB' || code === 'IE' || code === 'CH')
+      ? code
+      : (GUEST_TAX_STATE_NAMES[code] || code);
     if (!code) return 'State/region and postal code';
-    return (GUEST_TAX_STATE_NAMES[code] || code) + (zip ? ' ' + zip : '');
+    return label + (zip ? ' ' + zip : '');
   }
 
   function guestTaxAddressReady() {
@@ -1148,6 +1151,16 @@
     if (!LIVE_PAYMENTS) return true;
     if (accountMode === 'member' || accountMode === 'guest') return guestTaxAddressReady();
     return false;
+  }
+
+  function serverTaxQuoteAllowed() {
+    /* Until the Supabase Edge Function deploy path is available, the
+       live quote-tax endpoint only understands U.S. state codes. If
+       EUR/GBP/CHF ask it today, it falls back to the house Illinois
+       address and overwrites the correct local estimate. Keep the
+       non-USD row as an explicit estimate until the function is
+       deployed with the IE/GB/CH resolver. */
+    return selectedCurrency() === 'USD';
   }
 
   function taxPendingLabel() {
@@ -1428,7 +1441,7 @@
 
   function stagedPaymentMessage() {
     if (payMethod === 'bank') {
-      return 'Plaid/Open Banking is connected in HyperSwitch, but this storefront is still staged for bank checkout. The next deploy needs the order currency storage and Open Banking create-payment path before it can launch Plaid for ' + selectedCurrency() + '. Nothing was charged.';
+      return 'Plaid/Open Banking is connected in HyperSwitch, but bank checkout is not live on this storefront yet. This is a staged sandbox button until the order currency storage and Open Banking create-payment path are deployed for ' + selectedCurrency() + '. Nothing was charged.';
     }
     if (selectedCurrency() !== 'USD') {
       return 'The storefront can display ' + selectedCurrency() + ', but live card settlement is still guarded to USD until the order records store currency. Nothing was charged.';
@@ -1453,7 +1466,7 @@
     walletNote.hidden = isCard;
     if (!isCard) {
       walletNote.textContent = method === 'bank'
-        ? 'Plaid/Open Banking is staged. Selecting it shows the bank-checkout status below; no card details are needed.'
+        ? stagedPaymentMessage()
         : PAY_LABELS[method] + ' opens inside the secure HyperSwitch payment form. No card details are typed on this page.';
     }
     if (threeDsNotice) threeDsNotice.hidden = method === 'bank';
@@ -1467,7 +1480,7 @@
     if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
       liveResetPayment('');
     }
-    if (LIVE_PAYMENTS && typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
+    if (method !== 'bank' && LIVE_PAYMENTS && typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
   payButtons.forEach(function (b) {
@@ -1485,6 +1498,7 @@
       applyCurrencyAddressDefault();
       updateCurrencyHint();
       syncBankAvailability();
+      if (payMethod === 'bank') setPayMethod('bank');
       if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
         liveResetPayment('');
       }
@@ -1511,7 +1525,7 @@
        reads the TAX DESTINATION from. A New York code and a Florida
        code owe different tax on the same cart, so this field has to
        re-ask the question as well as re-open the payment. */
-    if (LIVE_PAYMENTS) liveEnsureQuote();
+    if (LIVE_PAYMENTS && serverTaxQuoteAllowed()) liveEnsureQuote();
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
@@ -1640,7 +1654,7 @@
       document.getElementById('sumTax').textContent = '';
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.taxable);
       syncPayButtonToDisplayedTotal(m.taxable);
-    } else if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
+    } else if (LIVE_PAYMENTS && serverTaxQuoteAllowed() && liveTotalsAreCurrent()) {
       /* Already answered for exactly this cart: repaint the real
          figure rather than flashing the estimate back over it.
          applyServerTotals also re-syncs the pay button through the
@@ -1675,7 +1689,7 @@
        total must discard the payment that was opened against the old
        one, and liveEnsureQuote for why the asking is now separate
        from the opening. */
-    if (typeof liveEnsureQuote === 'function') liveEnsureQuote();
+    if (serverTaxQuoteAllowed() && typeof liveEnsureQuote === 'function') liveEnsureQuote();
     if (typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
@@ -1705,7 +1719,7 @@
        payment open is the separate, slower thing that spends its two
        seconds behind the account step rather than in front of the
        shopper. */
-    if (LIVE_PAYMENTS) liveEnsureQuote();
+    if (LIVE_PAYMENTS && serverTaxQuoteAllowed()) liveEnsureQuote();
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
@@ -1859,7 +1873,8 @@
     quoteGate: function () {
       return !!(views.checkout && views.checkout.classList.contains('is-active') &&
         Object.keys(cart).length > 0 &&
-        taxDestinationReady());
+        taxDestinationReady() &&
+        serverTaxQuoteAllowed());
     },
     totals: {
       taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint'
