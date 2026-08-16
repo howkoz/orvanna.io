@@ -262,7 +262,7 @@
                    guests naturally expect the visible billing State/ZIP
                    fields to drive tax. They now do. Signed-in members still
                    price from the member address stored server side. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State and ZIP entered above. If State is blank, the estimate falls back to Illinois until you enter one.</p>
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State and ZIP entered above. Tax stays pending until both fields are entered.</p>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -969,7 +969,7 @@
     name: 'Jordan Avery',
     street: '4821 Meridian Loop',
     city: 'Cedar Falls',
-    state: 'Iowa',
+    state: 'IA',
     zip: '50613'
   };
 
@@ -1083,19 +1083,25 @@
   function guestTaxStateName() {
     var code = guestTaxState();
     var zip = guestTaxZip();
-    if (!code) return 'Illinois, the default until State is entered';
+    if (!code) return 'State and ZIP';
     return (GUEST_TAX_STATE_NAMES[code] || code) + (zip ? ' ' + zip : '');
   }
 
-  /* True while the tax figure on screen is priced from the blank
-     guest State fallback for a shopper who is not a signed-in member
-     and has typed no referring member code. A typed referring code
-     excludes it because the server may price from that member's
-     stored address instead. */
-  function guestTaxDefaultUnpicked() {
-    return accountMode !== 'member' &&
-      guestTaxState() === '' &&
-      document.getElementById('memberCode').value.trim() === '';
+  function guestTaxAddressReady() {
+    return guestTaxState() !== '' && guestTaxZip() !== '';
+  }
+
+  function taxDestinationReady() {
+    if (!LIVE_PAYMENTS) return true;
+    if (accountMode === 'member') return true;
+    if (accountMode === 'guest') return guestTaxAddressReady();
+    return false;
+  }
+
+  function taxPendingLabel() {
+    return accountMode === 'guest'
+      ? 'Tax <span class="row-hint">enter State and ZIP</span>'
+      : 'Tax <span class="row-hint">after sign in or guest address</span>';
   }
 
   function referralCodeEntered() {
@@ -1130,7 +1136,7 @@
     accountMode = 'guest';
     clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
-    accountStatus.textContent = 'Checking out as a guest. Tax is calculated from the billing State and ZIP fields, with Illinois as the fallback until State is entered.';
+    accountStatus.textContent = 'Checking out as a guest. Tax is calculated from the billing State and ZIP fields once both are entered.';
     setAccountStage('done');
   }
 
@@ -1428,7 +1434,7 @@
     var taxable = t.oneMoney + t.subMoney + delivery;
     var tax = taxExempt() ? 0 : round2(taxable * 0.05);
     var total = round2(taxable + tax);
-    return { t: t, delivery: delivery, tax: tax, total: total };
+    return { t: t, delivery: delivery, taxable: taxable, tax: tax, total: total };
   }
 
   /* ============================================================
@@ -1471,7 +1477,7 @@
        controls are the billing State/ZIP fields, so the summary no
        longer has its own tax picker to drift from them. */
     document.getElementById('guestTaxStateRow').hidden =
-      !LIVE_PAYMENTS || accountMode === 'member';
+      !LIVE_PAYMENTS || accountMode !== 'guest';
 
     var m = orderMath();
     document.getElementById('rowOneSub').hidden = m.t.oneMoney === 0;
@@ -1492,6 +1498,7 @@
        complaint: you could not tell which one you were looking at.
 
        So the row now distinguishes:
+         pending   the address is not known yet, so no tax amount is shown
          known     the tax engine has answered for THIS cart
          estimate  a placeholder, and it says so, while we ask
          flat      no engine at all (demo mode), and it says that too
@@ -1499,7 +1506,12 @@
        applyServerTotals paints the known state. This paints the
        other two, and asks. ------------------------------------- */
     var taxLabel = document.getElementById('taxLabel');
-    if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
+    if (LIVE_PAYMENTS && !taxDestinationReady()) {
+      taxLabel.innerHTML = taxPendingLabel();
+      document.getElementById('sumTax').textContent = '';
+      document.getElementById('checkoutTotal').textContent = fmtMoney(m.taxable);
+      syncPayButtonToDisplayedTotal(m.taxable);
+    } else if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
       /* Already answered for exactly this cart: repaint the real
          figure rather than flashing the estimate back over it.
          applyServerTotals also re-syncs the pay button through the
@@ -1515,16 +1527,11 @@
          stored on their account, so the label says so rather than
          letting the demonstration address fields imply otherwise.
          The guest half now prices from the visible billing State/ZIP
-         fields, with Illinois only as the blank-State fallback. If a
-         referral code is present, the server may price from that
-         member's stored address instead, so the estimate must not
-         overpromise the guest fields while the quote is in flight. */
+         fields. Until those fields exist, no tax estimate is shown. */
       taxLabel.innerHTML = LIVE_PAYMENTS
         ? (accountMode === 'member'
           ? 'Tax <span class="row-hint">estimate, from the address on file for this member</span>'
-          : (referralCodeEntered()
-            ? 'Tax <span class="row-hint">estimate, referral code may set the tax address</span>'
-            : 'Tax <span class="row-hint">estimate, for ' + guestTaxStateName() + '</span>'))
+          : 'Tax <span class="row-hint">estimate, for ' + guestTaxStateName() + '</span>')
         : 'Tax <span class="row-hint">5 percent</span>';
       document.getElementById('sumTax').textContent = fmtMoney(m.tax);
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
@@ -1719,26 +1726,11 @@
     },
     quoteGate: function () {
       return !!(views.checkout && views.checkout.classList.contains('is-active') &&
-        Object.keys(cart).length > 0);
+        Object.keys(cart).length > 0 &&
+        taxDestinationReady());
     },
     totals: {
-      taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint',
-      /* The blank-State fallback never reads as settled fact. Once a
-         state is typed, or a member or referring code is attached, a
-         falsy return keeps the engine's own wording, which names the
-         server's jurisdiction. Words only, page constants only: the
-         figures are the engine's. */
-      decorateTaxLabel: function (t, place, builtLabel) {
-        if (!guestTaxDefaultUnpicked()) return null;
-        var wording;
-        if (t.tax_cents === 0) {
-          wording = t.tax_reason === 'not_collecting' ? 'not collected' : 'none due';
-        } else {
-          wording = t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated';
-        }
-        return 'Tax <span class="row-hint">' + wording +
-          ' for Illinois, the default until State is entered</span>';
-      }
+      taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint'
     },
     /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE. Full history of
        the "shown one number, charged another" fault: see the note in
@@ -1931,15 +1923,18 @@
     if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
     if (payMethod !== 'card') return;
     if (Object.keys(cart).length === 0) return;
-    /* DELIBERATELY NOT GATED ON THE PAYMENT STEP BEING VISIBLE.
-       Opening the payment takes about two seconds, and roughly one of
-       those is the payment service itself, which we cannot make
-       faster. What we CAN do is spend it while the shopper is busy
-       with the account step, so that by the time they choose guest or
-       sign in, the card form is already there. Measured 2026-08-15:
-       the create call is 2.2s, of which HyperSwitch's own create is
-       about 1.0s. Nothing is shown during this: the whole payment
-       step is still hidden, so an early open is invisible. */
+    if (!taxDestinationReady()) {
+      if (liveOpenTimer) {
+        window.clearTimeout(liveOpenTimer);
+        liveOpenTimer = null;
+      }
+      if (liveState.clientSecret) liveResetPayment('');
+      return;
+    }
+    /* Opening the payment takes about two seconds, but it must not
+       happen until tax has a destination. Account chooser is not a
+       destination, and a guest without State/ZIP is not a destination.
+       A signed-in member or a guest address can open immediately. */
     /* never disturb a payment already under way, a resume still
        resolving, an open bank window, or a finished one being
        re-checked */
@@ -1962,6 +1957,7 @@
       if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
       if (!views.checkout.classList.contains('is-active')) return;
       if (payMethod !== 'card' || Object.keys(cart).length === 0) return;
+      if (!taxDestinationReady()) return;
       var now = liveAmountSignature();
       if (liveState.clientSecret && engine.openedFor() === now) return;
       if (liveState.clientSecret) {
