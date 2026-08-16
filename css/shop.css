@@ -1671,6 +1671,96 @@ body.payment-in-flight .checkout-summary {
 }
 .challenge-chrome[hidden] { display: none; }
 
+.plaid-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 86px 18px 24px;
+  background: rgba(2, 6, 20, 0.78);
+  backdrop-filter: blur(12px);
+}
+.plaid-panel[hidden] { display: none; }
+.plaid-card {
+  width: min(680px, 100%);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 28px;
+  border-radius: 8px;
+  border-color: rgba(34, 211, 238, 0.42);
+  box-shadow: 0 26px 70px rgba(2, 6, 20, 0.65);
+}
+.plaid-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  margin-bottom: 22px;
+}
+.plaid-kicker,
+.plaid-label {
+  display: block;
+  margin: 0 0 6px;
+  color: var(--cyan);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+#plaidTitle {
+  margin: 0;
+  color: var(--paper);
+  font-size: 1.35rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.plaid-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.plaid-grid > div,
+.plaid-result {
+  padding: 14px 16px;
+  border: 1px solid rgba(34, 211, 238, 0.24);
+  border-radius: 8px;
+  background: rgba(15, 23, 42, 0.7);
+}
+.plaid-grid strong {
+  display: block;
+  color: var(--paper);
+  font-size: 1rem;
+}
+.plaid-copy,
+.plaid-result {
+  color: var(--text-d);
+  font-size: 0.86rem;
+  line-height: 1.7;
+}
+.plaid-bank-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0;
+}
+.plaid-bank {
+  min-height: 46px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-radius: 8px;
+  background: rgba(2, 6, 20, 0.42);
+  color: var(--paper);
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-align: left;
+  padding: 0 16px;
+}
+.plaid-bank.is-selected {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.24);
+}
+
 .cc-inner {
   max-width: var(--maxw);
   margin: 0 auto;
@@ -1718,6 +1808,10 @@ body.payment-in-flight .checkout-summary {
   .cc-inner { padding: 9px 14px; }
   .cc-line { flex: 1 1 100%; }
   .resume-actions .btn { flex: 1 1 100%; text-align: center; }
+  .plaid-panel { padding: 70px 12px 16px; }
+  .plaid-card { padding: 22px 16px; max-height: calc(100vh - 92px); }
+  .plaid-head { flex-direction: column; }
+  .plaid-grid { grid-template-columns: 1fr; }
 }
 
 /* ---------- card form placeholder ----------

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=998e57b8cf20">
-<link rel="stylesheet" href="css/corporate.css?v=998e57b8cf20">
-<link rel="stylesheet" href="css/shop.css?v=998e57b8cf20">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=41986debcc75">
+<link rel="stylesheet" href="css/corporate.css?v=41986debcc75">
+<link rel="stylesheet" href="css/shop.css?v=41986debcc75">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=998e57b8cf20" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=41986debcc75" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -550,6 +550,47 @@
   </div>
 </div>
 
+<!-- ============ PLAID SANDBOX PANEL ============
+     This is deliberately page-owned demo chrome, not Plaid Link.
+     Real Open Banking still needs the create-payment path to create
+     an open_banking payment through HyperSwitch. Until then, the
+     Plaid tile opens this visible sandbox panel instead of appearing
+     inert. -->
+<div class="plaid-panel" id="plaidPanel" role="dialog" aria-modal="true" aria-labelledby="plaidTitle" hidden>
+  <div class="plaid-card glass">
+    <span class="accent-bar" aria-hidden="true"></span>
+    <div class="plaid-head">
+      <div>
+        <p class="plaid-kicker">Open Banking sandbox</p>
+        <h2 id="plaidTitle">Plaid bank checkout preview</h2>
+      </div>
+      <button class="btn btn-ghost btn-sm" type="button" id="plaidClose">Back to checkout</button>
+    </div>
+    <div class="plaid-grid">
+      <div>
+        <span class="plaid-label">Amount</span>
+        <strong id="plaidAmount">GBP 0.00</strong>
+      </div>
+      <div>
+        <span class="plaid-label">Country code</span>
+        <strong id="plaidCountry">GB</strong>
+      </div>
+      <div>
+        <span class="plaid-label">Status</span>
+        <strong>Sandbox preview</strong>
+      </div>
+    </div>
+    <p class="plaid-copy">Choose a sandbox bank to preview the handoff. This panel is the demo page for the Plaid rail until Orvanna can create a real HyperSwitch Open Banking payment.</p>
+    <div class="plaid-bank-list" aria-label="Sandbox bank choices">
+      <button class="plaid-bank is-selected" type="button">Sandbox Bank</button>
+      <button class="plaid-bank" type="button">Open Banking Demo</button>
+      <button class="plaid-bank" type="button">Test Current Account</button>
+    </div>
+    <button class="btn btn-solid btn-block" type="button" id="plaidAuthorize">Authorize sandbox bank payment</button>
+    <p class="plaid-result" id="plaidResult" role="status" aria-live="polite">No payment has been created. Nothing has been charged.</p>
+  </div>
+</div>
+
 <!-- ============ CART DRAWER ============ -->
 <div class="drawer-overlay" id="drawerOverlay"></div>
 <aside class="cart-drawer" id="cartDrawer" aria-label="Cart" aria-hidden="true">
@@ -655,8 +696,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=998e57b8cf20"></script>
-<script src="js/payments.js?v=998e57b8cf20"></script>
+<script src="js/catalog.js?v=41986debcc75"></script>
+<script src="js/payments.js?v=41986debcc75"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1400,6 +1441,12 @@
   var placeOrderBtn = document.getElementById('placeOrderBtn');
   var currencySelect = document.getElementById('currencySelect');
   var threeDsNotice = document.getElementById('threeDsNotice');
+  var plaidPanel = document.getElementById('plaidPanel');
+  var plaidAmount = document.getElementById('plaidAmount');
+  var plaidCountry = document.getElementById('plaidCountry');
+  var plaidClose = document.getElementById('plaidClose');
+  var plaidAuthorize = document.getElementById('plaidAuthorize');
+  var plaidResult = document.getElementById('plaidResult');
 
   function canOpenLiveCardPayment() {
     return payMethod === 'card' && selectedCurrency() === 'USD';
@@ -1449,6 +1496,32 @@
     return '';
   }
 
+  function plaidCountryCode() {
+    if (selectedCurrency() === 'GBP') return 'GB';
+    if (selectedCurrency() === 'EUR') return 'IE';
+    if (selectedCurrency() === 'CHF') return 'CH';
+    return guestTaxState() || 'GB';
+  }
+
+  function openPlaidPanel() {
+    if (!plaidPanel) return;
+    var renderedTotal = document.getElementById('checkoutTotal');
+    plaidAmount.textContent = renderedTotal && renderedTotal.textContent.trim()
+      ? renderedTotal.textContent.trim()
+      : fmtMoney(orderMath().total);
+    plaidCountry.textContent = plaidCountryCode();
+    plaidResult.textContent = 'No payment has been created. Nothing has been charged.';
+    plaidPanel.hidden = false;
+    window.setTimeout(function () { plaidClose.focus(); }, 0);
+  }
+
+  function closePlaidPanel() {
+    if (!plaidPanel) return;
+    plaidPanel.hidden = true;
+    var bankButton = document.querySelector('[data-pay="bank"]');
+    if (bankButton) bankButton.focus();
+  }
+
   function setPayMethod(method) {
     payMethod = method;
     payButtons.forEach(function (b) {
@@ -1488,6 +1561,28 @@
       setPayMethod(b.getAttribute('data-pay'));
     });
   });
+
+  if (plaidClose) plaidClose.addEventListener('click', closePlaidPanel);
+  if (plaidPanel) {
+    plaidPanel.addEventListener('click', function (e) {
+      if (e.target === plaidPanel) closePlaidPanel();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !plaidPanel.hidden) closePlaidPanel();
+    });
+  }
+  document.querySelectorAll('.plaid-bank').forEach(function (bank) {
+    bank.addEventListener('click', function () {
+      document.querySelectorAll('.plaid-bank').forEach(function (b) {
+        b.classList.toggle('is-selected', b === bank);
+      });
+    });
+  });
+  if (plaidAuthorize) {
+    plaidAuthorize.addEventListener('click', function () {
+      plaidResult.textContent = 'Sandbox authorization preview complete. The live backend still has not created an Open Banking payment, so no order was created and nothing was charged.';
+    });
+  }
 
   if (currencySelect) {
     updateCurrencyHint();
@@ -2033,7 +2128,8 @@
     liveStatus(stagedMessage);
     placeOrderBtn.disabled = false;
     placeOrderBtn.textContent = paymentButtonLabel();
-    if (shouldFocus) {
+    if (payMethod === 'bank') openPlaidPanel();
+    if (shouldFocus && payMethod !== 'bank') {
       window.setTimeout(function () {
         livePayStatus.focus({ preventScroll: true });
         livePayStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
