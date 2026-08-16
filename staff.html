@@ -8,6 +8,60 @@
 <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
 <link rel="stylesheet" href="css/corporate.css?v=2440b7a330fc">
 <link rel="stylesheet" href="css/staff.css?v=2440b7a330fc">
+<style>
+/* ============================================================
+   Order history and order detail (2026-08-15, PROPOSED).
+   Scoped to this feature and kept here rather than in staff.css
+   because the whole refund feature is proposed and not deployed;
+   it moves into the stylesheet when the feature ships.
+   Colours are taken from the existing shipped tokens rather than
+   invented, so this matches the rest of the console.
+   ============================================================ */
+.hist-head { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.hist-table { width:100%; border-collapse:collapse; font-size:14px; }
+.hist-table th { text-align:left; font-weight:600; color:#7C8AA0; padding:6px 8px;
+                 border-bottom:1px solid rgba(124,138,160,.35); white-space:nowrap; }
+.hist-table td { padding:8px; border-bottom:1px solid rgba(124,138,160,.18); vertical-align:middle; }
+.hist-row { cursor:pointer; }
+.hist-row:hover, .hist-row:focus-visible { background:rgba(124,138,160,.12); outline:none; }
+.hist-ordernum { font-family:ui-monospace,Menlo,Consolas,monospace; white-space:nowrap; }
+.hist-table-wrap { overflow-x:auto; }
+.hist-more { margin-top:10px; }
+
+/* Status pills. Each state gets its own colour so a refunded order
+   is recognisable at a glance rather than by reading. */
+.ostat { display:inline-block; padding:2px 8px; border-radius:999px; font-size:12px; font-weight:600; white-space:nowrap; }
+.ostat-succeeded { background:#ECFDF5; color:#065F46; }
+.ostat-refunded  { background:#EEF2FF; color:#3730A3; }
+.ostat-failed    { background:#FEF2F2; color:#991B1B; }
+.ostat-abandoned { background:#F3F4F6; color:#4B5563; }
+.ostat-other     { background:#FFFBEB; color:#92400E; }
+
+.od-grid { display:grid; grid-template-columns:auto 1fr; gap:6px 16px; font-size:14px; margin:10px 0 14px; }
+.od-grid dt { color:#7C8AA0; }
+.od-grid dd { margin:0; }
+.od-mono { font-family:ui-monospace,Menlo,Consolas,monospace; word-break:break-all; }
+.od-lines { width:100%; border-collapse:collapse; font-size:14px; margin-bottom:12px; }
+.od-lines th, .od-lines td { text-align:left; padding:6px 8px; border-bottom:1px solid rgba(124,138,160,.18); }
+.od-lines th { color:#7C8AA0; font-weight:600; }
+.od-total-row td { font-weight:700; border-bottom:none; }
+.od-actions { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+
+/* The refund confirmation. Deliberately loud: this is the last
+   thing between a click and money leaving. */
+.refund-confirm { border:2px solid #DC2626; background:#FEF2F2; border-radius:10px; padding:14px; margin-top:12px; }
+.refund-confirm h3 { margin:0 0 8px; font-size:15px; color:#991B1B; }
+.refund-confirm p { margin:0 0 8px; font-size:14px; color:#374151; }
+.refund-amount { font-size:22px; font-weight:700; color:#991B1B; }
+.refund-field { display:block; margin:10px 0 4px; font-size:13px; color:#374151; font-weight:600; }
+.refund-confirm select, .refund-confirm input, .refund-confirm textarea {
+  width:100%; max-width:420px; padding:7px 9px; font:inherit; font-size:14px;
+  border:1px solid #9CA3AF; border-radius:6px; background:#fff; color:#111827; }
+.refund-result { margin-top:12px; padding:12px; border-radius:8px; font-size:14px; }
+.refund-result-ok   { background:#ECFDF5; border:1px solid #059669; color:#065F46; }
+.refund-result-bad  { background:#FEF2F2; border:1px solid #DC2626; color:#991B1B; }
+.refund-result-wait { background:#FFFBEB; border:1px solid #D97706; color:#92400E; }
+</style>
 </head>
 <body class="console-body">
 
@@ -249,6 +303,49 @@
           <button class="btn-again" id="sameCallerBtn" type="button">Same caller, new order</button>
           <button class="btn-newcall" id="confirmNewCallBtn" type="button">New call</button>
         </div>
+      </section>
+
+      <!-- ============ ORDER HISTORY ============
+           Howard, 2026-08-15: "you are going to have to setup an
+           order history for these refunds ... we should be able to
+           go into the order and then have a refund button".
+
+           THE LIST IS NOT FILTERED BY TIME. Staff need to look up
+           any order, whenever it was placed. The 24 hour refund
+           window is a SERVER rule inside refund-payment; this
+           screen deliberately does not implement it, because a
+           money rule implemented in two places is a money rule
+           that eventually disagrees with itself. -->
+      <section class="console-panel" aria-label="Order history" id="historyPanel">
+        <div class="hist-head">
+          <span class="panel-title">Order history</span>
+          <button class="btn-addline" type="button" id="histRefreshBtn">Refresh</button>
+        </div>
+        <p class="place-hint" id="histStatus" role="status" aria-live="polite">Loading orders...</p>
+        <div class="hist-table-wrap">
+          <table class="hist-table" id="histTable" hidden>
+            <thead>
+              <tr><th>Order</th><th>Placed</th><th>Member</th><th>Total</th><th>Status</th></tr>
+            </thead>
+            <tbody id="histBody"></tbody>
+          </table>
+        </div>
+        <div class="hist-more">
+          <button class="btn-addline" type="button" id="histMoreBtn" hidden>Show more</button>
+        </div>
+      </section>
+
+      <!-- ============ ORDER DETAIL, with the refund button ============
+           Enough detail that a staff member can be SURE they have the
+           right order before acting: the line items as the server
+           priced them, the tax with its jurisdiction, the total, the
+           status, and the processor reference. -->
+      <section class="console-panel" aria-label="Order detail" id="orderDetailPanel" hidden>
+        <div class="hist-head">
+          <span class="panel-title" id="odTitle">Order</span>
+          <button class="btn-addline" type="button" id="odBackBtn">Back to history</button>
+        </div>
+        <div id="odBody"></div>
       </section>
 
       <div class="kbd-strip" aria-label="Keyboard shortcuts">
@@ -2261,10 +2358,450 @@
     if (e.key === 'Enter') { e.preventDefault(); runStaffLookup(); }
   });
 
+  /* ============================================================
+     ORDER HISTORY, ORDER DETAIL, AND THE REFUND BUTTON
+     Added 2026-08-15. PROPOSED, NOT DEPLOYED.
+     Design: DOCUMENTATION\11-REFUNDS.md
+
+     THIS SCREEN ENFORCES NOTHING. Read that twice before changing
+     anything below.
+
+     It shows a refund button on every succeeded order, sends the
+     request, and displays whatever the server answers. It does not
+     check the 24 hour window, does not check whether an order was
+     already refunded, and does not check the staff role. All four
+     of those rules live on the server: the window and the order
+     rules in functions/_shared/refund-rules.ts, the role check in
+     functions/_shared/staff-auth.ts.
+
+     That is Howard's call ("i can do that as a rule that i need to
+     know so you do not have to program so much around that") and
+     it is the safer half of the split. A screen that greys out a
+     button is a courtesy to the person reading it and stops
+     nobody: anyone can call the endpoint directly. Keeping the
+     rules in exactly one place, on the server, is what makes them
+     real. If a rule ever fires, the refusal message the server
+     sends is shown verbatim, which is why those messages are
+     written in plain English.
+     ============================================================ */
+
+  /* The staff token rides x-orvanna-session, NOT Authorization,
+     because the platform claims Authorization for the anonymous
+     key on functions deployed with token verification on.
+     _shared/staff-auth.ts checks our header first for this reason. */
+  function staffFnCallAuthed(name, body) {
+    return fetch(LIVE_CONFIG.functionsBase + '/' + name, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + LIVE_CONFIG.anonKey,
+        'apikey': LIVE_CONFIG.anonKey,
+        'x-orvanna-session': (session && session.token) || ''
+      },
+      body: JSON.stringify(body || {})
+    }).then(function (resp) {
+      return resp.json().catch(function () { return {}; }).then(function (data) {
+        return { status: resp.status, data: data };
+      });
+    });
+  }
+
+  var HIST_PAGE = 50;
+  var histOffset = 0;
+  var histTotal = 0;
+
+  var histStatusEl = byId('histStatus');
+  var histTableEl = byId('histTable');
+  var histBodyEl = byId('histBody');
+  var histMoreBtn = byId('histMoreBtn');
+  var detailPanel = byId('orderDetailPanel');
+  var historyPanel = byId('historyPanel');
+  var odBody = byId('odBody');
+  var odTitle = byId('odTitle');
+
+  function statusClass(s) {
+    if (s === 'succeeded') return 'ostat-succeeded';
+    if (s === 'refunded' || s === 'partially_refunded') return 'ostat-refunded';
+    if (s === 'failed') return 'ostat-failed';
+    if (s === 'abandoned') return 'ostat-abandoned';
+    return 'ostat-other';
+  }
+
+  function statusLabel(s) {
+    if (s === 'partially_refunded') return 'part refunded';
+    return String(s || '').replace(/_/g, ' ');
+  }
+
+  function fmtWhen(iso) {
+    if (!iso) return '';
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) return '';
+    return d.toLocaleString(undefined, {
+      year: 'numeric', month: 'short', day: 'numeric',
+      hour: '2-digit', minute: '2-digit'
+    });
+  }
+
+  /* Everything the server sends is written with textContent, never
+     innerHTML, so a value could never be markup. */
+  function cell(row, text, cls) {
+    var td = document.createElement('td');
+    td.textContent = text == null ? '' : String(text);
+    if (cls) td.className = cls;
+    row.appendChild(td);
+    return td;
+  }
+
+  function loadHistory(append) {
+    if (!append) { histOffset = 0; histBodyEl.textContent = ''; }
+    histStatusEl.textContent = 'Loading orders...';
+    return staffFnCall('list-demo-orders', { limit: HIST_PAGE, offset: histOffset })
+      .then(function (result) {
+        if (result.status !== 200 || !result.data || !result.data.orders) {
+          histStatusEl.textContent = 'Could not load the order history right now.';
+          return;
+        }
+        var orders = result.data.orders;
+        histTotal = result.data.total || orders.length;
+        orders.forEach(function (o) {
+          var tr = document.createElement('tr');
+          tr.className = 'hist-row';
+          tr.tabIndex = 0;
+          tr.setAttribute('role', 'button');
+          tr.setAttribute('aria-label', 'Open order ' + o.order_number);
+          cell(tr, o.order_number, 'hist-ordernum');
+          cell(tr, fmtWhen(o.created_at));
+          cell(tr, o.member_code || '—');
+          cell(tr, fmtMoney(o.total));
+          var td = document.createElement('td');
+          var pill = document.createElement('span');
+          pill.className = 'ostat ' + statusClass(o.payment_status);
+          pill.textContent = statusLabel(o.payment_status);
+          td.appendChild(pill);
+          /* A refunded order shows the amount that went back, so the
+             history answers "was this refunded" without a click. */
+          if (o.refunded && o.refunded_amount != null &&
+              o.payment_status !== 'refunded') {
+            var extra = document.createElement('span');
+            extra.className = 'ostat ostat-refunded';
+            extra.style.marginLeft = '6px';
+            extra.textContent = 'refunded ' + fmtMoney(o.refunded_amount);
+            td.appendChild(extra);
+          }
+          tr.appendChild(td);
+          tr.addEventListener('click', function () { openOrder(o.order_number); });
+          tr.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault(); openOrder(o.order_number);
+            }
+          });
+          histBodyEl.appendChild(tr);
+        });
+        histOffset += orders.length;
+        histTableEl.hidden = histBodyEl.childNodes.length === 0;
+        histMoreBtn.hidden = histOffset >= histTotal;
+        histStatusEl.textContent = histBodyEl.childNodes.length === 0
+          ? 'No orders yet.'
+          : 'Showing ' + histOffset + ' of ' + histTotal + ' orders, newest first.';
+      })
+      .catch(function () {
+        histStatusEl.textContent = 'Could not reach the order service.';
+      });
+  }
+
+  function row(dl, label, value, cls) {
+    var dt = document.createElement('dt');
+    dt.textContent = label;
+    var dd = document.createElement('dd');
+    dd.textContent = value == null || value === '' ? '—' : String(value);
+    if (cls) dd.className = cls;
+    dl.appendChild(dt); dl.appendChild(dd);
+  }
+
+  function openOrder(orderNumber) {
+    historyPanel.hidden = true;
+    detailPanel.hidden = false;
+    odTitle.textContent = 'Order ' + orderNumber;
+    odBody.textContent = 'Loading...';
+    detailPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    staffFnCallAuthed('list-demo-orders', { order_number: orderNumber })
+      .then(function (result) {
+        if (result.status === 401) {
+          odBody.textContent = 'Your staff session is not valid. Sign in again.';
+          return;
+        }
+        if (result.status !== 200 || !result.data || !result.data.order) {
+          odBody.textContent = (result.data && result.data.error && result.data.error.message) ||
+            'Could not open that order.';
+          return;
+        }
+        renderOrderDetail(result.data.order, result.data.refunds || []);
+      })
+      .catch(function () { odBody.textContent = 'Could not reach the order service.'; });
+  }
+
+  function renderOrderDetail(o, refunds) {
+    odBody.textContent = '';
+
+    var dl = document.createElement('dl');
+    dl.className = 'od-grid';
+    row(dl, 'Placed', fmtWhen(o.created_at));
+    row(dl, 'Channel', o.created_by_channel === 'staff_console' ? 'staff console' : 'shop');
+    row(dl, 'Member', o.member_code || 'none');
+    row(dl, 'Status', statusLabel(o.payment_status));
+    /* The processor reference is the value a human quotes to the
+       processor. Staff-gated: it is not on the anonymous path. */
+    row(dl, 'Processor reference', o.payment_reference, 'od-mono');
+    odBody.appendChild(dl);
+
+    /* Line items exactly as the SERVER priced them. Client prices
+       were never trusted and are not stored, so this is the only
+       pricing that exists for this order. */
+    var t = document.createElement('table');
+    t.className = 'od-lines';
+    var thead = document.createElement('thead');
+    var htr = document.createElement('tr');
+    ['Item', 'Mode', 'Qty', 'Unit', 'Volume'].forEach(function (h) {
+      var th = document.createElement('th'); th.textContent = h; htr.appendChild(th);
+    });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = document.createElement('tbody');
+    (o.items || []).forEach(function (it) {
+      var tr = document.createElement('tr');
+      cell(tr, it.sku);
+      cell(tr, it.mode === 'one' ? 'one-time' : 'monthly');
+      cell(tr, it.quantity);
+      cell(tr, fmtMoney(it.unit_price));
+      cell(tr, fmtPv(it.unit_pv));
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+
+    var tf = document.createElement('tbody');
+    function money(label, value) {
+      var tr = document.createElement('tr');
+      cell(tr, label); cell(tr, ''); cell(tr, ''); cell(tr, '');
+      cell(tr, fmtMoney(value));
+      tf.appendChild(tr);
+      return tr;
+    }
+    if (o.activation_fee) money('Priority activation', o.activation_fee);
+    /* Tax with its jurisdiction AND its provenance. A zero from
+       Stripe and a zero from the flat fallback are not the same
+       fact (migration 016), so the source is shown, not hidden. */
+    var taxLabel = 'Tax' +
+      (o.tax_jurisdiction ? ' (' + o.tax_jurisdiction + ')' : '') +
+      (o.tax_source === 'stripe_tax' ? '' :
+        o.tax_source ? ' [' + o.tax_source + ']' : '');
+    money(taxLabel, o.tax);
+    if (o.tax_exempt) {
+      var ex = document.createElement('tr');
+      cell(ex, 'Tax exempt'); cell(ex, ''); cell(ex, ''); cell(ex, ''); cell(ex, 'yes');
+      tf.appendChild(ex);
+    }
+    var totalRow = money('Total charged', o.total);
+    totalRow.className = 'od-total-row';
+    t.appendChild(tf);
+    odBody.appendChild(t);
+
+    if (refunds.length) {
+      var h = document.createElement('p');
+      h.className = 'place-hint';
+      h.style.textAlign = 'left';
+      h.textContent = 'Refund history:';
+      odBody.appendChild(h);
+      var rt = document.createElement('table');
+      rt.className = 'od-lines';
+      var rb = document.createElement('tbody');
+      refunds.forEach(function (r) {
+        var tr = document.createElement('tr');
+        cell(tr, fmtWhen(r.requested_at));
+        cell(tr, r.status);
+        cell(tr, fmtMoney(r.amount));
+        cell(tr, r.reason_code);
+        cell(tr, r.requested_by);
+        rb.appendChild(tr);
+      });
+      rt.appendChild(rb);
+      odBody.appendChild(rt);
+    }
+
+    /* THE REFUND BUTTON. Shown on any order the shop considers
+       paid. Whether it is ALLOWED is the server's answer, not
+       this screen's guess. */
+    var actions = document.createElement('div');
+    actions.className = 'od-actions';
+    var refundBtn = document.createElement('button');
+    refundBtn.type = 'button';
+    refundBtn.className = 'btn-newcall';
+    refundBtn.textContent = 'Refund this order';
+    actions.appendChild(refundBtn);
+    odBody.appendChild(actions);
+
+    refundBtn.addEventListener('click', function () {
+      refundBtn.disabled = true;
+      actions.appendChild(buildConfirm(o, refundBtn));
+    });
+  }
+
+  /* The confirmation. It RESTATES THE ORDER NUMBER AND THE EXACT
+     AMOUNT, because a refund is irreversible and outward facing,
+     and because the number on the screen is the last chance to
+     notice it is the wrong order. */
+  function buildConfirm(o, refundBtn) {
+    var box = document.createElement('div');
+    box.className = 'refund-confirm';
+
+    var h = document.createElement('h3');
+    h.textContent = 'Refund order ' + o.order_number + '?';
+    box.appendChild(h);
+
+    var amt = document.createElement('p');
+    var amtSpan = document.createElement('span');
+    amtSpan.className = 'refund-amount';
+    amtSpan.textContent = fmtMoney(o.total);
+    amt.appendChild(amtSpan);
+    var amtTail = document.createElement('span');
+    amtTail.textContent = ' returned to the customer, including ' +
+      fmtMoney(o.tax) + ' of tax.';
+    amt.appendChild(amtTail);
+    box.appendChild(amt);
+
+    var warn = document.createElement('p');
+    warn.textContent = 'This cannot be undone. If they buy again it will be a new order.';
+    box.appendChild(warn);
+
+    var reasonLabel = document.createElement('label');
+    reasonLabel.className = 'refund-field';
+    reasonLabel.textContent = 'Reason';
+    reasonLabel.setAttribute('for', 'refundReason');
+    box.appendChild(reasonLabel);
+    var sel = document.createElement('select');
+    sel.id = 'refundReason';
+    [['requested_by_customer', 'Customer asked for it'],
+     ['duplicate', 'Duplicate order'],
+     ['fraudulent', 'Fraudulent'],
+     ['other', 'Other']].forEach(function (pair) {
+      var op = document.createElement('option');
+      op.value = pair[0]; op.textContent = pair[1];
+      sel.appendChild(op);
+    });
+    box.appendChild(sel);
+
+    var noteLabel = document.createElement('label');
+    noteLabel.className = 'refund-field';
+    noteLabel.textContent = 'Note (optional)';
+    noteLabel.setAttribute('for', 'refundNote');
+    box.appendChild(noteLabel);
+    var note = document.createElement('input');
+    note.id = 'refundNote';
+    note.type = 'text';
+    note.maxLength = 500;
+    box.appendChild(note);
+
+    /* Typing beats clicking for an irreversible action: it defeats
+       muscle memory in a way a second button never does. */
+    var typeLabel = document.createElement('label');
+    typeLabel.className = 'refund-field';
+    typeLabel.textContent = 'Type ' + o.order_number + ' to confirm';
+    typeLabel.setAttribute('for', 'refundTyped');
+    box.appendChild(typeLabel);
+    var typed = document.createElement('input');
+    typed.id = 'refundTyped';
+    typed.type = 'text';
+    typed.autocomplete = 'off';
+    typed.spellcheck = false;
+    box.appendChild(typed);
+
+    var actions = document.createElement('div');
+    actions.className = 'od-actions';
+    var go = document.createElement('button');
+    go.type = 'button';
+    go.className = 'btn-newcall';
+    go.textContent = 'Refund ' + fmtMoney(o.total);
+    go.disabled = true;
+    var cancel = document.createElement('button');
+    cancel.type = 'button';
+    cancel.className = 'btn-addline';
+    cancel.textContent = 'Cancel';
+    actions.appendChild(go);
+    actions.appendChild(cancel);
+    box.appendChild(actions);
+
+    var result = document.createElement('div');
+    box.appendChild(result);
+
+    typed.addEventListener('input', function () {
+      go.disabled = typed.value.trim().toUpperCase() !== o.order_number;
+    });
+
+    cancel.addEventListener('click', function () {
+      box.remove();
+      refundBtn.disabled = false;
+    });
+
+    go.addEventListener('click', function () {
+      go.disabled = true;
+      cancel.disabled = true;
+      result.className = 'refund-result refund-result-wait';
+      result.textContent = 'Sending the refund...';
+
+      staffFnCallAuthed('refund-payment', {
+        order_number: o.order_number,
+        reason_code: sel.value,
+        reason_note: note.value || null,
+        confirm: true
+      }).then(function (r) {
+        var d = r.data || {};
+        /* WHATEVER THE SERVER SAYS IS WHAT THE AGENT SEES. The
+           screen has no opinion: if a rule refused, its message is
+           shown verbatim, which is why those messages are written
+           for a person rather than for a log. */
+        if (r.status === 200 && d.refund_status === 'succeeded') {
+          result.className = 'refund-result refund-result-ok';
+          result.textContent = 'Refunded. ' + fmtMoney(d.amount) +
+            ' has been returned to the customer, including ' +
+            fmtMoney(d.tax_returned) + ' of tax.';
+          loadHistory(false);
+          return;
+        }
+        if (r.status === 200 || r.status === 202) {
+          result.className = 'refund-result refund-result-wait';
+          result.textContent = d.message ||
+            ('The processor has not settled this refund yet (' +
+             (d.refund_status || 'pending') + '). It will not be refunded twice.');
+          loadHistory(false);
+          return;
+        }
+        result.className = 'refund-result refund-result-bad';
+        result.textContent = (d.error && d.error.message) ||
+          ('The refund was refused (HTTP ' + r.status + ').');
+        cancel.disabled = false;
+      }).catch(function () {
+        result.className = 'refund-result refund-result-bad';
+        result.textContent = 'Could not reach the refund service. Nothing was refunded.';
+        cancel.disabled = false;
+      });
+    });
+
+    typed.focus();
+    return box;
+  }
+
+  byId('histRefreshBtn').addEventListener('click', function () { loadHistory(false); });
+  byId('histMoreBtn').addEventListener('click', function () { loadHistory(true); });
+  byId('odBackBtn').addEventListener('click', function () {
+    detailPanel.hidden = true;
+    historyPanel.hidden = false;
+    historyPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
   renderProductOptions();
   renderAddPreview();
   boot();
   staffResumeBoot();
+  loadHistory(false);
 })();
 </script>
 
