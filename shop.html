@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=d2e4315307df">
-<link rel="stylesheet" href="css/corporate.css?v=d2e4315307df">
-<link rel="stylesheet" href="css/shop.css?v=d2e4315307df">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ef1c71fb1dbb">
+<link rel="stylesheet" href="css/corporate.css?v=ef1c71fb1dbb">
+<link rel="stylesheet" href="css/shop.css?v=ef1c71fb1dbb">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=d2e4315307df" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=ef1c71fb1dbb" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -290,7 +290,7 @@
             <div class="checkout-panel glass" id="paymentPanel">
               <span class="accent-bar" aria-hidden="true"></span>
               <h2 class="checkout-panel-title"><span class="step-num">4</span>Payment</h2>
-              <p class="step-intro">Credit card is the only payment method open in this phase, and it opens the card form below. The express marks are turned off and place nothing.</p>
+              <p class="step-intro">Credit card is live for USD sandbox checkout. Bank account is staged for Plaid/Open Banking sandbox testing when the currency rail is ready.</p>
 
               <div class="pay-row" role="group" aria-label="Payment method">
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
@@ -324,6 +324,16 @@
                     <circle cx="7.4" cy="14.6" r="1.2" fill="currentColor"/>
                   </svg>
                   Credit card
+                </button>
+                <button class="pay-btn pay-bank" type="button" data-pay="bank" aria-pressed="false">
+                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M 4 10.2 L 12 5 L 20 10.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                    <line x1="5.5" y1="18" x2="18.5" y2="18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    <line x1="7" y1="10.8" x2="7" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    <line x1="12" y1="10.8" x2="12" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                    <line x1="17" y1="10.8" x2="17" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+                  </svg>
+                  Bank account
                 </button>
               </div>
               <p class="pay-note">Demonstration marks, not real payment brands. No real money is ever charged on this rail.</p>
@@ -415,6 +425,15 @@
                  those fields are filled. -->
             <div class="taxid-row" id="guestTaxStateRow" hidden>
               <p class="field-hint">Tax follows the billing State and ZIP fields. The tax line appears after those fields are entered.</p>
+            </div>
+            <div class="taxid-row currency-row">
+              <label class="field-label" for="currencySelect">Currency</label>
+              <select class="field field-compact" id="currencySelect">
+                <option value="USD">USD, United States dollar</option>
+                <option value="GBP">GBP, British pound</option>
+                <option value="EUR">EUR, euro</option>
+              </select>
+              <p class="field-hint" id="currencyHint">Card checkout settles in USD. GBP and EUR are display-ready while the payment rail matures.</p>
             </div>
             <div class="taxid-row">
               <label class="field-label" for="taxId">Tax ID</label>
@@ -654,8 +673,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=d2e4315307df"></script>
-<script src="js/payments.js?v=d2e4315307df"></script>
+<script src="js/catalog.js?v=ef1c71fb1dbb"></script>
+<script src="js/payments.js?v=ef1c71fb1dbb"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -672,11 +691,57 @@
   'use strict';
 
   var O = window.ORVANNA;
-  var fmtMoney = O.fmtMoney;
   var fmtPv = O.fmtPv;
 
   var cart = O.loadCart();
   function persist() { O.saveCart(cart); }
+
+  /* ---------- display currency ----------
+
+     Pilot-grade multi-currency, deliberately split from settlement.
+     Catalog prices remain the USD source of truth; this layer converts
+     what the shopper sees. The live charge path stays guarded below
+     until the order table and Edge Functions can store and settle the
+     selected currency end to end. */
+  var CURRENCY_STORAGE_KEY = 'orvannaCurrency';
+  var CURRENCIES = {
+    USD: { rate: 1, symbol: '$', locale: 'en-US', note: 'Card checkout settles in USD.' },
+    GBP: { rate: 0.79, symbol: 'GBP ', locale: 'en-GB', note: 'GBP display is ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' },
+    EUR: { rate: 0.92, symbol: 'EUR ', locale: 'en-US', note: 'EUR display is ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' }
+  };
+  var displayCurrency = (function () {
+    try {
+      var saved = window.localStorage.getItem(CURRENCY_STORAGE_KEY);
+      if (saved && CURRENCIES[saved]) return saved;
+    } catch (e) { /* default below */ }
+    return 'USD';
+  })();
+
+  function selectedCurrency() {
+    return CURRENCIES[displayCurrency] ? displayCurrency : 'USD';
+  }
+
+  function fmtMoney(amountUsd) {
+    var code = selectedCurrency();
+    var c = CURRENCIES[code];
+    var amount = round2((Number(amountUsd) || 0) * c.rate);
+    if (code !== 'USD') return code + ' ' + amount.toFixed(2);
+    try {
+      return new Intl.NumberFormat(c.locale, {
+        style: 'currency',
+        currency: code
+      }).format(amount);
+    } catch (e) {
+      return c.symbol + amount.toFixed(2);
+    }
+  }
+
+  function updateCurrencyHint() {
+    var select = document.getElementById('currencySelect');
+    var hint = document.getElementById('currencyHint');
+    if (select) select.value = selectedCurrency();
+    if (hint) hint.textContent = CURRENCIES[selectedCurrency()].note;
+  }
 
   /* ---------- catalog render ---------- */
 
@@ -834,7 +899,7 @@
       return '<div class="cart-child">' +
         '<a class="child-name" href="product.html?sku=' + c.sku + '">' + c.name + '</a>' +
         (q > 1 ? '<span class="child-qty">&times; ' + q + '</span>' : '') +
-        '<span class="child-amt">$0.00</span>' +
+        '<span class="child-amt">' + fmtMoney(0) + '</span>' +
         '<span class="child-tag">Included</span>' +
       '</div>';
     }).join('') + '</div>';
@@ -1307,7 +1372,8 @@
     applepay: 'Apple Pay',
     googlepay: 'Google Pay',
     paypal: 'PayPal',
-    card: 'Credit card'
+    card: 'Credit card',
+    bank: 'Bank account'
   };
 
   var payMethod = 'card';
@@ -1315,6 +1381,32 @@
   var cardFields = document.getElementById('cardFields');
   var walletNote = document.getElementById('walletNote');
   var placeOrderBtn = document.getElementById('placeOrderBtn');
+  var currencySelect = document.getElementById('currencySelect');
+
+  function canOpenLiveCardPayment() {
+    return payMethod === 'card' && selectedCurrency() === 'USD';
+  }
+
+  function paymentButtonLabel() {
+    if (!LIVE_PAYMENTS) return payMethod === 'card' ? 'Place order' : 'Place order with ' + PAY_LABELS[payMethod];
+    if (payMethod === 'card') {
+      return selectedCurrency() === 'USD' ? 'Continue to card details' : 'Card checkout is USD only';
+    }
+    if (payMethod === 'bank') return 'Prepare bank checkout';
+    return 'Place order with ' + PAY_LABELS[payMethod];
+  }
+
+  function stagedPaymentMessage() {
+    if (payMethod === 'bank') {
+      return selectedCurrency() === 'USD'
+        ? 'Bank account checkout is staged through Plaid/Open Banking, which HyperSwitch currently exposes for GBP and EUR payment initiation. Choose GBP or EUR to test that rail once the server currency migration is deployed.'
+        : 'Plaid/Open Banking is connected in HyperSwitch, but this checkout still needs the currency storage migration before it can settle ' + selectedCurrency() + ' orders. Nothing was charged.';
+    }
+    if (selectedCurrency() !== 'USD') {
+      return 'The storefront can display ' + selectedCurrency() + ', but live card settlement is still guarded to USD until the order records store currency. Nothing was charged.';
+    }
+    return '';
+  }
 
   function setPayMethod(method) {
     payMethod = method;
@@ -1332,11 +1424,15 @@
     cardFields.hidden = !isCard || LIVE_PAYMENTS;
     walletNote.hidden = isCard;
     if (!isCard) {
-      walletNote.textContent = PAY_LABELS[method] + ' needs no card details here. Place the order to finish.';
+      walletNote.textContent = method === 'bank'
+        ? 'Bank account checkout is staged for the Plaid/Open Banking sandbox. No card details are needed.'
+        : PAY_LABELS[method] + ' needs no card details here. Place the order to finish.';
     }
-    placeOrderBtn.textContent = isCard
-      ? (LIVE_PAYMENTS ? 'Continue to card details' : 'Place order')
-      : 'Place order with ' + PAY_LABELS[method];
+    placeOrderBtn.textContent = paymentButtonLabel();
+    if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLiveCardPayment()) {
+      liveResetPayment('');
+    }
+    if (LIVE_PAYMENTS && typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
   payButtons.forEach(function (b) {
@@ -1344,6 +1440,19 @@
       setPayMethod(b.getAttribute('data-pay'));
     });
   });
+
+  if (currencySelect) {
+    updateCurrencyHint();
+    currencySelect.addEventListener('change', function () {
+      displayCurrency = CURRENCIES[currencySelect.value] ? currencySelect.value : 'USD';
+      try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
+      updateCurrencyHint();
+      if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLiveCardPayment()) {
+        liveResetPayment('');
+      }
+      renderAll();
+    });
+  }
 
   /* ---------- tax ---------- */
 
@@ -1402,7 +1511,7 @@
           '<span class="sl-name"><a class="product-name-link" href="product.html?sku=' + c.sku + '">' + c.name + '</a>' +
           (q > 1 ? ' <span class="sl-qty">&times; ' + q + '</span>' : '') +
           ' <span class="child-tag">Included</span></span>' +
-          '<span class="sl-amt">$0.00</span>' +
+          '<span class="sl-amt">' + fmtMoney(0) + '</span>' +
         '</div>';
       }).join('');
     }
@@ -1445,6 +1554,7 @@
   function syncPayButtonToDisplayedTotal(displayedTotal) {
     if (!LIVE_PAYMENTS) return;
     if (typeof liveState === 'undefined' || !liveState) return;
+    if (!canOpenLiveCardPayment()) return;
     if (!liveState.clientSecret || liveState.checkOnly || liveState.busy) return;
     if (placeOrderBtn.hidden) return;
     placeOrderBtn.textContent = 'Pay ' + fmtMoney(displayedTotal) + ' now, test mode';
@@ -1500,7 +1610,7 @@
       applyServerTotals(engine.getServerTotals());
     } else if (taxExempt()) {
       taxLabel.innerHTML = 'Tax exempt';
-      document.getElementById('sumTax').textContent = '$0.00';
+      document.getElementById('sumTax').textContent = fmtMoney(0);
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
       syncPayButtonToDisplayedTotal(m.total);
     } else {
@@ -1607,7 +1717,7 @@
     }
     rows += '<div class="total-row"><span>' + DELIVERY[choice].label + '</span><span class="total-num">' + (m.delivery === 0 ? 'Free' : fmtMoney(m.delivery)) + '</span></div>';
     rows += taxExempt()
-      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">$0.00</span></div>'
+      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">' + fmtMoney(0) + '</span></div>'
       : '<div class="total-row"><span>Tax <span class="row-hint">5 percent</span></span><span class="total-num">' + fmtMoney(m.tax) + '</span></div>';
     rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + fmtMoney(m.total) + '</span></div>';
     rows += '<div class="total-row"><span>Payment method</span><span class="total-num">' + PAY_LABELS[payMethod] + '</span></div>';
@@ -1682,6 +1792,7 @@
     buttonId: 'placeOrderBtn',
     statusId: 'livePayStatus',
     skeletonId: 'cardFormSkeleton',
+    formatMoney: fmtMoney,
     /* nothing the shopper can reach may change the amount that is
        currently being authorized */
     inertSelectors: '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
@@ -1701,7 +1812,9 @@
         items: cartPayload(),
         activation: deliveryChoice(),
         tax_id: taxIdInput.value.trim(),
-        member_code: document.getElementById('memberCode').value.trim()
+        member_code: document.getElementById('memberCode').value.trim(),
+        currency: selectedCurrency(),
+        payment_method: payMethod === 'bank' ? 'open_banking_pis' : 'card'
       };
       return Object.assign(payload, guestTaxPayload());
     },
@@ -1718,7 +1831,9 @@
        liveMountCheckout below. */
     onTotalsApplied: function (t) {
       if (!placeOrderBtn.hidden && liveState.clientSecret) {
-        placeOrderBtn.textContent = 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode';
+        placeOrderBtn.textContent = canOpenLiveCardPayment()
+          ? 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode'
+          : paymentButtonLabel();
       }
     },
     /* THE SHOPPER COPY TABLE. Second person, speaking to the person
@@ -1790,9 +1905,7 @@
         livePayArea.hidden = !message;
         cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
         placeOrderBtn.disabled = false;
-        placeOrderBtn.textContent = (LIVE_PAYMENTS && payMethod === 'card')
-          ? 'Continue to card details'
-          : 'Place order';
+        placeOrderBtn.textContent = paymentButtonLabel();
       },
       /* success clears the cart (only then); the engine has already
          fired the record-tax bookkeeping call */
@@ -1902,7 +2015,14 @@
        liveState exists. Cheap insurance against a hard error on load. */
     if (typeof liveState === 'undefined' || !liveState) return;
     if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
-    if (payMethod !== 'card') return;
+    if (!canOpenLiveCardPayment()) {
+      if (liveOpenTimer) {
+        window.clearTimeout(liveOpenTimer);
+        liveOpenTimer = null;
+      }
+      if (liveState.clientSecret) liveResetPayment('');
+      return;
+    }
     if (Object.keys(cart).length === 0) return;
     if (!taxDestinationReady()) {
       if (liveOpenTimer) {
@@ -1938,7 +2058,7 @@
       /* re-check everything: nearly a second has passed */
       if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
       if (!views.checkout.classList.contains('is-active')) return;
-      if (payMethod !== 'card' || Object.keys(cart).length === 0) return;
+      if (!canOpenLiveCardPayment() || Object.keys(cart).length === 0) return;
       if (!taxDestinationReady()) return;
       var now = liveAmountSignature();
       if (liveState.clientSecret && engine.openedFor() === now) return;
@@ -1987,6 +2107,15 @@
       return;
     }
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
+    var stagedMessage = stagedPaymentMessage();
+    if (stagedMessage) {
+      livePayArea.hidden = false;
+      livePayNote.textContent = '';
+      setCardSkeleton(false);
+      liveStatus(stagedMessage);
+      placeOrderBtn.textContent = paymentButtonLabel();
+      return;
+    }
     if (liveState.clientSecret) { liveConfirm(); } else { liveStart(); }
   }
 
@@ -2021,6 +2150,8 @@
          decide what it means (verifier finding, 2026-08-15) */
       tax_id: taxIdInput.value.trim(),
       member_code: document.getElementById('memberCode').value.trim(),
+      currency: selectedCurrency(),
+      payment_method: payMethod === 'bank' ? 'open_banking_pis' : 'card',
       channel: 'shop',
       /* which page the bank should come back to. A page name, never
          a full address: the server builds the address itself from
@@ -2129,9 +2260,11 @@
        math survives as a fallback for the case where no server answer
        exists yet, and it is the same figure the summary is showing at
        that moment, so the two can never disagree on screen. */
-    placeOrderBtn.textContent = 'Pay ' + fmtMoney(
-      liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
-    ) + ' now, test mode';
+    placeOrderBtn.textContent = canOpenLiveCardPayment()
+      ? 'Pay ' + fmtMoney(
+          liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
+        ) + ' now, test mode'
+      : paymentButtonLabel();
     placeOrderBtn.disabled = false;
     liveState.busy = false;
     /* H1, verifier audit 2026-08-15. liveEnsureCheckout refuses to act while a
@@ -2267,7 +2400,7 @@
       '</span><span class="total-num">' +
       (r.activation_fee_cents === 0 ? 'Free' : cents(r.activation_fee_cents)) + '</span></div>';
     rows += r.tax_exempt
-      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">$0.00</span></div>'
+      ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">' + fmtMoney(0) + '</span></div>'
       : '<div class="total-row"><span>Tax <span class="row-hint">' +
           receiptTaxHint(r) + '</span></span><span class="total-num">' + cents(r.tax_cents) + '</span></div>';
     rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + cents(r.total_cents) + '</span></div>';
@@ -2313,13 +2446,16 @@
     }).catch(function () { /* the section simply stays hidden */ });
   }
 
-  /* in live mode the express marks stay demonstration drawings:
-     the card flow is the one real test rail (spec 1.2, step 7) */
+  /* In live mode the express marks stay demonstration drawings.
+     Bank account remains selectable as the visible Plaid/Open Banking
+     staging path; it is guarded before create-payment until the
+     currency and order-record work is ready. */
   if (LIVE_PAYMENTS) {
     payButtons.forEach(function (b) {
-      if (b.getAttribute('data-pay') !== 'card') {
+      var method = b.getAttribute('data-pay');
+      if (method !== 'card' && method !== 'bank') {
         b.disabled = true;
-        b.title = 'Demonstration mark only. The card flow is the real test rail in this phase.';
+        b.title = 'Demonstration mark only. Card and bank account are the sandbox rails in this phase.';
       }
     });
   } else {

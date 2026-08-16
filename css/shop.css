@@ -1007,7 +1007,7 @@ a.product-icon { display: block; }
 
 .pay-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
 }
 
@@ -1052,6 +1052,11 @@ a.product-icon { display: block; }
   background: rgba(34, 211, 238, 0.08);
   color: #E2E8F0;
   border-color: rgba(34, 211, 238, 0.45);
+}
+.pay-bank {
+  background: rgba(16, 185, 129, 0.1);
+  color: #D1FAE5;
+  border-color: rgba(16, 185, 129, 0.45);
 }
 
 .pay-btn[aria-pressed="true"] {
@@ -1500,6 +1505,7 @@ a.back-to-shop { text-decoration: none; }
   .delivery-option { flex-wrap: wrap; }
   .delivery-price { margin-left: auto; }
   .pay-btn { font-size: 0.7rem; padding: 11px 6px; }
+  .pay-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ============================================================

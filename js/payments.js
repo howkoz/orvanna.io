@@ -126,7 +126,7 @@
   function createPaymentEngine(opts) {
 
     var O = window.ORVANNA;
-    var fmtMoney = O.fmtMoney;
+    var fmtMoney = opts.formatMoney || O.fmtMoney;
     var copy = opts.copy;
     var hooks = opts.hooks || {};
 
