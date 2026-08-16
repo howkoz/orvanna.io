@@ -511,7 +511,7 @@
 /* Disabled is a state, not a dimmer: opacity fades ink and background
    together and collapsed these to 3.84:1 and 3.72:1. Both colours are
    now stated. See the fuller note in shop.css. */
-.btn-addline:disabled { background: #64748B; border-color: #64748B; color: #0F172A; opacity: 1; cursor: not-allowed; }
+.btn-addline:disabled { background: #7C8AA0; border-color: #7C8AA0; color: #0F172A; opacity: 1; cursor: not-allowed; }
 
 .add-preview {
   font-size: 0.8rem;
@@ -737,7 +737,7 @@
   transition: filter 0.15s ease;
 }
 .btn-place:hover { filter: brightness(1.15); }
-.btn-place:disabled { background: #64748B; border-color: #64748B; color: #0F172A; opacity: 1; cursor: not-allowed; }
+.btn-place:disabled { background: #7C8AA0; border-color: #7C8AA0; color: #0F172A; opacity: 1; cursor: not-allowed; }
 .place-hint { font-size: 0.74rem; color: #94A3B8; text-align: center; margin-top: 6px; }
 
 /* ---------- confirmation: designed for reading aloud ---------- */

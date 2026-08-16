@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Conductor Library</title>
+<meta name="description" content="One agent at a time from the Orvanna Conductor Library: what it does, who it is for, the problem it solves, the jobs it handles, and its price in both billing modes. Demonstration company, all data synthetic.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/library.css?v=2440b7a330fc">
+
+<!-- Theme boot. Runs before paint so a saved choice never flashes the other
+     theme. With nothing saved the page follows the reader's system setting. -->
+<script>
+(function () {
+  try {
+    var saved = window.localStorage.getItem('orvannaLibraryTheme');
+    if (saved === 'light' || saved === 'dark') {
+      document.documentElement.setAttribute('data-theme', saved);
+    }
+  } catch (err) {
+    /* storage blocked: the page simply follows the system setting */
+  }
+  document.documentElement.classList.add('js');
+})();
+</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to the agent</a>
+
+<!-- ============ NAVIGATION ============ -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link is-active" href="library.html">Library</a>
+      <a class="nav-link" href="team.html">Team</a>
+      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
+      <a class="nav-signin" href="login.html">Sign In</a>
+      <div class="theme-set" role="group" aria-label="Page theme">
+        <span class="theme-legend" aria-hidden="true">Theme</span>
+        <button class="theme-btn" type="button" data-theme-set="system" aria-pressed="true">Auto</button>
+        <button class="theme-btn" type="button" data-theme-set="light" aria-pressed="false">Light</button>
+        <button class="theme-btn" type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<!-- ============ BREADCRUMB ============ -->
+<div class="crumb-bar">
+  <nav class="crumb" aria-label="Breadcrumb">
+    <a href="library.html">
+      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path d="M 10 3 L 5 8 L 10 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Conductor Library
+    </a>
+    <span class="sep" aria-hidden="true">/</span>
+    <span class="here" id="crumbHere">Agent</span>
+  </nav>
+</div>
+
+<main id="main">
+
+<noscript>
+  <section class="band">
+    <div class="wrap">
+      <div class="notfound panel">
+        <span class="accent-bar" aria-hidden="true"></span>
+        <h1 class="section-title">This page needs scripting</h1>
+        <p>Each agent page is built from the shop's own catalog file when it loads, so that a price shown here can never drift from the price you are charged. With scripting switched off there is nothing to build it from.</p>
+        <a class="btn-back" href="shop.html">See the same items in the shop</a>
+      </div>
+    </div>
+  </section>
+</noscript>
+
+<!-- ============ THE UNKNOWN AGENT VIEW ============
+     Both views below start hidden and the script reveals one and
+     REMOVES the other, so the finished page carries exactly one
+     first-level heading rather than one visible and one hidden.
+     Shown instead of everything below when the address names an
+     agent that does not exist. A real message beats a blank page. -->
+<section class="band" id="viewMissing" hidden>
+  <div class="wrap">
+    <div class="notfound panel">
+      <span class="accent-bar" aria-hidden="true"></span>
+      <div class="ico" id="missingMark" aria-hidden="true"></div>
+      <h1 class="section-title">No agent at that address</h1>
+      <p>The library has sixteen entries and none of them is <span class="asked" id="missingSku">that one</span>.</p>
+      <p>The address may have been mistyped, or the agent may have been renamed since the link was shared.</p>
+      <a class="btn-back" href="library.html">Back to the library index</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ THE AGENT ============ -->
+<div id="viewAgent" hidden>
+
+  <section class="detail-hero" aria-labelledby="agentName">
+    <div class="wrap">
+      <div class="detail-head">
+        <div class="detail-mark ico" id="agentMark" aria-hidden="true"></div>
+        <div>
+          <span class="badge" id="agentBadge">Agent</span>
+          <h1 class="detail-name" id="agentName">Agent</h1>
+          <p class="detail-blurb" id="agentBlurb"></p>
+
+          <div class="price">
+            <div>
+              <span class="price-label">Subscription</span>
+              <span class="price-amt" id="priceSub"></span>
+              <span class="price-pv" id="pvSub"></span>
+            </div>
+            <div>
+              <span class="price-label">One time</span>
+              <span class="price-amt" id="priceOnce"></span>
+              <span class="price-pv" id="pvOnce"></span>
+            </div>
+          </div>
+          <p class="price-note">Personal Volume (PV) equals dollars in both modes. A subscription grants its PV every month it stays active; a one-time purchase grants its PV once.</p>
+
+          <p class="buy-line">
+            <span>Buy it or read the sales page:</span>
+            <a id="shopLink" href="shop.html">Open in the shop</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- what is inside: bundle and packs only -->
+  <section class="band band-alt" id="insideSection" aria-labelledby="insideTitle" hidden>
+    <div class="wrap">
+      <h2 class="section-title" id="insideTitle">What is inside</h2>
+      <hr class="rule">
+      <p class="lead" id="insideLead"></p>
+      <div class="inside-grid" id="insideGrid"></div>
+    </div>
+  </section>
+
+  <!-- the six fields -->
+  <section class="band" aria-labelledby="detailTitle">
+    <div class="wrap">
+      <h2 class="section-title" id="detailTitle">The full entry</h2>
+      <hr class="rule">
+
+      <div class="fields">
+        <div class="field">
+          <h3>What it does</h3>
+          <p id="fieldDoes"></p>
+        </div>
+        <div class="field">
+          <h3>Who it is for</h3>
+          <p id="fieldWho"></p>
+        </div>
+        <div class="field">
+          <h3>The problem it solves</h3>
+          <p id="fieldProblem"></p>
+        </div>
+        <div class="field field-wide">
+          <h3>Four things it actually handles</h3>
+          <ul class="handles" id="fieldHandles"></ul>
+        </div>
+        <div class="field field-wide">
+          <h3>How it works alongside the other agents</h3>
+          <p id="fieldTogether"></p>
+        </div>
+        <div class="field field-wide" id="fieldNoteBlock" hidden>
+          <h3 id="fieldNoteTitle">Say this plainly to a customer</h3>
+          <p id="fieldNote"></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- walk the catalog -->
+  <section class="band band-alt" aria-labelledby="walkTitle">
+    <div class="wrap">
+      <h2 class="section-title" id="walkTitle">Keep reading</h2>
+      <hr class="rule">
+      <div class="walk">
+        <a class="walk-link panel" id="walkPrev" href="library.html">
+          <span class="ico" id="prevMark" aria-hidden="true"></span>
+          <span class="walk-body">
+            <span class="walk-dir">Previous</span>
+            <span class="walk-name" id="prevName"></span>
+          </span>
+        </a>
+        <a class="walk-link walk-next panel" id="walkNext" href="library.html">
+          <span class="ico" id="nextMark" aria-hidden="true"></span>
+          <span class="walk-body">
+            <span class="walk-dir">Next</span>
+            <span class="walk-name" id="nextName"></span>
+          </span>
+        </a>
+      </div>
+      <p class="table-note">The catalog is a loop: the last entry leads back to the first, so you can walk all sixteen without returning to the index.</p>
+    </div>
+  </section>
+
+</div>
+
+</main>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-cols">
+      <div class="footer-col">
+        <h2 class="footer-head">Shop</h2>
+        <a class="flink" href="shop.html">The catalog</a>
+        <a class="flink" href="library.html#tiers">Domain agents</a>
+        <a class="flink" href="library.html#tiers">Support agents</a>
+        <a class="flink" href="library.html#groups">Packs and the bundle</a>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Library</h2>
+        <a class="flink" href="library.html#catalog">The sixteen agents</a>
+        <a class="flink" href="library.html#choose">How to choose</a>
+        <span class="flink">Getting started</span>
+        <span class="flink">Selling resources</span>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Learn</h2>
+        <a class="flink" href="index.html">About Orvanna</a>
+        <a class="flink" href="team.html">Who builds Orvanna</a>
+        <span class="flink">Frequently asked questions</span>
+        <span class="flink">Latest updates</span>
+      </div>
+      <div class="footer-col">
+        <h2 class="footer-head">Support</h2>
+        <span class="flink">Help center</span>
+        <span class="flink">Contact</span>
+        <span class="flink">Activation status</span>
+      </div>
+    </div>
+
+    <div class="footer-meta">
+      <a class="footer-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
+      <p class="legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+    </div>
+  </div>
+</footer>
+
+<script src="js/catalog.js?v=2440b7a330fc"></script>
+<script src="js/library-icons.js?v=2440b7a330fc"></script>
+<script>
+/* ============================================================
+   ORVANNA CONDUCTOR LIBRARY: the agent detail template.
+
+   ONE FILE SERVES ALL SIXTEEN AGENTS. The address selects the
+   agent: library-agent.html?sku=payment
+
+   WHY A QUERY PARAMETER AND NOT SIXTEEN FILES. Please read this
+   before "improving" it into separate pages.
+
+   Every price and every Personal Volume (PV) figure on this page
+   is read at load time from js/catalog.js, which is the single
+   source of truth for the whole site and is held in a written
+   lockstep contract with the server's own price mirror. Sixteen
+   hand-maintained files would each carry their own copy of those
+   numbers. Copies drift. A price that drifts is not a cosmetic
+   fault here: PV equals dollars, PV drives Sales Volume, Sales
+   Volume drives qualification, and qualification drives what the
+   compensation plan pays. One template that reads catalog.js
+   cannot drift, because there is nothing to keep in step.
+
+   product.html already works exactly this way, so this is the
+   established pattern in this project, not a new invention.
+
+   Each agent still gets its own real address, which can be
+   shared, bookmarked, printed, and linked to from anywhere.
+
+   What lives WHERE:
+     catalog.js         name, tier, blurb, prices, PV, includes
+     library-icons.js   the sixteen marks
+     LIBRARY_NOTES      the six library fields, below. Prose only:
+                        not one number that catalog.js also holds.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  var O = window.ORVANNA;
+  var ICONS = window.ORVANNA_LIBRARY_ICONS || {};
+
+  /* ------------------------------------------------------------
+     LIBRARY_NOTES: the teaching copy, one entry per sku.
+       does      what it does
+       who       who it is for
+       problem   the problem it solves
+       handles   four concrete jobs
+       together  how it works alongside the other agents
+       note      optional, an honest word about how it is priced
+     Prose only. Prices are never written here.
+     ------------------------------------------------------------ */
+  var LIBRARY_NOTES = {
+
+    payment: {
+      does: 'It watches every transaction from authorization through settlement, sorts declines by the reason the bank gave, and retries the ones worth retrying on a schedule that fits that reason. Then it reconciles what the processor actually paid against what you actually sold.',
+      who: 'Any business taking card payments that has never had the time to work a decline queue, and any business whose payout figures and sales figures have quietly stopped agreeing.',
+      problem: 'A failed payment is a silent loss. Nothing breaks, no alarm sounds, and the sale simply walks away. Recovering a share of those is usually the fastest money in the catalog.',
+      handles: [
+        'Reconciles the previous day of settlements against your orders each morning, to the cent',
+        'Categorizes declines and schedules retries by decline reason, not on a blind timer',
+        'Assembles refund and chargeback packets with response codes and full history attached',
+        'Writes an end of day settlement summary you can read in about a minute'
+      ],
+      together: 'It hands clean payment records to Accounting, dispute evidence to whoever answers disputes, and live transaction facts to Customer Care so support answers are true. Large refunds, new retry rules, and any change to how declines are handled stop at your desk first.'
+    },
+
+    shipping: {
+      does: 'It compares carrier rates and delivery estimates order by order, books the shipment, sends the tracking link, and then checks every open parcel several times a day. Anything that stops moving gets chased while it is still fixable.',
+      who: 'Anyone shipping physical goods who currently learns about a late parcel from the customer rather than from the carrier.',
+      problem: 'A late parcel becomes a support ticket, and the ticket costs more than the postage did. Catching the delay first turns an angry message into a message you sent.',
+      handles: [
+        'Rate and transit comparison per order, then the booking itself',
+        'Tracking links out to customers as soon as a label exists',
+        'Carrier inquiries filed the day a parcel stops scanning',
+        'Loss claims drafted with the paperwork attached, waiting on your approval'
+      ],
+      together: 'It feeds delivery status to Customer Care so support never guesses, freight cost to Accounting so it lands in the right column, and inbound arrival dates to Inventory. Carrier changes, claim submissions, and any promise of a refund stay yours to make.'
+    },
+
+    pricing: {
+      does: 'It tracks your costs and the listed prices of your competitors, recomputes margin on every item you sell, and puts anything drifting outside the bands you set on a review list. It proposes; it never reprices on its own.',
+      who: 'Businesses whose supplier costs move faster than their price sheet, and anyone who has ever discovered a loss-making item months after it started losing money.',
+      problem: 'Prices go stale quietly. Nothing announces that a price set last quarter is now selling at the margin of last quarter, so the discovery is usually accidental and late.',
+      handles: [
+        'Per item margin recalculated as costs and competitor prices move',
+        'A live watchlist of items outside the margin bands you defined',
+        'A weekly price review: raise, hold, or discount, line by line',
+        'The reasoning shown on every proposal, so approval is a judgement not a leap'
+      ],
+      together: 'It shares margin figures with Marketing before any promotion is built on them, cost data with Accounting so the books match the shelf, and aging signals from Inventory feed its discount proposals. Your pricing strategy stays yours; it runs the arithmetic and keeps the watchlist.'
+    },
+
+    inventory: {
+      does: 'It reconciles stock counts against sales and receipts every night, tracks how fast each item actually moves, and recalculates reorder points as those speeds change. When an item crosses its point, the purchase order is already drafted.',
+      who: 'Any business holding stock, where cash is sitting on a shelf and nobody has time to work out which shelf is the expensive one.',
+      problem: 'Stockouts lose the sale and overstock loses the cash, and most businesses are doing both at once in different items without a way to see it.',
+      handles: [
+        'Nightly reconciliation of counts against sales and receipts, with every gap investigated',
+        'Velocity per item, with safety margins that follow the real numbers',
+        'Purchase orders drafted at the reorder point: supplier, quantity, expected cost filled in',
+        'Slow movers flagged early, while they are still stock rather than dead stock'
+      ],
+      together: 'It tells Shipping what is arriving, Pricing what is aging and might justify a discount, and Accounting what the stockroom is worth at month end. Supplier choice and every purchase order remain your call; it never spends money without a yes.'
+    },
+
+    marketing: {
+      does: 'It drafts posts, emails, and product copy in your voice, schedules whatever you approve, and measures what each campaign returned. It learns from your results rather than from a generic playbook.',
+      who: 'Owners who market in bursts because there is never a calm week to do it properly, and anyone spending on channels they have never actually measured.',
+      problem: 'Consistent marketing beats brilliant marketing that ships twice a year. The hard part is not the idea, it is showing up every week with something to send.',
+      handles: [
+        'A morning set of drafts in your voice, waiting for your edits',
+        'Scheduling and sending for anything you approve, on the calendar you set',
+        'A weekly readout: what ran, what it cost, what came back',
+        'A proposed fix attached to every underperformer, not just a red number'
+      ],
+      together: 'It pulls real margin from Pricing before proposing any discount, so a promotion cannot quietly sell at a loss, and it hands warm inquiries to Customer Care with the context attached. Nothing publishes without your approval; the brand voice and the final word stay yours.'
+    },
+
+    tax: {
+      does: 'It categorizes transactions for tax treatment as they happen and keeps a live calendar of filing obligations for every region you sell in. Ahead of each date it assembles the return, the supporting schedules, and a plain-language note on what changed.',
+      who: 'Businesses selling into more than one place, and any owner whose quarter currently ends in a search for receipts.',
+      problem: 'Deadlines do not care how busy the quarter was. The work is not hard so much as unforgiving about dates, which is exactly the kind of work software should hold.',
+      handles: [
+        'A live filing calendar per region, kept current as you enter new markets',
+        'Rate changes flagged the day it learns of them, not the week of the filing',
+        'The return, its schedules, and a summary of what moved since last period',
+        'Records kept in the shape an auditor asks for, rather than the shape they happened to arrive in'
+      ],
+      together: 'It draws clean figures from Accounting and payment records from the Payment Agent, so the return matches the books by construction rather than by luck. The boundary is deliberate and worth repeating to customers: it prepares, it never files. Your accountant stays the authority and signs.'
+    },
+
+    engineer: {
+      does: 'It takes requests written in plain language, scopes each one into a change, writes and tests it against your actual setup, and stages it for your approval. You read a two-line summary, not the code, unless you want the code.',
+      who: 'Any business carrying a short list of small software problems that have waited months because none of them felt big enough to hire someone for.',
+      problem: 'Calling a developer about a broken contact form feels like too much effort, so the form stays broken. The cost is invisible and it compounds.',
+      handles: [
+        'A request queue you write in ordinary English, one line per item',
+        'Bug fixes and small features, tested before you ever see them',
+        'Connections between the tools you already pay for',
+        'Error watching on your site and internal tools, usually reported with the fix attached'
+      ],
+      together: 'It pairs naturally with Quality Assurance, which checks its work before you see it, and it takes escalations from any domain agent that hits a technical wall. Nothing deploys without your go-ahead.'
+    },
+
+    qa: {
+      does: 'It runs a test pass on every change to your site and tools, walking the paths your revenue walks through: pages, forms, checkout, and the numbers on screen against the records underneath.',
+      who: 'Anyone whose customers are currently the people finding the defects, and anyone shipping changes with nothing between the change and the customer.',
+      problem: 'A customer finding a bug is the most expensive way to find it. The same bug found an hour earlier costs almost nothing.',
+      handles: [
+        'Page loads, form submissions, and checkout completion, checked on every change',
+        'Difficult-customer testing: wrong inputs, slow connections, small screens, double clicks',
+        'Findings filed by severity with steps to reproduce and screenshots attached',
+        'Clean passes reported too, so silence never has to mean untested'
+      ],
+      together: 'It reviews the changes made by the Software Engineer agent as a matter of routine, and it takes test requests from you in plain language: check this page, try this flow, break this if you can. It blocks nothing on its own authority; it reports and you decide what ships.'
+    },
+
+    secretary: {
+      does: 'It holds the operational memory a busy owner drops: who you promised to call, what the meeting decided, which follow-up is now overdue. Scheduling stops being correspondence and becomes something that happens.',
+      who: 'Owners whose calendar and commitments currently live in their head, and anyone losing a morning a week to arranging times.',
+      problem: 'The promise made on Tuesday is the one that quietly does not happen. Not through neglect, just through volume.',
+      handles: [
+        'Scheduling, including the reschedules, with the blocks you mark as yours protected',
+        'Routine correspondence drafted, never sent until you say yes',
+        'Meeting notes with decisions and owners separated out from the discussion',
+        'One page each morning: appointments, promised follow-ups, and what slips if today ignores it'
+      ],
+      together: 'It keeps notes any other agent can search later, and it turns commitments made in a Customer Care conversation into real calendar entries. It signs nothing and commits you to nothing; your calendar rules are its law.'
+    },
+
+    executive: {
+      does: 'It reads across sales, costs, and operations, keeps a scorecard against the targets you set, and names drift early, while correcting it is still cheap. Once a week it writes the briefing a chief of staff would write.',
+      who: 'An owner who is always inside the week and never above it, especially one already running several agents whose reports nobody has time to read together.',
+      problem: 'Nobody in a small business is paid to stand back. The standing-back function is the first thing dropped and the last thing missed.',
+      handles: [
+        'A daily read of the figures every other agent produced',
+        'A scorecard against the targets you stated, not targets it invented',
+        'A weekly briefing: three numbers that moved, why they moved, one recommendation',
+        'Priorities passed to the other agents so the whole ensemble pulls in one direction'
+      ],
+      together: 'It is the only agent that reads from all of them, which is what makes its weekly note worth more than the sum of the individual reports. It recommends and never decides. Strategy, hiring, spending, and direction stay where they belong.'
+    },
+
+    accounting: {
+      does: 'It categorizes transactions against your chart of accounts as they occur and reconciles bank and processor balances continuously, rather than in a rush at month end. Anything it cannot place with confidence goes on a short question list for you.',
+      who: 'Any business whose month end is currently an excavation, and anyone whose accountant starts each engagement by cleaning up.',
+      problem: 'Books that are current are rare. Books that are current and correct are rarer. Everything downstream, tax included, inherits whatever state they are in.',
+      handles: [
+        'Daily categorization, with a short question list rather than a silent guess',
+        'Bank and processor reconciliation to the cent',
+        'Month-end statements drafted, with a plain-language note on what changed and why',
+        'Locked periods that stay locked'
+      ],
+      together: 'It receives settlement data from Payment, freight costs from Shipping, and stock values from Inventory, then feeds clean figures to Tax. It proposes journal entries; it does not invent them. Anything outside the routine waits for you or your accountant.'
+    },
+
+    care: {
+      does: 'It watches your inbox and chat, answers what it can prove from your own records, around the clock and in the tone you choose, and drafts replies for the questions it cannot answer alone.',
+      who: 'Anyone answering the same twenty questions every week, and anyone whose hard cases wait behind easy ones.',
+      problem: 'The routine inbox eats the hours meant for the business. Clearing it does not just save time, it also gets the difficult cases to you while they are still small.',
+      handles: [
+        'Order status answered live from real shipping data, not from a guess',
+        'Round-the-clock first replies in the tone you set',
+        'A full log: who asked what, what was answered, what is still open',
+        'A weekly note on repeated questions, because a repeated question is product feedback'
+      ],
+      together: 'It pulls delivery status from Shipping and transaction facts from Payment so its answers are true, and passes each product complaint to the agent whose domain it touches. It never promises money, credit, or a policy change on its own; those drafts wait for you.'
+    },
+
+    manager: {
+      does: 'It runs the Software Engineer, Secretary, and Accounting agents as one small ensemble. You stop dispatching tasks to three separate agents; you say what you need and it decides who does what, in what order, and reports back once.',
+      who: 'Someone already running two or three support agents who has noticed that coordinating them has become a job of its own.',
+      problem: 'Three useful agents still need sequencing, and right now that someone is you. A management layer is the thing being bought here, not extra capacity.',
+      handles: [
+        'One shared task list across its three agents',
+        'The collisions: the code change that touches the books, the meeting that lands on the monthly close',
+        'One daily summary instead of three',
+        'One point of contact for anything the trio produced'
+      ],
+      together: 'It is the single answer point for its trio, and it takes direction from the Chief Executive agent if you run one. Its authority ends where yours begins: it sequences and delegates inside the trio, and brings anything external, financial, or irreversible to you.',
+      noteTitle: 'Say this plainly to a customer',
+      note: 'This is the one item in the catalog priced above the sum of its parts. The extra buys the coordination, and pretending otherwise would be the wrong way to sell it. Both figures are shown above, so a customer who adds it up will find exactly the numbers you quoted.'
+    },
+
+    ignition: {
+      does: 'It covers the three jobs that start on day one of a storefront and never stop: the money comes in and is accounted for, the questions get answered, and the commitments get kept.',
+      who: 'A first storefront, or a small business automating for the first time and wanting the smallest set that changes a week.',
+      problem: 'New operators usually buy too much or too little. This is a deliberately small starting formation, sized so you can tell what it changed.',
+      handles: [
+        'Daily settlement reconciliation and worked declines, from the Payment Agent',
+        'Round-the-clock inbox answers drawn from your own records, from Customer Care',
+        'The calendar and the follow-ups, from the Secretary',
+        'Handoffs between the three: a payment question in the inbox gets a real transaction answer'
+      ],
+      together: 'The three share what they know, so a promised callback lands on the calendar by itself and a billing question is answered from real transaction data. Each keeps its own approval boundary: refunds, unusual replies, and new commitments still come to you.',
+      noteTitle: 'Honest guidance',
+      note: 'This pack is priced at exactly the sum of its parts, so you are buying the selection and not a discount. Take it if the shortlist saves you a decision. Buy the three agents individually if you would rather add and drop them one at a time; the price and the Personal Volume (PV) come out identical either way.'
+    },
+
+    momentum: {
+      does: 'It staffs both sides of the seam that growth tears open: demand goes up while margin and quality try to keep pace. Marketing and Pricing work together, the Software Engineer and Quality Assurance work together, and the Payment Agent catches what volume multiplies.',
+      who: 'A business past the starting line and now growing, where campaigns are outrunning margins or changes are outrunning testing.',
+      problem: 'Growth rarely breaks a business evenly. It breaks it at the seams, and the two most common seams are a promotion sold below margin and a change shipped without a check.',
+      handles: [
+        'Campaigns drafted, scheduled, and measured every week',
+        'Margin checked before any promotion is allowed to be built on it',
+        'Site and tool changes shipped, then tested before a customer meets them',
+        'The extra declines that growth produces, worked rather than absorbed'
+      ],
+      together: 'The five trade data constantly: campaign results inform the price review, the price review shapes the next promotion, and every change to the site is tested before it can cost a sale. You set the direction and approve the changes.',
+      noteTitle: 'Honest guidance',
+      note: 'Priced at exactly the sum of its parts, so there is no discount here either. This is the right pack when the growth is already happening; buying it in anticipation usually means paying for capacity before there is work for it.'
+    },
+
+    constellation: {
+      does: 'All six domain agents run their own function through the day while the Manager Agent keeps its support trio moving underneath them. The day ends in one combined report, with the exceptions that need you listed first.',
+      who: 'An established operation that would otherwise be hiring across several functions at once, and wants one place to look each morning instead of six.',
+      problem: 'Past a certain size the expensive part is not any single function, it is the ferrying between them. This is the formation where coordination pays the most.',
+      handles: [
+        'Settlements flowing to the books without anyone carrying a spreadsheet',
+        'Stock levels flowing to reorder points, and costs flowing to prices',
+        'Clean figures flowing to filings, which is why the tax packet is ready early',
+        'One combined daily report, exceptions first'
+      ],
+      together: 'This is the pack where the handoffs matter most, because every one of them would otherwise be a person moving a file. Scale changes nothing about authority: every filing, payment change, and purchase order still stops at your desk for a yes.',
+      noteTitle: 'Honest guidance',
+      note: 'Seven listed items, and ten agents once you count through the trio inside the Manager Agent. Priced at exactly the sum of its parts, like the other packs. What you are buying is the whole formation live on the same day, and the coordination between its parts.'
+    }
+  };
+
+  /* ---------- theme: auto, light, or dark ---------- */
+  /* Declared before it is used, and called on both paths below, so
+     the control works on the missing-agent view too. */
+
+  function wireTheme() {
+    var root = document.documentElement;
+    var STORE_KEY = 'orvannaLibraryTheme';
+    var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-theme-set]'));
+
+    function paint(choice) {
+      buttons.forEach(function (button) {
+        button.setAttribute('aria-pressed', String(button.getAttribute('data-theme-set') === choice));
+      });
+    }
+
+    function apply(choice) {
+      if (choice === 'light' || choice === 'dark') {
+        root.setAttribute('data-theme', choice);
+      } else {
+        root.removeAttribute('data-theme');
+      }
+      try {
+        if (choice === 'system') { window.localStorage.removeItem(STORE_KEY); }
+        else { window.localStorage.setItem(STORE_KEY, choice); }
+      } catch (err) {
+        /* storage blocked: the choice still applies for this visit */
+      }
+      paint(choice);
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        apply(button.getAttribute('data-theme-set'));
+      });
+    });
+
+    var saved = 'system';
+    try {
+      var value = window.localStorage.getItem(STORE_KEY);
+      if (value === 'light' || value === 'dark') { saved = value; }
+    } catch (err) { saved = 'system'; }
+    paint(saved);
+  }
+
+  /* ---------- resolve the agent from the address ---------- */
+
+  var sku = null;
+  try {
+    sku = new URLSearchParams(window.location.search).get('sku');
+  } catch (err) {
+    sku = null;   /* very old browser: fall through to the missing view */
+  }
+
+  var product = sku ? O.get(sku) : null;
+  var notes = product ? LIBRARY_NOTES[product.sku] : null;
+
+  /* Take the losing view out of the document rather than hiding it.
+     Hidden content still carries its headings into the outline, and
+     a page with two first-level headings is a page a screen reader
+     has to disambiguate for no reason. */
+  function drop(id) {
+    var node = document.getElementById(id);
+    if (node && node.parentNode) { node.parentNode.removeChild(node); }
+  }
+
+  if (!product || !notes) {
+    drop('viewAgent');
+    /* A real message, not a blank page. What was asked for is echoed
+       back, escaped through textContent so a crafted address cannot
+       inject markup into the page. */
+    document.getElementById('viewMissing').hidden = false;
+    document.getElementById('missingSku').textContent = sku ? '?sku=' + sku : 'the one you asked for';
+    document.getElementById('missingMark').innerHTML = ICONS.constellation || '';
+    document.getElementById('crumbHere').textContent = 'Not found';
+    document.title = 'Not found | Orvanna Conductor Library';
+    wireTheme();
+    return;
+  }
+
+  drop('viewMissing');
+  document.getElementById('viewAgent').hidden = false;
+
+  /* ---------- the head ---------- */
+
+  var TIER_LABEL = {
+    domain: { text: 'Domain agent', cls: 'badge badge-domain' },
+    support: { text: 'Support agent', cls: 'badge' },
+    bundle: { text: 'Bundle', cls: 'badge badge-group' },
+    pack: { text: 'Digital pack', cls: 'badge badge-group' }
+  };
+
+  var tier = TIER_LABEL[product.tier] || TIER_LABEL.support;
+  var badge = document.getElementById('agentBadge');
+  badge.className = tier.cls;
+  badge.textContent = tier.text;
+
+  document.title = product.name + ' | Orvanna Conductor Library';
+  document.getElementById('crumbHere').textContent = product.name;
+  document.getElementById('agentMark').innerHTML = ICONS[product.sku] || '';
+  document.getElementById('agentName').textContent = product.name;
+  document.getElementById('agentBlurb').textContent = product.blurb;
+
+  /* ---------- prices, every figure straight from catalog.js ---------- */
+
+  document.getElementById('priceSub').innerHTML =
+    O.fmtMoney(product.sub.price) + ' <span class="per">/ month</span>';
+  document.getElementById('pvSub').textContent = O.fmtPv(product.sub.pv) + ' a month';
+  document.getElementById('priceOnce').innerHTML =
+    O.fmtMoney(product.once.price) + ' <span class="per">once</span>';
+  document.getElementById('pvOnce').textContent = O.fmtPv(product.once.pv) + ' once';
+  document.getElementById('shopLink').href = 'product.html?sku=' + product.sku;
+
+  /* ---------- what is inside (bundle and packs) ---------- */
+
+  if (product.includes && product.includes.length) {
+    document.getElementById('insideSection').hidden = false;
+
+    var partsSum = product.includes.reduce(function (total, childSku) {
+      var child = O.get(childSku);
+      return total + (child ? child.sub.price : 0);
+    }, 0);
+
+    /* Stated as a comparison, computed here rather than typed, so the
+       sentence cannot disagree with the prices above it. */
+    var relation = partsSum === product.sub.price
+      ? 'Bought separately those come to ' + O.fmtMoney(partsSum) + ' a month, which is exactly what this item costs. You are buying the selection, not a discount.'
+      : 'Bought separately those come to ' + O.fmtMoney(partsSum) + ' a month, and this item is ' + O.fmtMoney(product.sub.price) + ' a month. The difference buys the coordination layer, which is the product.';
+
+    document.getElementById('insideLead').textContent =
+      product.includes.length + ' items. ' + relation;
+
+    document.getElementById('insideGrid').innerHTML = product.includes.map(function (childSku) {
+      var child = O.get(childSku);
+      if (!child) { return ''; }
+      return '<a class="inside-chip panel" href="library-agent.html?sku=' + child.sku + '">' +
+        '<span class="ico" aria-hidden="true">' + (ICONS[child.sku] || '') + '</span>' +
+        '<span class="inside-body">' +
+          '<span class="inside-name">' + child.name + '</span>' +
+          '<span class="inside-blurb">' + child.blurb + '</span>' +
+        '</span>' +
+      '</a>';
+    }).join('');
+  }
+
+  /* ---------- the six fields ---------- */
+
+  document.getElementById('fieldDoes').textContent = notes.does;
+  document.getElementById('fieldWho').textContent = notes.who;
+  document.getElementById('fieldProblem').textContent = notes.problem;
+  document.getElementById('fieldTogether').textContent = notes.together;
+
+  var handles = document.getElementById('fieldHandles');
+  notes.handles.forEach(function (job) {
+    var li = document.createElement('li');
+    li.textContent = job;
+    handles.appendChild(li);
+  });
+
+  if (notes.note) {
+    document.getElementById('fieldNoteBlock').hidden = false;
+    document.getElementById('fieldNoteTitle').textContent = notes.noteTitle || 'Worth knowing';
+    document.getElementById('fieldNote').textContent = notes.note;
+  }
+
+  /* ---------- walk the catalog, wrapping at both ends ---------- */
+
+  var order = O.PRODUCTS;
+  var at = 0;
+  order.forEach(function (item, index) { if (item.sku === product.sku) { at = index; } });
+
+  var prev = order[(at - 1 + order.length) % order.length];
+  var next = order[(at + 1) % order.length];
+
+  document.getElementById('walkPrev').href = 'library-agent.html?sku=' + prev.sku;
+  document.getElementById('prevName').textContent = prev.name;
+  document.getElementById('prevMark').innerHTML = ICONS[prev.sku] || '';
+
+  document.getElementById('walkNext').href = 'library-agent.html?sku=' + next.sku;
+  document.getElementById('nextName').textContent = next.name;
+  document.getElementById('nextMark').innerHTML = ICONS[next.sku] || '';
+
+  wireTheme();
+})();
+</script>
+
+</body>
+</html>

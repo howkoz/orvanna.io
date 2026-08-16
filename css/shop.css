@@ -589,10 +589,15 @@
    the Pay button now sits disabled for the ~2 seconds that takes, on EVERY
    payment, so the least readable state became one of the most seen.
    Stating both colours keeps the contrast a decision rather than a side effect.
-   Computed: #0F172A on #64748B is 4.63:1. */
+   MEASURED, not estimated, 2026-08-15. The previous value here was #64748B
+   under a comment claiming 4.63:1. It actually measures 3.75:1, under the 4.5
+   floor the same comment invokes. The claim was written rather than computed,
+   which is the failure this project keeps repeating, so the number below was
+   calculated and is stated as a measurement.
+   Computed: #0F172A on #7C8AA0 is 5.10:1. */
 .btn:disabled {
-  background: #64748B;
-  border-color: #64748B;
+  background: #7C8AA0;
+  border-color: #7C8AA0;
   color: #0F172A;
   opacity: 1;
   cursor: default;
