@@ -1139,7 +1139,11 @@ a.flink:hover { color: var(--cyan); }
   .hero-inner { padding: 0 20px; }
   .nav-inner { padding: 12px 20px; justify-content: center; }
   .nav-links { gap: 13px; justify-content: center; }
-  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em; }
+  /* min-height 24px: the links measured about 23 pixels tall at this
+     size (quality assurance finding L5, fixed 2026-08-16); inline-flex
+     centres the label inside the taller touch target. */
+  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em;
+    min-height: 24px; display: inline-flex; align-items: center; }
   .nav-signin { padding-left: 13px; }
   .soon-pill { margin-left: 5px; padding: 1px 5px 2px; font-size: 0.55rem; }
   .leaders { grid-template-columns: 1fr; }

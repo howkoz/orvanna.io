@@ -740,6 +740,18 @@
 .btn-place:disabled { background: #7C8AA0; border-color: #7C8AA0; color: #0F172A; opacity: 1; cursor: not-allowed; }
 .place-hint { font-size: 0.74rem; color: #94A3B8; text-align: center; margin-top: 6px; }
 
+/* A failure ending on the payment status line reads as a failure
+   (owner request 2026-08-16; the engine sets and clears the class,
+   see js/payments.js; same rule as shop.css). #FCA5A5, one stop
+   lighter than the #F87171 red the shop already uses. COMPUTED, not
+   eyeballed: 10.35 to 1 on the bare navy field (#060B18), 8.84 to 1
+   on the lightest glass-panel gradient stop composited over navy,
+   10.07 to 1 on the darkest, all above the 4.5 to 1 floor. The
+   console has no light theme, so the dark figures are the whole
+   story. The compound selector outranks .place-hint's grey on the
+   status element (higher specificity, not just later order). */
+.place-hint.pay-status-failure, .pay-status-failure { color: #FCA5A5; }
+
 /* ---------- confirmation: designed for reading aloud ---------- */
 
 .confirm-panel { border-color: rgba(34, 211, 238, 0.35); }

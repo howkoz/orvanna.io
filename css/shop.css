@@ -1054,6 +1054,18 @@ a.product-icon { display: block; }
   margin: 12px 0 20px;
 }
 
+/* A failure ending on the payment status line reads as a failure
+   (owner request 2026-08-16; the engine sets and clears the class,
+   see js/payments.js). #FCA5A5 is the light stop of the red family
+   already in this sheet (.line-remove:hover uses #F87171, one stop
+   deeper). COMPUTED, not eyeballed: 10.35 to 1 on the bare navy
+   field (#060B18), 8.84 to 1 on the lightest glass-panel gradient
+   stop composited over navy, 10.07 to 1 on the darkest, all above
+   the 4.5 to 1 floor. This page has no light theme (corporate.css
+   hard-codes the navy field), so the dark figures are the whole
+   story. */
+.pay-status-failure { color: #FCA5A5; }
+
 .wallet-note {
   font-size: 0.84rem;
   color: var(--text-d);

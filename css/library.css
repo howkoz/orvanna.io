@@ -711,6 +711,28 @@ tbody th {
   white-space: nowrap;
 }
 
+/* Links inside tables. The packs-and-bundle rows on library.html are
+   injected by that page's script as plain anchors with no class, so
+   without this rule they fell back to the browser's default link
+   blue: computed 1.84 to 1 on the dark panel, the exact washed-out
+   class caught 2026-08-14 (quality assurance finding H1, fixed
+   2026-08-16). The accent token computes 5.36 to 1 on the light
+   panel and 9.57 to 1 on the dark panel; visited keeps the same
+   colour, and the hover wash still computes 4.81 to 1 light and
+   8.21 to 1 dark, so every state clears the 4.5 to 1 floor in both
+   themes. Same treatment as .situation-a a below. */
+table a,
+table a:visited {
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+}
+table a:hover,
+table a:focus-visible {
+  background: var(--accent-soft);
+}
+
 .table-note { font-size: 0.82rem; color: var(--muted); margin-top: 12px; }
 
 /* ============================================================
@@ -1182,7 +1204,11 @@ a.flink:hover { color: var(--chrome-accent); }
   .rail-inner, .crumb { padding-left: 20px; padding-right: 20px; }
   .nav-inner { padding: 12px 20px; justify-content: center; }
   .nav-links { gap: 13px; justify-content: center; }
-  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em; }
+  /* min-height 24px: the links measured about 23 pixels tall at this
+     size (quality assurance finding L5, fixed 2026-08-16); inline-flex
+     centres the label inside the taller touch target. */
+  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em;
+    min-height: 24px; display: inline-flex; align-items: center; }
   .nav-signin { padding-left: 13px; border-left: 0; }
   .price { grid-template-columns: 1fr; }
   .panel { padding: 24px 20px 22px; }

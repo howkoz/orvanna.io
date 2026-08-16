@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-<link rel="stylesheet" href="css/corporate.css?v=2440b7a330fc">
-<link rel="stylesheet" href="css/shop.css?v=2440b7a330fc">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ce0eca3abc2d">
+<link rel="stylesheet" href="css/corporate.css?v=ce0eca3abc2d">
+<link rel="stylesheet" href="css/shop.css?v=ce0eca3abc2d">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=ce0eca3abc2d" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -183,6 +183,20 @@
               <label class="field-label" for="memberCode">Member code</label>
               <input class="field" type="text" id="memberCode" autocomplete="off" spellcheck="false">
               <p class="field-hint">Optional. Credits this order to a referring member.</p>
+              <!-- N-H1, whole-project audit 2026-08-16: a signed-in shopper
+                   used to see the demonstration address here while the tax
+                   engine priced the member's real stored address, so the
+                   screen showed Iowa and the charge carried California tax.
+                   This demo holds no display copy of the stored address, so
+                   the honest minimal fix is to SAY which address the tax is
+                   computed against instead of implying it is the one shown. -->
+              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in, so tax is calculated against the billing address stored on this member's account, not the demonstration address shown above. The address fields here are display only for the demonstration.</p>
+              <!-- The guest half of N-H1, delivered 2026-08-16 (quality
+                   assurance finding M1): a guest order's tax is priced
+                   server side from the demonstration tax address in
+                   Illinois, never from these fields, and only the
+                   signed-in surface said so. Now both do. -->
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest. For this demonstration, tax on a guest order is priced from the demonstration tax address in Illinois, United States, not from the address you type here. The address fields here are display only for the demonstration.</p>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -572,15 +586,19 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=2440b7a330fc"></script>
+<script src="js/catalog.js?v=ce0eca3abc2d"></script>
+<script src="js/payments.js?v=ce0eca3abc2d"></script>
 <script>
 /* ============================================================
-   Orvanna shop, round 4. The catalog lives in js/catalog.js
-   (single source of truth). This script renders the catalog,
-   runs the mode-aware cart (subscription default, one-time via
-   the product page), and the four-step checkout: account,
-   billing address, activation, payment. Everything local,
-   nothing on the network, no console noise.
+   Orvanna shop. The catalog lives in js/catalog.js (single
+   source of truth) and the shared payment engine in
+   js/payments.js (extracted 2026-08-16; one engine, two pages).
+   This script renders the catalog, runs the mode-aware cart
+   (subscription default, one-time via the product page), and the
+   four-step checkout: account, billing address, activation,
+   payment. With LIVE_PAYMENTS on, the payment step runs real
+   test-mode payments through the engine; everything else stays
+   local.
    ============================================================ */
 (function () {
   'use strict';
@@ -925,13 +943,21 @@
     if (!codeField) return;
     if (codeField.readOnly) { codeField.value = ''; }
     codeField.readOnly = false;
+    /* Corrected 2026-08-16 (quality assurance finding M1): this used
+       to say a guest's tax "really is priced from what is on screen",
+       which was false. The server prices every guest order from the
+       demonstration tax address in Illinois (HOUSE_TAX_ADDRESS in
+       functions/_shared/tax.ts) regardless of what is typed here. So
+       the signed-in note comes down and the guest note goes up. */
+    document.getElementById('addressTaxNote').hidden = true;
+    document.getElementById('addressTaxNoteGuest').hidden = false;
   }
 
   document.getElementById('chooseGuest').addEventListener('click', function () {
     accountMode = 'guest';
     clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
-    accountStatus.textContent = 'Checking out as a guest. Enter your billing address below.';
+    accountStatus.textContent = 'Checking out as a guest. For this demonstration, tax on a guest order is priced from the demonstration tax address in Illinois, not from the address fields below.';
     setAccountStage('done');
   });
 
@@ -1001,8 +1027,11 @@
         return memberDisplayName(signedInCode).then(function (row) {
           var name = (row && row.display_name) || signedInCode;
           accountMode = 'member';
-          /* the billing address stays synthetic, because this demo
-             holds no real addresses; the NAME is the member's own */
+          /* the billing address fields stay synthetic, because this
+             demo holds no display copy of real addresses; the NAME is
+             the member's own. The SERVER prices tax from the member's
+             stored address, not from these fields, and the note below
+             the member code says so plainly (N-H1). */
           setAddress({
             name: name,
             street: SYNTHETIC_ADDRESS.street,
@@ -1010,6 +1039,8 @@
             state: SYNTHETIC_ADDRESS.state,
             zip: SYNTHETIC_ADDRESS.zip
           });
+          document.getElementById('addressTaxNote').hidden = false;
+          document.getElementById('addressTaxNoteGuest').hidden = true;
           /* this is what actually credits the order: create-payment
              resolves it against app.members server side */
           var codeField = document.getElementById('memberCode');
@@ -1074,26 +1105,18 @@
      ============================================================ */
   const LIVE_PAYMENTS = true;
 
+  /* The endpoints and the public anonymous key now live in ONE place,
+     js/payments.js (OrvannaPayments.CONFIG), shared with the staff
+     console. This page keeps only the restBase alias: the read-only
+     data interface, used ONLY to turn a signed-in member code into
+     that member's display name. It reaches the same seven public
+     v_demo_* views the portal already reads with the same public key,
+     so this adds no new surface. The sign-in credential itself is
+     never checked here: that happens inside the demo-login function,
+     against bcrypt hashes in a table the public key cannot read. */
   var LIVE_CONFIG = {
-    /* Supabase Edge Function base for the Orvanna project. */
-    functionsBase: 'https://oiyibdczkokegaxkwulv.supabase.co/functions/v1',
-    /* The public anon key: public by design, grants nothing on
-       the database; it only lets the browser invoke the
-       functions. Same key the portal pages already ship. */
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw',
-    /* The read-only data interface, used ONLY to turn a signed-in
-       member code into that member's display name. It reaches the
-       same seven public v_demo_* views the portal already reads with
-       the same public key, so this adds no new surface. The sign-in
-       credential itself is never checked here: that happens inside
-       the demo-login function, against bcrypt hashes in a table the
-       public key cannot read. */
-    restBase: 'https://oiyibdczkokegaxkwulv.supabase.co/rest/v1',
-    /* The sanctioned external script (spec section 1.4). Pinned
-       from the HyperSwitch documentation at wiring time; confirm
-       against the dashboard docs before flipping the flag and
-       record the final URL in the QA sheet. */
-    hyperLoaderUrl: 'https://beta.hyperswitch.io/v1/HyperLoader.js'
+    anonKey: window.OrvannaPayments.CONFIG.anonKey,
+    restBase: 'https://oiyibdczkokegaxkwulv.supabase.co/rest/v1'
   };
 
   /* ---------- step 4: payment method ---------- */
@@ -1237,14 +1260,23 @@
     if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
       /* Already answered for exactly this cart: repaint the real
          figure rather than flashing the estimate back over it. */
-      applyServerTotals(liveServerTotals);
+      applyServerTotals(engine.getServerTotals());
     } else if (taxExempt()) {
       taxLabel.innerHTML = 'Tax exempt';
       document.getElementById('sumTax').textContent = '$0.00';
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
     } else {
+      /* N-H1: a signed-in member's tax is priced from the address
+         stored on their account, so the label says so rather than
+         letting the demonstration address fields imply otherwise.
+         The guest half, delivered 2026-08-16 (quality assurance
+         finding M1): a guest order is priced from the demonstration
+         tax address in Illinois, so the guest estimate says that
+         too instead of implying the typed address is used. */
       taxLabel.innerHTML = LIVE_PAYMENTS
-        ? 'Tax <span class="row-hint">estimate, working it out</span>'
+        ? (accountMode === 'member'
+          ? 'Tax <span class="row-hint">estimate, from the address on file for this member</span>'
+          : 'Tax <span class="row-hint">estimate, from the demonstration tax address, Illinois</span>')
         : 'Tax <span class="row-hint">5 percent</span>';
       document.getElementById('sumTax').textContent = fmtMoney(m.tax);
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
@@ -1373,146 +1405,28 @@
      card data and never sends prices, names, addresses, or tax
      identifiers: the create-payment request carries only
      { sku, mode, quantity } lines plus the activation choice,
-     the tax exempt yes or no, the optional member code, and the
+     the tax identifier text, the optional member code, and the
      channel (spec section 1.2).
+
+     EXTRACTED 2026-08-16: the machinery below (resume storage,
+     transport, amount signature, tax quote, challenge chrome and
+     reveal, receipt classifiers, polling clocks, record-tax) now
+     lives in js/payments.js, shared with the staff console. This
+     page keeps what is genuinely its own: the auto-open behavior,
+     the shopper copy, the resume view, and the confirmation
+     renderer. All shopper-facing strings are injected into the
+     engine through the copy table below and belong to this page.
      ============================================================ */
 
-  var liveState = {
-    orderNumber: null,
-    clientSecret: null,
-    hyper: null,
-    widgets: null,
-    busy: false,
-    /* true once the bank's approval overlay has been seen for this
-       attempt: it changes both the waiting schedule and the wording */
-    sawChallenge: false,
-    /* true once a payment has been handed to the bank and the button
-       may only ask what happened, never submit again */
-    checkOnly: false,
-    /* true while an on-load resume is unresolved, so nothing can
-       start a second payment behind it */
-    resuming: false
-  };
   var livePayArea = document.getElementById('livePayArea');
   var livePayNote = document.getElementById('livePayNote');
   var livePayStatus = document.getElementById('livePayStatus');
   var payOrderChip = document.getElementById('payOrderChip');
   var payOrderNum = document.getElementById('payOrderNum');
 
-  function liveStatus(message) {
-    livePayStatus.hidden = !message;
-    livePayStatus.textContent = message || '';
-  }
-
-  /* ============================================================
-     RESUME STATE
-
-     The bank's approval step can take the whole page away with a
-     history-replacing navigation, so anything we want back must be
-     written BEFORE the payment is confirmed, never in a callback.
-
-     Two copies, on purpose:
-     - sessionStorage survives a same-tab redirect and is scoped to
-       the tab, which is the correct default. The client secret, a
-       bearer token for this one payment, lives here and nowhere
-       else.
-     - localStorage is the fallback for a bank application that
-       bounces the shopper back into a NEW tab, which starts with
-       an empty sessionStorage. It carries no secret and expires
-       after thirty minutes.
-     ============================================================ */
-
-  var RESUME_KEY = 'orv.resume.v1';
-  var RESUME_MAX_AGE_MS = 30 * 60 * 1000;
-
-  function resumeSave(patch) {
-    var base = resumeRead() || {};
-    var next = {
-      v: 1,
-      order_number: patch.order_number || base.order_number || null,
-      client_secret: patch.client_secret || base.client_secret || null,
-      total_cents: typeof patch.total_cents === 'number' ? patch.total_cents : (base.total_cents || null),
-      saw_challenge: patch.saw_challenge === true || base.saw_challenge === true,
-      created_at_ms: base.created_at_ms || Date.now(),
-      channel: 'shop'
-    };
-    try {
-      window.sessionStorage.setItem(RESUME_KEY, JSON.stringify(next));
-    } catch (e) { /* private mode: the query parameter still carries the order */ }
-    try {
-      var lean = JSON.parse(JSON.stringify(next));
-      lean.client_secret = null;          /* never a bearer token in localStorage */
-      window.localStorage.setItem(RESUME_KEY, JSON.stringify(lean));
-    } catch (e) { /* same */ }
-  }
-
-  function parseStore(store) {
-    try {
-      var raw = store.getItem(RESUME_KEY);
-      if (!raw) return null;
-      var v = JSON.parse(raw);
-      if (!v || v.v !== 1 || !v.order_number) return null;
-      if (Date.now() - Number(v.created_at_ms || 0) > RESUME_MAX_AGE_MS) return null;
-      return v;
-    } catch (e) { return null; }
-  }
-
-  /* sessionStorage first (it has the secret and the right scope),
-     then localStorage (the new-tab case) */
-  function resumeRead() {
-    var s = null, l = null;
-    try { s = parseStore(window.sessionStorage); } catch (e) { s = null; }
-    try { l = parseStore(window.localStorage); } catch (e) { l = null; }
-    if (s && l && s.order_number === l.order_number) {
-      s.saw_challenge = s.saw_challenge || l.saw_challenge;
-    }
-    return s || l;
-  }
-
-  function resumeClear() {
-    try { window.sessionStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
-    try { window.localStorage.removeItem(RESUME_KEY); } catch (e) { /* nothing to clear */ }
-  }
-
-  /* The address the bank comes back to. Built from the origin and
-     the path, never from the live address bar, so no leftover query
-     or hash from an earlier attempt rides along. The server builds
-     the same address from the return_page we send it; this copy is
-     what the widget itself uses. */
-  function canonicalReturnUrl(orderNum) {
-    var url = new URL(window.location.pathname, window.location.origin);
-    url.search = '';
-    url.hash = '';
-    if (orderNum) url.searchParams.set('orv', orderNum);
-    return url.toString();
-  }
-
-  var ORDER_NUMBER_RE = /^ORV-\d{4}-\d{2}-[0-9A-Z]{6}$/;
-
-  /* invoke an Edge Function; resolves { status, data } and never
-     rejects on an HTTP error status (the caller reads status) */
-  function fnCall(name, method, body) {
-    return fetch(LIVE_CONFIG.functionsBase + '/' + name, {
-      method: method,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + LIVE_CONFIG.anonKey,
-        'apikey': LIVE_CONFIG.anonKey
-      },
-      body: body ? JSON.stringify(body) : undefined
-    }).then(function (resp) {
-      return resp.json().catch(function () { return {}; }).then(function (data) {
-        return { status: resp.status, data: data };
-      });
-    });
-  }
-
-  function friendlyError(result, fallback) {
-    if (result && result.data && result.data.error && result.data.error.message) {
-      return result.data.error.message;
-    }
-    return fallback;
-  }
+  var esc = window.OrvannaPayments.esc;
+  var friendlyError = window.OrvannaPayments.friendlyError;
+  var ORDER_NUMBER_RE = window.OrvannaPayments.ORDER_NUMBER_RE;
 
   /* the cart snapshot the server prices: never any price fields */
   function cartPayload() {
@@ -1522,83 +1436,179 @@
     });
   }
 
+  var engine = window.OrvannaPayments.createPaymentEngine({
+    live: LIVE_PAYMENTS,
+    channel: 'shop',
+    returnPage: 'shop.html',
+    resumeKey: 'orv.resume.v1',
+    mountId: 'hyperswitchMount',
+    buttonId: 'placeOrderBtn',
+    statusId: 'livePayStatus',
+    skeletonId: 'cardFormSkeleton',
+    /* nothing the shopper can reach may change the amount that is
+       currently being authorized */
+    inertSelectors: '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
+      '#memberCode, #taxId, .pay-btn, #cartButton, #checkoutButton, ' +
+      '#backToShop, #accountSwitch',
+    /* everything that can move the amount, in one place. The tax
+       identifier goes as itself, not a verdict: the server and Stripe
+       decide what it means (verifier finding, 2026-08-15). */
+    signaturePayload: function () {
+      return {
+        items: cartPayload(),
+        activation: deliveryChoice(),
+        tax_id: taxIdInput.value.trim(),
+        member_code: document.getElementById('memberCode').value.trim()
+      };
+    },
+    quoteGate: function () {
+      return !!(views.checkout && views.checkout.classList.contains('is-active') &&
+        Object.keys(cart).length > 0);
+    },
+    totals: { taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint' },
+    /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE. Full history of
+       the "shown one number, charged another" fault: see the note in
+       liveMountCheckout below. */
+    onTotalsApplied: function (t) {
+      if (!placeOrderBtn.hidden && liveState.clientSecret) {
+        placeOrderBtn.textContent = 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode';
+      }
+    },
+    /* THE SHOPPER COPY TABLE. Second person, speaking to the person
+       holding the card. Every failing message says nothing was
+       charged, without exception. */
+    copy: {
+      loaderFailed: 'The secure card form could not load. Nothing was charged. Please try again.',
+      sdkSubmitFailed: 'The card form could not submit.',
+      challengeOpenStatus: 'Your bank is asking you to approve this payment. Finish in the window from your bank. Nothing has been charged yet.',
+      finishingStatus: 'Finishing your order, one moment. Nothing is charged until this settles.',
+      bankSaidPrefix: ' Your bank said: ',
+      outcomeBroke: function () {
+        return 'The security check could not run just now. Nothing was charged, and nothing about your card is wrong. Please try again in a minute.';
+      },
+      outcomeRefused: function () {
+        return 'Your bank did not confirm it was you, so the payment stopped there. Nothing was charged and your cart is unchanged. You can try the approval again, or use a different card.';
+      },
+      outcomeApprovedThenDeclined: function (bankSaid) {
+        return 'Your bank confirmed it was you, then declined the payment itself.' + bankSaid +
+          ' Nothing was charged and your cart is unchanged. This is usually a limit or a hold on the card, so a different card will often work.';
+      },
+      outcomeChallengeDeclinedByCard: function (bankSaid) {
+        return 'You finished the approval step, and the payment was then declined by the card itself.' + bankSaid +
+          ' Nothing was charged and your cart is unchanged. That is the card refusing the amount rather than the approval failing, so a different card will often work.';
+      },
+      outcomeChallengeIncomplete: function (bankSaid) {
+        return 'The approval step did not complete, so the payment stopped there.' + bankSaid +
+          ' Nothing was charged and your cart is unchanged. You can try again, or use a different card.';
+      },
+      outcomeDeclined: function (bankSaid) {
+        /* The button at this moment reads "Continue to card details"
+           (the onReset hook sets it), so that is the name this
+           message uses. Corrected 2026-08-16 (quality assurance
+           finding L2): it used to say "Press Place order", a button
+           that was not on screen. */
+        return 'Declined.' + bankSaid +
+          ' Nothing was charged and your cart is unchanged. Press Continue to card details to try again with a different card.';
+      },
+      waitingAuth: function (orderNum) {
+        return 'Waiting for you to approve this with your bank. Order ' + orderNum +
+          '. We have not charged you yet.';
+      },
+      waitingProcessor: function (orderNum) {
+        return 'Still checking with the payment service, one moment. Order ' + orderNum +
+          '. We have not charged you yet.';
+      },
+      checkAgainLabel: 'Check this order again',
+      timeoutStatus: function (orderNum) {
+        return 'This is taking longer than usual and we still do not have an answer. ' +
+          'We have not charged you. Your order number is ' + orderNum +
+          '. Press the button to check again.';
+      }
+    },
+    hooks: {
+      onFinishing: function (on) {
+        if (on) livePayArea.hidden = false;
+      },
+      onChallengeClose: function () {
+        livePayArea.hidden = false;
+      },
+      onInertChange: function (on) {
+        document.body.classList.toggle('payment-in-flight', on);
+      },
+      onReset: function (message) {
+        if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
+        livePayNote.textContent = '';
+        payOrderChip.hidden = true;
+        payOrderNum.textContent = '';
+        livePayArea.hidden = !message;
+        cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
+        placeOrderBtn.disabled = false;
+        placeOrderBtn.textContent = (LIVE_PAYMENTS && payMethod === 'card')
+          ? 'Continue to card details'
+          : 'Place order';
+      },
+      /* success clears the cart (only then); the engine has already
+         fired the record-tax bookkeeping call */
+      onSuccess: function (receipt) {
+        liveRenderConfirmation(receipt);
+        cart = {};
+        persist();
+        renderAll();
+        liveResetPayment('');
+        showView('confirm');
+        liveRenderRecentOrders();
+      },
+      /* a decline preserves the cart */
+      onFailure: function (receipt) {
+        liveResetPayment(engine.outcomeMessage(receipt));
+      },
+      onTimeout: function () { /* the engine's shared handling suffices here */ },
+      onCheckError: function (result) {
+        liveState.busy = false;
+        engine.setInert(false);
+        /* leaving the finishing state on would hide the very button
+           this message tells the shopper to press (audit finding A2) */
+        engine.setFinishing(false);
+        placeOrderBtn.disabled = false;
+        liveStatus(friendlyError(result,
+          'Could not check the order just now. Your order number is ' + liveState.orderNumber +
+          '. Nothing has been charged. Press the button again in a moment.'));
+      }
+    }
+  });
+
+  var liveState = engine.state;
+  var fnCall = engine.fnCall;
+  var liveStatus = engine.status;
+  var resumeSave = engine.resumeSave;
+  var resumeRead = engine.resumeRead;
+  var resumeClear = engine.resumeClear;
+  var authApproved = engine.authApproved;
+  var awaitingAuthentication = engine.awaitingAuthentication;
+  var reasonOf = engine.reasonOf;
+  var liveOutcomeMessage = engine.outcomeMessage;
+  var nextPollDelay = engine.nextPollDelay;
+  var receiptTaxHint = engine.receiptTaxHint;
+
+  /* the two names the rest of this page already calls; both now walk
+     into the shared engine */
+  function liveEnsureQuote() { engine.ensureQuote(); }
+  function warmHyperLoader() { engine.warmHyperLoader(); }
+
   /* clear any in-flight payment; an optional message stays on
-     screen (used for the decline copy, cart untouched) */
+     screen (used for the decline copy, cart untouched). The whole
+     job, including cancelling any pending challenge reveal, lives in
+     the engine now; the shop's trailing user interface work runs in
+     the onReset hook above. */
   function liveResetPayment(message) {
-    /* the discarded payment's amount signature goes with it, so the
-       next call to liveEnsureCheckout opens a fresh one */
-    liveOpenedFor = null;
-    /* Server totals belong to a CART, not to a payment. Discarding a
-       payment because the amount moved must not also discard a tax
-       answer that is still correct for what is on screen, or the row
-       would drop back to "estimate" and re-ask a question already
-       answered. Anything that no longer matches is cleared. */
-    if (!liveTotalsAreCurrent()) liveServerTotals = null;
-    if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
-    liveState.orderNumber = null;
-    liveState.clientSecret = null;
-    liveState.hyper = null;
-    liveState.widgets = null;
-    liveState.busy = false;
-    liveState.sawChallenge = false;
-    liveState.checkOnly = false;
-    liveState.resuming = false;
-    resumeClear();
-    setPaymentInert(false);
-    document.getElementById('hyperswitchMount').innerHTML = '';
-    livePayNote.textContent = '';
-    payOrderChip.hidden = true;
-    payOrderNum.textContent = '';
-    if (message) {
-      livePayArea.hidden = false;
-      liveStatus(message);
-    } else {
-      livePayArea.hidden = true;
-      liveStatus('');
-    }
-    liveSetFinishing(false);
-    setCardSkeleton(false);
-    cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
-    placeOrderBtn.disabled = false;
-    placeOrderBtn.textContent = (LIVE_PAYMENTS && payMethod === 'card')
-      ? 'Continue to card details'
-      : 'Place order';
+    engine.resetPayment(message);
   }
 
-  /* ============================================================
-     THE FINISHING STATE
-
-     Between the bank's approval window closing and our server
-     saying what happened, there are a few seconds of waiting. The
-     provider's card form is still mounted underneath, so without
-     this the shopper watches the page snap back to an empty card
-     form and then jump to the receipt, which reads as though the
-     payment failed and then changed its mind. Reported 2026-08-15,
-     described exactly: it stops for a second back at the card entry
-     and then finishes at the complete page.
-
-     So while we are finishing, the card form and the button go
-     away and only the status line remains. Nothing here decides
-     the outcome; it is presentation over a wait whose answer still
-     comes from the server.
-     ============================================================ */
-  /* The placeholder that stands in for the card form while the server
-     opens the payment. Presentation only; it is torn down the instant
-     the real form mounts, and again on any reset. */
-  function setCardSkeleton(on) {
-    var sk = document.getElementById('cardFormSkeleton');
-    if (sk) sk.hidden = !on;
-  }
-
-  function liveSetFinishing(on) {
-    var mount = document.getElementById('hyperswitchMount');
-    if (mount) mount.hidden = !!on;
-    placeOrderBtn.hidden = !!on;
-    if (on) {
-      livePayArea.hidden = false;
-      livePayStatus.hidden = false;
-    }
-  }
+  /* The finishing state (the "snaps back to the card form" fix,
+     reported 2026-08-15) and the card-form skeleton both live in the
+     engine now, shared with the staff console. */
+  var liveSetFinishing = engine.setFinishing;
+  var setCardSkeleton = engine.setCardSkeleton;
 
   /* ============================================================
      THE CARD FORM IS THE PAYMENT STEP
@@ -1629,146 +1639,14 @@
      retries by hand.
      ============================================================ */
   var liveOpenTimer = null;
-  var liveOpenedFor = null;
-  /* What the server actually opened the payment for. Null until it answers.
-     The page can no longer work tax out for itself: a real engine knows what
-     California charges for software and a browser does not. So this is the
-     authority for the tax row and the pay button once it arrives, and until
-     then the page says "estimate" rather than quietly showing a guess as
-     though it were the figure. */
-  var liveServerTotals = null;
-
-  /* Server totals belong to the cart they were computed for. Without
-     this, an answer for a two-item cart could land after a third item
-     was added and paint a stale figure that looks authoritative. The
-     signature is stamped when the answer arrives and checked before it
-     is ever shown again. */
-  function liveTotalsAreCurrent() {
-    if (!liveServerTotals || !liveServerTotals.__sig) return false;
-    if (typeof liveAmountSignature !== 'function') return false;
-    return liveServerTotals.__sig === liveAmountSignature();
-  }
-
-  function applyServerTotals(t) {
-    if (!t) return;
-    if (!t.__sig) t.__sig = liveAmountSignature();
-    liveServerTotals = t;
-    var taxLabelEl = document.getElementById('taxLabel');
-    /* This string goes into innerHTML and shop.html has no escape helper
-       (code quality audit, 2026-08-15). Rather than introduce one for a
-       single use, the value is passed through an allow list: a
-       jurisdiction is only ever letters, spaces and commas, so anything
-       else is dropped and no markup can survive. */
-    var place = String(t.tax_jurisdiction || '').replace(/[^A-Za-z, ]/g, '').slice(0, 40);
-    var where = place ? ' ' + place : '';
-    if (t.tax_cents === 0) {
-      /* A zero is two different facts and the reason is the only thing that
-         separates them. not_collecting means we hold no registration there,
-         which is ours to fix; anything else means the place genuinely does not
-         tax this, which is the right answer. */
-      taxLabelEl.innerHTML = t.tax_reason === 'not_collecting'
-        ? 'Tax <span class="row-hint">not collected' + where + '</span>'
-        : 'Tax <span class="row-hint">none due' + where + '</span>';
-    } else {
-      taxLabelEl.innerHTML = 'Tax <span class="row-hint">' +
-        (t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated' + where) + '</span>';
-    }
-    document.getElementById('sumTax').textContent = fmtMoney(t.tax_cents / 100);
-    document.getElementById('checkoutTotal').textContent = fmtMoney(t.total_cents / 100);
-    if (!placeOrderBtn.hidden && liveState.clientSecret) {
-      placeOrderBtn.textContent = 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode';
-    }
-  }
-
-  function liveAmountSignature() {
-    return JSON.stringify({
-      items: cartPayload(),
-      activation: deliveryChoice(),
-      /* the identifier itself, not a verdict: the server and Stripe
-         decide what it means (verifier finding, 2026-08-15) */
-      tax_id: taxIdInput.value.trim(),
-      member_code: document.getElementById('memberCode').value.trim()
-    });
-  }
-
-  /* ============================================================
-     ASKING WHAT TAX IS OWED, WITHOUT STARTING A PAYMENT
-
-     Decision 2026-08-15: the tax has to be calculated BEFORE the
-     payment is sent, which means an additional call whose only job
-     is to price the tax.
-
-     That is the right architecture, and the reason is worth
-     stating because it is not obvious from the screen. Tax USED to
-     arrive as a by-product of opening a payment, which meant three
-     bad things at once: nothing could be priced without an order row
-     and a live payment being created at the processor; the seconds
-     before that answer showed a flat guess dressed as the answer;
-     and adding an item threw a perfectly good payment away purely to
-     re-ask what tax was owed.
-
-     So quoting and charging are now separate calls. quote-tax
-     creates nothing: no order, no payment, no tax record. It exists
-     to answer the question on screen. create-payment still prices
-     the cart from scratch when the payment opens, through the very
-     same shared code, and remains the only authority for the amount
-     that is charged.
-
-     WHY A SHORTER DEBOUNCE THAN THE PAYMENT'S 900ms: a quote is
-     cheap and creates nothing, so it can afford to be eager. Its
-     rate limit is its own bucket and deliberately looser, precisely
-     so that a shopper changing their mind repeatedly can still pay
-     at the end of it.
-     ============================================================ */
-  var QUOTE_DEBOUNCE_MS = 350;
-  var liveQuoteTimer = null;
-  var liveQuoteInFlight = null;   /* the signature currently being asked about */
-
-  function liveEnsureQuote() {
-    if (!LIVE_PAYMENTS) return;
-    if (typeof liveState === 'undefined' || !liveState) return;
-    if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
-    if (Object.keys(cart).length === 0) return;
-    /* An open bank window, or a payment already handed over, means the
-       amount is settled and no longer ours to re-quote. */
-    if (liveState.checkOnly || challengeOpen) return;
-
-    var signature = liveAmountSignature();
-    if (liveTotalsAreCurrent()) return;
-    if (liveQuoteInFlight === signature) return;
-
-    if (liveQuoteTimer) window.clearTimeout(liveQuoteTimer);
-    liveQuoteTimer = window.setTimeout(function () {
-      liveQuoteTimer = null;
-      var asking = liveAmountSignature();
-      if (liveTotalsAreCurrent() || liveQuoteInFlight === asking) return;
-      if (Object.keys(cart).length === 0) return;
-      liveQuoteInFlight = asking;
-      fnCall('quote-tax', 'POST', {
-        items: cartPayload(),
-        activation: deliveryChoice(),
-        tax_id: taxIdInput.value.trim(),
-        member_code: document.getElementById('memberCode').value.trim()
-      }).then(function (result) {
-        if (liveQuoteInFlight === asking) liveQuoteInFlight = null;
-        if (result.status !== 200 || !result.data || !result.data.totals) return;
-        /* THE STALENESS CHECK. Between asking and answering the shopper
-           may have changed the cart. An answer to a question nobody is
-           asking any more is dropped, not shown: a wrong figure that
-           looks calculated is worse than an estimate that admits it. */
-        if (liveAmountSignature() !== asking) return;
-        var t = result.data.totals;
-        t.__sig = asking;
-        applyServerTotals(t);
-      }).catch(function () {
-        if (liveQuoteInFlight === asking) liveQuoteInFlight = null;
-        /* Silent on purpose. The estimate is already on screen and
-           already labelled an estimate, and create-payment will price
-           the cart properly a moment later regardless. Shouting about
-           a failed display call would be noise about nothing. */
-      });
-    }, QUOTE_DEBOUNCE_MS);
-  }
+  /* The amount signature, the server-totals authority, and the tax
+     quote (quote-tax creates nothing: no order, no payment, no tax
+     record; create-payment remains the only authority for what is
+     charged) are all engine machinery now. These aliases keep this
+     page's call sites readable. */
+  var liveAmountSignature = engine.amountSignature;
+  var liveTotalsAreCurrent = engine.totalsAreCurrent;
+  var applyServerTotals = engine.applyServerTotals;
 
   function liveEnsureCheckout() {
     if (!LIVE_PAYMENTS) return;
@@ -1791,10 +1669,10 @@
     /* never disturb a payment already under way, a resume still
        resolving, an open bank window, or a finished one being
        re-checked */
-    if (liveState.busy || liveState.resuming || liveState.checkOnly || challengeOpen) return;
+    if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
 
     var signature = liveAmountSignature();
-    if (liveState.clientSecret && liveOpenedFor === signature) return;
+    if (liveState.clientSecret && engine.openedFor() === signature) return;
 
     if (liveOpenTimer) window.clearTimeout(liveOpenTimer);
     /* The debounce exists to stop a create per keystroke while a tax
@@ -1807,280 +1685,38 @@
     liveOpenTimer = window.setTimeout(function () {
       liveOpenTimer = null;
       /* re-check everything: nearly a second has passed */
-      if (liveState.busy || liveState.resuming || liveState.checkOnly || challengeOpen) return;
+      if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
       if (!views.checkout.classList.contains('is-active')) return;
       if (payMethod !== 'card' || Object.keys(cart).length === 0) return;
       var now = liveAmountSignature();
-      if (liveState.clientSecret && liveOpenedFor === now) return;
+      if (liveState.clientSecret && engine.openedFor() === now) return;
       if (liveState.clientSecret) {
-        /* replacing a payment opened against a total that has moved */
         /* the total moved after this payment was opened: discard it
            rather than let it settle at the old amount */
         liveResetPayment('');
       }
-      liveOpenedFor = now;
+      engine.setOpenedFor(now);
       liveStart();
     }, openDelay);
   }
 
-  /* ============================================================
-     INERT WHILE A PAYMENT IS IN FLIGHT
-
-     Nothing the shopper can reach may change the amount that is
-     currently being authorized. Really disabled, not dimmed, so a
-     keyboard user cannot tab into it either.
-     ============================================================ */
-
-  var inertOn = false;
-
-  function paymentInertControls() {
-    return [].slice.call(document.querySelectorAll(
-      '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
-      '#memberCode, #taxId, .pay-btn, #cartButton, #checkoutButton, ' +
-      '#backToShop, #accountSwitch'
-    ));
-  }
-
-  function setPaymentInert(on) {
-    if (on === inertOn) return;
-    inertOn = on;
-    paymentInertControls().forEach(function (el) {
-      if (on) {
-        if (el.disabled) el.setAttribute('data-was-disabled', '1');
-        el.disabled = true;
-      } else if (el.getAttribute('data-was-disabled')) {
-        el.removeAttribute('data-was-disabled');
-      } else {
-        el.disabled = false;
-      }
-    });
-    document.body.classList.toggle('payment-in-flight', on);
-  }
-
-  /* ============================================================
-     THE BANK APPROVAL OVERLAY
-
-     The payment widget injects a full-screen frame of its own for
-     the bank's approval screen. We do not control its contents, so
-     what we do control is everything around it: the page behind it
-     goes inert, our chrome bar carries the order number and the
-     test-mode reminder, focus moves into the dialog and stays
-     there, and screen readers are told what happened.
-     ============================================================ */
-
-  var challengeChrome = document.getElementById('challengeChrome');
-  var ccOrderNum = document.getElementById('ccOrderNum');
-  var ccCancel = document.getElementById('ccCancel');
-  var challengeOpen = false;
-  var focusBeforeChallenge = null;
-
-  function challengeFrame() {
-    return document.getElementById('orca-fullscreen');
-  }
-
-  function openChallengeChrome() {
-    if (challengeOpen) return;
-    challengeOpen = true;
-    liveState.sawChallenge = true;
-    resumeSave({ order_number: liveState.orderNumber, saw_challenge: true });
-    focusBeforeChallenge = document.activeElement;
-    ccOrderNum.textContent = liveState.orderNumber || 'not yet issued';
-    /* Move this bar to the very end of <body> before showing it.
-       The widget appends its full-screen bank frame to the body when
-       the challenge starts, so by then that frame is AFTER us in
-       document order. Both elements sit at the maximum z-index a
-       browser will honour (see the note in shop.css), and at equal
-       z-index the later element wins. Without this line the bar is
-       painted behind the bank frame and the shopper never sees the
-       order number, the test-mode notice, or the way out. */
-    try { document.body.appendChild(challengeChrome); } catch (e) { /* best effort */ }
-    challengeChrome.hidden = false;
-    setPaymentInert(true);
-    liveStatus('Your bank is asking you to approve this payment. Finish in the window from your bank. Nothing has been charged yet.');
-    try { ccCancel.focus(); } catch (e) { /* focus is best effort */ }
-    document.addEventListener('keydown', challengeKeydown, true);
-  }
-
-  function closeChallengeChrome() {
-    if (!challengeOpen) return;
-    challengeOpen = false;
-    challengeChrome.hidden = true;
-    document.removeEventListener('keydown', challengeKeydown, true);
-    /* The bank's window has gone but the payment is still in flight.
-       Put the page into the finishing state so the card form does not
-       reappear for a second on the way to the receipt. Deliberately
-       says nothing about the outcome: the shopper may have approved,
-       failed, or closed the window, and only the server knows which.
-       The cancel handler writes its own message straight after this,
-       which correctly replaces this one. */
-    if (liveState.busy) {
-      liveSetFinishing(true);
-      liveStatus('Finishing your order, one moment. Nothing is charged until this settles.');
-    }
-    /* focus must never be left on the control that just disappeared.
-       It goes back where it came from when that is still a real,
-       usable control, and otherwise to the status line, which is
-       exactly where the outcome is about to be written. */
-    var back = focusBeforeChallenge;
-    focusBeforeChallenge = null;
-    var CONTROLS = /^(BUTTON|INPUT|SELECT|TEXTAREA|A)$/;
-    if (back && document.contains(back) && !back.disabled && !back.hidden &&
-        CONTROLS.test(back.tagName || '')) {
-      try { back.focus(); return; } catch (e) { /* fall through */ }
-    }
-    try {
-      livePayArea.hidden = false;
-      livePayStatus.hidden = false;
-      livePayStatus.focus();
-    } catch (e) { /* fall through to the button */ }
-    if (document.activeElement !== livePayStatus) {
-      try { placeOrderBtn.focus(); } catch (err) { /* best effort */ }
-    }
-  }
-
-  /* Keyboard containment. The bank's own screen is a cross-origin
-     frame, so once focus is inside it the browser handles the
-     tabbing; what we can guarantee is that Tab never lands back on
-     the checkout behind the overlay, and that Escape does not
-     silently drop the shopper somewhere undefined. */
-  function challengeKeydown(e) {
-    if (e.key === 'Escape') {
-      e.preventDefault();
-      return;                    /* Escape must not orphan a live payment */
-    }
-    if (e.key !== 'Tab') return;
-    var frame = challengeFrame();
-    var stops = [ccCancel];
-    if (frame) stops.push(frame);
-    var index = stops.indexOf(document.activeElement);
-    e.preventDefault();
-    var next = e.shiftKey
-      ? stops[(index <= 0 ? stops.length : index) - 1]
-      : stops[(index + 1) % stops.length];
-    try { next.focus(); } catch (err) { /* best effort */ }
-  }
-
-  /* ============================================================
-     A BLANK WINDOW IS NOT A CHALLENGE
-
-     3-D Secure 2 has two phases and the payment widget runs BOTH in
-     the same full-screen frame. The first phase is silent: the card's
-     bank looks at the device and the transaction and, most of the
-     time, approves without asking the shopper anything. Only if it
-     wants proof does a second, visible phase draw a passcode form.
-
-     So the frame appearing means "authentication is running", NOT "a
-     challenge is up". Showing it immediately produced exactly what
-     was reported on 2026-08-15 with 4242 4242 4242 4242: a blank
-     white window for about two seconds, waiting for a challenge that
-     was never going to come, and our chrome bar announcing an
-     approval the bank had not asked for.
-
-     So the frame is made invisible the moment it appears, and is
-     revealed only if it is STILL THERE a beat later, which is the
-     tell that a real challenge rendered inside it. A frictionless
-     authentication finishes inside that beat and the shopper sees
-     nothing at all, which is the whole point of frictionless.
-
-     The delay is presentation only. It never gates the payment, and
-     the outcome still comes from our server either way.
-     ============================================================ */
-  var challengePendingTimer = null;
-  var CHALLENGE_REVEAL_MS = 1400;
-
-  function setChallengeFrameVisible(frame, visible) {
-    if (!frame) return;
-    frame.style.opacity = visible ? '' : '0';
-    frame.style.pointerEvents = visible ? '' : 'none';
-    /* M6, quality assurance audit 2026-08-15. The keyboard trap moves focus
-       between the cancel button and this frame, but an element with no
-       tabindex cannot take focus, so Tab simply stayed on Cancel and a
-       keyboard user could never reach into the bank's window at all. Setting
-       it here rather than in the markup is deliberate: the widget creates this
-       element itself, so this is the only moment we are certain it exists. */
-    if (visible) { try { frame.setAttribute('tabindex', '-1'); } catch (e) { /* best effort */ } }
-  }
-
-  function cancelChallengeReveal() {
-    if (challengePendingTimer) {
-      window.clearTimeout(challengePendingTimer);
-      challengePendingTimer = null;
-    }
-  }
-
-  /* Watch for the widget's overlay appearing and disappearing. */
-  if (window.MutationObserver) {
-    new MutationObserver(function () {
-      var frame = challengeFrame();
-      if (frame && !challengeOpen && !challengePendingTimer) {
-        setChallengeFrameVisible(frame, false);
-        challengePendingTimer = window.setTimeout(function () {
-          challengePendingTimer = null;
-          var still = challengeFrame();
-          /* gone already: the silent phase finished and there was
-             never anything for the shopper to look at */
-          if (!still) return;
-          setChallengeFrameVisible(still, true);
-          openChallengeChrome();
-        }, CHALLENGE_REVEAL_MS);
-      }
-      if (!frame) {
-        cancelChallengeReveal();
-        if (challengeOpen) closeChallengeChrome();
-      }
-    }).observe(document.body, { childList: true, subtree: true });
-  }
-
-  ccCancel.addEventListener('click', function () {
-    var frame = challengeFrame();
-    if (frame && frame.parentNode) frame.parentNode.removeChild(frame);
-    closeChallengeChrome();
+  /* The inert lockdown, the bank approval chrome, the keyboard trap,
+     and the "a blank window is not a challenge" reveal logic (now
+     driven by a real payment status poll rather than a timer guess)
+     all live in the engine. What stays here is what the CANCEL
+     button means on this page. */
+  document.getElementById('ccCancel').addEventListener('click', function () {
+    engine.removeChallengeFrame();
+    engine.closeChallengeChrome();
     /* the shopper may have approved and then backed out, so the
        server is still asked what really happened */
     liveStatus('Checking whether your bank approved before you closed that window. Nothing has been charged yet.');
     if (liveState.orderNumber) {
-      livePollReceipt(0, Date.now());
+      livePollReceipt(Date.now());
     } else {
       liveResetPayment('You closed the approval window before it finished. Nothing was charged and your cart is unchanged.');
     }
   });
-
-  /* load HyperLoader.js, the one sanctioned external script,
-     only on demand and only when the flag is true */
-  /* Cached, so calling this more than once cannot append a second
-     copy of the script. That matters now that it is deliberately
-     started EARLY as well as on demand. */
-  var hyperLoaderPromise = null;
-
-  function loadHyperLoader() {
-    if (window.Hyper) return Promise.resolve();
-    if (hyperLoaderPromise) return hyperLoaderPromise;
-    hyperLoaderPromise = new Promise(function (resolve, reject) {
-      var s = document.createElement('script');
-      s.src = LIVE_CONFIG.hyperLoaderUrl;
-      s.onload = function () { resolve(); };
-      s.onerror = function () {
-        /* let a later attempt try again rather than failing forever */
-        hyperLoaderPromise = null;
-        reject(new Error('The secure card form could not load. Nothing was charged. Please try again.'));
-      };
-      document.head.appendChild(s);
-    });
-    return hyperLoaderPromise;
-  }
-
-  /* Start fetching the card-form script the moment a shopper enters
-     checkout, which is a second or two before the payment step can
-     possibly need it. Before this, the download did not begin until
-     the server had already answered, so the shopper watched an empty
-     space while two waits ran one after the other instead of at the
-     same time. Failure here is deliberately ignored: the real attempt
-     later reports it properly. */
-  function warmHyperLoader() {
-    if (!LIVE_PAYMENTS) return;
-    try { loadHyperLoader().catch(function () { /* reported at use */ }); }
-    catch (e) { /* never let warming break checkout */ }
-  }
 
   function liveSubmit() {
     /* three guards against a second payment: the in-flight flag, an
@@ -2088,14 +1724,14 @@
        up. The server's guarded update makes a duplicate CONFIRM
        harmless; a duplicate CREATE would make a second order, which
        is what these guards exist to prevent. */
-    if (liveState.busy || liveState.resuming || challengeOpen) return;
+    if (liveState.busy || liveState.resuming || engine.isChallengeOpen()) return;
     /* a payment already handed to the bank is never re-submitted:
        the button becomes a way to ask again what happened to it */
     if (liveState.checkOnly && liveState.orderNumber) {
       liveState.busy = true;
       placeOrderBtn.disabled = true;
       liveStatus('Checking your order with the payment service.');
-      livePollReceipt(0, Date.now());
+      livePollReceipt(Date.now());
       return;
     }
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
@@ -2106,6 +1742,19 @@
      payment; the response carries the order number, the client
      secret, and the publishable key */
   function liveStart() {
+    /* Record the signature this payment is being opened against, the
+       way the staff console does in liveStaffStart. Fixed 2026-08-16
+       (verifier finding M2): the auto-open path recorded it before
+       calling in here, but the manual path in liveSubmit did not, so
+       after a decline (which nulls the recorded signature) a retry
+       press opened a payment whose recorded signature was null, and
+       the trailing liveEnsureCheckout re-check read that null as a
+       mismatch and destroyed and recreated the payment 900
+       milliseconds later: a duplicate demo order, a wasted
+       rate-limit token, and a wiped card form. Recording at start
+       covers both paths; the auto-open's earlier record is the same
+       value, so this is idempotent. */
+    engine.setOpenedFor(liveAmountSignature());
     liveState.busy = true;
     placeOrderBtn.disabled = true;
     livePayArea.hidden = false;
@@ -2142,7 +1791,7 @@
       /* deliberately NOT saved as resume state yet: nothing has been
          handed to a bank, so a page that reloads here should show
          the ordinary catalog, not a "finishing your order" panel */
-      return loadHyperLoader().then(function () {
+      return engine.loadHyperLoader().then(function () {
         liveMountCheckout(result.data.publishable_key);
       });
     }).catch(function (err) {
@@ -2155,43 +1804,58 @@
   /* step two: mount the provider's secure card form in the
      step-4 panel; card data goes only into that form */
   function liveMountCheckout(publishableKey) {
-    liveState.hyper = window.Hyper(publishableKey);
-    liveState.widgets = liveState.hyper.widgets({
-      clientSecret: liveState.clientSecret
-    });
-    var checkoutWidget = liveState.widgets.create('payment', { layout: 'tabs' });
-    checkoutWidget.mount('#hyperswitchMount');
-    setCardSkeleton(false);
+    /* the engine keeps the publishable key: the challenge reveal poll
+       needs it to ask the payment service for the payment's status */
+    engine.mountWidget(publishableKey);
     cardFields.hidden = true;
     walletNote.hidden = true;
-    /* CARD HINT. Every number here was run end to end against the
-       live rail on 2026-08-15 before this text was written. The
-       cards changed today because the PROCESSOR changed: the
-       account now runs Braintree in sandbox, and each processor
-       publishes its own test numbers.
+    /* CARD HINT. ONE TRUTH FOR THE CHALLENGE CARD, settled 2026-08-16
+       (verifier finding M1, quality assurance finding H3). The
+       history, kept honest rather than deleted:
+       - 2026-08-15 morning: the hint taught 4111 1111 1111 1111 as
+         the challenge card, seen parking at requires_customer_action
+         on the live rail.
+       - 2026-08-15, twenty-six minutes later: rewritten against
+         Braintree's published 3-D Secure 2 table to teach the 2503,
+         2370 and 2701 cards, and the note here claimed the earlier
+         4111 recommendation "could never finish" and that 4111 "is
+         not a 3-D Secure test card at all".
+       - 2026-08-16: server-side probes against the live rail proved
+         BOTH 4111 and 2503 park at requires_customer_action with a
+         next_action attached, so those two claims about 4111 were
+         wrong and are withdrawn.
+       - 2026-08-16, later the same day: the owner completed the 2503
+         challenge personally in a real browser on the live site, the
+         full chain, challenge to passcode 1234 to approval to ORDER
+         PLACED: order ORV-2026-08-0XWV5X, confirmed server-side as
+         succeeded ($110.25 including $10.25 tax, 12:12:31 UTC; run
+         on the pre-stabilization live build, same rail). So 2503 is
+         END-TO-END VERIFIED, ending included. The pending-human-
+         click-through caveat now applies ONLY to 4111's ending.
 
-       CORRECTED 2026-08-15 (second time today) against Braintree's
-       published 3-D Secure 2 table, after review found that the card
-       we were recommending could never finish. Two mistakes were in
-       the earlier hint: 4111 1111 1111 1111 is not a 3-D Secure test
-       card at all, and 4000 1111 1111 1115 DOES raise the approval
-       screen but is a decline card, so a correct passcode still ends
-       in a refusal. That reads as if the passcode was ignored.
-
-       Braintree's real table, expiry month 01 and year = current + 3:
-         4000 0000 0000 2503  approval screen, passcode, then APPROVED
+       The one story, told identically by this hint, staff.html's
+       hint, and docs/TEST-CARDS.html:
+         4000 0000 0000 2503  the primary recommended challenge card
+                              (Braintree's documented 3-D Secure
+                              challenge card; the sandbox passcode on
+                              its own screen is 1234; end-to-end
+                              verified 2026-08-16, order
+                              ORV-2026-08-0XWV5X)
          4000 0000 0000 2370  approval screen, authentication fails
-         4000 0000 0000 2701  no screen at all, approved (frictionless)
+                              (Braintree's documented table)
+         4000 0000 0000 2701  no screen at all, approves
+                              (frictionless, Braintree's documented
+                              table)
+         4111 1111 1111 1111  also raises a challenge on this rail
+                              (server-verified 2026-08-16; its ending
+                              is the one still unproven)
          4000 1111 1111 1115  approval screen, then the card declines
-       The passcode the sandbox displays on its own screen is 1234.
-
-       Only the first of those shows the whole journey ending in a
-       sale, so it leads the hint. Full matrix: docs/TEST-CARDS.html.
-       See also ROADMAP.md. */
+       Expiry month 01, year = current + 3. Full matrix:
+       docs/TEST-CARDS.html. See also ROADMAP.md. */
     livePayNote.textContent =
       'Test mode, expiry 01/29, any three digit security code. ' +
-      '4000 0000 0000 2503 asks your bank for the passcode 1234 and then approves. ' +
-      '4000 0000 0000 2370 asks, and the approval fails. ' +
+      '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. ' +
+      '4000 0000 0000 2370 opens it, and the approval fails. ' +
       '4000 0000 0000 2701 approves with no passcode at all. ' +
       'Nothing is ever charged.';
     liveStatus('');
@@ -2213,7 +1877,7 @@
        exists yet, and it is the same figure the summary is showing at
        that moment, so the two can never disagree on screen. */
     placeOrderBtn.textContent = 'Pay ' + fmtMoney(
-      liveTotalsAreCurrent() ? liveServerTotals.total_cents / 100 : orderMath().total
+      liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
     ) + ' now, test mode';
     placeOrderBtn.disabled = false;
     liveState.busy = false;
@@ -2244,14 +1908,14 @@
        they press the button again. The server reprices independently in any
        case, so this protects the shopper from a confusing charge rather than
        protecting the total, which was never the browser's to decide. */
-    if (liveState.clientSecret && liveOpenedFor !== liveAmountSignature()) {
+    if (liveState.clientSecret && engine.openedFor() !== liveAmountSignature()) {
       liveResetPayment('Your order changed while we were getting ready, so we have started that step again. Nothing was charged. Press the button once more when the card form appears.');
       liveEnsureCheckout();
       return;
     }
     liveState.busy = true;
     placeOrderBtn.disabled = true;
-    setPaymentInert(true);
+    engine.setInert(true);
     /* never a bare spinner: between this moment and the bank's
        screen there can be several seconds of quiet checking, and a
        message that implies the money is already moving would be a
@@ -2264,18 +1928,7 @@
       client_secret: liveState.clientSecret,
       total_cents: Math.round(orderMath().total * 100)
     });
-    liveState.hyper.confirmPayment({
-      widgets: liveState.widgets,
-      confirmParams: { return_url: canonicalReturnUrl(liveState.orderNumber) },
-      redirect: 'if_required'
-    }).then(
-      function (sdkResult) {
-        liveAfterSdk(sdkResult && sdkResult.error ? sdkResult.error : null);
-      },
-      function (err) {
-        liveAfterSdk({ message: (err && err.message) || 'The card form could not submit.' });
-      }
-    );
+    engine.confirmPayment().then(liveAfterSdk);
   }
 
   /* The card form's own verdict is advisory: a decline can reach
@@ -2285,10 +1938,7 @@
      invalid fields), which never left the browser: keep the form
      up for editing and say so. */
   function liveAfterSdk(sdkError) {
-    if (
-      sdkError &&
-      /incomplete|invalid|required|expir|number|cvc|cvv|blank|empty/i.test(sdkError.message || '')
-    ) {
+    if (engine.isValidationError(sdkError)) {
       liveState.busy = false;
       placeOrderBtn.disabled = false;
       liveStatus('The card form says: ' + sdkError.message +
@@ -2300,107 +1950,24 @@
        screen, whether or not a bank window was involved: it reappearing
        for a second on the way to the receipt reads as a failure that
        then changed its mind. Cleared on every ending by
-       liveResetPayment and by the timeout branch. */
+       liveResetPayment and by the engine's timeout branch. */
     liveSetFinishing(true);
-    livePollReceipt(0, Date.now());
+    livePollReceipt(Date.now());
   }
 
   /* ============================================================
      READING THE SERVER RECEIPT
 
-     The server sends back a short plain-English `reason` and a set
-     of named authentication fields. Those two are what let this
-     page tell four genuinely different stories apart, instead of
-     showing one generic decline for all of them. Everything here
-     tolerates their absence, because the older server shape had
-     neither field.
+     The classifiers, the SIX outcome stories (including the two that
+     keep a typed passcode from ever looking ignored), the two
+     waiting clocks, the poll loop, and the record-tax bookkeeping
+     call on success are all engine machinery now: see the copy table
+     above for this page's words and js/payments.js for the
+     machinery. Success and failure land back here through the
+     onSuccess and onFailure hooks.
      ============================================================ */
-
-  function authOf(r) { return (r && r.authentication) || {}; }
-  function reasonOf(r) { return (r && typeof r.reason === 'string') ? r.reason : ''; }
-
-  function transStatus(r) {
-    return String(authOf(r).trans_status || '').toUpperCase();
-  }
-
-  /* the bank confirmed the shopper's identity */
-  function authApproved(r) {
-    var ts = transStatus(r);
-    if (ts === 'Y' || ts === 'A') return true;
-    var st = String(authOf(r).status || '').toLowerCase();
-    return st === 'success' || st === 'authenticated' || st === 'authentication_successful';
-  }
-
-  /* the identity check ran and came back no, or never finished */
-  function authRefused(r) {
-    var ts = transStatus(r);
-    if (ts === 'N' || ts === 'R' || ts === 'U') return true;
-    var st = String(authOf(r).status || '').toLowerCase();
-    if (st === 'failed' || st === 'authentication_failed') return true;
-    return /authentication_failed|challenge_abandoned|attempt_reset|not_submitted/.test(reasonOf(r));
-  }
-
-  /* the identity check itself broke: nobody said no, it simply
-     could not run */
-  function authBroke(r) {
-    var a = authOf(r);
-    if (a.error_code || a.error_message) return true;
-    return /authentication_error|three_ds_error|3ds_error|unavailable/.test(reasonOf(r));
-  }
-
-  function awaitingAuthentication(r) {
-    if (reasonOf(r) === 'awaiting_authentication') return true;
-    var st = String((r && r.processor && r.processor.status) || '').toLowerCase();
-    return st === 'requires_customer_action';
-  }
-
-  /* The four distinct endings, plus the plain decline that has
-     nothing to do with a bank approval. Every failing message ends
-     by saying nothing was charged, without exception. */
-  function liveOutcomeMessage(receipt) {
-    var bankSaid = receipt.processor && receipt.processor.error_message
-      ? ' Your bank said: ' + receipt.processor.error_message + '.'
-      : '';
-    if (authBroke(receipt)) {
-      return 'The security check could not run just now. Nothing was charged, and nothing about your card is wrong. Please try again in a minute.';
-    }
-    if (authRefused(receipt) && !authApproved(receipt)) {
-      return 'Your bank did not confirm it was you, so the payment stopped there. Nothing was charged and your cart is unchanged. You can try the approval again, or use a different card.';
-    }
-    if (authApproved(receipt)) {
-      return 'Your bank confirmed it was you, then declined the payment itself.' + bankSaid +
-        ' Nothing was charged and your cart is unchanged. This is usually a limit or a hold on the card, so a different card will often work.';
-    }
-    /* THE PASSCODE MUST NEVER LOOK IGNORED.
-
-       The four branches above all depend on the authentication
-       object, and the processor's OWN 3-D Secure (which is what this
-       rail uses today) does not populate it. So a shopper who typed a
-       correct passcode and was then declined used to land on a bare
-       "Declined.", which reads as though the approval step did
-       nothing. That was hit and reported on 2026-08-15.
-
-       What this page knows first-hand is whether the approval window
-       opened, because it watched it open. That fact alone does not
-       say whether the approval SUCCEEDED, so the wording is decided
-       by what the processor actually said: a plain processor decline
-       means the money was refused after the approval step, whereas
-       anything else may well be the approval step itself failing. We
-       stop short of claiming the bank confirmed the shopper's
-       identity, because on this rail we genuinely cannot see that. */
-    if (liveState.sawChallenge) {
-      var declinedByCard =
-        /processor.?declined|do not honou?r|insufficient|card.?declined/i
-          .test((receipt.processor && receipt.processor.error_message) || '');
-      if (declinedByCard) {
-        return 'You finished the approval step, and the payment was then declined by the card itself.' + bankSaid +
-          ' Nothing was charged and your cart is unchanged. That is the card refusing the amount rather than the approval failing, so a different card will often work.';
-      }
-      return 'The approval step did not complete, so the payment stopped there.' + bankSaid +
-        ' Nothing was charged and your cart is unchanged. You can try again, or use a different card.';
-    }
-    return 'Declined.' + bankSaid +
-      ' Nothing was charged and your cart is unchanged. Press Place order to try again with a different card.';
+  function livePollReceipt(startedAt) {
+    engine.pollReceipt(startedAt);
   }
 
   /* success copy acknowledges the extra step when there was one */
@@ -2411,135 +1978,20 @@
     return 'Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.';
   }
 
-  /* ============================================================
-     TWO WAITING CLOCKS
-
-     Waiting for a processor takes seconds. Waiting for a person to
-     read a text message from their bank takes one to three
-     minutes. One schedule cannot serve both, and the old single
-     schedule (three checks over seven and a half seconds) timed
-     out in the middle of every real approval.
-     ============================================================ */
-
-  var PROCESSOR_WAIT_MS = 20 * 1000;
-  var AUTH_WAIT_MS = 10 * 60 * 1000;
-
-  function nextPollDelay(receipt, elapsedMs) {
-    if (awaitingAuthentication(receipt) || liveState.sawChallenge || challengeOpen) {
-      if (elapsedMs > AUTH_WAIT_MS) return -1;
-      return elapsedMs < 60 * 1000 ? 5000 : 10000;
-    }
-    if (elapsedMs > PROCESSOR_WAIT_MS) return -1;
-    return 2000;
-  }
-
-  function livePollReceipt(attempt, startedAt) {
-    fnCall('confirm-payment', 'POST', { order_number: liveState.orderNumber })
-      .then(function (result) {
-        if (result.status !== 200) {
-          liveState.busy = false;
-          setPaymentInert(false);
-          placeOrderBtn.disabled = false;
-          liveStatus(friendlyError(result,
-            'Could not check the order just now. Your order number is ' + liveState.orderNumber +
-            '. Nothing has been charged. Press the button again in a moment.'));
-          return;
-        }
-        liveHandleReceipt(result.data, startedAt);
-      });
-  }
-
-  /* act on the server's receipt: success clears the cart (only
-     then), a decline preserves it, in-flight waits on the right
-     clock and never calls itself an error */
-  function liveHandleReceipt(receipt, startedAt) {
-    if (receipt.payment_status === 'succeeded') {
-      /* The sale has completed, so the tax liability is now real and the
-         calculation should be recorded for reporting. Fire and forget, and
-         deliberately AFTER the receipt is rendered: this is bookkeeping, and a
-         shopper whose money has already moved must never wait on it. The job
-         is idempotent and picks up anything missed on its next run, so a
-         failure here costs a retry rather than a lost record. */
-      try { fnCall('record-tax', 'POST', {}).catch(function () { /* next run takes it */ }); }
-      catch (e) { /* never let bookkeeping break a receipt */ }
-      liveRenderConfirmation(receipt);
-      cart = {};
-      persist();
-      renderAll();
-      liveResetPayment('');
-      showView('confirm');
-      liveRenderRecentOrders();
-      return;
-    }
-    var reasonNow = reasonOf(receipt);
-    if (receipt.payment_status === 'failed' || receipt.payment_status === 'abandoned' ||
-        reasonNow === 'attempt_reset' || reasonNow === 'not_submitted') {
-      liveResetPayment(liveOutcomeMessage(receipt));
-      return;
-    }
-
-    var elapsed = Date.now() - startedAt;
-    var delay = nextPollDelay(receipt, elapsed);
-    if (delay > 0) {
-      liveStatus(awaitingAuthentication(receipt) || liveState.sawChallenge
-        ? 'Waiting for you to approve this with your bank. Order ' + liveState.orderNumber +
-          '. We have not charged you yet.'
-        : 'Still checking with the payment service, one moment. Order ' + liveState.orderNumber +
-          '. We have not charged you yet.');
-      window.setTimeout(function () {
-        livePollReceipt(0, startedAt);
-      }, delay);
-      return;
-    }
-
-    liveState.busy = false;
-    liveState.checkOnly = true;
-    setPaymentInert(false);
-    /* leaving the finishing state on here would hide the very button
-       this message tells the shopper to press */
-    liveSetFinishing(false);
-    placeOrderBtn.disabled = false;
-    placeOrderBtn.textContent = 'Check this order again';
-    liveStatus('This is taking longer than usual and we still do not have an answer. ' +
-      'We have not charged you. Your order number is ' + liveState.orderNumber +
-      '. Press the button to check again.');
-  }
-
   /* render the confirmation view from the SERVER receipt, not
-     from this page's math (spec section 1.2, step 8) */
-  /* THE RECEIPT MUST NAME THE RATE IT ACTUALLY CHARGED.
-
-     This row said "5 percent" no matter what, because that was true for as
-     long as tax was a flat guess. A New York order on 2026-08-15 was charged
-     $8.88 on $100.00 and the receipt still called it five percent, which is a
-     receipt stating a figure nobody was charged.
-
-     The rate is DERIVED from the receipt's own numbers rather than passed
-     alongside them, so it cannot disagree with the amount printed beside it,
-     and it keeps working on a resumed page where the checkout's own state is
-     long gone. Where we know the jurisdiction, it is named too: "8.88 percent,
-     NY" says considerably more than a bare number. */
-  function receiptTaxHint(r) {
-    var taxable = (r.subtotal_one_cents || 0) + (r.subtotal_sub_cents || 0) +
-                  (r.activation_fee_cents || 0);
-    if (!taxable || !r.tax_cents) return 'none due';
-    var pct = (r.tax_cents / taxable) * 100;
-    /* two decimals, because a combined rate like New York City's 8.875 is not
-       a whole number and rounding it to 9 would misstate what was charged */
-    var text = pct.toFixed(2).replace(/\.00$/, '') + ' percent';
-    var place = liveServerTotals && liveServerTotals.tax_jurisdiction
-      ? String(liveServerTotals.tax_jurisdiction).replace(/[^A-Za-z, ]/g, '').slice(0, 40)
-      : '';
-    return place ? text + ', ' + place : text;
-  }
-
+     from this page's math (spec section 1.2, step 8). The tax hint
+     is derived from the receipt's own numbers by the engine, so it
+     can never disagree with the amount printed beside it. */
   function liveRenderConfirmation(r) {
     function cents(c) { return fmtMoney(c / 100); }
 
     document.getElementById('confirmLines').innerHTML =
       (r.items || []).map(function (it) {
         var p = O.get(it.sku);
-        var name = p ? p.name : it.sku;
+        /* a sku the catalog does not know is a server-originated
+           string entering innerHTML, so it goes through the shared
+           escape helper */
+        var name = p ? p.name : esc(String(it.sku));
         var amount = it.unit_price * it.quantity;
         return '<div class="summary-line">' +
           '<span class="sl-name">' + name +
@@ -2594,12 +2046,14 @@
       if (result.status !== 200 || !result.data.orders) return;
       document.getElementById('liveOrdersList').innerHTML =
         result.data.orders.map(function (o) {
+          /* every server-originated string is escaped before it
+             enters innerHTML */
           return '<div class="summary-line">' +
-            '<span class="sl-name">' + o.order_number +
-              ' <span class="sl-qty">' + o.item_count +
+            '<span class="sl-name">' + esc(String(o.order_number)) +
+              ' <span class="sl-qty">' + esc(String(o.item_count)) +
               (o.item_count === 1 ? ' item' : ' items') + '</span></span>' +
             '<span class="sl-amt">' + fmtMoney(o.total) +
-              ' <span class="sl-per">' + o.payment_status + '</span></span>' +
+              ' <span class="sl-per">' + esc(String(o.payment_status)) + '</span></span>' +
           '</div>';
         }).join('');
       document.getElementById('liveOrdersSection').hidden = false;
@@ -2738,6 +2192,14 @@
         }
       }
       resumeApply(receipt);
+    }).catch(function () {
+      /* A2: a network failure here used to strand "checking with the
+         payment service" on screen forever. Clear the flag and leave
+         the shopper a working retry. */
+      liveState.resuming = false;
+      resumeSay('We could not reach the payment service just now. Nothing has been charged.',
+        'Press Check again in a moment.');
+      resumeCheckAgain.hidden = false;
     });
   }
 
@@ -2776,9 +2238,23 @@
         return;
       }
       lookupResult.textContent = '';
+      /* Fixed 2026-08-16 (verifier finding L2): the in-flight branch
+         of resumeApply renders the "Check again" button, whose click
+         handler reads liveState.orderNumber and silently returns when
+         it is empty; the lookup never set it, leaving a dead control.
+         The looked-up order is adopted the same way resumeConfirm
+         adopts one. Any open, unconfirmed checkout payment is
+         discarded first so the adopted number can never desync a
+         payment that is still holding the old one; a payment already
+         handed to a bank (checkOnly) is left alone. */
+      if (liveState.clientSecret && !liveState.checkOnly) liveResetPayment('');
+      liveState.orderNumber = value;
       liveState.sawChallenge = false;
       showResumeView(value);
       resumeApply(result.data);
+    }).catch(function () {
+      /* A2: the lookup must answer even on a network failure */
+      lookupResult.textContent = 'We could not reach the payment service just now. Nothing about the order changed. Please try again in a moment.';
     });
   }
 
