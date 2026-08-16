@@ -250,18 +250,14 @@
               <label class="field-label" for="memberCode">Member code</label>
               <input class="field" type="text" id="memberCode" autocomplete="off" spellcheck="false">
               <p class="field-hint">Optional. Credits this order to a referring member.</p>
-              <!-- N-H1, whole-project audit 2026-08-16: a signed-in shopper
-                   used to see the demonstration address here while the tax
-                   engine priced the member's real stored address, so the
-                   screen showed Iowa and the charge carried California tax.
-                   This demo holds no display copy of the stored address, so
-                   the honest minimal fix is to SAY which address the tax is
-                   computed against instead of implying it is the one shown. -->
-              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in, so tax is calculated against the billing address stored on this member's account, not the demonstration address shown above. The address fields here are display only for the demonstration.</p>
+              <!-- Revised 2026-08-16: the billing address starts blank
+                   for both signed-in and guest checkout, and tax/payment
+                   wait until the shopper enters State and ZIP. -->
+              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing State and ZIP so tax can be calculated before payment opens.</p>
               <!-- Revised 2026-08-16 after the checkout walk:
-                   guests naturally expect the visible billing State/ZIP
-                   fields to drive tax. They now do. Signed-in members still
-                   price from the member address stored server side. -->
+                   shoppers naturally expect the visible billing State/ZIP
+                   fields to drive tax. They now do for both guest and
+                   signed-in checkout. -->
               <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State and ZIP entered above. Tax stays pending until both fields are entered.</p>
             </div>
 
@@ -420,7 +416,7 @@
                  the address panel; signed-in members price from the stored
                  member address instead. -->
             <div class="taxid-row" id="guestTaxStateRow" hidden>
-              <p class="field-hint">Guest tax follows the billing State and ZIP fields. If you enter a referral code, the tax engine may use that member's stored address instead; the tax line is the final answer.</p>
+              <p class="field-hint">Tax follows the billing State and ZIP fields. The tax line appears after those fields are entered.</p>
             </div>
             <div class="taxid-row">
               <label class="field-label" for="taxId">Tax ID</label>
@@ -965,14 +961,6 @@
 
   /* ---------- step 1: account ---------- */
 
-  var SYNTHETIC_ADDRESS = {
-    name: 'Jordan Avery',
-    street: '4821 Meridian Loop',
-    city: 'Cedar Falls',
-    state: 'IA',
-    zip: '50613'
-  };
-
   var accountMode = null;  /* null | 'member' | 'guest' */
 
   var accountChooser = document.getElementById('accountChooser');
@@ -1018,10 +1006,10 @@
      The checkout walk exposed the confusing split: shoppers
      typed State/ZIP in the billing form, but the page priced tax
      from a separate summary selector that defaulted to Illinois.
-     The guest rule is now simpler: the visible billing State and
-     ZIP are the guest tax destination. A signed-in member still
-     sends blanks here so the server uses the member address stored
-     in the database.
+     The checkout rule is now simpler: tax stays pending until the
+     shopper reaches billing and enters State and ZIP. Member sign-in
+     still credits the order, but the checkout address is the tax
+     destination.
      ============================================================ */
   var billStreetInput = document.getElementById('billStreet');
   var billCityInput = document.getElementById('billCity');
@@ -1056,17 +1044,17 @@
   }
 
   function guestTaxState() {
-    return accountMode === 'member' ? '' : normalizeGuestState(billStateInput.value);
+    return accountMode === null ? '' : normalizeGuestState(billStateInput.value);
   }
 
   function guestTaxZip() {
-    if (accountMode === 'member') return '';
+    if (accountMode === null) return '';
     var m = String(billZipInput.value || '').trim().match(/\d{5}(?:-\d{4})?/);
     return m ? m[0] : '';
   }
 
   function guestTaxText(input) {
-    return accountMode === 'member'
+    return accountMode === null
       ? ''
       : String(input.value || '').trim().replace(/\s+/g, ' ').slice(0, 80);
   }
@@ -1093,20 +1081,14 @@
 
   function taxDestinationReady() {
     if (!LIVE_PAYMENTS) return true;
-    if (accountMode === 'member') return true;
-    if (accountMode === 'guest') return guestTaxAddressReady();
+    if (accountMode === 'member' || accountMode === 'guest') return guestTaxAddressReady();
     return false;
   }
 
   function taxPendingLabel() {
-    return accountMode === 'guest'
+    return accountMode === 'member' || accountMode === 'guest'
       ? 'Tax <span class="row-hint">enter State and ZIP</span>'
-      : 'Tax <span class="row-hint">after sign in or guest address</span>';
-  }
-
-  function referralCodeEntered() {
-    return accountMode !== 'member' &&
-      document.getElementById('memberCode').value.trim() !== '';
+      : 'Tax <span class="row-hint">after account and billing address</span>';
   }
 
   /* Leaving a signed-in account must also give the member code back,
@@ -1138,6 +1120,7 @@
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
     accountStatus.textContent = 'Checking out as a guest. Tax is calculated from the billing State and ZIP fields once both are entered.';
     setAccountStage('done');
+    renderSummary();
   }
 
   document.getElementById('chooseGuest').addEventListener('click', continueAsGuest);
@@ -1222,17 +1205,16 @@
         return memberDisplayName(signedInCode).then(function (row) {
           var name = (row && row.display_name) || signedInCode;
           accountMode = 'member';
-          /* the billing address fields stay synthetic, because this
-             demo holds no display copy of real addresses; the NAME is
-             the member's own. The SERVER prices tax from the member's
-             stored address, not from these fields, and the note below
-             the member code says so plainly (N-H1). */
+          /* Member sign-in credits the order, but does not decide the
+             tax destination. The shopper enters the checkout billing
+             address below, and payment stays closed until State and
+             ZIP are present. */
           setAddress({
             name: name,
-            street: SYNTHETIC_ADDRESS.street,
-            city: SYNTHETIC_ADDRESS.city,
-            state: SYNTHETIC_ADDRESS.state,
-            zip: SYNTHETIC_ADDRESS.zip
+            street: '',
+            city: '',
+            state: '',
+            zip: ''
           });
           document.getElementById('addressTaxNote').hidden = false;
           document.getElementById('addressTaxNoteGuest').hidden = true;
@@ -1249,8 +1231,9 @@
           codeField.readOnly = true;
           accountStatus.textContent = 'Signed in as ' + name + ' (' + signedInCode + ')' +
             (row && row.rank_name ? ', ' + row.rank_name : '') +
-            '. This order will be credited to that member.';
+            '. This order will be credited to that member. Enter the billing address to calculate tax.';
           setAccountStage('done');
+          renderSummary();
           /* the member code is part of the amount signature, so the
              payment must be reopened against the signed-in member */
           if (LIVE_PAYMENTS) liveEnsureCheckout();
@@ -1387,7 +1370,7 @@
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
-  /* Guest billing address fields move the tax amount, so they walk
+  /* Billing address fields move the tax amount, so they walk
      the same road as every other amount-affecting control: through
      renderSummary, which repaints the estimate label, asks for a
      fresh quote, and re-checks the open payment. */
@@ -1934,7 +1917,8 @@
     /* Opening the payment takes about two seconds, but it must not
        happen until tax has a destination. Account chooser is not a
        destination, and a guest without State/ZIP is not a destination.
-       A signed-in member or a guest address can open immediately. */
+       After account and billing address are complete, it can open
+       immediately. */
     /* never disturb a payment already under way, a resume still
        resolving, an open bank window, or a finished one being
        re-checked */
