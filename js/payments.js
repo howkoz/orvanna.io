@@ -733,10 +733,33 @@
     var challengePollTimer = null;
     var revealActive = false;
 
+    function placeChallengeFrame(frame) {
+      if (!frame) return;
+      /* The provider injects this node with its own full-screen
+         positioning. Keep the challenge above checkout chrome but
+         below our instruction bar, and put the passcode card where a
+         shopper looks first: top center, not over the sticky total. */
+      frame.style.setProperty('position', 'fixed', 'important');
+      frame.style.setProperty('top', '86px', 'important');
+      frame.style.setProperty('left', '50%', 'important');
+      frame.style.setProperty('right', 'auto', 'important');
+      frame.style.setProperty('bottom', 'auto', 'important');
+      frame.style.setProperty('transform', 'translateX(-50%)', 'important');
+      frame.style.setProperty('width', 'min(480px, calc(100vw - 32px))', 'important');
+      frame.style.setProperty('height', 'min(620px, calc(100vh - 108px))', 'important');
+      frame.style.setProperty('max-height', 'calc(100vh - 108px)', 'important');
+      frame.style.setProperty('overflow', 'hidden', 'important');
+      frame.style.setProperty('z-index', '2147483646', 'important');
+      frame.style.setProperty('box-shadow', '0 24px 70px rgba(2, 6, 20, 0.55)', 'important');
+      frame.style.setProperty('border-radius', '10px', 'important');
+      frame.style.setProperty('background', '#fff', 'important');
+    }
+
     function setChallengeFrameVisible(frame, visible) {
       if (!frame) return;
-      frame.style.opacity = visible ? '' : '0';
-      frame.style.pointerEvents = visible ? '' : 'none';
+      if (visible) placeChallengeFrame(frame);
+      frame.style.opacity = visible ? '1' : '0';
+      frame.style.pointerEvents = visible ? 'auto' : 'none';
       /* M6, quality assurance audit 2026-08-15. The keyboard trap
          moves focus between the cancel button and this frame, but an
          element with no tabindex cannot take focus, so Tab simply
