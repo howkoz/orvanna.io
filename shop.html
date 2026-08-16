@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ef1c71fb1dbb">
-<link rel="stylesheet" href="css/corporate.css?v=ef1c71fb1dbb">
-<link rel="stylesheet" href="css/shop.css?v=ef1c71fb1dbb">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=178d3ba7b42c">
+<link rel="stylesheet" href="css/corporate.css?v=178d3ba7b42c">
+<link rel="stylesheet" href="css/shop.css?v=178d3ba7b42c">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=ef1c71fb1dbb" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=178d3ba7b42c" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -294,49 +294,27 @@
 
               <div class="pay-row" role="group" aria-label="Payment method">
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
-                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="7" y="4" width="10" height="16" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
-                    <line x1="10.5" y1="17.2" x2="13.5" y2="17.2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                    <path d="M 19 9 a 5 5 0 0 1 0 6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                  </svg>
-                  Apple Pay
+                  <span class="pay-mark mark-applepay" aria-hidden="true">Apple Pay</span>
+                  <span class="sr-only">Apple Pay</span>
                 </button>
                 <button class="pay-btn pay-googlepay" type="button" data-pay="googlepay" aria-pressed="false">
-                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M 4 8.5 a 2.5 2.5 0 0 1 2.5 -2.5 h 11 a 2.5 2.5 0 0 1 2.5 2.5 v 8 a 2.5 2.5 0 0 1 -2.5 2.5 h -11 a 2.5 2.5 0 0 1 -2.5 -2.5 z" fill="none" stroke="currentColor" stroke-width="1.7"/>
-                    <path d="M 14 10.5 h 6 v 4 h -6 a 2 2 0 0 1 0 -4 z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
-                    <circle cx="15.6" cy="12.5" r="1" fill="currentColor"/>
-                  </svg>
-                  Google Pay
+                  <span class="pay-mark mark-googlepay" aria-hidden="true"><span class="g-blue">G</span><span>Pay</span></span>
+                  <span class="sr-only">Google Pay</span>
                 </button>
                 <button class="pay-btn pay-paypal" type="button" data-pay="paypal" aria-pressed="false">
-                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M 16 8 a 5 5 0 1 0 1.3 4.8" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                    <path d="M 17.6 9.4 L 17.3 12.9 L 14 11.7" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                    <circle cx="11.3" cy="12.6" r="1.1" fill="currentColor"/>
-                  </svg>
-                  PayPal
+                  <span class="pay-mark mark-paypal" aria-hidden="true"><span>Pay</span><span>Pal</span></span>
+                  <span class="sr-only">PayPal</span>
                 </button>
                 <button class="pay-btn pay-card" type="button" data-pay="card" aria-pressed="true">
-                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="3" y="6" width="18" height="12.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
-                    <line x1="3" y1="10.2" x2="21" y2="10.2" stroke="currentColor" stroke-width="1.7"/>
-                    <circle cx="7.4" cy="14.6" r="1.2" fill="currentColor"/>
-                  </svg>
-                  Credit card
+                  <span class="pay-mark mark-card" aria-hidden="true">Card</span>
+                  <span class="sr-only">Credit card</span>
                 </button>
                 <button class="pay-btn pay-bank" type="button" data-pay="bank" aria-pressed="false">
-                  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M 4 10.2 L 12 5 L 20 10.2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                    <line x1="5.5" y1="18" x2="18.5" y2="18" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                    <line x1="7" y1="10.8" x2="7" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                    <line x1="12" y1="10.8" x2="12" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                    <line x1="17" y1="10.8" x2="17" y2="16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
-                  </svg>
-                  Bank account
+                  <span class="pay-mark mark-plaid" aria-hidden="true">Plaid</span>
+                  <span class="sr-only">Bank account through Plaid</span>
                 </button>
               </div>
-              <p class="pay-note">Demonstration marks, not real payment brands. No real money is ever charged on this rail.</p>
+              <p class="pay-note">Credit card is the live USD sandbox rail. Plaid is staged for bank account testing after the currency and ACH/Open Banking rails are ready.</p>
 
               <form id="checkoutForm" novalidate>
                 <div id="cardFields">
@@ -673,8 +651,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=ef1c71fb1dbb"></script>
-<script src="js/payments.js?v=ef1c71fb1dbb"></script>
+<script src="js/catalog.js?v=178d3ba7b42c"></script>
+<script src="js/payments.js?v=178d3ba7b42c"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1387,6 +1365,21 @@
     return payMethod === 'card' && selectedCurrency() === 'USD';
   }
 
+  function bankMethodAllowed() {
+    return selectedCurrency() === 'GBP' || selectedCurrency() === 'EUR';
+  }
+
+  function syncBankAvailability() {
+    var bankButton = document.querySelector('[data-pay="bank"]');
+    if (!bankButton) return;
+    var allowed = bankMethodAllowed();
+    bankButton.disabled = !allowed;
+    bankButton.title = allowed
+      ? 'Plaid/Open Banking sandbox path, staged until currency settlement is deployed.'
+      : 'Plaid/Open Banking is not the USD bank rail. USD bank checkout needs an ACH/bank-debit connector path.';
+    if (!allowed && payMethod === 'bank') setPayMethod('card');
+  }
+
   function paymentButtonLabel() {
     if (!LIVE_PAYMENTS) return payMethod === 'card' ? 'Place order' : 'Place order with ' + PAY_LABELS[payMethod];
     if (payMethod === 'card') {
@@ -1398,9 +1391,7 @@
 
   function stagedPaymentMessage() {
     if (payMethod === 'bank') {
-      return selectedCurrency() === 'USD'
-        ? 'Bank account checkout is staged through Plaid/Open Banking, which HyperSwitch currently exposes for GBP and EUR payment initiation. Choose GBP or EUR to test that rail once the server currency migration is deployed.'
-        : 'Plaid/Open Banking is connected in HyperSwitch, but this checkout still needs the currency storage migration before it can settle ' + selectedCurrency() + ' orders. Nothing was charged.';
+      return 'Plaid/Open Banking is connected in HyperSwitch, but this checkout still needs the currency storage migration before it can settle ' + selectedCurrency() + ' orders. Nothing was charged.';
     }
     if (selectedCurrency() !== 'USD') {
       return 'The storefront can display ' + selectedCurrency() + ', but live card settlement is still guarded to USD until the order records store currency. Nothing was charged.';
@@ -1443,10 +1434,12 @@
 
   if (currencySelect) {
     updateCurrencyHint();
+    syncBankAvailability();
     currencySelect.addEventListener('change', function () {
       displayCurrency = CURRENCIES[currencySelect.value] ? currencySelect.value : 'USD';
       try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
       updateCurrencyHint();
+      syncBankAvailability();
       if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLiveCardPayment()) {
         liveResetPayment('');
       }
