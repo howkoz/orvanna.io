@@ -191,7 +191,6 @@
                   <select class="field" id="billState" autocomplete="off">
                     <option value="">Select</option>
                   </select>
-                  <p class="field-hint" id="billStateCurrencyNote" hidden></p>
                 </div>
                 <div>
                   <label class="field-label" for="billZip" id="billZipLabel">ZIP code</label>
@@ -201,15 +200,6 @@
               <label class="field-label" for="memberCode">Member code</label>
               <input class="field" type="text" id="memberCode" autocomplete="off" spellcheck="false">
               <p class="field-hint">Optional. Credits this order to a referring member.</p>
-              <!-- Revised 2026-08-16: the billing address starts blank
-                   for both signed-in and guest checkout, and tax/payment
-                   wait until the shopper enters State/region and postal code. -->
-              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing location and postal code so tax can be calculated before payment opens.</p>
-              <!-- Revised 2026-08-16 after the checkout walk:
-                   shoppers naturally expect the visible billing State/region and postal code
-                   fields to drive tax. They now do for both guest and
-                   signed-in checkout. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the billing location and postal code entered above. Tax stays pending until both fields are entered.</p>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -348,12 +338,6 @@
             <div class="total-row">
               <span id="taxLabel">Tax <span class="row-hint">5 percent</span></span>
               <span class="total-num" id="sumTax">$0.00</span>
-            </div>
-            <!-- TAX HELPER. The actual controls are the billing State/region and postal code
-                 fields above. This note keeps the tax row honest before
-                 those fields are filled. -->
-            <div class="taxid-row" id="guestTaxStateRow" hidden>
-              <p class="field-hint">Tax follows the billing location and postal code fields. The tax line appears after those fields are entered.</p>
             </div>
             <div class="taxid-row currency-row">
               <label class="field-label" for="currencySelect">Currency</label>
@@ -1282,11 +1266,6 @@
     billStateInput.disabled = locked;
     if (billStateLabel) billStateLabel.textContent = locked ? 'Country' : 'State';
     if (billZipLabel) billZipLabel.textContent = locked ? 'Postal code' : 'ZIP code';
-    var note = document.getElementById('billStateCurrencyNote');
-    if (note) {
-      note.textContent = locked ? 'Country follows the selected currency.' : '';
-      note.hidden = true;
-    }
   }
 
   function taxDestinationReady() {
@@ -1319,12 +1298,6 @@
     if (!codeField) return;
     if (codeField.readOnly) { codeField.value = ''; }
     codeField.readOnly = false;
-    /* Guest checkout prices tax from the visible billing State/region and postal code
-       fields. This keeps the amount-control on the same fields the
-       shopper is naturally editing. */
-    document.getElementById('addressTaxNote').hidden = true;
-    document.getElementById('addressTaxNoteGuest').hidden = false;
-    document.getElementById('guestTaxStateRow').hidden = false;
   }
 
   /* ONE guest path, reached from two doors: the chooser's guest
@@ -1438,14 +1411,6 @@
             zip: ''
           });
           applyCurrencyAddressDefault();
-          document.getElementById('addressTaxNote').hidden = false;
-          document.getElementById('addressTaxNoteGuest').hidden = true;
-          /* the guest tax note is a guest control: a member's tax
-             comes from the address stored on their account, so the
-             note comes down with the guest copy, and guestTaxState()
-             returns '' for a member so the billing fields also drop
-             out of the amount signature and both payloads */
-          document.getElementById('guestTaxStateRow').hidden = true;
           /* this is what actually credits the order: create-payment
              resolves it against app.members server side */
           var codeField = document.getElementById('memberCode');
@@ -2078,12 +2043,6 @@
   function renderSummary() {
     document.getElementById('checkoutLines').innerHTML =
       Object.keys(cart).map(summaryLineHtml).join('');
-
-    /* The guest tax helper follows the account mode. The actual
-       controls are the billing State/region and postal code fields, so the summary no
-       longer has its own tax picker to drift from them. */
-    document.getElementById('guestTaxStateRow').hidden =
-      !LIVE_PAYMENTS || accountMode !== 'guest';
 
     var m = orderMath();
     document.getElementById('rowOneSub').hidden = m.t.oneMoney === 0;
