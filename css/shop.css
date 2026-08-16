@@ -1084,8 +1084,17 @@ a.product-icon { display: block; }
   font-weight: 800;
   font-style: italic;
 }
-.mark-paypal span:first-child { color: #003087; }
-.mark-paypal span:last-child { color: #009CDE; }
+/* DARK-BACKGROUND MARK VARIANT (quality assurance finding M-O3,
+   2026-08-16). The light-background brand colors were used on the
+   dark navy tile (#17357C): "Pay" in brand navy #003087 computed
+   1.04 to 1, invisible, and "Pal" in #009CDE computed 3.71 to 1,
+   both below the 4.5 floor for the tile's only label. PayPal's
+   dark-background wordmark treatment is light lettering: white
+   "Pay" computes 11.02 to 1 on this tile, and the lightened brand
+   blue #00B9F2 for "Pal" computes 4.84 to 1. Both halves now clear
+   4.5 to 1 by computation. */
+.mark-paypal span:first-child { color: #FFFFFF; }
+.mark-paypal span:last-child { color: #00B9F2; }
 
 .mark-card {
   min-width: 58px;

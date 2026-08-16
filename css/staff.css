@@ -9,14 +9,14 @@
 /* ---------- page frame ---------- */
 
 .console-body {
-  background: var(--navy);
+  background: #070B14;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
 }
 
 .console-wrap {
-  max-width: 1240px;          /* wider than the marketing 1100px: this is a work surface */
+  max-width: 1320px;          /* wider than the marketing 1100px: this is a work surface */
   width: 100%;
   margin: 0 auto;
   padding: 0 20px;
@@ -36,11 +36,35 @@
 .console-top-inner {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 10px 0;
+  gap: 10px;
+  padding: 9px 0;
 }
 
 .console-logo { height: 24px; width: auto; }
+
+.console-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #F8FAFC;
+  text-decoration: none;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(34, 211, 238, 0.75);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
+}
+
+.brand-word {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
 
 .console-title {
   font-size: 0.78rem;
@@ -106,14 +130,24 @@
 }
 .btn-newcall:hover { filter: brightness(1.08); }
 
-.console-links { display: flex; gap: 4px; }
+.console-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+}
 .console-link {
-  font-size: 0.85rem;
+  font: inherit;
+  font-size: 0.73rem;
   font-weight: 600;
   color: #A5B4FC;                       /* 7.4:1 on navy */
   text-decoration: none;
-  padding: 6px 10px;
+  background: transparent;
+  border: 0;
+  padding: 7px 8px;
   border-radius: 7px;
+  white-space: nowrap;
+  cursor: pointer;
 }
 .console-link:hover { color: #FFFFFF; background: rgba(129, 140, 248, 0.12); }
 
@@ -122,8 +156,30 @@
 .console-notice {
   font-size: 0.8rem;
   color: #94A3B8;                       /* 7.4:1 on navy */
-  padding: 7px 0;
+  padding: 8px 0;
   border-bottom: 1px solid rgba(129, 140, 248, 0.08);
+}
+
+.console-notice-grid {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.console-notice-grid span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid rgba(129, 140, 248, 0.14);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+}
+
+.console-notice-grid b {
+  color: #E2E8F0;
+  font-weight: 700;
 }
 
 /* ---------- work surface: two columns ---------- */
@@ -147,7 +203,7 @@
 .console-grid {
   position: relative;
   display: grid;
-  grid-template-columns: 400px minmax(0, 1fr);
+  grid-template-columns: 360px minmax(0, 1fr);
   gap: 16px;
   align-items: start;
 }
@@ -158,10 +214,10 @@
 /* ---------- panels: glass, but denser and calmer ---------- */
 
 .console-panel {
-  background: var(--glass-bg);
+  background: rgba(17, 24, 39, 0.86);
   border: 1px solid var(--hairline);
-  border-radius: 12px;
-  padding: 16px 18px;
+  border-radius: 8px;
+  padding: 15px 18px;
   position: relative;
   /* no overflow clipping: the lookup dropdown must escape its panel.
      Nothing inside these panels needs clipping (no accent bars here). */
@@ -613,11 +669,73 @@
   align-items: start;
 }
 
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: start;
+  margin-bottom: 8px;
+}
+
+.call-steps {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  counter-reset: call-step;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.call-steps li {
+  counter-increment: call-step;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 26px;
+  padding: 3px 8px;
+  border: 1px solid rgba(129, 140, 248, 0.22);
+  border-radius: 999px;
+  color: #94A3B8;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.call-steps li::before {
+  content: counter(call-step);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.14);
+  color: #CBD5E1;
+  font-size: 0.64rem;
+}
+
+.call-steps li.is-current {
+  color: #67E8F9;
+  border-color: rgba(34, 211, 238, 0.55);
+  background: rgba(34, 211, 238, 0.06);
+}
+
+.call-steps li.is-current::before {
+  background: #22D3EE;
+  color: #07111D;
+}
+
 .totals-box {
   background: rgba(6, 11, 24, 0.5);
   border: 1px solid rgba(129, 140, 248, 0.16);
-  border-radius: 10px;
+  border-radius: 8px;
   padding: 12px 14px;
+  position: sticky;
+  top: 74px;
 }
 .t-row {
   display: flex;
@@ -699,7 +817,19 @@
   font-size: 0.88rem;
   color: #E2E8F0;
 }
+.pay-choice[hidden] { display: none; }
+.pay-choice > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
 .pay-choice:has(input:checked) { border-color: var(--cyan); background: rgba(34, 211, 238, 0.07); }
+.pay-choice:has(input:disabled) {
+  color: #94A3B8;
+  cursor: not-allowed;
+  background: rgba(15, 23, 42, 0.38);
+}
 .pay-choice input { accent-color: #22D3EE; width: 15px; height: 15px; }
 .pay-choice .pc-note { font-size: 0.74rem; color: #94A3B8; }
 
@@ -894,11 +1024,11 @@
    ============================================================ */
 
 .agent-rules {
-  border: 1px solid rgba(248, 113, 113, 0.34);
-  border-left: 3px solid #F87171;
+  border: 1px solid rgba(250, 204, 21, 0.34);
+  border-left: 3px solid #FACC15;
   border-radius: 8px;
-  background: rgba(248, 113, 113, 0.07);
-  padding: 11px 14px;
+  background: rgba(250, 204, 21, 0.06);
+  padding: 10px 12px;
   margin-bottom: 12px;
 }
 .ar-head {
@@ -906,18 +1036,18 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #FCA5A5;
-  margin-bottom: 7px;
+  color: #FDE68A;
+  margin-bottom: 6px;
 }
 .ar-list { margin: 0; padding-left: 18px; }
 .ar-list li {
   font-size: 0.78rem;
-  line-height: 1.55;
+  line-height: 1.45;
   color: #CBD5E1;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 .ar-list li:last-child { margin-bottom: 0; }
-.ar-list b { color: #FECACA; }
+.ar-list b { color: #FDE68A; }
 
 .rec-chip {
   font-size: 0.62rem;
@@ -989,6 +1119,35 @@
   border-top: 1px solid rgba(129, 140, 248, 0.12);
 }
 #staffLookupResult { text-align: left; }
+
+.history-note {
+  margin: -4px 0 8px;
+  color: #94A3B8;
+  font-size: 0.78rem;
+}
+
+#historyPanel .hist-table-wrap {
+  max-height: 430px;
+  overflow: auto;
+  border: 1px solid rgba(129, 140, 248, 0.14);
+  border-radius: 8px;
+}
+
+#historyPanel .hist-table th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #111827;
+}
+
+#historyPanel .hist-table td,
+#historyPanel .hist-table th {
+  padding: 9px 10px;
+}
+
+#histStatus {
+  text-align: left;
+}
 
 /* ---------- chrome above a bank's own approval overlay ---------- */
 

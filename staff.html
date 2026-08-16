@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=678ca8081176">
-<link rel="stylesheet" href="css/corporate.css?v=678ca8081176">
-<link rel="stylesheet" href="css/staff.css?v=678ca8081176">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fc000256520a">
+<link rel="stylesheet" href="css/corporate.css?v=fc000256520a">
+<link rel="stylesheet" href="css/staff.css?v=fc000256520a">
 <style>
 /* ============================================================
    Order history, order detail, and refund controls.
@@ -74,10 +74,11 @@
 <!-- ============ TOP BAR: identity, call timer, new call ============ -->
 <header class="console-top">
   <div class="console-wrap console-top-inner">
-    <a href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=678ca8081176" alt="Orvanna" class="console-logo">
+    <a class="console-brand" href="index.html" aria-label="Orvanna home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-word">Orvanna</span>
     </a>
-    <span class="console-title">Staff Call Console</span>
+    <span class="console-title">Phone Orders</span>
     <span class="console-demo-pill">Demonstration</span>
     <span class="console-top-spacer"></span>
     <div class="call-timer" id="callTimer" aria-label="Call timer">
@@ -86,22 +87,23 @@
       <span id="timerValue">00:00</span>
     </div>
     <button class="btn-newcall" id="newCallBtn" type="button" title="Clear everything for the next caller">New call</button>
-    <nav class="console-links" aria-label="Other Orvanna pages">
-      <a class="console-link" href="portal/index.html">Member portal</a>
+    <nav class="console-links" aria-label="Staff navigation">
+      <a class="console-link" href="portal/index.html">Portal</a>
       <a class="console-link" href="shop.html">Shop</a>
-      <a class="console-link" href="library.html" title="The product library: every agent, pack, and price in one reference">Library</a>
-      <a class="console-link" href="comp-plan.html" title="The compensation plan in full">Plan</a>
-      <a class="console-link" href="faq.html" title="The frequently asked questions page">Questions</a>
-      <a class="console-link" href="team.html">Team</a>
+      <a class="console-link" href="library.html">Library</a>
+      <a class="console-link" href="comp-plan.html">Plan</a>
+      <a class="console-link" href="faq.html">FAQ</a>
       <button class="console-link console-support" type="button" data-orvanna-support>Support</button>
-      <a class="console-link" id="signOutLink" href="index.html" title="End this console session and return to the Orvanna home page">Sign out</a>
+      <a class="console-link" id="signOutLink" href="index.html">Sign out</a>
     </nav>
   </div>
 </header>
 
 <div class="console-notice">
-  <div class="console-wrap">
-    Staff console, demonstration; it opens only after a staff sign-in checked against the demonstration database. Live volume figures come from the demonstration database; contact details are synthesized. Payments run on the live TEST rail: test cards only, play money, no real charge is possible. Point terms: Personal Volume (PV), Sales Volume (SV), Team Volume (TV).
+  <div class="console-wrap console-notice-grid">
+    <span><b>Demo data</b> synthetic caller details</span>
+    <span><b>Test rail</b> play money only</span>
+    <span><b>Volume</b> PV, SV, and TV from the demo database</span>
   </div>
 </div>
 
@@ -121,7 +123,7 @@
                  spellcheck="false" placeholder="GW-000002, 2, or a name" autofocus>
           <div class="lookup-list" id="lookupList" hidden></div>
         </div>
-        <p class="lookup-hint">Codes work with or without the GW- prefix. <kbd>Enter</kbd> picks the top match; <kbd>/</kbd> jumps back here from anywhere.</p>
+        <p class="lookup-hint"><kbd>/</kbd> search from anywhere. <kbd>Enter</kbd> picks the top match.</p>
       </section>
 
       <!-- caller snapshot -->
@@ -151,7 +153,15 @@
 
       <!-- quick order -->
       <section class="console-panel" aria-label="Quick order" id="orderPanel">
-        <h2 class="panel-title">Quick order <span class="title-chip">Placed for the caller</span></h2>
+        <div class="order-head">
+          <h2 class="panel-title">Phone order <span class="title-chip">Placed for the caller</span></h2>
+          <ol class="call-steps" aria-label="Call flow">
+            <li class="is-current">Caller</li>
+            <li>Lines</li>
+            <li>Payment</li>
+            <li>Read back</li>
+          </ol>
+        </div>
 
         <div class="order-disabled-note" id="orderGate">Look up the caller first; the order is placed on their account.</div>
 
@@ -185,7 +195,7 @@
 
             <!-- payment: phone-appropriate, no wallets -->
             <div>
-              <h3 class="panel-title">Payment by phone</h3>
+              <h3 class="panel-title">Payment</h3>
 
               <!-- The rule that has to be visible, not buried in a manual.
                    A bank's approval step (3-D Secure, or 3DS) asks the
@@ -194,15 +204,11 @@
                    read out the code their bank just sent is word for word the
                    script real fraudsters use, so it is forbidden here. -->
               <div class="agent-rules" id="agentRules">
-                <p class="ar-head">Rules for card approvals on a call</p>
+                <p class="ar-head">Call guardrails</p>
                 <ul class="ar-list">
-                  <li><b>Never ask the caller to read you a code from their bank.</b> Not the six digits in a text message, not a code from a banking application, not ever. That request is the exact script of a real fraud technique, and it does not complete the approval anyway.</li>
-                  <!-- Reworded 2026-08-16 (quality assurance finding M2):
-                       this rule used to instruct "Send them a payment link",
-                       a path this sandbox cannot walk yet. The rule now says
-                       what the console can actually do. -->
-                  <li>If the bank asks for an approval, only the cardholder can give it, on their own phone or computer. This sandbox cannot send a payment link yet, so stay on the line while they finish the approval on their own device.</li>
-                  <li>A card you key here is a telephone order. Telephone orders sit outside Strong Customer Authentication (SCA), the European rule that requires these approvals, so the bank usually will not ask for one. The trade is that a fraud chargeback lands on us rather than on the card issuer.</li>
+                  <li><b>Never ask for a bank code.</b> If approval appears, the caller completes it on their own device.</li>
+                  <li>Keyed card entry is a telephone order. Repeat back the last four only.</li>
+                  <li>Give the order number before the card is sent.</li>
                 </ul>
               </div>
 
@@ -214,11 +220,11 @@
                        sandbox cannot walk. The option stays listed first
                        because it is the right habit, and the chip and note
                        now say what is true today. -->
-                  <span>Payment link to the caller's own device <span class="rec-chip">not built yet</span> <span class="pc-note">the right way once it exists: they would pay on their phone while you stay on the line, and any bank approval would work properly. Not available on this sandbox yet; use the keyed telephone order below.</span></span>
+                  <span>Payment link <span class="rec-chip">not built yet</span> <span class="pc-note">Use after hosted links are enabled.</span></span>
                 </label>
                 <label class="pay-choice">
                   <input type="radio" name="payChoice" value="new">
-                  <span>Key the card here, telephone order <span class="pc-note">key it while they read; repeat back the last four only. The bank usually will not ask for an approval on this path, but it can, and if it does only the cardholder can complete it.</span></span>
+                  <span>Key card now <span class="pc-note">Demo phone-order path.</span></span>
                 </label>
                 <label class="pay-choice">
                   <input type="radio" name="payChoice" value="onfile" checked>
@@ -234,13 +240,13 @@
                      panel used to open by instructing the link path as if it
                      worked. It now describes the future path in the
                      conditional and points at the path that exists. -->
-                <p class="lp-line" id="linkStatus">When this path is built, you will create the order and then send the caller a link to pay on their own device, so no card number is ever spoken aloud. It is not available on this sandbox yet; use the keyed telephone order path above.</p>
+                <p class="lp-line" id="linkStatus">Hosted payment links are staged for a later pass. Use keyed card entry for this demo call.</p>
                 <div class="lp-row">
                   <input class="staff-field" id="linkField" type="text" readonly placeholder="The payment link appears here" aria-label="Payment link for the caller">
                   <button class="btn-addline" id="copyLinkBtn" type="button" disabled>Copy</button>
                 </div>
-                <button class="btn-place" id="createLinkBtn" type="button" disabled>Create a payment link</button>
-                <p class="lp-note" id="linkNote">Not available on this sandbox yet: creating a hosted payment link needs a server function that has not been built, so nothing here can mint one. Until it exists, use the keyed telephone order path above and read the rules.</p>
+                <button class="btn-place" id="createLinkBtn" type="button" disabled>Create link</button>
+                <p class="lp-note" id="linkNote">Not available in this sandbox.</p>
               </div>
 
               <!-- The demonstration raw card inputs that used to sit here
@@ -264,7 +270,7 @@
 
               <button class="btn-place" id="placeOrderBtn" type="button" disabled>Place order for the caller</button>
               <button class="btn-addline btn-abandon" id="abandonBtn" type="button" hidden>Abandon this attempt</button>
-              <p class="place-hint">Test mode: the payment runs on the live test rail, play money only. <kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Ctrl</kbd>+<kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Enter</kbd> places it.</p>
+              <p class="place-hint">Test rail only. <kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Ctrl</kbd>+<kbd style="font-family:Consolas,monospace;font-size:0.72rem;border:1px solid rgba(129,140,248,0.18);border-radius:4px;padding:0 4px;color:#CBD5E1">Enter</kbd> places it.</p>
 
               <!-- Recovery: any order number can be looked up, for the call
                    that comes in asking "was I charged?" -->
@@ -338,9 +344,10 @@
            that eventually disagrees with itself. -->
       <section class="console-panel" aria-label="Order history" id="historyPanel">
         <div class="hist-head">
-          <span class="panel-title">Order history</span>
+          <span class="panel-title">Recent orders</span>
           <button class="btn-addline" type="button" id="histRefreshBtn">Refresh</button>
         </div>
+        <p class="history-note">Recent activity for refunds and callbacks. Use order lookup above for a specific order.</p>
         <p class="place-hint" id="histStatus" role="status" aria-live="polite">Loading orders...</p>
         <div class="hist-table-wrap">
           <table class="hist-table" id="histTable" hidden>
@@ -395,8 +402,8 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=678ca8081176"></script>
-<script src="js/payments.js?v=678ca8081176"></script>
+<script src="js/catalog.js?v=fc000256520a"></script>
+<script src="js/payments.js?v=fc000256520a"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -1307,9 +1314,16 @@
   function applyPayChoice() {
     var choice = payChoice();
     if (choice === 'link') {
+      if (!PAYMENT_LINK_READY) {
+        var fresh = document.querySelector('input[name="payChoice"][value="new"]');
+        if (fresh) fresh.checked = true;
+        linkPanel.hidden = true;
+        return;
+      }
       staffStatus(PAYMENT_LINK_READY
         ? 'Create the order, then send the link and stay on the line.'
         : 'The payment link path is not available on this sandbox yet. Use the keyed telephone order path below, and read the rules above before you do.');
+      linkPanel.hidden = false;
     }
   }
 
@@ -1335,8 +1349,9 @@
     var fresh = document.querySelector('input[name="payChoice"][value="new"]');
     onfile.disabled = true;
     link.disabled = !PAYMENT_LINK_READY;
+    if (link.closest) link.closest('.pay-choice').hidden = !PAYMENT_LINK_READY;
     fresh.checked = true;
-    linkPanel.hidden = false;
+    linkPanel.hidden = !PAYMENT_LINK_READY;
     byId('createLinkBtn').disabled = !PAYMENT_LINK_READY;
     byId('copyLinkBtn').disabled = true;
     linkNote.hidden = PAYMENT_LINK_READY;
@@ -2107,7 +2122,7 @@
     });
   }
 
-  var HIST_PAGE = 50;
+  var HIST_PAGE = 18;
   var histOffset = 0;
   var histTotal = 0;
 

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b568b18d7dd7">
-<link rel="stylesheet" href="css/corporate.css?v=b568b18d7dd7">
-<link rel="stylesheet" href="css/shop.css?v=b568b18d7dd7">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fc000256520a">
+<link rel="stylesheet" href="css/corporate.css?v=fc000256520a">
+<link rel="stylesheet" href="css/shop.css?v=fc000256520a">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=b568b18d7dd7" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=fc000256520a" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -244,6 +244,13 @@
                     <option value="WI">Wisconsin</option>
                     <option value="WY">Wyoming</option>
                   </select>
+                  <!-- Currency and state coherence (quality assurance
+                       finding L-O2, 2026-08-16): under a non-USD display
+                       currency this select is LOCKED to the currency's
+                       demonstration country, because a GBP total priced
+                       "for California" is a display that contradicts
+                       itself. The script sets the lock and this note. -->
+                  <p class="field-hint" id="billStateCurrencyNote" hidden>Locked while a non-USD currency is selected: GBP prices from the United Kingdom, EUR from Ireland, CHF from Switzerland. Switch the currency back to USD to pick a state.</p>
                 </div>
                 <div>
                   <label class="field-label" for="billZip">Postal code</label>
@@ -745,8 +752,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=b568b18d7dd7"></script>
-<script src="js/payments.js?v=b568b18d7dd7"></script>
+<script src="js/catalog.js?v=fc000256520a"></script>
+<script src="js/payments.js?v=fc000256520a"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -776,6 +783,18 @@
      until the order table and Edge Functions can store and settle the
      selected currency end to end. */
   var CURRENCY_STORAGE_KEY = 'orvannaCurrency';
+  /* LOCKSTEP CONTRACT (verifier finding O-M3, 2026-08-16): this table
+     is the SINGLE SOURCE OF TRUTH for the conversion rates, exactly as
+     www/js/catalog.js is for prices. The server's quote conversion
+     table, TAX_CURRENCY_RATES in functions/_shared/tax.ts, is its
+     MIRROR and must stay rate for rate and code for code identical:
+     these rates convert what the shopper SEES, the mirror converts
+     what the quote SAYS, and the day they differ the displayed
+     conversion and the quoted tax disagree by design. Parity is
+     mechanically enforced by functions/_shared/check_currency_mirror.py,
+     which the deploy build (deploy/build_dist.py) runs and fails on
+     any drift, the same discipline as the pricing mirror's check V6.
+     If a rate changes here it changes in tax.ts in the same commit. */
   var CURRENCIES = {
     USD: { rate: 1, symbol: '$', locale: 'en-US', note: 'Card checkout settles in USD.' },
     GBP: { rate: 0.79, symbol: 'GBP ', locale: 'en-GB', note: 'GBP display and Stripe Tax quote staging are ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' },
@@ -1237,6 +1256,24 @@
     billZipInput.value = a.zip;
   }
 
+  /* CURRENCY AND STATE COHERENCE (quality assurance finding L-O2,
+     2026-08-16). A persisted GBP display used to accept a United
+     States state pick and paint "estimate, for California" under a
+     GBP total: every money guard held, but the display contradicted
+     itself. Under a non-USD currency the State/region select is now
+     LOCKED to the currency's demonstration country (which
+     applyCurrencyAddressDefault has just set) with an honest note;
+     back on USD it unlocks and the note comes down. The lock plays
+     fair with the payment-state inert machinery: that machinery
+     snapshots and restores the disabled flag around a flight, so a
+     currency lock present before a flight survives it. */
+  function syncStateFieldForCurrency() {
+    var locked = selectedCurrency() !== 'USD';
+    billStateInput.disabled = locked;
+    var note = document.getElementById('billStateCurrencyNote');
+    if (note) note.hidden = !locked;
+  }
+
   function taxDestinationReady() {
     if (!LIVE_PAYMENTS) return true;
     if (accountMode === 'member' || accountMode === 'guest') return guestTaxAddressReady();
@@ -1610,6 +1647,10 @@
       plaidAuthorize.textContent = plaidAuthorizeLabel();
     }
     if (plaidResult) plaidResult.textContent = 'No payment has been created. Nothing has been charged.';
+    /* the ending hides this spinner (an honest ending is not
+       processing anything); a fresh run gets it back */
+    var plaidSpinner = document.querySelector('.plaid-processing');
+    if (plaidSpinner) plaidSpinner.hidden = false;
     if (plaidBankName) plaidBankName.textContent = selectedPlaidBankName();
     document.querySelectorAll('.plaid-bank').forEach(function (bank) { bank.hidden = false; });
     document.querySelectorAll('.plaid-account').forEach(function (acct) {
@@ -1736,18 +1777,33 @@
       });
     });
   });
+  /* THE PLAID ENDING TELLS THE TRUTH (verifier finding O-H1, quality
+     assurance finding M-O1, fixed 2026-08-16). The old ending handed
+     the authorize click to demoPlaceOrder, which minted an order
+     number in the REAL ORV namespace that no server knew (the lookup
+     would answer "no order with that number exists"), rendered the
+     real confirmation view, cleared the cart, and printed the real
+     receipt's boilerplate claim that the payment "ran through the
+     Orvanna orchestration layer": nothing ran through anything, the
+     wizard makes zero network calls by design. The ending now stays
+     INSIDE the panel as an explicit staged preview: no order number
+     is minted anywhere in this path (the lookup-will-deny-it defect
+     is impossible by construction), the cart is untouched, and the
+     copy says exactly what exists (nothing) and where the real
+     ending will come from (the open-banking rail, Phase S2 of the
+     subscription work). */
   if (plaidAuthorize) {
     plaidAuthorize.addEventListener('click', function () {
       plaidAuthorize.disabled = true;
       plaidAuthorize.textContent = 'Authorizing';
       plaidSetStep('done');
-      plaidResult.textContent = 'Securely returning to Orvanna. Nothing real has been charged.';
+      plaidResult.textContent = 'Checking with the sandbox. Nothing real has been charged.';
       window.setTimeout(function () {
-        if (plaidPanel) plaidPanel.hidden = true;
-        demoPlaceOrder({
-          paymentLabel: 'Plaid/Open Banking sandbox',
-          demoNote: 'Plaid sandbox checkout complete. This preview placed a demo order and did not create a real Open Banking payment or charge real money.'
-        });
+        /* the spinner comes down: nothing is processing, and a
+           spinner over this message would imply something is */
+        var spinner = document.querySelector('.plaid-processing');
+        if (spinner) spinner.hidden = true;
+        plaidResult.textContent = 'End of the sandbox preview. No order was created, no order number exists, and nothing was charged: the Open Banking payment path is not wired to the payment rail yet. This is the exact point where the real bank authorization will complete once the open-banking rail lands (Phase S2 of the subscription work). Your cart is unchanged. Use Back to checkout to keep shopping or to pay by card.';
         plaidAuthorize.disabled = false;
         plaidAuthorize.textContent = plaidAuthorizeLabel();
       }, 650);
@@ -1757,14 +1813,39 @@
   if (currencySelect) {
     updateCurrencyHint();
     syncBankAvailability();
+    /* the currency persists in localStorage, so a page can LOAD
+       non-USD: the state lock has to be right from the first paint,
+       not only after the first change */
+    syncStateFieldForCurrency();
     currencySelect.addEventListener('change', function () {
       displayCurrency = CURRENCIES[currencySelect.value] ? currencySelect.value : 'USD';
       try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
       applyCurrencyAddressDefault();
+      syncStateFieldForCurrency();
       updateCurrencyHint();
       syncBankAvailability();
       if (payMethod === 'bank') setPayMethod('bank');
-      if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
+      /* NEVER RESET A PAYMENT THAT IS IN FLIGHT (verifier finding
+         O-M2, 2026-08-16). The inert list now disables this select
+         during authorization, but the busy seconds while the payment
+         OPENS engage no inert, and a check-again payment (checkOnly)
+         releases it again, so this guard is load bearing, not
+         belt-and-braces. Without it, flipping currency mid-flight
+         cleared the engine state, the order chip, AND the resume
+         record liveConfirm deliberately writes before confirm, while
+         the charge itself continued at the processor: a charge could
+         succeed with the client holding no record of it beyond the
+         lookup. A payment merely OPEN (card form up, nothing
+         submitted) is still discarded exactly as before, which is the
+         staged-currency behavior the verifier verified sound. The
+         display currency itself may always change: it is
+         presentation, and the staged hint plus the submit gate keep a
+         non-USD display from ever confirming the USD payment. */
+      var paymentInFlight = LIVE_PAYMENTS && liveState &&
+        (liveState.busy || liveState.resuming || liveState.checkOnly ||
+          engine.isChallengeOpen());
+      if (LIVE_PAYMENTS && liveState && liveState.clientSecret &&
+          !canOpenLivePayment() && !paymentInFlight) {
         liveResetPayment('');
       }
       renderAll();
@@ -2117,6 +2198,14 @@
        currently being authorized */
     inertSelectors: '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
       '#memberCode, #taxId, #billStreet, #billCity, #billState, #billZip, ' +
+      /* #currencySelect joined 2026-08-16 (verifier finding O-M2): it
+         escaped the lockdown when the currency layer landed, so it
+         stayed operable during authorization and its change handler
+         could reset an in-flight payment, wiping the resume record
+         liveConfirm writes before confirm while the charge continued
+         at the processor. The handler carries its own in-flight guard
+         as the second belt. */
+      '#currencySelect, ' +
       '.pay-btn, #cartButton, #checkoutButton, ' +
       '#backToShop, #accountSwitch',
     /* everything that can move the amount, in one place. The tax
@@ -2356,6 +2445,21 @@
        liveState exists. Cheap insurance against a hard error on load. */
     if (typeof liveState === 'undefined' || !liveState) return;
     if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
+    /* NEVER DISTURB A PAYMENT ALREADY UNDER WAY: a payment being
+       opened, a resume still resolving, an open bank window, or a
+       finished one being re-checked. HOISTED ABOVE the two staged
+       discard branches below (verifier finding O-M2, 2026-08-16):
+       they used to run first, so a currency flipped to a staged one
+       while a payment was in flight reset it through this function
+       even after the change handler itself learned to refuse, wiping
+       the engine state and the resume record while the charge
+       continued at the processor. With the guard first, a staged
+       currency or a lost tax destination defers its discard until
+       the payment is out of flight; the trailing re-check in
+       liveMountCheckout runs this function again at exactly that
+       moment, so a merely OPEN payment is still discarded promptly,
+       which is the staged behavior the verifier verified sound. */
+    if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
     if (!canOpenLivePayment()) {
       if (liveOpenTimer) {
         window.clearTimeout(liveOpenTimer);
@@ -2378,10 +2482,6 @@
        destination, and a guest without State/region and postal code is not a destination.
        After account and billing address are complete, it can open
        immediately. */
-    /* never disturb a payment already under way, a resume still
-       resolving, an open bank window, or a finished one being
-       re-checked */
-    if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
 
     var signature = liveAmountSignature();
     if (liveState.clientSecret && engine.openedFor() === signature) return;
