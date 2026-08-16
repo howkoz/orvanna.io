@@ -186,9 +186,12 @@
                   <input class="field" type="text" id="billCity" autocomplete="off" spellcheck="false">
                 </div>
                 <div>
-                  <label class="field-label" for="billState">State</label>
+                  <label class="field-label" for="billState">State / region</label>
                   <select class="field" id="billState" autocomplete="off">
                     <option value="">Select</option>
+                    <option value="GB">United Kingdom</option>
+                    <option value="IE">Ireland</option>
+                    <option value="CH">Switzerland</option>
                     <option value="AL">Alabama</option>
                     <option value="AK">Alaska</option>
                     <option value="AZ">Arizona</option>
@@ -243,8 +246,8 @@
                   </select>
                 </div>
                 <div>
-                  <label class="field-label" for="billZip">ZIP</label>
-                  <input class="field" type="text" id="billZip" inputmode="numeric" autocomplete="off" spellcheck="false">
+                  <label class="field-label" for="billZip">ZIP / postal code</label>
+                  <input class="field" type="text" id="billZip" autocomplete="off" spellcheck="false">
                 </div>
               </div>
               <label class="field-label" for="memberCode">Member code</label>
@@ -252,13 +255,13 @@
               <p class="field-hint">Optional. Credits this order to a referring member.</p>
               <!-- Revised 2026-08-16: the billing address starts blank
                    for both signed-in and guest checkout, and tax/payment
-                   wait until the shopper enters State and ZIP. -->
-              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing State and ZIP so tax can be calculated before payment opens.</p>
+                   wait until the shopper enters State/region and postal code. -->
+              <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in. Enter the billing State/region and ZIP/postal code so tax can be calculated before payment opens.</p>
               <!-- Revised 2026-08-16 after the checkout walk:
-                   shoppers naturally expect the visible billing State/ZIP
+                   shoppers naturally expect the visible billing State/region and postal code
                    fields to drive tax. They now do for both guest and
                    signed-in checkout. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State and ZIP entered above. Tax stays pending until both fields are entered.</p>
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest, so tax is calculated from the State/region and ZIP/postal code entered above. Tax stays pending until both fields are entered.</p>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -398,11 +401,11 @@
               <span id="taxLabel">Tax <span class="row-hint">5 percent</span></span>
               <span class="total-num" id="sumTax">$0.00</span>
             </div>
-            <!-- TAX HELPER. The actual controls are the billing State/ZIP
+            <!-- TAX HELPER. The actual controls are the billing State/region and postal code
                  fields above. This note keeps the tax row honest before
                  those fields are filled. -->
             <div class="taxid-row" id="guestTaxStateRow" hidden>
-              <p class="field-hint">Tax follows the billing State and ZIP fields. The tax line appears after those fields are entered.</p>
+              <p class="field-hint">Tax follows the billing State/region and ZIP/postal code fields. The tax line appears after those fields are entered.</p>
             </div>
             <div class="taxid-row currency-row">
               <label class="field-label" for="currencySelect">Currency</label>
@@ -410,8 +413,9 @@
                 <option value="USD">USD, United States dollar</option>
                 <option value="GBP">GBP, British pound</option>
                 <option value="EUR">EUR, euro</option>
+                <option value="CHF">CHF, Swiss franc</option>
               </select>
-              <p class="field-hint" id="currencyHint">Card checkout settles in USD. GBP and EUR are display-ready while the payment rail matures.</p>
+              <p class="field-hint" id="currencyHint">Card checkout settles in USD. GBP, EUR, and CHF are display-ready while the payment rail matures.</p>
             </div>
             <div class="taxid-row">
               <label class="field-label" for="taxId">Tax ID</label>
@@ -684,8 +688,9 @@
   var CURRENCY_STORAGE_KEY = 'orvannaCurrency';
   var CURRENCIES = {
     USD: { rate: 1, symbol: '$', locale: 'en-US', note: 'Card checkout settles in USD.' },
-    GBP: { rate: 0.79, symbol: 'GBP ', locale: 'en-GB', note: 'GBP display is ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' },
-    EUR: { rate: 0.92, symbol: 'EUR ', locale: 'en-US', note: 'EUR display is ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' }
+    GBP: { rate: 0.79, symbol: 'GBP ', locale: 'en-GB', note: 'GBP display and Stripe Tax quote staging are ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' },
+    EUR: { rate: 0.92, symbol: 'EUR ', locale: 'en-US', note: 'EUR display and Stripe Tax quote staging are ready. Plaid/Open Banking payment needs the currency rail migration before settlement.' },
+    CHF: { rate: 0.88, symbol: 'CHF ', locale: 'de-CH', note: 'CHF display and Stripe Tax quote staging are ready. Live payment settlement is still guarded to USD.' }
   };
   var displayCurrency = (function () {
     try {
@@ -1045,10 +1050,10 @@
      THE GUEST TAX ADDRESS (2026-08-16)
 
      The checkout walk exposed the confusing split: shoppers
-     typed State/ZIP in the billing form, but the page priced tax
+     typed State/region and postal code in the billing form, but the page priced tax
      from a separate summary selector that defaulted to Illinois.
      The checkout rule is now simpler: tax stays pending until the
-     shopper reaches billing and enters State and ZIP. Member sign-in
+     shopper reaches billing and enters State/region and postal code. Member sign-in
      still credits the order, but the checkout address is the tax
      destination.
      ============================================================ */
@@ -1056,7 +1061,13 @@
   var billCityInput = document.getElementById('billCity');
   var billStateInput = document.getElementById('billState');
   var billZipInput = document.getElementById('billZip');
+  var CURRENCY_ADDRESS_DEFAULTS = {
+    GBP: { street: '10 Downing Street', city: 'London', state: 'GB', zip: 'SW1A 2AA' },
+    EUR: { street: '1 College Green', city: 'Dublin', state: 'IE', zip: 'D02 X285' },
+    CHF: { street: 'Bahnhofstrasse 1', city: 'Zurich', state: 'CH', zip: '8001' }
+  };
   var GUEST_TAX_STATE_NAMES = {
+    GB: 'United Kingdom', IE: 'Ireland', CH: 'Switzerland',
     AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas',
     CA: 'California', CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware',
     DC: 'District of Columbia', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii',
@@ -1090,7 +1101,11 @@
 
   function guestTaxZip() {
     if (accountMode === null) return '';
-    var m = String(billZipInput.value || '').trim().match(/\d{5}(?:-\d{4})?/);
+    var raw = String(billZipInput.value || '').trim().replace(/\s+/g, ' ');
+    if (guestTaxState() === 'GB' || guestTaxState() === 'IE' || guestTaxState() === 'CH') {
+      return raw.replace(/[^A-Za-z0-9 -]/g, '').slice(0, 12);
+    }
+    var m = raw.match(/\d{5}(?:-\d{4})?/);
     return m ? m[0] : '';
   }
 
@@ -1112,12 +1127,21 @@
   function guestTaxStateName() {
     var code = guestTaxState();
     var zip = guestTaxZip();
-    if (!code) return 'State and ZIP';
+    if (!code) return 'State/region and postal code';
     return (GUEST_TAX_STATE_NAMES[code] || code) + (zip ? ' ' + zip : '');
   }
 
   function guestTaxAddressReady() {
     return guestTaxState() !== '' && guestTaxZip() !== '';
+  }
+
+  function applyCurrencyAddressDefault() {
+    var a = CURRENCY_ADDRESS_DEFAULTS[selectedCurrency()];
+    if (!a) return;
+    billStreetInput.value = a.street;
+    billCityInput.value = a.city;
+    billStateInput.value = a.state;
+    billZipInput.value = a.zip;
   }
 
   function taxDestinationReady() {
@@ -1128,7 +1152,7 @@
 
   function taxPendingLabel() {
     return accountMode === 'member' || accountMode === 'guest'
-      ? 'Tax <span class="row-hint">enter State and ZIP</span>'
+      ? 'Tax <span class="row-hint">enter State/region and postal code</span>'
       : 'Tax <span class="row-hint">after account and billing address</span>';
   }
 
@@ -1140,7 +1164,7 @@
     if (!codeField) return;
     if (codeField.readOnly) { codeField.value = ''; }
     codeField.readOnly = false;
-    /* Guest checkout prices tax from the visible billing State/ZIP
+    /* Guest checkout prices tax from the visible billing State/region and postal code
        fields. This keeps the amount-control on the same fields the
        shopper is naturally editing. */
     document.getElementById('addressTaxNote').hidden = true;
@@ -1159,7 +1183,8 @@
     accountMode = 'guest';
     clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
-    accountStatus.textContent = 'Checking out as a guest. Tax is calculated from the billing State and ZIP fields once both are entered.';
+    applyCurrencyAddressDefault();
+    accountStatus.textContent = 'Checking out as a guest. Tax is calculated from the billing State/region and postal code fields once both are entered.';
     setAccountStage('done');
     renderSummary();
   }
@@ -1249,7 +1274,7 @@
           /* Member sign-in credits the order, but does not decide the
              tax destination. The shopper enters the checkout billing
              address below, and payment stays closed until State and
-             ZIP are present. */
+             postal code is present. */
           setAddress({
             name: name,
             street: '',
@@ -1257,6 +1282,7 @@
             state: '',
             zip: ''
           });
+          applyCurrencyAddressDefault();
           document.getElementById('addressTaxNote').hidden = false;
           document.getElementById('addressTaxNoteGuest').hidden = true;
           /* the guest tax note is a guest control: a member's tax
@@ -1448,6 +1474,7 @@
     currencySelect.addEventListener('change', function () {
       displayCurrency = CURRENCIES[currencySelect.value] ? currencySelect.value : 'USD';
       try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
+      applyCurrencyAddressDefault();
       updateCurrencyHint();
       syncBankAvailability();
       if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
@@ -1568,7 +1595,7 @@
       Object.keys(cart).map(summaryLineHtml).join('');
 
     /* The guest tax helper follows the account mode. The actual
-       controls are the billing State/ZIP fields, so the summary no
+       controls are the billing State/region and postal code fields, so the summary no
        longer has its own tax picker to drift from them. */
     document.getElementById('guestTaxStateRow').hidden =
       !LIVE_PAYMENTS || accountMode !== 'guest';
@@ -1620,7 +1647,7 @@
       /* N-H1: a signed-in member's tax is priced from the address
          stored on their account, so the label says so rather than
          letting the demonstration address fields imply otherwise.
-         The guest half now prices from the visible billing State/ZIP
+         The guest half now prices from the visible billing State/region and postal code
          fields. Until those fields exist, no tax estimate is shown. */
       taxLabel.innerHTML = LIVE_PAYMENTS
         ? (accountMode === 'member'
@@ -2037,7 +2064,7 @@
     }
     /* Opening the payment takes about two seconds, but it must not
        happen until tax has a destination. Account chooser is not a
-       destination, and a guest without State/ZIP is not a destination.
+       destination, and a guest without State/region and postal code is not a destination.
        After account and billing address are complete, it can open
        immediately. */
     /* never disturb a payment already under way, a resume still
