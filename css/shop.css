@@ -933,8 +933,9 @@ a.product-icon { display: block; }
 
 .field-row-3 {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr;
-  gap: 0 16px;
+  grid-template-columns: minmax(150px, 1.55fr) minmax(128px, 0.9fr) minmax(150px, 1.1fr);
+  align-items: end;
+  gap: 0 14px;
 }
 
 /* ---------- activation: shipping-method style selector ---------- */
@@ -1699,6 +1700,30 @@ body.payment-in-flight .checkout-summary {
   gap: 18px;
   margin-bottom: 22px;
 }
+.plaid-progress {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 18px;
+}
+.plaid-progress-step {
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  border-radius: 999px;
+  color: var(--text-d);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.plaid-progress-step.is-active {
+  border-color: var(--cyan);
+  color: var(--paper);
+  background: rgba(34, 211, 238, 0.12);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.14);
+}
 .plaid-kicker,
 .plaid-label {
   display: block;
@@ -1740,13 +1765,20 @@ body.payment-in-flight .checkout-summary {
   font-size: 0.86rem;
   line-height: 1.7;
 }
+.plaid-copy strong { color: var(--paper); }
+.plaid-step[hidden] { display: none; }
 .plaid-bank-list {
   display: grid;
   gap: 10px;
   margin: 18px 0;
 }
 .plaid-bank {
-  min-height: 46px;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  column-gap: 14px;
   border: 1px solid rgba(148, 163, 184, 0.34);
   border-radius: 8px;
   background: rgba(2, 6, 20, 0.42);
@@ -1754,11 +1786,91 @@ body.payment-in-flight .checkout-summary {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-align: left;
-  padding: 0 16px;
+  padding: 10px 16px;
 }
 .plaid-bank.is-selected {
   border-color: var(--cyan);
   box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.24);
+}
+.plaid-bank span {
+  grid-row: 1 / span 2;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 8px;
+  color: var(--cyan);
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.24);
+}
+.plaid-bank strong,
+.plaid-bank small {
+  display: block;
+  min-width: 0;
+}
+.plaid-bank small {
+  color: var(--text-d);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.plaid-consent {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 14px 0 18px;
+  color: var(--text-d);
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+.plaid-actions {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.35fr) minmax(0, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+.plaid-account-list {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+.plaid-account {
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  background: rgba(2, 6, 20, 0.42);
+  color: var(--paper);
+}
+.plaid-account.is-selected {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+}
+.plaid-account span,
+.plaid-account strong,
+.plaid-account small {
+  display: block;
+  min-width: 0;
+}
+.plaid-account small {
+  color: var(--text-d);
+  font-size: 0.78rem;
+  line-height: 1.55;
+}
+.plaid-processing {
+  width: 54px;
+  height: 54px;
+  margin: 20px auto;
+  border-radius: 50%;
+  border: 3px solid rgba(148, 163, 184, 0.24);
+  border-top-color: var(--cyan);
+  animation: plaid-spin 0.85s linear infinite;
+}
+@keyframes plaid-spin {
+  to { transform: rotate(360deg); }
 }
 
 .cc-inner {
@@ -1812,6 +1924,8 @@ body.payment-in-flight .checkout-summary {
   .plaid-card { padding: 22px 16px; max-height: calc(100vh - 92px); }
   .plaid-head { flex-direction: column; }
   .plaid-grid { grid-template-columns: 1fr; }
+  .plaid-progress { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .plaid-actions { grid-template-columns: 1fr; }
 }
 
 /* ---------- card form placeholder ----------

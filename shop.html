@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=41986debcc75">
-<link rel="stylesheet" href="css/corporate.css?v=41986debcc75">
-<link rel="stylesheet" href="css/shop.css?v=41986debcc75">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=678ca8081176">
+<link rel="stylesheet" href="css/corporate.css?v=678ca8081176">
+<link rel="stylesheet" href="css/shop.css?v=678ca8081176">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=41986debcc75" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=678ca8081176" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -246,7 +246,7 @@
                   </select>
                 </div>
                 <div>
-                  <label class="field-label" for="billZip">ZIP / postal code</label>
+                  <label class="field-label" for="billZip">Postal code</label>
                   <input class="field" type="text" id="billZip" autocomplete="off" spellcheck="false">
                 </div>
               </div>
@@ -561,10 +561,16 @@
     <span class="accent-bar" aria-hidden="true"></span>
     <div class="plaid-head">
       <div>
-        <p class="plaid-kicker">Open Banking sandbox</p>
-        <h2 id="plaidTitle">Plaid bank checkout preview</h2>
+        <p class="plaid-kicker">Plaid sandbox</p>
+        <h2 id="plaidTitle">Connect a bank account</h2>
       </div>
       <button class="btn btn-ghost btn-sm" type="button" id="plaidClose">Back to checkout</button>
+    </div>
+    <div class="plaid-progress" aria-label="Plaid sandbox progress">
+      <span class="plaid-progress-step is-active" data-plaid-progress="bank">Bank</span>
+      <span class="plaid-progress-step" data-plaid-progress="signin">Sign in</span>
+      <span class="plaid-progress-step" data-plaid-progress="account">Account</span>
+      <span class="plaid-progress-step" data-plaid-progress="done">Done</span>
     </div>
     <div class="plaid-grid">
       <div>
@@ -580,14 +586,57 @@
         <strong>Sandbox preview</strong>
       </div>
     </div>
-    <p class="plaid-copy">Choose a sandbox bank to preview the handoff. This panel is the demo page for the Plaid rail until Orvanna can create a real HyperSwitch Open Banking payment.</p>
-    <div class="plaid-bank-list" aria-label="Sandbox bank choices">
-      <button class="plaid-bank is-selected" type="button">Sandbox Bank</button>
-      <button class="plaid-bank" type="button">Open Banking Demo</button>
-      <button class="plaid-bank" type="button">Test Current Account</button>
-    </div>
-    <button class="btn btn-solid btn-block" type="button" id="plaidAuthorize">Authorize sandbox bank payment</button>
-    <p class="plaid-result" id="plaidResult" role="status" aria-live="polite">No payment has been created. Nothing has been charged.</p>
+    <section class="plaid-step is-active" data-plaid-step="bank">
+      <p class="plaid-copy">Select a sandbox institution to continue the bank checkout.</p>
+      <label class="field-label" for="plaidSearch">Search banks</label>
+      <input class="field" type="text" id="plaidSearch" value="Sandbox" autocomplete="off" spellcheck="false">
+      <div class="plaid-bank-list" aria-label="Sandbox bank choices">
+        <button class="plaid-bank is-selected" type="button" data-bank-name="Sandbox Bank"><span>SB</span><strong>Sandbox Bank</strong><small>Instant test institution</small></button>
+        <button class="plaid-bank" type="button" data-bank-name="Open Banking Demo"><span>OB</span><strong>Open Banking Demo</strong><small>EU and GB sandbox consent</small></button>
+        <button class="plaid-bank" type="button" data-bank-name="Test Current Account"><span>TC</span><strong>Test Current Account</strong><small>Consumer current account</small></button>
+      </div>
+      <button class="btn btn-solid btn-block" type="button" id="plaidContinueBank">Continue to bank sign in</button>
+    </section>
+
+    <section class="plaid-step" data-plaid-step="signin" hidden>
+      <p class="plaid-copy">Sign in to <strong id="plaidBankName">Sandbox Bank</strong>. This sandbox accepts any test username and password.</p>
+      <label class="field-label" for="plaidUsername">Username</label>
+      <input class="field" type="text" id="plaidUsername" autocomplete="off" spellcheck="false" placeholder="sandbox_user">
+      <label class="field-label" for="plaidPassword">Password</label>
+      <input class="field" type="password" id="plaidPassword" autocomplete="off" placeholder="sandbox_pass">
+      <label class="plaid-consent">
+        <input type="checkbox" id="plaidConsent" checked>
+        <span>I authorize this sandbox bank to share account details for this checkout.</span>
+      </label>
+      <div class="plaid-actions">
+        <button class="btn btn-ghost" type="button" data-plaid-back="bank">Back</button>
+        <button class="btn btn-solid" type="button" id="plaidContinueSignin">Continue</button>
+      </div>
+      <p class="plaid-result" id="plaidSigninError" role="status" aria-live="polite" hidden>Enter any test username and password, then keep the consent box checked.</p>
+    </section>
+
+    <section class="plaid-step" data-plaid-step="account" hidden>
+      <p class="plaid-copy">Choose the account to pay from. Only the selected account will be used for this sandbox checkout.</p>
+      <div class="plaid-account-list" role="radiogroup" aria-label="Sandbox accounts">
+        <label class="plaid-account">
+          <input type="radio" name="plaidAccount" value="checking" checked>
+          <span><strong>Everyday Checking</strong><small>Available balance: <b id="plaidBalancePrimary">GBP 2,850.00</b></small></span>
+        </label>
+        <label class="plaid-account">
+          <input type="radio" name="plaidAccount" value="savings">
+          <span><strong>Reserve Savings</strong><small>Available balance: <b id="plaidBalanceSecondary">GBP 8,400.00</b></small></span>
+        </label>
+      </div>
+      <div class="plaid-actions">
+        <button class="btn btn-ghost" type="button" data-plaid-back="signin">Back</button>
+        <button class="btn btn-solid" type="button" id="plaidAuthorize">Authorize sandbox bank payment</button>
+      </div>
+    </section>
+
+    <section class="plaid-step" data-plaid-step="done" hidden>
+      <div class="plaid-processing" aria-hidden="true"></div>
+      <p class="plaid-copy" id="plaidResult" role="status" aria-live="polite">No payment has been created. Nothing has been charged.</p>
+    </section>
   </div>
 </div>
 
@@ -696,8 +745,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=41986debcc75"></script>
-<script src="js/payments.js?v=41986debcc75"></script>
+<script src="js/catalog.js?v=678ca8081176"></script>
+<script src="js/payments.js?v=678ca8081176"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1447,6 +1496,16 @@
   var plaidClose = document.getElementById('plaidClose');
   var plaidAuthorize = document.getElementById('plaidAuthorize');
   var plaidResult = document.getElementById('plaidResult');
+  var plaidContinueBank = document.getElementById('plaidContinueBank');
+  var plaidContinueSignin = document.getElementById('plaidContinueSignin');
+  var plaidSearch = document.getElementById('plaidSearch');
+  var plaidBankName = document.getElementById('plaidBankName');
+  var plaidUsername = document.getElementById('plaidUsername');
+  var plaidPassword = document.getElementById('plaidPassword');
+  var plaidConsent = document.getElementById('plaidConsent');
+  var plaidSigninError = document.getElementById('plaidSigninError');
+  var plaidBalancePrimary = document.getElementById('plaidBalancePrimary');
+  var plaidBalanceSecondary = document.getElementById('plaidBalanceSecondary');
 
   function canOpenLiveCardPayment() {
     return payMethod === 'card' && selectedCurrency() === 'USD';
@@ -1503,6 +1562,56 @@
     return guestTaxState() || 'GB';
   }
 
+  function selectedPlaidBankName() {
+    var bank = document.querySelector('.plaid-bank.is-selected');
+    return bank ? bank.getAttribute('data-bank-name') : 'Sandbox Bank';
+  }
+
+  function plaidSetStep(step) {
+    document.querySelectorAll('[data-plaid-step]').forEach(function (panel) {
+      var active = panel.getAttribute('data-plaid-step') === step;
+      panel.hidden = !active;
+      panel.classList.toggle('is-active', active);
+    });
+    document.querySelectorAll('[data-plaid-progress]').forEach(function (item) {
+      item.classList.toggle('is-active', item.getAttribute('data-plaid-progress') === step);
+    });
+    window.setTimeout(function () {
+      var target = step === 'bank' ? plaidSearch
+        : step === 'signin' ? plaidUsername
+          : step === 'account' ? document.querySelector('input[name="plaidAccount"]')
+            : plaidClose;
+      if (target) target.focus({ preventScroll: true });
+    }, 0);
+  }
+
+  function plaidAuthorizeLabel() {
+    var amount = plaidAmount ? plaidAmount.textContent.trim() : '';
+    return amount ? 'Authorize ' + amount : 'Authorize sandbox bank payment';
+  }
+
+  function resetPlaidFlow() {
+    if (plaidSearch) plaidSearch.value = '';
+    if (plaidUsername) plaidUsername.value = '';
+    if (plaidPassword) plaidPassword.value = '';
+    if (plaidConsent) plaidConsent.checked = true;
+    if (plaidSigninError) plaidSigninError.hidden = true;
+    if (plaidAuthorize) {
+      plaidAuthorize.disabled = false;
+      plaidAuthorize.textContent = plaidAuthorizeLabel();
+    }
+    if (plaidResult) plaidResult.textContent = 'No payment has been created. Nothing has been charged.';
+    if (plaidBankName) plaidBankName.textContent = selectedPlaidBankName();
+    document.querySelectorAll('.plaid-bank').forEach(function (bank) { bank.hidden = false; });
+    document.querySelectorAll('.plaid-account').forEach(function (acct) {
+      acct.classList.toggle('is-selected', acct.querySelector('input').checked);
+    });
+    var balanceCurrency = selectedCurrency();
+    if (plaidBalancePrimary) plaidBalancePrimary.textContent = balanceCurrency + ' 2,850.00';
+    if (plaidBalanceSecondary) plaidBalanceSecondary.textContent = balanceCurrency + ' 8,400.00';
+    plaidSetStep('bank');
+  }
+
   function openPlaidPanel() {
     if (!plaidPanel) return;
     var renderedTotal = document.getElementById('checkoutTotal');
@@ -1510,9 +1619,8 @@
       ? renderedTotal.textContent.trim()
       : fmtMoney(orderMath().total);
     plaidCountry.textContent = plaidCountryCode();
-    plaidResult.textContent = 'No payment has been created. Nothing has been charged.';
+    resetPlaidFlow();
     plaidPanel.hidden = false;
-    window.setTimeout(function () { plaidClose.focus(); }, 0);
   }
 
   function closePlaidPanel() {
@@ -1576,13 +1684,55 @@
       document.querySelectorAll('.plaid-bank').forEach(function (b) {
         b.classList.toggle('is-selected', b === bank);
       });
+      if (plaidBankName) plaidBankName.textContent = selectedPlaidBankName();
+    });
+  });
+  if (plaidSearch) {
+    plaidSearch.addEventListener('input', function () {
+      var term = plaidSearch.value.trim().toLowerCase();
+      document.querySelectorAll('.plaid-bank').forEach(function (bank) {
+        var name = bank.getAttribute('data-bank-name').toLowerCase();
+        bank.hidden = term && name.indexOf(term) < 0;
+      });
+    });
+  }
+  if (plaidContinueBank) {
+    plaidContinueBank.addEventListener('click', function () {
+      if (plaidBankName) plaidBankName.textContent = selectedPlaidBankName();
+      plaidSetStep('signin');
+    });
+  }
+  if (plaidContinueSignin) {
+    plaidContinueSignin.addEventListener('click', function () {
+      var valid = !!(plaidUsername && plaidUsername.value.trim()) &&
+        !!(plaidPassword && plaidPassword.value.trim()) &&
+        !!(plaidConsent && plaidConsent.checked);
+      if (!valid) {
+        if (plaidSigninError) plaidSigninError.hidden = false;
+        return;
+      }
+      if (plaidSigninError) plaidSigninError.hidden = true;
+      plaidSetStep('account');
+    });
+  }
+  document.querySelectorAll('[data-plaid-back]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      plaidSetStep(button.getAttribute('data-plaid-back'));
+    });
+  });
+  document.querySelectorAll('.plaid-account input').forEach(function (input) {
+    input.addEventListener('change', function () {
+      document.querySelectorAll('.plaid-account').forEach(function (acct) {
+        acct.classList.toggle('is-selected', acct.querySelector('input').checked);
+      });
     });
   });
   if (plaidAuthorize) {
     plaidAuthorize.addEventListener('click', function () {
       plaidAuthorize.disabled = true;
-      plaidAuthorize.textContent = 'Finishing sandbox order';
-      plaidResult.textContent = 'Sandbox authorization preview complete. Finishing the demo order now. Nothing real was charged.';
+      plaidAuthorize.textContent = 'Authorizing';
+      plaidSetStep('done');
+      plaidResult.textContent = 'Securely returning to Orvanna. Nothing real has been charged.';
       window.setTimeout(function () {
         if (plaidPanel) plaidPanel.hidden = true;
         demoPlaceOrder({
@@ -1590,7 +1740,7 @@
           demoNote: 'Plaid sandbox checkout complete. This preview placed a demo order and did not create a real Open Banking payment or charge real money.'
         });
         plaidAuthorize.disabled = false;
-        plaidAuthorize.textContent = 'Authorize sandbox bank payment';
+        plaidAuthorize.textContent = plaidAuthorizeLabel();
       }, 650);
     });
   }
