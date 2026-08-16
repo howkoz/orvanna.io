@@ -622,6 +622,8 @@
 
 .checkout-panel { padding: 34px 30px 30px; }
 
+#paymentPanel { position: relative; }
+
 .checkout-summary {
   position: sticky;
   top: 96px;
@@ -1545,6 +1547,21 @@ body.payment-in-flight .line-remove,
 body.payment-in-flight .pay-btn {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+body.payment-in-flight #paymentPanel {
+  z-index: 24;
+}
+
+body.payment-in-flight #livePayArea,
+body.payment-in-flight #livePayStatus,
+body.payment-in-flight #cardFormSkeleton {
+  position: relative;
+  z-index: 25;
+}
+
+body.payment-in-flight .checkout-summary {
+  z-index: 1;
 }
 
 /* ---------- chrome above the bank's own approval overlay ---------- */
