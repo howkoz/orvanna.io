@@ -487,13 +487,18 @@
       catch (e) { /* never let warming break the page */ }
     }
 
-    /* mount the provider's secure card form; card data goes only into
-       that form, never into this page's inputs */
+    /* mount the provider's secure payment form; card and wallet data
+       go only into that form, never into this page's inputs */
     function mountWidget(publishableKey) {
       state.publishableKey = publishableKey;
       state.hyper = window.Hyper(publishableKey);
       state.widgets = state.hyper.widgets({ clientSecret: state.clientSecret });
-      state.widgets.create('payment', { layout: 'tabs' }).mount('#' + opts.mountId);
+      state.widgets.create('payment', {
+        layout: 'tabs',
+        wallets: {
+          walletReturnUrl: canonicalReturnUrl(state.orderNumber)
+        }
+      }).mount('#' + opts.mountId);
       setCardSkeleton(false);
     }
 

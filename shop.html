@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=178d3ba7b42c">
-<link rel="stylesheet" href="css/corporate.css?v=178d3ba7b42c">
-<link rel="stylesheet" href="css/shop.css?v=178d3ba7b42c">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=998e57b8cf20">
+<link rel="stylesheet" href="css/corporate.css?v=998e57b8cf20">
+<link rel="stylesheet" href="css/shop.css?v=998e57b8cf20">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=178d3ba7b42c" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=998e57b8cf20" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -290,7 +290,7 @@
             <div class="checkout-panel glass" id="paymentPanel">
               <span class="accent-bar" aria-hidden="true"></span>
               <h2 class="checkout-panel-title"><span class="step-num">4</span>Payment</h2>
-              <p class="step-intro">Credit card is live for USD sandbox checkout. Bank account is staged for Plaid/Open Banking sandbox testing when the currency rail is ready.</p>
+              <p class="step-intro">Credit card, Google Pay, and PayPal are live for USD sandbox checkout. Plaid/Open Banking is staged for bank account testing when the currency rail is ready.</p>
 
               <div class="pay-row" role="group" aria-label="Payment method">
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
@@ -314,7 +314,7 @@
                   <span class="sr-only">Bank account through Plaid</span>
                 </button>
               </div>
-              <p class="pay-note">Credit card is the live USD sandbox rail. Plaid is staged for bank account testing after the currency and ACH/Open Banking rails are ready.</p>
+              <p class="pay-note">Card, Google Pay, and PayPal run through the HyperSwitch sandbox. Plaid is staged for bank account testing after the currency and ACH/Open Banking rails are ready.</p>
 
               <form id="checkoutForm" novalidate>
                 <div id="cardFields">
@@ -651,8 +651,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=178d3ba7b42c"></script>
-<script src="js/payments.js?v=178d3ba7b42c"></script>
+<script src="js/catalog.js?v=998e57b8cf20"></script>
+<script src="js/payments.js?v=998e57b8cf20"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1365,6 +1365,11 @@
     return payMethod === 'card' && selectedCurrency() === 'USD';
   }
 
+  function canOpenLivePayment() {
+    return selectedCurrency() === 'USD' &&
+      (payMethod === 'card' || payMethod === 'googlepay' || payMethod === 'paypal');
+  }
+
   function bankMethodAllowed() {
     return selectedCurrency() === 'GBP' || selectedCurrency() === 'EUR';
   }
@@ -1384,6 +1389,11 @@
     if (!LIVE_PAYMENTS) return payMethod === 'card' ? 'Place order' : 'Place order with ' + PAY_LABELS[payMethod];
     if (payMethod === 'card') {
       return selectedCurrency() === 'USD' ? 'Continue to card details' : 'Card checkout is USD only';
+    }
+    if (payMethod === 'googlepay' || payMethod === 'paypal') {
+      return selectedCurrency() === 'USD'
+        ? 'Continue to ' + PAY_LABELS[payMethod]
+        : PAY_LABELS[payMethod] + ' is USD only';
     }
     if (payMethod === 'bank') return 'Prepare bank checkout';
     return 'Place order with ' + PAY_LABELS[payMethod];
@@ -1417,10 +1427,10 @@
     if (!isCard) {
       walletNote.textContent = method === 'bank'
         ? 'Bank account checkout is staged for the Plaid/Open Banking sandbox. No card details are needed.'
-        : PAY_LABELS[method] + ' needs no card details here. Place the order to finish.';
+        : PAY_LABELS[method] + ' opens inside the secure HyperSwitch payment form. No card details are typed on this page.';
     }
     placeOrderBtn.textContent = paymentButtonLabel();
-    if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLiveCardPayment()) {
+    if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
       liveResetPayment('');
     }
     if (LIVE_PAYMENTS && typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
@@ -1440,7 +1450,7 @@
       try { window.localStorage.setItem(CURRENCY_STORAGE_KEY, displayCurrency); } catch (e) { /* display only */ }
       updateCurrencyHint();
       syncBankAvailability();
-      if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLiveCardPayment()) {
+      if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
         liveResetPayment('');
       }
       renderAll();
@@ -1547,7 +1557,7 @@
   function syncPayButtonToDisplayedTotal(displayedTotal) {
     if (!LIVE_PAYMENTS) return;
     if (typeof liveState === 'undefined' || !liveState) return;
-    if (!canOpenLiveCardPayment()) return;
+    if (!canOpenLivePayment()) return;
     if (!liveState.clientSecret || liveState.checkOnly || liveState.busy) return;
     if (placeOrderBtn.hidden) return;
     placeOrderBtn.textContent = 'Pay ' + fmtMoney(displayedTotal) + ' now, test mode';
@@ -1824,7 +1834,7 @@
        liveMountCheckout below. */
     onTotalsApplied: function (t) {
       if (!placeOrderBtn.hidden && liveState.clientSecret) {
-        placeOrderBtn.textContent = canOpenLiveCardPayment()
+        placeOrderBtn.textContent = canOpenLivePayment()
           ? 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode'
           : paymentButtonLabel();
       }
@@ -2008,7 +2018,7 @@
        liveState exists. Cheap insurance against a hard error on load. */
     if (typeof liveState === 'undefined' || !liveState) return;
     if (!views.checkout || !views.checkout.classList.contains('is-active')) return;
-    if (!canOpenLiveCardPayment()) {
+    if (!canOpenLivePayment()) {
       if (liveOpenTimer) {
         window.clearTimeout(liveOpenTimer);
         liveOpenTimer = null;
@@ -2051,7 +2061,7 @@
       /* re-check everything: nearly a second has passed */
       if (liveState.busy || liveState.resuming || liveState.checkOnly || engine.isChallengeOpen()) return;
       if (!views.checkout.classList.contains('is-active')) return;
-      if (!canOpenLiveCardPayment() || Object.keys(cart).length === 0) return;
+      if (!canOpenLivePayment() || Object.keys(cart).length === 0) return;
       if (!taxDestinationReady()) return;
       var now = liveAmountSignature();
       if (liveState.clientSecret && engine.openedFor() === now) return;
@@ -2229,12 +2239,13 @@
          4000 1111 1111 1115  approval screen, then the card declines
        Expiry month 01, year = current + 3. Full matrix:
        docs/TEST-CARDS.html. See also ROADMAP.md. */
-    livePayNote.textContent =
-      'Test mode, expiry 01/29, any three digit security code. ' +
-      '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. ' +
-      '4000 0000 0000 2370 opens it, and the approval fails. ' +
-      '4000 0000 0000 2701 approves with no passcode at all. ' +
-      'Nothing is ever charged.';
+    livePayNote.textContent = payMethod === 'googlepay' || payMethod === 'paypal'
+      ? PAY_LABELS[payMethod] + ' is enabled on the Braintree connector. Choose it inside the secure HyperSwitch form if it is available in this browser. Nothing is ever charged.'
+      : 'Test mode, expiry 01/29, any three digit security code. ' +
+        '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. ' +
+        '4000 0000 0000 2370 opens it, and the approval fails. ' +
+        '4000 0000 0000 2701 approves with no passcode at all. ' +
+        'Nothing is ever charged.';
     liveStatus('');
     /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE.
 
@@ -2253,7 +2264,7 @@
        math survives as a fallback for the case where no server answer
        exists yet, and it is the same figure the summary is showing at
        that moment, so the two can never disagree on screen. */
-    placeOrderBtn.textContent = canOpenLiveCardPayment()
+    placeOrderBtn.textContent = canOpenLivePayment()
       ? 'Pay ' + fmtMoney(
           liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
         ) + ' now, test mode'
@@ -2439,16 +2450,16 @@
     }).catch(function () { /* the section simply stays hidden */ });
   }
 
-  /* In live mode the express marks stay demonstration drawings.
-     Bank account remains selectable as the visible Plaid/Open Banking
-     staging path; it is guarded before create-payment until the
-     currency and order-record work is ready. */
+  /* In live mode, methods follow the processor setup now turned on.
+     Braintree now exposes Google Pay and PayPal through HyperSwitch,
+     Apple Pay still waits for domain setup, and Bank account remains
+     the staged Plaid/Open Banking path. */
   if (LIVE_PAYMENTS) {
     payButtons.forEach(function (b) {
       var method = b.getAttribute('data-pay');
-      if (method !== 'card' && method !== 'bank') {
+      if (method === 'applepay') {
         b.disabled = true;
-        b.title = 'Demonstration mark only. Card and bank account are the sandbox rails in this phase.';
+        b.title = 'Apple Pay needs Braintree Apple Pay domain setup before this sandbox rail can be enabled.';
       }
     });
   } else {
