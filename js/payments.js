@@ -99,8 +99,18 @@
        inertSelectors    CSS selector string: every control that can
                          move the amount while a payment is in flight
        signaturePayload  function returning { items, activation,
-                         tax_id, member_code }: the exact fields the
-                         server prices. Doubles as the quote payload.
+                         tax_id, member_code, and on the shop the
+                         guest_state code }: the exact fields the
+                         server prices. Doubles as the quote payload,
+                         which is why adding a field here (the guest
+                         tax state, 2026-08-16) automatically joins
+                         BOTH the quote debounce and the amount
+                         signature: a changed field re-asks the tax
+                         question, and a change after a payment opened
+                         discards and reopens that payment. The staff
+                         console sends no guest_state on purpose: its
+                         quick order always has a caller attached, so
+                         there is no guest whose state could apply.
        quoteGate         function: page-specific extra gates before a
                          tax quote may be asked (view active, caller
                          loaded, and so on)

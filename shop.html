@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ce0eca3abc2d">
-<link rel="stylesheet" href="css/corporate.css?v=ce0eca3abc2d">
-<link rel="stylesheet" href="css/shop.css?v=ce0eca3abc2d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=5158b5d0dd4d">
+<link rel="stylesheet" href="css/corporate.css?v=5158b5d0dd4d">
+<link rel="stylesheet" href="css/shop.css?v=5158b5d0dd4d">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=ce0eca3abc2d" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=5158b5d0dd4d" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -192,11 +192,37 @@
                    computed against instead of implying it is the one shown. -->
               <p class="field-hint hint-loose" id="addressTaxNote" hidden>You are signed in, so tax is calculated against the billing address stored on this member's account, not the demonstration address shown above. The address fields here are display only for the demonstration.</p>
               <!-- The guest half of N-H1, delivered 2026-08-16 (quality
-                   assurance finding M1): a guest order's tax is priced
-                   server side from the demonstration tax address in
-                   Illinois, never from these fields, and only the
-                   signed-in surface said so. Now both do. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest. For this demonstration, tax on a guest order is priced from the demonstration tax address in Illinois, United States, not from the address you type here. The address fields here are display only for the demonstration.</p>
+                   assurance finding M1) and extended the same day with the
+                   state picker below: a guest order's tax is priced server
+                   side from a canned demonstration address for the state
+                   picked below, never from these fields, and it defaults to
+                   Illinois when nothing is picked. -->
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest. For this demonstration, tax is calculated for the state you pick below, using a demonstration address in that state, and it defaults to Illinois. The address fields you type above are display only for the demonstration.</p>
+              <!-- GUEST TAX STATE PICKER (2026-08-16). Guests only; a
+                   signed-in member's tax comes from the address stored on
+                   their account and the server ignores this field entirely
+                   when a member is attached. The page sends the two-letter
+                   CODE and nothing else: the code becomes an address only
+                   inside the server's allow list (functions/_shared/tax.ts,
+                   GUEST_STATE_ADDRESSES), so the browser still cannot choose
+                   its own tax destination, only point at one of the eight the
+                   server offers. This list is DISPLAY ONLY and must match
+                   that allow list; the server side is the authority, and an
+                   unknown code silently prices as Illinois there. -->
+              <div id="guestTaxStateRow" hidden>
+                <label class="field-label" for="guestTaxState">Tax state</label>
+                <select class="field" id="guestTaxState">
+                  <option value="IL" selected>Illinois (default)</option>
+                  <option value="CA">California</option>
+                  <option value="CO">Colorado</option>
+                  <option value="FL">Florida</option>
+                  <option value="NY">New York</option>
+                  <option value="OR">Oregon (no state sales tax)</option>
+                  <option value="TX">Texas</option>
+                  <option value="WA">Washington</option>
+                </select>
+                <p class="field-hint">Pick a state and the tax engine prices this order for that state. The demonstration offers these eight; the tax line above the total says which figure you are looking at.</p>
+              </div>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -586,8 +612,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=ce0eca3abc2d"></script>
-<script src="js/payments.js?v=ce0eca3abc2d"></script>
+<script src="js/catalog.js?v=5158b5d0dd4d"></script>
+<script src="js/payments.js?v=5158b5d0dd4d"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -935,6 +961,36 @@
     document.getElementById('acctUser').focus();
   });
 
+  /* ============================================================
+     THE GUEST TAX STATE (2026-08-16)
+
+     The picker in the billing panel. Guests only: what leaves this
+     page is the two-letter CODE, and only for a guest; a signed-in
+     member sends an empty string, so a hidden picker can never
+     move a member's amount signature. The server ignores the code
+     whenever a member is attached in any case; this is the belt to
+     that suspender. Display names live here for the estimate label
+     and MUST match the server allow list in functions/_shared/
+     tax.ts (GUEST_STATE_ADDRESSES), which is the authority.
+     ============================================================ */
+  var guestTaxStateSelect = document.getElementById('guestTaxState');
+  var GUEST_TAX_STATE_NAMES = {
+    IL: 'Illinois', CA: 'California', CO: 'Colorado', FL: 'Florida',
+    NY: 'New York', OR: 'Oregon', TX: 'Texas', WA: 'Washington'
+  };
+
+  function guestTaxState() {
+    return accountMode === 'member' ? '' : guestTaxStateSelect.value;
+  }
+
+  function guestTaxStateName() {
+    var code = guestTaxStateSelect.value;
+    var name = GUEST_TAX_STATE_NAMES[code] || 'Illinois';
+    /* the default is labelled as the default, so a shopper who never
+       touched the picker knows the figure is not their own state */
+    return code === 'IL' ? name + ', the default' : name;
+  }
+
   /* Leaving a signed-in account must also give the member code back,
      otherwise a guest order would still be credited to whoever signed
      in a moment ago. */
@@ -945,19 +1001,22 @@
     codeField.readOnly = false;
     /* Corrected 2026-08-16 (quality assurance finding M1): this used
        to say a guest's tax "really is priced from what is on screen",
-       which was false. The server prices every guest order from the
-       demonstration tax address in Illinois (HOUSE_TAX_ADDRESS in
-       functions/_shared/tax.ts) regardless of what is typed here. So
-       the signed-in note comes down and the guest note goes up. */
+       which was false. The server prices every guest order from a
+       canned demonstration address, picked by state in the selector
+       below (GUEST_STATE_ADDRESSES in functions/_shared/tax.ts,
+       Illinois by default), regardless of what is typed here. So the
+       signed-in note comes down, and the guest note and the state
+       picker go up. */
     document.getElementById('addressTaxNote').hidden = true;
     document.getElementById('addressTaxNoteGuest').hidden = false;
+    document.getElementById('guestTaxStateRow').hidden = false;
   }
 
   document.getElementById('chooseGuest').addEventListener('click', function () {
     accountMode = 'guest';
     clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
-    accountStatus.textContent = 'Checking out as a guest. For this demonstration, tax on a guest order is priced from the demonstration tax address in Illinois, not from the address fields below.';
+    accountStatus.textContent = 'Checking out as a guest. Tax is calculated for the state you pick in the billing step, and it defaults to Illinois.';
     setAccountStage('done');
   });
 
@@ -1041,6 +1100,12 @@
           });
           document.getElementById('addressTaxNote').hidden = false;
           document.getElementById('addressTaxNoteGuest').hidden = true;
+          /* the state picker is a guest control: a member's tax comes
+             from the address stored on their account, so the picker
+             comes down with the guest note, and guestTaxState()
+             returns '' for a member so the hidden control also drops
+             out of the amount signature and both payloads */
+          document.getElementById('guestTaxStateRow').hidden = true;
           /* this is what actually credits the order: create-payment
              resolves it against app.members server side */
           var codeField = document.getElementById('memberCode');
@@ -1186,6 +1251,16 @@
     if (LIVE_PAYMENTS) liveEnsureCheckout();
   });
 
+  /* The guest tax state moves the amount, so it walks the same road
+     as every other amount-affecting control: through renderSummary,
+     which repaints the estimate label for the newly picked state at
+     once, then asks for a fresh quote (the debounce) and re-checks
+     the open payment (the amount signature). A state changed after a
+     payment opened therefore discards that payment and opens a fresh
+     one, exactly as the activation choice and the tax identifier
+     already do. */
+  guestTaxStateSelect.addEventListener('change', renderSummary);
+
   function taxExempt() {
     return /\d/.test(taxIdInput.value);
   }
@@ -1227,6 +1302,38 @@
     return { t: t, delivery: delivery, tax: tax, total: total };
   }
 
+  /* ============================================================
+     THE BUTTON MAY NEVER DISAGREE WITH THE TOTAL BESIDE IT
+     (owner requirement, 2026-08-16, landed with the state picker).
+
+     When an amount-affecting control moves while a payment is
+     already open, renderSummary repaints the tax row and the order
+     total immediately, but the fresh quote (350 milliseconds of
+     debounce) and the payment reopen (900 milliseconds) arrive
+     later. In that window the button used to keep offering the OLD
+     payment's figure next to the NEW displayed total: two numbers
+     on one screen, which is the exact class of fault this checkout
+     exists to prevent. So every branch of renderSummary that paints
+     a total now hands that same figure to this function, and the
+     button and the row can only ever move together. The moment the
+     quote answers, applyServerTotals repaints both again through
+     onTotalsApplied; the moment the fresh payment opens, the mount
+     does the same. The liveConfirm signature guard remains the hard
+     rail at submission time; this keeps the SCREEN honest during
+     the seconds in between.
+
+     Deliberately silent unless a payment is open and still
+     submittable: before the first open the button reads "Continue
+     to card details" and carries no figure, and a button on
+     check-again duty is asking about a settled amount. */
+  function syncPayButtonToDisplayedTotal(displayedTotal) {
+    if (!LIVE_PAYMENTS) return;
+    if (typeof liveState === 'undefined' || !liveState) return;
+    if (!liveState.clientSecret || liveState.checkOnly || liveState.busy) return;
+    if (placeOrderBtn.hidden) return;
+    placeOrderBtn.textContent = 'Pay ' + fmtMoney(displayedTotal) + ' now, test mode';
+  }
+
   function renderSummary() {
     document.getElementById('checkoutLines').innerHTML =
       Object.keys(cart).map(summaryLineHtml).join('');
@@ -1259,27 +1366,33 @@
     var taxLabel = document.getElementById('taxLabel');
     if (LIVE_PAYMENTS && liveTotalsAreCurrent()) {
       /* Already answered for exactly this cart: repaint the real
-         figure rather than flashing the estimate back over it. */
+         figure rather than flashing the estimate back over it.
+         applyServerTotals also re-syncs the pay button through the
+         onTotalsApplied hook, so row and button move together. */
       applyServerTotals(engine.getServerTotals());
     } else if (taxExempt()) {
       taxLabel.innerHTML = 'Tax exempt';
       document.getElementById('sumTax').textContent = '$0.00';
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
+      syncPayButtonToDisplayedTotal(m.total);
     } else {
       /* N-H1: a signed-in member's tax is priced from the address
          stored on their account, so the label says so rather than
          letting the demonstration address fields imply otherwise.
          The guest half, delivered 2026-08-16 (quality assurance
-         finding M1): a guest order is priced from the demonstration
-         tax address in Illinois, so the guest estimate says that
-         too instead of implying the typed address is used. */
+         finding M1) and extended with the state picker the same
+         day: a guest order is priced from a canned demonstration
+         address for the PICKED state, Illinois by default, so the
+         estimate names that state instead of implying the typed
+         address is used. */
       taxLabel.innerHTML = LIVE_PAYMENTS
         ? (accountMode === 'member'
           ? 'Tax <span class="row-hint">estimate, from the address on file for this member</span>'
-          : 'Tax <span class="row-hint">estimate, from the demonstration tax address, Illinois</span>')
+          : 'Tax <span class="row-hint">estimate, for ' + guestTaxStateName() + '</span>')
         : 'Tax <span class="row-hint">5 percent</span>';
       document.getElementById('sumTax').textContent = fmtMoney(m.tax);
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
+      syncPayButtonToDisplayedTotal(m.total);
     }
     document.getElementById('summaryRenews').hidden = m.t.subMoney === 0;
     document.getElementById('checkoutPv').textContent = fmtPv(m.t.pv);
@@ -1448,17 +1561,23 @@
     /* nothing the shopper can reach may change the amount that is
        currently being authorized */
     inertSelectors: '.qty-btn, .line-remove, [data-add], input[name="delivery"], ' +
-      '#memberCode, #taxId, .pay-btn, #cartButton, #checkoutButton, ' +
+      '#memberCode, #taxId, #guestTaxState, .pay-btn, #cartButton, #checkoutButton, ' +
       '#backToShop, #accountSwitch',
     /* everything that can move the amount, in one place. The tax
        identifier goes as itself, not a verdict: the server and Stripe
-       decide what it means (verifier finding, 2026-08-15). */
+       decide what it means (verifier finding, 2026-08-15). The guest
+       tax state (2026-08-16) rides here for the same reason: it moves
+       the tax line, so changing it must re-quote, and changing it
+       after a payment opened must discard and reopen that payment.
+       Empty for a signed-in member, so the hidden picker can never
+       churn a member's signature. */
     signaturePayload: function () {
       return {
         items: cartPayload(),
         activation: deliveryChoice(),
         tax_id: taxIdInput.value.trim(),
-        member_code: document.getElementById('memberCode').value.trim()
+        member_code: document.getElementById('memberCode').value.trim(),
+        guest_state: guestTaxState()
       };
     },
     quoteGate: function () {
@@ -1769,6 +1888,13 @@
          decide what it means (verifier finding, 2026-08-15) */
       tax_id: taxIdInput.value.trim(),
       member_code: document.getElementById('memberCode').value.trim(),
+      /* the guest's picked tax state, IDENTICAL to the field in the
+         quote payload above (signaturePayload doubles as the quote
+         body), so the state a shopper is quoted against is the state
+         the charge is priced against. A code, never an address; empty
+         for a signed-in member; the server ignores it whenever a
+         member is attached. */
+      guest_state: guestTaxState(),
       channel: 'shop',
       /* which page the bank should come back to. A page name, never
          a full address: the server builds the address itself from

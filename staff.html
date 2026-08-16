@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ce0eca3abc2d">
-<link rel="stylesheet" href="css/corporate.css?v=ce0eca3abc2d">
-<link rel="stylesheet" href="css/staff.css?v=ce0eca3abc2d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=5158b5d0dd4d">
+<link rel="stylesheet" href="css/corporate.css?v=5158b5d0dd4d">
+<link rel="stylesheet" href="css/staff.css?v=5158b5d0dd4d">
 <style>
 /* ============================================================
    Order history and order detail (2026-08-15, PROPOSED).
@@ -75,7 +75,7 @@
 <header class="console-top">
   <div class="console-wrap console-top-inner">
     <a href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=ce0eca3abc2d" alt="Orvanna" class="console-logo">
+      <img src="assets/logo-header-dark.svg?v=5158b5d0dd4d" alt="Orvanna" class="console-logo">
     </a>
     <span class="console-title">Staff Call Console</span>
     <span class="console-demo-pill">Demonstration</span>
@@ -395,8 +395,8 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=ce0eca3abc2d"></script>
-<script src="js/payments.js?v=ce0eca3abc2d"></script>
+<script src="js/catalog.js?v=5158b5d0dd4d"></script>
+<script src="js/payments.js?v=5158b5d0dd4d"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -1146,7 +1146,16 @@
     /* everything that can move the amount. Phone orders are always
        standard activation, so that value is fixed rather than read.
        The tax identifier goes as itself, not a verdict: the server
-       and Stripe decide what it means. */
+       and Stripe decide what it means.
+
+       NO guest_state HERE, DELIBERATELY (scope check 2026-08-16,
+       when the shop's guest state picker landed): this console has
+       no guest path. The quote gate below refuses to act until a
+       caller is on screen, and the caller IS a member, so the
+       server would ignore a state code on every order this page can
+       place. If a guest phone-order path is ever added, wire the
+       picker exactly as shop.html does: the code joins this payload
+       and the create payload identically, and nothing else. */
     signaturePayload: function () {
       return {
         items: staffCartPayload(),
