@@ -1580,7 +1580,18 @@
   });
   if (plaidAuthorize) {
     plaidAuthorize.addEventListener('click', function () {
-      plaidResult.textContent = 'Sandbox authorization preview complete. The live backend still has not created an Open Banking payment, so no order was created and nothing was charged.';
+      plaidAuthorize.disabled = true;
+      plaidAuthorize.textContent = 'Finishing sandbox order';
+      plaidResult.textContent = 'Sandbox authorization preview complete. Finishing the demo order now. Nothing real was charged.';
+      window.setTimeout(function () {
+        if (plaidPanel) plaidPanel.hidden = true;
+        demoPlaceOrder({
+          paymentLabel: 'Plaid/Open Banking sandbox',
+          demoNote: 'Plaid sandbox checkout complete. This preview placed a demo order and did not create a real Open Banking payment or charge real money.'
+        });
+        plaidAuthorize.disabled = false;
+        plaidAuthorize.textContent = 'Authorize sandbox bank payment';
+      }, 650);
     });
   }
 
@@ -1846,7 +1857,8 @@
 
   /* the round-4 demonstration handler, unchanged: it runs when
      LIVE_PAYMENTS is false and never touches the network */
-  function demoPlaceOrder() {
+  function demoPlaceOrder(options) {
+    options = options || {};
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
 
     var m = orderMath();
@@ -1867,7 +1879,7 @@
       ? '<div class="total-row"><span>Tax exempt</span><span class="total-num">' + fmtMoney(0) + '</span></div>'
       : '<div class="total-row"><span>Tax <span class="row-hint">5 percent</span></span><span class="total-num">' + fmtMoney(m.tax) + '</span></div>';
     rows += '<div class="total-row total-main"><span>Order total</span><span class="total-num">' + fmtMoney(m.total) + '</span></div>';
-    rows += '<div class="total-row"><span>Payment method</span><span class="total-num">' + PAY_LABELS[payMethod] + '</span></div>';
+    rows += '<div class="total-row"><span>Payment method</span><span class="total-num">' + (options.paymentLabel || PAY_LABELS[payMethod]) + '</span></div>';
     rows += '<div class="total-row"><span>Total PV</span><span class="total-pv-num">' + fmtPv(m.t.pv) + '</span></div>';
     document.getElementById('confirmTotals').innerHTML = rows;
 
@@ -1883,6 +1895,8 @@
     document.getElementById('confirmQualified').textContent = m.t.pv >= 100
       ? 'This order carries ' + fmtPv(m.t.pv) + ': a qualified month.'
       : 'This order carries ' + fmtPv(m.t.pv) + ' of the 100 PV qualified month.';
+    document.getElementById('confirmDemoNote').textContent = options.demoNote ||
+      'Test mode checkout: a test payment ran against the sandbox and nothing real was ever charged.';
 
     /* the order is placed: the cart clears */
     cart = {};
