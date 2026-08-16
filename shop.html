@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=5158b5d0dd4d">
-<link rel="stylesheet" href="css/corporate.css?v=5158b5d0dd4d">
-<link rel="stylesheet" href="css/shop.css?v=5158b5d0dd4d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=3704193951e8">
+<link rel="stylesheet" href="css/corporate.css?v=3704193951e8">
+<link rel="stylesheet" href="css/shop.css?v=3704193951e8">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=5158b5d0dd4d" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=3704193951e8" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -138,6 +138,20 @@
                 <button class="btn btn-ghost" type="button" id="signinBack">Back</button>
               </div>
               <p class="account-status" id="signinError" role="status" aria-live="polite" hidden></p>
+              <!-- EVERY REFUSAL HANDS THE SHOPPER A PATH (owner defect,
+                   2026-08-16, hit live with a staff credential): a refusal
+                   message alone is a dead end, because in this state the
+                   guest choice is off screen, the payment step has correctly
+                   not opened, and the shopper reads "the card input is not
+                   opening". So every sign-in refusal, wrong password,
+                   unknown code, staff or administrator account, or the
+                   sign-in service being unreachable, shows this inline
+                   button alongside the message. It runs the SAME handler as
+                   the chooser's guest button, so there is one guest path,
+                   not two. -->
+              <div class="account-choices" id="signinErrorActions" hidden>
+                <button class="btn btn-ghost" type="button" id="signinGuestBtn">Continue as guest instead</button>
+              </div>
               <!-- The password below is PUBLIC ON PURPOSE. A visitor to a
                    demonstration has to be able to sign in. It guards nothing:
                    the roster it opens is already public, and it cannot open
@@ -197,32 +211,16 @@
                    side from a canned demonstration address for the state
                    picked below, never from these fields, and it defaults to
                    Illinois when nothing is picked. -->
-              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest. For this demonstration, tax is calculated for the state you pick below, using a demonstration address in that state, and it defaults to Illinois. The address fields you type above are display only for the demonstration.</p>
-              <!-- GUEST TAX STATE PICKER (2026-08-16). Guests only; a
-                   signed-in member's tax comes from the address stored on
-                   their account and the server ignores this field entirely
-                   when a member is attached. The page sends the two-letter
-                   CODE and nothing else: the code becomes an address only
-                   inside the server's allow list (functions/_shared/tax.ts,
-                   GUEST_STATE_ADDRESSES), so the browser still cannot choose
-                   its own tax destination, only point at one of the eight the
-                   server offers. This list is DISPLAY ONLY and must match
-                   that allow list; the server side is the authority, and an
-                   unknown code silently prices as Illinois there. -->
-              <div id="guestTaxStateRow" hidden>
-                <label class="field-label" for="guestTaxState">Tax state</label>
-                <select class="field" id="guestTaxState">
-                  <option value="IL" selected>Illinois (default)</option>
-                  <option value="CA">California</option>
-                  <option value="CO">Colorado</option>
-                  <option value="FL">Florida</option>
-                  <option value="NY">New York</option>
-                  <option value="OR">Oregon (no state sales tax)</option>
-                  <option value="TX">Texas</option>
-                  <option value="WA">Washington</option>
-                </select>
-                <p class="field-hint">Pick a state and the tax engine prices this order for that state. The demonstration offers these eight; the tax line above the total says which figure you are looking at.</p>
-              </div>
+              <p class="field-hint hint-loose" id="addressTaxNoteGuest" hidden>You are checking out as a guest. For this demonstration, tax is calculated for the state picked at the Tax state control in the order summary, and it defaults to Illinois. The address fields you type above are display only for the demonstration.</p>
+              <!-- The guest tax state picker used to sit here, in this
+                   billing panel. Moved to the ORDER SUMMARY the same day it
+                   landed (owner defect, 2026-08-16): this panel is hidden
+                   until the account step completes, but the summary shows a
+                   tax figure from the moment checkout opens, so the page was
+                   stating a jurisdiction as fact before the shopper had ever
+                   been shown the control that changes it. The control now
+                   lives at the tax row it affects; see guestTaxStateRow in
+                   the summary column below. -->
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -373,6 +371,38 @@
             <div class="total-row">
               <span id="taxLabel">Tax <span class="row-hint">5 percent</span></span>
               <span class="total-num" id="sumTax">$0.00</span>
+            </div>
+            <!-- GUEST TAX STATE PICKER, AT THE ROW IT AFFECTS (moved here
+                 2026-08-16, owner defect from live testing: it began life in
+                 the billing panel, which stays hidden until the account step
+                 completes, while this summary shows a tax figure from the
+                 moment checkout opens, so the page asserted "calculated
+                 IL, US" before the shopper had been shown the control that
+                 changes it; the choice must be visible at or before the
+                 FIRST tax figure it affects). Guests only; a signed-in
+                 member's tax comes from the address stored on their account
+                 and the server ignores this field entirely when a member is
+                 attached. The page sends the two-letter CODE and nothing
+                 else: the code becomes an address only inside the server's
+                 allow list (functions/_shared/tax.ts,
+                 GUEST_STATE_ADDRESSES), so the browser still cannot choose
+                 its own tax destination, only point at one of the eight the
+                 server offers. This list is DISPLAY ONLY and must match
+                 that allow list; the server side is the authority, and an
+                 unknown code silently prices as Illinois there. -->
+            <div class="taxid-row" id="guestTaxStateRow" hidden>
+              <label class="field-label" for="guestTaxState">Tax state</label>
+              <select class="field field-compact" id="guestTaxState">
+                <option value="IL" selected>Illinois (default)</option>
+                <option value="CA">California</option>
+                <option value="CO">Colorado</option>
+                <option value="FL">Florida</option>
+                <option value="NY">New York</option>
+                <option value="OR">Oregon (no state sales tax)</option>
+                <option value="TX">Texas</option>
+                <option value="WA">Washington</option>
+              </select>
+              <p class="field-hint">Guest orders only: the tax line above is priced for this state, Illinois until you change it. If you enter a referral code, the tax engine may use that member's address instead; the tax line is the final answer.</p>
             </div>
             <div class="taxid-row">
               <label class="field-label" for="taxId">Tax ID</label>
@@ -612,8 +642,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=5158b5d0dd4d"></script>
-<script src="js/payments.js?v=5158b5d0dd4d"></script>
+<script src="js/catalog.js?v=3704193951e8"></script>
+<script src="js/payments.js?v=3704193951e8"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -957,6 +987,9 @@
   }
 
   document.getElementById('chooseSignin').addEventListener('click', function () {
+    /* a refusal from an earlier visit to this step is history, not
+       the state of this one */
+    hideSigninError();
     setAccountStage('signin');
     document.getElementById('acctUser').focus();
   });
@@ -986,9 +1019,31 @@
   function guestTaxStateName() {
     var code = guestTaxStateSelect.value;
     var name = GUEST_TAX_STATE_NAMES[code] || 'Illinois';
-    /* the default is labelled as the default, so a shopper who never
-       touched the picker knows the figure is not their own state */
-    return code === 'IL' ? name + ', the default' : name;
+    /* the default reads as a CHANGEABLE default, never a settled
+       fact: the picker sits directly under the tax row, so "change
+       below" points at a control the shopper can actually see
+       (owner defect, 2026-08-16) */
+    return code === 'IL' ? name + ', the default, change below' : name;
+  }
+
+  /* True while the tax figure on screen is priced from the unpicked
+     Illinois default for a shopper who is not a signed-in member and
+     has typed no referring member code. This is the one situation
+     where a tax label must read as a changeable default rather than
+     a settled fact, because the figure will move the moment the
+     shopper touches the picker sitting right under it. A typed
+     referring code excludes it because the server then prices the
+     REFERRED member's stored address, and naming Illinois would be
+     wrong. */
+  function guestTaxDefaultUnpicked() {
+    return accountMode !== 'member' &&
+      guestTaxStateSelect.value === 'IL' &&
+      document.getElementById('memberCode').value.trim() === '';
+  }
+
+  function referralCodeEntered() {
+    return accountMode !== 'member' &&
+      document.getElementById('memberCode').value.trim() !== '';
   }
 
   /* Leaving a signed-in account must also give the member code back,
@@ -1012,13 +1067,23 @@
     document.getElementById('guestTaxStateRow').hidden = false;
   }
 
-  document.getElementById('chooseGuest').addEventListener('click', function () {
+  /* ONE guest path, reached from two doors: the chooser's guest
+     button, and the inline "Continue as guest instead" button that
+     every sign-in refusal now shows (owner defect, 2026-08-16: a
+     refusal used to leave the shopper at a dead end with the guest
+     choice off screen and the payment step correctly unopened, which
+     reads as "the card input is not opening"). Same function, so the
+     two doors can never drift. */
+  function continueAsGuest() {
     accountMode = 'guest';
     clearSignedInMember();
     setAddress({ name: '', street: '', city: '', state: '', zip: '' });
-    accountStatus.textContent = 'Checking out as a guest. Tax is calculated for the state you pick in the billing step, and it defaults to Illinois.';
+    accountStatus.textContent = 'Checking out as a guest. Tax is calculated for the state picked at the Tax state control in the order summary, and it defaults to Illinois.';
     setAccountStage('done');
-  });
+  }
+
+  document.getElementById('chooseGuest').addEventListener('click', continueAsGuest);
+  document.getElementById('signinGuestBtn').addEventListener('click', continueAsGuest);
 
   /* ============================================================
      REAL MEMBER SIGN-IN
@@ -1042,11 +1107,24 @@
      actually keeps a member out of the portal and the console.
      ============================================================ */
   var signinError = document.getElementById('signinError');
+  var signinErrorActions = document.getElementById('signinErrorActions');
   var signinContinueBtn = document.getElementById('signinContinue');
 
+  /* A refusal and its way forward always travel together: every
+     error message brings the inline guest button up with it, and
+     starting a fresh attempt takes both down. The member-code helper
+     hint below the buttons stays visible throughout, so the two
+     recovery paths (fix the code, or go guest) are both on screen
+     in every refusal state. */
   function showSigninError(message) {
     signinError.textContent = message;
     signinError.hidden = false;
+    signinErrorActions.hidden = false;
+  }
+
+  function hideSigninError() {
+    signinError.hidden = true;
+    signinErrorActions.hidden = true;
   }
 
   function memberDisplayName(code) {
@@ -1062,7 +1140,7 @@
   signinContinueBtn.addEventListener('click', function () {
     var code = document.getElementById('acctUser').value.trim();
     var pass = document.getElementById('acctPass').value;
-    signinError.hidden = true;
+    hideSigninError();
     if (code === '' || pass === '') {
       showSigninError('Enter a member code and the password.');
       return;
@@ -1338,6 +1416,19 @@
     document.getElementById('checkoutLines').innerHTML =
       Object.keys(cart).map(summaryLineHtml).join('');
 
+    /* THE STATE CHOICE APPEARS WITH THE FIRST TAX FIGURE, NOT AFTER
+       IT (owner defect, 2026-08-16). The summary paints a tax figure
+       from the moment checkout opens, at the account chooser, before
+       anyone has said guest or member. The picker therefore shows
+       whenever the shopper is not a signed-in member, including that
+       undecided chooser moment, because the figure on screen at that
+       moment is a guest-priced figure. Every path into and around
+       the checkout funnels through renderSummary, so this one line
+       is the whole visibility rule; the sign-in success handler,
+       which does not re-render the summary, hides it explicitly. */
+    document.getElementById('guestTaxStateRow').hidden =
+      !LIVE_PAYMENTS || accountMode === 'member';
+
     var m = orderMath();
     document.getElementById('rowOneSub').hidden = m.t.oneMoney === 0;
     document.getElementById('rowSubSub').hidden = m.t.subMoney === 0;
@@ -1379,16 +1470,21 @@
       /* N-H1: a signed-in member's tax is priced from the address
          stored on their account, so the label says so rather than
          letting the demonstration address fields imply otherwise.
-         The guest half, delivered 2026-08-16 (quality assurance
-         finding M1) and extended with the state picker the same
-         day: a guest order is priced from a canned demonstration
-         address for the PICKED state, Illinois by default, so the
-         estimate names that state instead of implying the typed
-         address is used. */
+          The guest half, delivered 2026-08-16 (quality assurance
+          finding M1) and extended with the state picker the same
+          day: a guest order is priced from a canned demonstration
+          address for the PICKED state, Illinois by default, so the
+          estimate names that state instead of implying the typed
+          address is used. If a referral code is present, the server
+          may price from that member's stored address instead, so the
+          estimate must not overpromise the picker while the quote is
+          in flight. */
       taxLabel.innerHTML = LIVE_PAYMENTS
         ? (accountMode === 'member'
           ? 'Tax <span class="row-hint">estimate, from the address on file for this member</span>'
-          : 'Tax <span class="row-hint">estimate, for ' + guestTaxStateName() + '</span>')
+          : (referralCodeEntered()
+            ? 'Tax <span class="row-hint">estimate, referral code may set the tax address</span>'
+            : 'Tax <span class="row-hint">estimate, for ' + guestTaxStateName() + '</span>'))
         : 'Tax <span class="row-hint">5 percent</span>';
       document.getElementById('sumTax').textContent = fmtMoney(m.tax);
       document.getElementById('checkoutTotal').textContent = fmtMoney(m.total);
@@ -1584,7 +1680,30 @@
       return !!(views.checkout && views.checkout.classList.contains('is-active') &&
         Object.keys(cart).length > 0);
     },
-    totals: { taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint' },
+    totals: {
+      taxLabelId: 'taxLabel', taxId: 'sumTax', totalId: 'checkoutTotal', hintClass: 'row-hint',
+      /* THE UNPICKED DEFAULT NEVER READS AS SETTLED FACT (owner
+         defect, 2026-08-16: at the account chooser the summary said
+         "calculated IL, US" while the picker was nowhere on screen).
+         When the figure on screen is priced from the unpicked
+         Illinois default, the label says so and points at the picker
+         directly below the row. Once a state is picked, or a member
+         or referring code is attached, a falsy return keeps the
+         engine's own wording, which names the server's jurisdiction.
+         Words only, page constants only: the figures are the
+         engine's. */
+      decorateTaxLabel: function (t, place, builtLabel) {
+        if (!guestTaxDefaultUnpicked()) return null;
+        var wording;
+        if (t.tax_cents === 0) {
+          wording = t.tax_reason === 'not_collecting' ? 'not collected' : 'none due';
+        } else {
+          wording = t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated';
+        }
+        return 'Tax <span class="row-hint">' + wording +
+          ' for Illinois, the default, change below</span>';
+      }
+    },
     /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE. Full history of
        the "shown one number, charged another" fault: see the note in
        liveMountCheckout below. */

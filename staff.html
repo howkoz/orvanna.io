@@ -5,15 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=5158b5d0dd4d">
-<link rel="stylesheet" href="css/corporate.css?v=5158b5d0dd4d">
-<link rel="stylesheet" href="css/staff.css?v=5158b5d0dd4d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=3704193951e8">
+<link rel="stylesheet" href="css/corporate.css?v=3704193951e8">
+<link rel="stylesheet" href="css/staff.css?v=3704193951e8">
 <style>
 /* ============================================================
-   Order history and order detail (2026-08-15, PROPOSED).
-   Scoped to this feature and kept here rather than in staff.css
-   because the whole refund feature is proposed and not deployed;
-   it moves into the stylesheet when the feature ships.
+   Order history, order detail, and refund controls.
+   Added 2026-08-15, shipped 2026-08-16. Scoped to this feature
+   and kept here rather than in staff.css so the live refund screen
+   can keep its review history close to the markup it styles.
    Colours are taken from the existing shipped tokens rather than
    invented, so this matches the rest of the console.
 
@@ -75,7 +75,7 @@
 <header class="console-top">
   <div class="console-wrap console-top-inner">
     <a href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=5158b5d0dd4d" alt="Orvanna" class="console-logo">
+      <img src="assets/logo-header-dark.svg?v=3704193951e8" alt="Orvanna" class="console-logo">
     </a>
     <span class="console-title">Staff Call Console</span>
     <span class="console-demo-pill">Demonstration</span>
@@ -395,8 +395,8 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=5158b5d0dd4d"></script>
-<script src="js/payments.js?v=5158b5d0dd4d"></script>
+<script src="js/catalog.js?v=3704193951e8"></script>
+<script src="js/payments.js?v=3704193951e8"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -2058,10 +2058,9 @@
 
   /* ============================================================
      ORDER HISTORY, ORDER DETAIL, AND THE REFUND BUTTON
-     Added 2026-08-15. PROPOSED, NOT DEPLOYED.
-     (Superseded 2026-08-16, quality assurance finding L4: the
-     refund rail is LIVE and passed both gates on 2026-08-15; the
-     line above is kept as history, not status.)
+     Added 2026-08-15, live as of 2026-08-16. The refund rail
+     passed both gates on 2026-08-15; this screen was then graded
+     in the stabilization quality assurance pass.
      Design: DOCUMENTATION\11-REFUNDS.md
 
      THIS SCREEN ENFORCES NOTHING. Read that twice before changing

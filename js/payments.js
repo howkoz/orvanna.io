@@ -347,6 +347,22 @@
         label = 'Tax <span class="' + hint + '">' +
           (t.tax_source === 'flat_fallback' ? 'estimated' : 'calculated' + where) + '</span>';
       }
+      /* OPTIONAL PAGE DECORATION SEAM (2026-08-16, owner defect).
+         A real figure can still deserve different WORDS: the shop's
+         guest checkout prices the unpicked Illinois default, and a
+         label that states "calculated IL, US" as settled fact, next
+         to a picker that changes it, misleads exactly as far as it
+         informs. The engine cannot know page state like "is anyone
+         signed in", so the page may rewrite the label: it receives
+         the totals, the already-sanitized place text, and the label
+         the engine built, and returns replacement HTML or a falsy
+         value to keep the engine's wording. WORDS ONLY: the figures
+         painted below are not the page's to touch, and any dynamic
+         text a decorator injects must be its own constants or the
+         sanitized place it was handed, never raw server strings. */
+      if (opts.totals.decorateTaxLabel) {
+        label = opts.totals.decorateTaxLabel(t, place, label) || label;
+      }
       taxLabelEl.innerHTML = label;
       byId(opts.totals.taxId).textContent = fmtMoney(t.tax_cents / 100);
       byId(opts.totals.totalId).textContent = fmtMoney(t.total_cents / 100);
