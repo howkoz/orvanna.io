@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=86fbad344957">
-<link rel="stylesheet" href="css/corporate.css?v=86fbad344957">
-<link rel="stylesheet" href="css/staff.css?v=86fbad344957">
-<link rel="stylesheet" href="css/staff-ops.css?v=86fbad344957">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=35dc88905d19">
+<link rel="stylesheet" href="css/corporate.css?v=35dc88905d19">
+<link rel="stylesheet" href="css/staff.css?v=35dc88905d19">
+<link rel="stylesheet" href="css/staff-ops.css?v=35dc88905d19">
 </head>
 <body class="console-body">
 
@@ -95,6 +95,15 @@
         <section class="console-panel" aria-label="Run now">
           <h2 class="panel-title">Run now <span class="title-chip">Preview first, always</span></h2>
           <p class="ops-status-line">The preview is the same gather and price read the real run performs, and it creates nothing. Execution is a separate confirm step.</p>
+          <div class="ops-form-row">
+            <div class="ops-field">
+              <label class="order-label" for="runLimitInput">Number to run</label>
+              <!-- Blank = everything due; a positive whole number N =
+                   exactly N, oldest due first then member code. The
+                   server validates; this field only carries the ask. -->
+              <input id="runLimitInput" type="number" min="1" step="1" placeholder="blank = all due" inputmode="numeric">
+            </div>
+          </div>
           <div class="ops-actions">
             <button class="btn-addline" id="previewBtn" type="button">Preview today's run (dry run)</button>
             <!-- Disabled by design AND refused by the server. The
@@ -119,7 +128,7 @@
         <h2 class="panel-title">Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
         <p class="ops-status-line" id="runHistStatus"></p>
         <div class="ops-table-wrap"><table class="ops-table" id="runHistTable" hidden>
-          <thead><tr><th>Run</th><th>Tick date</th><th>Status</th><th>Clock</th><th class="ops-num">Due</th><th class="ops-num">Attempts</th><th class="ops-num">Succeeded</th><th class="ops-num">Declined</th><th class="ops-num">Member fault</th><th class="ops-num">System fault</th><th>Finished</th></tr></thead>
+          <thead><tr><th>Run</th><th>Tick date</th><th>Status</th><th>Clock</th><th class="ops-num">Due</th><th class="ops-num">Attempts</th><th class="ops-num">Succeeded</th><th class="ops-num">Declined</th><th class="ops-num">Member fault</th><th class="ops-num">System fault</th><th>Limit</th><th>Finished</th></tr></thead>
           <tbody id="runHistBody"></tbody>
         </table></div>
         <div id="runDetailBody"></div>
@@ -240,7 +249,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing engine deliberately inert until Phase S2</div>
 </footer>
 
-<script src="js/catalog.js?v=86fbad344957"></script>
+<script src="js/catalog.js?v=35dc88905d19"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -510,10 +519,18 @@
   var previewStatus = byId('previewStatus');
   var previewBody = byId('previewBody');
 
+  /* The number-to-run field: blank means all due, N means exactly
+     N. Read in one place so preview and execute always carry the
+     same ask; the SERVER validates it (this page enforces nothing). */
+  function runLimitValue() {
+    var v = byId('runLimitInput').value.trim();
+    return v === '' ? null : v;
+  }
+
   byId('previewBtn').addEventListener('click', function () {
     previewStatus.textContent = 'Gathering the dry run preview...';
     clearNode(previewBody);
-    opsCall('billing-console', { action: 'run_preview' }).then(function (result) {
+    opsCall('billing-console', { action: 'run_preview', run_limit: runLimitValue() }).then(function (result) {
       if (result.status !== 200) {
         previewStatus.textContent = serverMessage(result, 'Could not compute the preview.');
         return;
@@ -522,6 +539,10 @@
       previewStatus.textContent = '';
       if (d.inert) {
         var b = d.backlog || {};
+        if (d.requested_run_limit) {
+          previewBody.appendChild(el('div', 'ops-note',
+            'Number to run: ' + d.requested_run_limit + '. The limit is recorded and will ride the execute payload once Phase S2 enables execution.'));
+        }
         previewBody.appendChild(el('div', 'ops-warn',
           'ENGINE INERT: no dollar preview is claimed. ' + (b.explanation || '')));
         var dl = el('div', 'ops-note',
@@ -541,6 +562,38 @@
         (p.retries.will_clip_count ? (', ' + p.retries.will_clip_count + ' retry(ies) would be clipped by the calendar rule') : '') +
         ', ' + p.housekeeping.pause_auto_resumes_due + ' pause auto-resume(s) due. ' +
         'Total that would bill: ' + fmtMoney(p.total_would_bill) + '. Nothing was created.'));
+      /* The number-to-run answer: WHICH charges the first N are,
+         in the server's deterministic order (oldest due first,
+         then member code, then cycle). Rendered whenever a limit
+         was asked, so the capped figure is never inferred. */
+      if (p.limit && p.limit.requested_n) {
+        previewBody.appendChild(el('div', 'ops-note',
+          'Number to run: ' + p.limit.requested_n + '. A capped run would charge the first ' +
+          p.limit.selected_count + ' of ' + p.limit.due_total + ' due, totaling ' +
+          fmtMoney(p.limit.selected_amount) + ', leaving ' + p.limit.remaining_count +
+          ' due item(s) for later runs (the catch-up rule gathers them).'));
+        if ((p.limit.selected || []).length) {
+          var st = el('table', 'ops-table');
+          var sthead = el('thead'); var shtr = el('tr');
+          ['Order', 'Member', 'Sub', 'Cycle', 'Due date', 'Kind', 'Amount'].forEach(function (h, i) { shtr.appendChild(el('th', (i === 2 || i === 3 || i === 6) ? 'ops-num' : null, h)); });
+          sthead.appendChild(shtr); st.appendChild(sthead);
+          var stb = el('tbody');
+          p.limit.selected.forEach(function (r, i) {
+            var tr = el('tr');
+            cell(tr, i + 1);
+            cell(tr, r.member_code, 'ops-mono');
+            cell(tr, r.subscription_id, 'ops-num');
+            cell(tr, r.renewal_index, 'ops-num');
+            cell(tr, fmtDate(r.due_date));
+            cell(tr, r.kind === 'retry' ? r.detail : ('new billing, ' + r.detail));
+            cell(tr, fmtMoney(r.amount), 'ops-num');
+            stb.appendChild(tr);
+          });
+          st.appendChild(stb);
+          var swrap = el('div', 'ops-table-wrap'); swrap.appendChild(st);
+          previewBody.appendChild(swrap);
+        }
+      }
       if (p.new_cycles.by_frequency.length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
@@ -567,7 +620,7 @@
      the honest answer either way. */
   byId('executeBtn').addEventListener('click', function () {
     previewStatus.textContent = 'Asking the server...';
-    opsCall('billing-console', { action: 'run_execute' }).then(function (result) {
+    opsCall('billing-console', { action: 'run_execute', run_limit: runLimitValue() }).then(function (result) {
       previewStatus.textContent = serverMessage(result, 'The server refused the execution.');
     }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service.'; });
   });
@@ -647,12 +700,27 @@
         cell(tr, r.declined, 'ops-num');
         cell(tr, r.member_fault_failures, 'ops-num');
         cell(tr, r.system_fault_failures, 'ops-num');
+        /* Migration 028's number-to-run fields, when present:
+           "ran N of M due, R remaining". Absent (every run before
+           028 applies, and unlimited runs after) renders as
+           "all due", which is the honest reading either way. */
+        cell(tr, limitLabel(r));
         cell(tr, fmtWhen(r.finished_at));
         tr.addEventListener('click', function () { openRunDetail(r.id); });
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRunDetail(r.id); } });
         tbody.appendChild(tr);
       });
     }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  function limitLabel(run) {
+    var li = run.limit_info;
+    if (!li || li.run_limit === null || li.run_limit === undefined) { return 'all due'; }
+    var label = 'ran ' + li.run_limit + ' of ' + (run.subscriptions_due === null || run.subscriptions_due === undefined ? '?' : run.subscriptions_due) + ' due';
+    if (li.due_remaining !== null && li.due_remaining !== undefined) {
+      label += ', ' + li.due_remaining + ' remaining';
+    }
+    return label;
   }
 
   function openRunDetail(runId) {
@@ -670,7 +738,8 @@
         ', declined ' + run.declined + '. Member fault ' + run.member_fault_failures +
         ', system fault ' + run.system_fault_failures + ' (reported separately by design). ' +
         'Reconciled at open: ' + run.attempts_reconciled + '. Promo hook identity: ' + run.promo_hook_identity +
-        '. No interactive authentication requested: ' + run.mit_invariant_ok + '.'));
+        '. No interactive authentication requested: ' + run.mit_invariant_ok +
+        '. Number-to-run limit: ' + limitLabel(run) + '.'));
       if (run.notes) { drawer.appendChild(el('p', 'ops-status-line', 'Notes: ' + run.notes)); }
       var attempts = result.data.attempts || [];
       if (attempts.length) {
@@ -1370,7 +1439,9 @@
       }
       if (body.action === 'run_preview') {
         return ok({
-          action: 'run_preview', engine: ENGINE_INERT, honesty_notes: NOTES, inert: true, preview: null,
+          action: 'run_preview', engine: ENGINE_INERT, honesty_notes: NOTES, inert: true,
+          requested_run_limit: body.run_limit ? Number(body.run_limit) : null,
+          preview: null,
           backlog: {
             active_subscriptions_with_past_derived_dates: 1419,
             earliest_derived_date: '2024-09-01', latest_derived_date: '2026-08-01',

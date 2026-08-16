@@ -1412,7 +1412,7 @@ function initPeriodPicker() {
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   const logo = document.getElementById("logoImg");
-  logo.src = theme === "dark" ? "assets/logo-header-dark.svg" : "assets/logo-final-primary.svg";
+  if (logo) logo.src = theme === "dark" ? "assets/logo-header-dark.svg" : "assets/logo-final-primary.svg";
   document.getElementById("themeIcon").innerHTML = theme === "dark" ? "&#9788;" : "&#9789;";
   try { localStorage.setItem("orvanna-demo-theme", theme); } catch (e) { /* file:// may block storage */ }
 }
@@ -1438,8 +1438,14 @@ function initTabs() {
       document.querySelectorAll(".panel").forEach(function (p) {
         p.classList.toggle("active", p.id === "panel-" + state.tab);
       });
+      document.querySelectorAll(".tab").forEach(function (b) {
+        b.setAttribute("aria-current", b === btn ? "page" : "false");
+      });
       renderActive();
     });
+  });
+  document.querySelectorAll(".tab").forEach(function (b) {
+    b.setAttribute("aria-current", b.classList.contains("active") ? "page" : "false");
   });
 }
 
