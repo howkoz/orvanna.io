@@ -99,20 +99,37 @@
             <div class="ops-field">
               <label class="order-label" for="runLimitInput">Number to run</label>
               <!-- Blank = everything due; a positive whole number N =
-                   exactly N, oldest due first then member code. The
-                   server validates; this field only carries the ask. -->
+                   exactly the first N new cycle billings (oldest due
+                   first, then member code; migration 028's order).
+                   Retries are never limited. The server validates;
+                   this field only carries the ask. -->
               <input id="runLimitInput" type="number" min="1" step="1" placeholder="blank = all due" inputmode="numeric">
+            </div>
+            <div class="ops-field">
+              <label class="order-label" for="dispatchSelect">Dispatch</label>
+              <!-- EXPLICIT, never defaulted (migration 029's contract
+                   line): the page refuses to send an execute without
+                   a deliberate choice, and the server refuses one
+                   anyway. -->
+              <select id="dispatchSelect">
+                <option value="">choose...</option>
+                <option value="live">live (real test rail)</option>
+                <option value="simulated">simulated (scripted processor)</option>
+              </select>
             </div>
           </div>
           <div class="ops-actions">
             <button class="btn-addline" id="previewBtn" type="button">Preview today's run (dry run)</button>
-            <!-- Disabled by design AND refused by the server. The
-                 button is a courtesy label; the server's s2_pending
-                 refusal is the actual gate. -->
-            <button class="ops-btn-quiet" id="executeBtn" type="button" disabled title="Execution arrives with Phase S2; the engine is deliberately inert in production.">Execute run (arrives with Phase S2)</button>
+            <!-- Courtesy-disabled until a preview has run this
+                 session (the mandatory-preview discipline); the
+                 REAL gates are the server's: explicit dispatch,
+                 engine readiness, seeded credentials, and the
+                 engine's own clock and date rules. -->
+            <button class="ops-btn-quiet" id="executeBtn" type="button" disabled title="Preview first; then execution asks the server, which enforces every rule.">Execute run</button>
           </div>
           <p class="ops-status-line" id="previewStatus"></p>
           <div id="previewBody"></div>
+          <div id="executeBody"></div>
         </section>
       </div>
 
@@ -488,7 +505,7 @@
         ? ('Last changed by ' + s.updated_by + ' at ' + fmtWhen(s.updated_at) + '.')
         : 'Never changed; shipped disabled.';
     }).catch(function () {
-      byId('billingNotes').appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.'));
+      byId('billingNotes').appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
     });
   }
 
@@ -512,7 +529,7 @@
         ? ('Daily run enabled at ' + String(s.run_at_time).slice(0, 5) + ' ' + s.timezone + '.')
         : 'Daily run disabled; the engine runs manually only.');
       renderHonestyNotes(byId('billingNotes'), result.data);
-    }).catch(function () { schedStatus.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { schedStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   });
 
   /* ---------- run now: preview, then the S2-pending execute ---------- */
@@ -527,6 +544,12 @@
     return v === '' ? null : v;
   }
 
+  /* The last successful preview: the mandatory-preview discipline's
+     page half (courtesy; the server holds the real rules), and the
+     source of the tick date the execute sends, so what executes is
+     what was previewed. */
+  var lastPreview = null;
+
   byId('previewBtn').addEventListener('click', function () {
     previewStatus.textContent = 'Gathering the dry run preview...';
     clearNode(previewBody);
@@ -537,11 +560,15 @@
       }
       var d = result.data;
       previewStatus.textContent = '';
+      lastPreview = d;
+      /* Preview ran: the execute step unlocks (courtesy order;
+         the server enforces its own gates regardless). */
+      byId('executeBtn').disabled = false;
       if (d.inert) {
         var b = d.backlog || {};
         if (d.requested_run_limit) {
           previewBody.appendChild(el('div', 'ops-note',
-            'Number to run: ' + d.requested_run_limit + '. The limit is recorded and will ride the execute payload once Phase S2 enables execution.'));
+            'Number to run: ' + d.requested_run_limit + '. The limit rides the execute payload; an execute is refused until the engine seam is applied and its clock initialized.'));
         }
         previewBody.appendChild(el('div', 'ops-warn',
           'ENGINE INERT: no dollar preview is claimed. ' + (b.explanation || '')));
@@ -572,10 +599,11 @@
           p.limit.selected_count + ' of ' + p.limit.due_total + ' due, totaling ' +
           fmtMoney(p.limit.selected_amount) + ', leaving ' + p.limit.remaining_count +
           ' due item(s) for later runs (the catch-up rule gathers them).'));
+        previewBody.appendChild(el('p', 'ops-status-line', p.limit.retries_note || ''));
         if ((p.limit.selected || []).length) {
           var st = el('table', 'ops-table');
           var sthead = el('thead'); var shtr = el('tr');
-          ['Order', 'Member', 'Sub', 'Cycle', 'Due date', 'Kind', 'Amount'].forEach(function (h, i) { shtr.appendChild(el('th', (i === 2 || i === 3 || i === 6) ? 'ops-num' : null, h)); });
+          ['Order', 'Member', 'Sub', 'Cycle', 'Due date', 'Billing', 'Amount'].forEach(function (h, i) { shtr.appendChild(el('th', (i === 2 || i === 3 || i === 6) ? 'ops-num' : null, h)); });
           sthead.appendChild(shtr); st.appendChild(sthead);
           var stb = el('tbody');
           p.limit.selected.forEach(function (r, i) {
@@ -585,7 +613,7 @@
             cell(tr, r.subscription_id, 'ops-num');
             cell(tr, r.renewal_index, 'ops-num');
             cell(tr, fmtDate(r.due_date));
-            cell(tr, r.kind === 'retry' ? r.detail : ('new billing, ' + r.detail));
+            cell(tr, 'new billing, ' + r.detail);
             cell(tr, fmtMoney(r.amount), 'ops-num');
             stb.appendChild(tr);
           });
@@ -611,18 +639,68 @@
         var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
         previewBody.appendChild(wrap);
       }
-    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   });
 
-  /* The execute button stays disabled in this build; the click
-     handler exists so that IF markup is tampered with, the user
-     still just sees the server's own s2_pending refusal, which is
-     the honest answer either way. */
+  /* EXECUTE: live as of migrations 028 and 029. Two clicks arm and
+     fire (a same-button confirm), the dispatch choice is EXPLICIT
+     (the page refuses to send without one, and the server refuses
+     one anyway), and the tick date sent is the PREVIEW'S tick date
+     so what executes is what was previewed. Every refusal the
+     server sends renders verbatim: the rules live there. */
+  var executeArmed = false;
+  byId('dispatchSelect').addEventListener('change', function () { executeArmed = false; byId('executeBtn').textContent = 'Execute run'; });
+
   byId('executeBtn').addEventListener('click', function () {
-    previewStatus.textContent = 'Asking the server...';
-    opsCall('billing-console', { action: 'run_execute', run_limit: runLimitValue() }).then(function (result) {
-      previewStatus.textContent = serverMessage(result, 'The server refused the execution.');
-    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service.'; });
+    var body = byId('executeBody');
+    var dispatch = byId('dispatchSelect').value;
+    if (dispatch !== 'live' && dispatch !== 'simulated') {
+      previewStatus.textContent = 'Choose the dispatch mode first: live or simulated. The console never defaults this.';
+      return;
+    }
+    if (!executeArmed) {
+      executeArmed = true;
+      byId('executeBtn').textContent = 'Click again to execute (' + dispatch + ')';
+      previewStatus.textContent = 'Armed. A second click sends the run to the server' +
+        (dispatch === 'live' ? '; live dispatch will really charge the seeded test cards on the sandbox rail.' : '.');
+      return;
+    }
+    executeArmed = false;
+    byId('executeBtn').textContent = 'Execute run';
+    var tickDate = (lastPreview && lastPreview.preview && lastPreview.preview.tick_date)
+      ? fmtDate(lastPreview.preview.tick_date)
+      : new Date().toISOString().slice(0, 10);
+    previewStatus.textContent = 'Executing (' + dispatch + ') for ' + tickDate + '...';
+    clearNode(body);
+    opsCall('billing-console', {
+      action: 'run_execute',
+      run_limit: runLimitValue(),
+      dispatch: dispatch,
+      tick_date: tickDate
+    }).then(function (result) {
+      if (result.status !== 200) {
+        previewStatus.textContent = '';
+        body.appendChild(el('div', 'ops-bad', serverMessage(result, 'The server refused the execution.')));
+        return;
+      }
+      var d = result.data;
+      previewStatus.textContent = '';
+      body.appendChild(el('div', 'ops-ok',
+        'Run ' + d.run_id + ' executed for ' + fmtDate(d.tick_date) + ' (' + d.dispatch + '). ' + limitLabel(d.run) + '.'));
+      if (d.worker) {
+        body.appendChild(el('div', 'ops-note',
+          'Worker: recovered ' + d.worker.recovered_resolved + ' strand(s), charged ' + d.worker.charged +
+          ', succeeded ' + d.worker.succeeded + ', declined ' + d.worker.declined +
+          ', still pending ' + d.worker.pending + ', mismatches ' + d.worker.mismatches +
+          ', without a chargeable card ' + d.worker.no_card +
+          '. Pending and mismatched attempts stay honestly dispatched and the next execute sweeps them from the rail\'s own ledger.'));
+      }
+      loadRunHistory();
+      loadOverview();
+    }).catch(function () {
+      previewStatus.textContent = '';
+      body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
+    });
   });
 
   /* ---------- forecast ---------- */
@@ -671,7 +749,7 @@
       t.appendChild(tb);
       var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
       body.appendChild(wrap);
-    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   }
 
   /* ---------- run history + drill ---------- */
@@ -710,16 +788,26 @@
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRunDetail(r.id); } });
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   }
 
+  /* Migration 028's run-record arithmetic, real field names
+     (limit_requested / due_count / processed_count /
+     remaining_count) plus 029's dispatch_mode: "ran N of M due, R
+     remaining". Runs recorded before 028 applied carry none of
+     these and render as "all due", the honest reading of an
+     unlimited world. */
   function limitLabel(run) {
-    var li = run.limit_info;
-    if (!li || li.run_limit === null || li.run_limit === undefined) { return 'all due'; }
-    var label = 'ran ' + li.run_limit + ' of ' + (run.subscriptions_due === null || run.subscriptions_due === undefined ? '?' : run.subscriptions_due) + ' due';
-    if (li.due_remaining !== null && li.due_remaining !== undefined) {
-      label += ', ' + li.due_remaining + ' remaining';
+    var li = run.limit_info || {};
+    var has = function (v) { return v !== null && v !== undefined; };
+    if (!has(li.processed_count) && !has(li.limit_requested)) {
+      return (li.dispatch_mode === 'live' ? 'LIVE, ' : '') + 'all due';
     }
+    var label = (has(li.limit_requested) ? 'limit ' + li.limit_requested : 'unlimited') +
+      ': ran ' + (has(li.processed_count) ? li.processed_count : '?') +
+      ' of ' + (has(li.due_count) ? li.due_count : '?') + ' due' +
+      (has(li.remaining_count) ? ', ' + li.remaining_count + ' remaining' : '');
+    if (li.dispatch_mode === 'live') { label = 'LIVE, ' + label; }
     return label;
   }
 
@@ -770,7 +858,7 @@
         drawer.appendChild(el('p', 'ops-status-line', 'No attempts on this run.'));
       }
       body.appendChild(drawer);
-    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.')); });
+    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.')); });
   }
 
   /* ---------- retry queue ---------- */
@@ -795,7 +883,7 @@
         cell(tr, fmtMoney(r.amount), 'ops-num');
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   }
 
   /* ---------- attention queue ---------- */
@@ -817,7 +905,7 @@
         cell(tr, r.detail);
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   }
 
   /* ---------- subscription management ---------- */
@@ -864,7 +952,7 @@
         drawer.appendChild(wrap);
         subEvents.appendChild(drawer);
       }
-    }).catch(function () { subStatus.textContent = 'Could not reach the billing console service.'; });
+    }).catch(function () { subStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
   }
 
   function renderSubCard(s) {
@@ -933,7 +1021,7 @@
           if (currentMemberCode) { lookupSubs(); }
         }).catch(function () {
           clearNode(out);
-          out.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.'));
+          out.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
         });
       });
       return strip;
@@ -1418,7 +1506,7 @@
     };
     var NOTES = [
       'The scheduler extension (pg_cron) is not installed on this database instance, so the daily schedule cannot fire server-side yet. The schedule you set here is stored and will be honored once the scheduler is installed, an infrastructure step recorded for the coordinator.',
-      'The renewal engine is deliberately inert in production (Phase S1, ruling OQ8): its clock is not initialized and no billing run can execute here. RUN NOW offers the dry-run preview only; execution arrives with Phase S2.'
+      'The renewal engine\'s clock is not initialized on this database, so no billing run can execute here yet. RUN NOW previews; an execute is refused honestly until the deploy round applies the engine seam (migrations 028 and 029), seeds the test credentials, and initializes the clock per the recorded acceptance procedure.'
     ];
     var mockSchedule = { enabled: false, run_at_time: null, timezone: 'UTC', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
 
@@ -1451,7 +1539,12 @@
         });
       }
       if (body.action === 'run_execute') {
-        return err(409, 's2_pending', 'Executing a billing run arrives with Phase S2. Today the console previews only: the engine is deliberately inert in production, and no run can be executed from here.');
+        if (body.dispatch !== 'live' && body.dispatch !== 'simulated') {
+          return err(400, 'dispatch_required', 'Say explicitly how to dispatch: live (the real test rail) or simulated (the scripted processor). The console never defaults this.');
+        }
+        /* The pre-deploy production truth: the engine seam is not
+           applied until the deploy round ships 028 and 029. */
+        return err(409, 'engine_not_ready', 'The engine\'s execute seam (migrations 028 and 029) is not applied to this database yet; the deploy round applies it after the gates. Until then the console previews only.');
       }
       if (body.action === 'run_history') { return ok({ action: 'run_history', runs: [], total: 0, limit: 50, offset: 0 }); }
       if (body.action === 'retry_queue') { return ok({ action: 'retry_queue', retries: [] }); }
