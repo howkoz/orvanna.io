@@ -1386,6 +1386,7 @@
   var walletNote = document.getElementById('walletNote');
   var placeOrderBtn = document.getElementById('placeOrderBtn');
   var currencySelect = document.getElementById('currencySelect');
+  var threeDsNotice = document.getElementById('threeDsNotice');
 
   function canOpenLiveCardPayment() {
     return payMethod === 'card' && selectedCurrency() === 'USD';
@@ -1421,13 +1422,13 @@
         ? 'Continue to ' + PAY_LABELS[payMethod]
         : PAY_LABELS[payMethod] + ' is USD only';
     }
-    if (payMethod === 'bank') return 'Prepare bank checkout';
+    if (payMethod === 'bank') return 'Bank checkout staged';
     return 'Place order with ' + PAY_LABELS[payMethod];
   }
 
   function stagedPaymentMessage() {
     if (payMethod === 'bank') {
-      return 'Plaid/Open Banking is connected in HyperSwitch, but this checkout still needs the currency storage migration before it can settle ' + selectedCurrency() + ' orders. Nothing was charged.';
+      return 'Plaid/Open Banking is connected in HyperSwitch, but this storefront is still staged for bank checkout. The next deploy needs the order currency storage and Open Banking create-payment path before it can launch Plaid for ' + selectedCurrency() + '. Nothing was charged.';
     }
     if (selectedCurrency() !== 'USD') {
       return 'The storefront can display ' + selectedCurrency() + ', but live card settlement is still guarded to USD until the order records store currency. Nothing was charged.';
@@ -1452,8 +1453,15 @@
     walletNote.hidden = isCard;
     if (!isCard) {
       walletNote.textContent = method === 'bank'
-        ? 'Bank account checkout is staged for the Plaid/Open Banking sandbox. No card details are needed.'
+        ? 'Plaid/Open Banking is staged. Selecting it shows the bank-checkout status below; no card details are needed.'
         : PAY_LABELS[method] + ' opens inside the secure HyperSwitch payment form. No card details are typed on this page.';
+    }
+    if (threeDsNotice) threeDsNotice.hidden = method === 'bank';
+    if (method === 'bank' && LIVE_PAYMENTS) {
+      revealStagedPaymentMessage(false);
+    } else if (LIVE_PAYMENTS && livePayArea && !liveState.clientSecret) {
+      livePayArea.hidden = true;
+      liveStatus('');
     }
     placeOrderBtn.textContent = paymentButtonLabel();
     if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
@@ -2000,6 +2008,25 @@
   var liveSetFinishing = engine.setFinishing;
   var setCardSkeleton = engine.setCardSkeleton;
 
+  function revealStagedPaymentMessage(shouldFocus) {
+    var stagedMessage = stagedPaymentMessage();
+    if (!stagedMessage) return false;
+    livePayArea.hidden = false;
+    livePayNote.textContent = '';
+    setCardSkeleton(false);
+    document.getElementById('hyperswitchMount').innerHTML = '';
+    liveStatus(stagedMessage);
+    placeOrderBtn.disabled = false;
+    placeOrderBtn.textContent = paymentButtonLabel();
+    if (shouldFocus) {
+      window.setTimeout(function () {
+        livePayStatus.focus({ preventScroll: true });
+        livePayStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 0);
+    }
+    return true;
+  }
+
   /* ============================================================
      THE CARD FORM IS THE PAYMENT STEP
 
@@ -2137,15 +2164,7 @@
       return;
     }
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
-    var stagedMessage = stagedPaymentMessage();
-    if (stagedMessage) {
-      livePayArea.hidden = false;
-      livePayNote.textContent = '';
-      setCardSkeleton(false);
-      liveStatus(stagedMessage);
-      placeOrderBtn.textContent = paymentButtonLabel();
-      return;
-    }
+    if (revealStagedPaymentMessage(true)) return;
     if (liveState.clientSecret) { liveConfirm(); } else { liveStart(); }
   }
 
