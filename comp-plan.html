@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Compensation Plan</title>
 <meta name="description" content="The Orvanna compensation plan, version 1.3: how a Conductor earns, every term defined, every earning mechanism with worked arithmetic, the rank ladder, and the qualification rules. Demonstration document, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fc000256520a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=86fbad344957">
 <style>
 /* ==========================================================================
    Orvanna compensation plan brochure.
@@ -213,7 +213,30 @@ img, svg { max-width: 100%; display: block; }
   align-items: center;
   gap: 18px;
 }
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: #F8FAFC;
+  text-decoration: none;
+  flex-shrink: 0;
+  min-width: 0;
+}
 .nav-logo { height: 30px; width: auto; }
+.brand-mark {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(34, 211, 238, 0.75);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
+}
+.brand-word {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
 .nav-links {
   margin-left: auto;
   display: flex;
@@ -589,8 +612,9 @@ details.ledger[open] { padding-bottom: 18px; }
 <!-- ===================== NAVIGATION ===================== -->
 <header class="nav no-print">
   <div class="nav-inner">
-    <a href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=fc000256520a" alt="Orvanna" class="nav-logo">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -610,8 +634,8 @@ details.ledger[open] { padding-bottom: 18px; }
 <section class="cover" id="cover">
   <div class="wrap">
     <div class="cover-mark">
-      <img src="assets/logo-header-dark.svg?v=fc000256520a" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
-      <img src="assets/logo-final-primary.svg?v=fc000256520a" alt="Orvanna" class="logo-light">
+      <img src="assets/logo-header-dark.svg?v=86fbad344957" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
+      <img src="assets/logo-final-primary.svg?v=86fbad344957" alt="Orvanna" class="logo-light">
     </div>
     <p class="cover-kicker">The compensation plan</p>
     <h1>Build an ensemble.<br>Build a team.</h1>

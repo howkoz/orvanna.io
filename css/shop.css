@@ -1178,6 +1178,215 @@ a.product-icon { display: block; }
   background: rgba(34, 211, 238, 0.06);
 }
 
+.wallet-panel {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483600;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 76px 16px 24px;
+  background: rgba(2, 6, 20, 0.72);
+  backdrop-filter: blur(10px);
+}
+.wallet-panel[hidden] { display: none; }
+.wallet-sheet {
+  width: min(560px, 100%);
+  border-radius: 8px;
+  overflow: hidden;
+  color: #202124;
+  background: #FFFFFF;
+  box-shadow: 0 26px 80px rgba(2, 6, 20, 0.72);
+}
+.wallet-paypal-sheet {
+  color: #0C2145;
+  background: #FFFFFF;
+}
+.wallet-head {
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid #E5E7EB;
+}
+.wallet-brand {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+.wallet-google-logo,
+.wallet-paypal-logo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 3px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+.wallet-google-logo span:first-child {
+  color: #4285F4;
+  font-size: 1.28rem;
+}
+.wallet-paypal-logo {
+  gap: 0;
+  font-style: italic;
+}
+.wallet-paypal-logo span:first-child { color: #003087; }
+.wallet-paypal-logo span:last-child { color: #009CDE; }
+.wallet-close {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 999px;
+  color: #5F6368;
+  background: transparent;
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.wallet-close:hover { background: #F1F3F4; }
+.wallet-sheet h2 {
+  margin: 20px 24px 8px;
+  color: inherit;
+  font-size: 1.22rem;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.wallet-sandbox-note {
+  margin: 0 24px 18px;
+  color: #B3261E;
+  font-size: 0.86rem;
+  line-height: 1.45;
+}
+.wallet-paypal-sheet .wallet-sandbox-note { color: #334155; }
+.wallet-merchant-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 0 24px 18px;
+  color: #3C4043;
+  font-size: 0.92rem;
+}
+.wallet-merchant-row strong {
+  color: #202124;
+  font-size: 1.65rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.wallet-paypal-sheet .wallet-merchant-row strong { color: #0C2145; }
+.wallet-funding {
+  min-height: 72px;
+  display: grid;
+  grid-template-columns: 58px minmax(0, 1fr) 18px;
+  align-items: center;
+  gap: 14px;
+  margin: 0 24px 18px;
+  padding: 12px 16px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #EEF2F7;
+  cursor: pointer;
+}
+.wallet-funding:focus-visible,
+.wallet-pay-btn:focus-visible,
+.wallet-secondary:focus-visible,
+.wallet-close:focus-visible {
+  outline: 3px solid rgba(66, 133, 244, 0.35);
+  outline-offset: 2px;
+}
+.wallet-card-art {
+  width: 52px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  background: #FFFFFF;
+  border: 1px solid #DADCE0;
+}
+.wallet-card-art span {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  opacity: 0.9;
+}
+.wallet-card-art span:first-child {
+  background: #EB001B;
+  margin-right: -7px;
+}
+.wallet-card-art span:last-child { background: #F79E1B; }
+.wallet-radio {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 8px solid #0070BA;
+  background: #FFFFFF;
+  justify-self: center;
+}
+.wallet-funding-main {
+  display: block;
+  min-width: 0;
+}
+.wallet-funding-main strong,
+.wallet-funding-main small {
+  display: block;
+  min-width: 0;
+}
+.wallet-funding-main strong {
+  color: #202124;
+  font-size: 1rem;
+  font-weight: 500;
+}
+.wallet-paypal-sheet .wallet-funding-main strong { color: #0C2145; }
+.wallet-funding-main small {
+  margin-top: 3px;
+  color: #5F6368;
+  font-size: 0.9rem;
+}
+.wallet-chevron {
+  color: #5F6368;
+  font-size: 1.7rem;
+  line-height: 1;
+}
+.wallet-pay-btn,
+.wallet-secondary {
+  width: calc(100% - 48px);
+  min-height: 44px;
+  display: grid;
+  place-items: center;
+  margin: 0 24px 14px;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.94rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.wallet-pay-btn {
+  color: #FFFFFF;
+  background: #185ABC;
+}
+.wallet-paypal-sheet .wallet-pay-btn {
+  color: #0C2145;
+  background: #FFC439;
+}
+.wallet-secondary {
+  color: #3C4043;
+  background: transparent;
+}
+.wallet-secondary:hover { background: #F1F3F4; }
+.wallet-secure {
+  margin: 2px 24px 24px;
+  color: #5F6368;
+  font-size: 0.78rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
 /* ---------- order summary extras: tax ID, split subtotals ---------- */
 
 .row-hint {

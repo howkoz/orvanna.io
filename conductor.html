@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductors</title>
 <meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fc000256520a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=86fbad344957">
 <script>
 /* Applies a stored choice before first paint, so the page never flashes
    the wrong palette. With no stored choice the attribute stays off and the
@@ -276,10 +276,32 @@ em.q { font-style: normal; color: var(--accent); font-weight: 600; }
   display: flex; align-items: center; justify-content: space-between;
   gap: 18px; flex-wrap: wrap;
 }
-.nav-brand { display: block; flex-shrink: 0; }
+.nav-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--nav-link-on);
+  text-decoration: none;
+  flex-shrink: 0;
+  min-width: 0;
+}
 .nav-logo { height: 30px; width: auto; }
 .nav-logo.on-dark  { display: var(--logo-dark); }
 .nav-logo.on-light { display: var(--logo-light); }
+.brand-mark {
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--mark-lit);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 3px var(--mark-fill);
+}
+.brand-word {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
 
 .nav-links { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
 
@@ -537,8 +559,8 @@ a.flink:hover { color: var(--accent); }
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=fc000256520a"  alt="Orvanna" class="nav-logo on-dark">
-      <img src="assets/logo-final-primary.svg?v=fc000256520a" alt="Orvanna" class="nav-logo on-light">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>

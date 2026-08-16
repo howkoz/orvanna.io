@@ -1,0 +1,1525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Orvanna Staff Operations</title>
+<meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=86fbad344957">
+<link rel="stylesheet" href="css/corporate.css?v=86fbad344957">
+<link rel="stylesheet" href="css/staff.css?v=86fbad344957">
+<link rel="stylesheet" href="css/staff-ops.css?v=86fbad344957">
+</head>
+<body class="console-body">
+
+<!-- ============ TOP BAR ============ -->
+<!-- Top bar in the simplified console idiom (facelift fa2014c,
+     2026-08-16): the console-brand mark, terse labels. -->
+<header class="console-top">
+  <div class="console-wrap console-top-inner">
+    <a class="console-brand" href="index.html" aria-label="Orvanna home">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-word">Orvanna</span>
+    </a>
+    <span class="console-title">Operations</span>
+    <span class="console-demo-pill">Demonstration</span>
+    <span class="console-top-spacer"></span>
+    <nav class="console-links" aria-label="Staff navigation">
+      <a class="console-link" href="staff.html">Phone orders</a>
+      <a class="console-link" href="index.html">Portal</a>
+      <a class="console-link" href="shop.html">Shop</a>
+      <a class="console-link" id="signOutLink" href="index.html">Sign out</a>
+    </nav>
+  </div>
+</header>
+
+<div class="console-notice">
+  <div class="console-wrap">
+    Staff operations area, demonstration; it opens only after a staff sign-in checked against the demonstration database, and every rule on this page is enforced by the server on every call, never by the page. Point terms: Personal Volume (PV), Sales Volume (SV), Commissionable Volume (CV), Team Volume (TV).
+  </div>
+</div>
+
+<main class="console-main">
+  <div class="console-wrap">
+
+    <div class="ops-mock ops-hidden" id="mockBanner">
+      DEVELOPMENT MOCK MODE. The two operations services are not deployed yet, so this page is answering from recorded response shapes, not the live database. This banner cannot appear on the public site: mock mode only activates on a localhost address with dev=mock in the address bar.
+    </div>
+
+    <!-- ============ TABS ============ -->
+    <div class="ops-tabs" role="tablist" aria-label="Operations areas">
+      <button class="ops-tab" id="tabBilling" role="tab" aria-selected="true" aria-controls="areaBilling" type="button">Billing console</button>
+      <button class="ops-tab" id="tabCommissions" role="tab" aria-selected="false" aria-controls="areaCommissions" type="button">Commission dashboard</button>
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- ============ AREA 1: BILLING CONSOLE =============== -->
+    <!-- ==================================================== -->
+    <div id="areaBilling" role="tabpanel" aria-labelledby="tabBilling">
+
+      <div id="billingNotes"></div>
+
+      <div class="ops-stats" id="billingStats"></div>
+
+      <div class="ops-grid-2">
+
+        <!-- Schedule control -->
+        <section class="console-panel" aria-label="Daily run schedule">
+          <h2 class="panel-title">Daily run schedule <span class="title-chip">Stored server side</span></h2>
+          <p class="ops-status-line">The renewal engine runs automatically each day at this time, when enabled and once the scheduler is installed. When disabled or no time is set, the engine runs manually only.</p>
+          <div class="ops-form-row">
+            <label class="ops-check"><input type="checkbox" id="schedEnabled"> Enabled</label>
+            <div class="ops-field">
+              <label class="order-label" for="schedTime">Run at (24 hour)</label>
+              <input id="schedTime" type="time" step="60">
+            </div>
+            <div class="ops-field">
+              <label class="order-label" for="schedTz">Timezone</label>
+              <input id="schedTz" type="text" list="tzList" placeholder="UTC" spellcheck="false">
+              <datalist id="tzList">
+                <option value="UTC"></option>
+                <option value="America/Chicago"></option>
+                <option value="America/New_York"></option>
+                <option value="America/Denver"></option>
+                <option value="America/Los_Angeles"></option>
+                <option value="Europe/Berlin"></option>
+                <option value="Asia/Seoul"></option>
+              </datalist>
+            </div>
+            <button class="btn-addline" id="schedSaveBtn" type="button">Save schedule</button>
+          </div>
+          <p class="ops-status-line" id="schedStatus"></p>
+        </section>
+
+        <!-- Run now -->
+        <section class="console-panel" aria-label="Run now">
+          <h2 class="panel-title">Run now <span class="title-chip">Preview first, always</span></h2>
+          <p class="ops-status-line">The preview is the same gather and price read the real run performs, and it creates nothing. Execution is a separate confirm step.</p>
+          <div class="ops-actions">
+            <button class="btn-addline" id="previewBtn" type="button">Preview today's run (dry run)</button>
+            <!-- Disabled by design AND refused by the server. The
+                 button is a courtesy label; the server's s2_pending
+                 refusal is the actual gate. -->
+            <button class="ops-btn-quiet" id="executeBtn" type="button" disabled title="Execution arrives with Phase S2; the engine is deliberately inert in production.">Execute run (arrives with Phase S2)</button>
+          </div>
+          <p class="ops-status-line" id="previewStatus"></p>
+          <div id="previewBody"></div>
+        </section>
+      </div>
+
+      <!-- Seven day forecast -->
+      <section class="console-panel" aria-label="Seven day forecast">
+        <h2 class="panel-title">Next seven days <span class="title-chip">Derived from the same schedule arithmetic the engine runs</span></h2>
+        <p class="ops-status-line" id="forecastStatus"></p>
+        <div id="forecastBody"></div>
+      </section>
+
+      <!-- Run history -->
+      <section class="console-panel" aria-label="Run history">
+        <h2 class="panel-title">Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
+        <p class="ops-status-line" id="runHistStatus"></p>
+        <div class="ops-table-wrap"><table class="ops-table" id="runHistTable" hidden>
+          <thead><tr><th>Run</th><th>Tick date</th><th>Status</th><th>Clock</th><th class="ops-num">Due</th><th class="ops-num">Attempts</th><th class="ops-num">Succeeded</th><th class="ops-num">Declined</th><th class="ops-num">Member fault</th><th class="ops-num">System fault</th><th>Finished</th></tr></thead>
+          <tbody id="runHistBody"></tbody>
+        </table></div>
+        <div id="runDetailBody"></div>
+      </section>
+
+      <div class="ops-grid-2">
+        <!-- Retry queue -->
+        <section class="console-panel" aria-label="Retry queue">
+          <h2 class="panel-title">Retry queue <span class="title-chip">By decline class</span></h2>
+          <p class="ops-status-line" id="retryStatus"></p>
+          <div class="ops-table-wrap"><table class="ops-table" id="retryTable" hidden>
+            <thead><tr><th>Member</th><th>Sub</th><th>Class</th><th>Code</th><th>Next retry</th><th class="ops-num">Step</th><th class="ops-num">Amount</th></tr></thead>
+            <tbody id="retryBody"></tbody>
+          </table></div>
+        </section>
+
+        <!-- Attention queue -->
+        <section class="console-panel" aria-label="Attention queue">
+          <h2 class="panel-title">Attention queue <span class="title-chip">The rows a human must see</span></h2>
+          <p class="ops-status-line" id="attentionStatus"></p>
+          <div class="ops-table-wrap"><table class="ops-table" id="attentionTable" hidden>
+            <thead><tr><th>Reason</th><th>Member</th><th>Sub</th><th>Detail</th></tr></thead>
+            <tbody id="attentionBody"></tbody>
+          </table></div>
+        </section>
+      </div>
+
+      <!-- Subscription management -->
+      <section class="console-panel" aria-label="Subscription management">
+        <h2 class="panel-title">Subscription management <span class="title-chip">Every action server enforced and audited</span></h2>
+        <div class="ops-form-row">
+          <div class="ops-field">
+            <label class="order-label" for="subMemberInput">Member number</label>
+            <input class="lookup-input" id="subMemberInput" type="text" autocomplete="off" spellcheck="false" placeholder="GW-000003, 3">
+          </div>
+          <button class="btn-addline" id="subLookupBtn" type="button">Open subscriptions</button>
+        </div>
+        <p class="ops-status-line" id="subStatus"></p>
+        <div id="subList"></div>
+        <div id="subEvents"></div>
+      </section>
+
+    </div>
+
+    <!-- ==================================================== -->
+    <!-- ============ AREA 2: COMMISSION DASHBOARD ========== -->
+    <!-- ==================================================== -->
+    <div id="areaCommissions" role="tabpanel" aria-labelledby="tabCommissions" hidden>
+
+      <!-- Current month live -->
+      <section class="console-panel" aria-label="Current month live">
+        <h2 class="panel-title">Current month live <span class="title-chip" id="cmChip"></span></h2>
+        <div class="ops-stats" id="cmStats"></div>
+        <p class="ops-status-line" id="cmStatus"></p>
+        <div class="ops-table-wrap"><table class="ops-table" id="cmTable" hidden>
+          <thead><tr><th>Member</th><th>Name</th><th class="ops-num">Orders</th><th class="ops-num">SV so far</th><th>Qualified so far</th></tr></thead>
+          <tbody id="cmBody"></tbody>
+        </table></div>
+
+        <div class="ops-actions">
+          <button class="btn-addline" id="projectionBtn" type="button">Compute what-if projection (dry run)</button>
+        </div>
+        <p class="ops-status-line" id="projectionStatus"></p>
+        <div id="projectionBody"></div>
+      </section>
+
+      <!-- Runs board -->
+      <section class="console-panel" aria-label="Runs board">
+        <h2 class="panel-title">Runs board <span class="title-chip">Finalized months; every figure carries its run number</span></h2>
+        <p class="ops-status-line" id="runsBoardStatus"></p>
+        <div class="ops-table-wrap"><table class="ops-table" id="runsBoardTable" hidden>
+          <thead><tr><th>Period</th><th>Run</th><th>Spec</th><th class="ops-num">Total SV</th><th class="ops-num">Total CV</th><th class="ops-num">Payout</th><th class="ops-num">Paid</th><th>Finished</th><th></th></tr></thead>
+          <tbody id="runsBoardBody"></tbody>
+        </table></div>
+        <div id="runsDrillBody"></div>
+      </section>
+
+      <!-- Member drill -->
+      <section class="console-panel" aria-label="Member drill">
+        <h2 class="panel-title">Member drill <span class="title-chip">By member number only</span></h2>
+        <div class="ops-form-row">
+          <div class="ops-field">
+            <label class="order-label" for="drillMemberInput">Member number</label>
+            <input class="lookup-input" id="drillMemberInput" type="text" autocomplete="off" spellcheck="false" placeholder="GW-000003, 3">
+          </div>
+          <button class="btn-addline" id="drillBtn" type="button">Open member</button>
+        </div>
+        <p class="ops-status-line" id="drillStatus"></p>
+        <div id="drillBody"></div>
+      </section>
+
+      <div class="ops-grid-2">
+        <!-- House ledger -->
+        <section class="console-panel" aria-label="House ledger">
+          <h2 class="panel-title">House ledger <span class="title-chip">GW-000, bookkeeping only</span></h2>
+          <p class="ops-status-line">Retained volume is bookkeeping, never a disbursement; no commission run reads it. This figure should shrink as checkout attribution improves.</p>
+          <p class="ops-status-line" id="houseStatus"></p>
+          <div class="ops-table-wrap"><table class="ops-table" id="houseTable" hidden>
+            <thead><tr><th>Month</th><th class="ops-num">Slices</th><th class="ops-num">Retained PV</th><th class="ops-num">Cumulative</th><th>Direction</th></tr></thead>
+            <tbody id="houseBody"></tbody>
+          </table></div>
+        </section>
+
+        <!-- Superseded trail -->
+        <section class="console-panel" aria-label="Superseded run trail">
+          <h2 class="panel-title">Superseded run trail <span class="title-chip">The rerun rule made visible</span></h2>
+          <p class="ops-status-line" id="trailStatus"></p>
+          <div id="trailBody"></div>
+        </section>
+      </div>
+
+    </div>
+
+  </div>
+</main>
+
+<footer class="console-foot">
+  <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing engine deliberately inert until Phase S2</div>
+</footer>
+
+<script src="js/catalog.js?v=86fbad344957"></script>
+<script>
+/* ============================================================
+   Orvanna Staff Operations: the billing console (subscription
+   engine spec section 9A.2) and the commission dashboard (staff
+   commission dashboard spec v1.0), one tabbed page.
+
+   THIS PAGE ENFORCES NOTHING, and that is the design, the same
+   split the refund screen made on the owner's record 2026-08-15:
+   every money rule, role check, rate limit and audit line lives
+   in the two Edge Functions (billing-console, commission-report),
+   which check the staff session against the database on every
+   call. What this page does is render what the server answers,
+   verbatim where the words carry a rule (the engine's disclosure
+   texts, the projection banner), and offer courtesy confirms
+   before destructive requests. Greying a button here stops
+   nobody and is never treated as if it did.
+
+   The session gate below is convenience routing, not security
+   (same known gap as staff.html: a hand-written session object
+   opens the page, and the server then refuses every call).
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- session gate (courtesy) ----------
+     Staff opens both areas. Admin (the member portal demonstration
+     account) is admitted to the PAGE because the commission
+     dashboard's server accepts staff and admin (spec OQ5); the
+     billing console's server accepts staff only, so an admin
+     session sees its calls refused server side. */
+  var SESSION_KEY = 'orvanna_session';
+  var SIGN_IN_URL = 'login.html?role=staff&next=staff-operations.html';
+
+  function readSession() {
+    try { return JSON.parse(window.sessionStorage.getItem(SESSION_KEY)); }
+    catch (e) { return null; }
+  }
+  function sessionIsValid(s) {
+    return !!(s && s.token && (s.role === 'staff' || s.role === 'admin') &&
+      Number(s.expires_at) * 1000 > Date.now());
+  }
+  function clearSession() {
+    try { window.sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* nothing */ }
+  }
+
+  var session = readSession();
+  if (!sessionIsValid(session)) {
+    clearSession();
+    window.location.replace(SIGN_IN_URL);
+    return; /* nothing below this line runs */
+  }
+  document.getElementById('signOutLink').addEventListener('click', clearSession);
+
+  var O = window.ORVANNA;
+  var fmtMoney = O.fmtMoney;
+  var fmtPv = O.fmtPv;
+  function byId(id) { return document.getElementById(id); }
+
+  /* ---------- live endpoints ----------
+     Public values, public by design (they grant nothing on the
+     database); same constants login.html carries. */
+  var FUNCTIONS_BASE = 'https://oiyibdczkokegaxkwulv.supabase.co/functions/v1';
+  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9peWliZGN6a29rZWdheGt3dWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY2MzM1MDEsImV4cCI6MjEwMjIwOTUwMX0.NfZPoc6ZCZb-VtYhMC_toLnX73s5BJ_esKA4na-Pgdw';
+
+  /* ---------- development mock mode ----------
+     HONEST AND FENCED. The two operations functions are authored
+     but not yet deployed (the deploy engineer ships them after
+     both gates), so local verification needs recorded response
+     shapes. Mock mode activates ONLY when BOTH are true:
+       1. the page is served from localhost or 127.0.0.1, and
+       2. the address carries dev=mock.
+     On the public site condition 1 can never hold, so the shipped
+     build carries this code disabled by construction; the loud
+     banner above renders whenever it is active so a mock screen
+     can never be mistaken for live data. Every fixture below is a
+     RECORDED live shape (measured against the production database
+     on 2026-08-16), not an invention. */
+  var MOCK = (function () {
+    var host = window.location.hostname;
+    var local = host === 'localhost' || host === '127.0.0.1';
+    var asked = new URLSearchParams(window.location.search).get('dev') === 'mock';
+    return local && asked;
+  })();
+  if (MOCK) { byId('mockBanner').classList.remove('ops-hidden'); }
+
+  /* ---------- the one call helper ---------- */
+  function opsCall(fnName, body) {
+    if (MOCK) { return mockCall(fnName, body || {}); }
+    return fetch(FUNCTIONS_BASE + '/' + fnName, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        /* Authorization carries the platform anonymous key; the
+           staff token rides x-orvanna-session, the header the
+           server checks first (see _shared/staff-auth.ts). */
+        'Authorization': 'Bearer ' + ANON_KEY,
+        'apikey': ANON_KEY,
+        'x-orvanna-session': (session && session.token) || ''
+      },
+      body: JSON.stringify(body || {})
+    }).then(function (resp) {
+      return resp.json().catch(function () { return {}; }).then(function (data) {
+        return { status: resp.status, data: data };
+      });
+    });
+  }
+
+  function serverMessage(result, fallback) {
+    return (result && result.data && result.data.error && result.data.error.message) || fallback;
+  }
+
+  /* ---------- tiny DOM helpers (textContent only, never
+       innerHTML with data: a server value can never be markup) */
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) { node.className = cls; }
+    if (text !== undefined && text !== null) { node.textContent = String(text); }
+    return node;
+  }
+  function cell(tr, text, cls) {
+    var td = el('td', cls || null, text === null || text === undefined || text === '' ? 'none' : text);
+    tr.appendChild(td);
+    return td;
+  }
+  function clearNode(node) { while (node.firstChild) { node.removeChild(node.firstChild); } }
+
+  function fmtDate(v) {
+    if (!v) { return 'none'; }
+    var s = String(v);
+    return s.length >= 10 ? s.slice(0, 10) : s;
+  }
+  function fmtWhen(iso) {
+    if (!iso) { return 'none'; }
+    var d = new Date(iso);
+    if (isNaN(d.getTime())) { return String(iso); }
+    return d.toLocaleString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+  }
+  function periodLabel(v) {
+    var s = fmtDate(v);
+    var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    var mm = parseInt(s.slice(5, 7), 10);
+    return isNaN(mm) ? s : MONTHS[mm - 1] + ' ' + s.slice(0, 4);
+  }
+  function normalizeCode(raw) {
+    var t = String(raw).trim().toUpperCase().replace(/^GW[-\s]?/, '');
+    if (!/^\d{1,6}$/.test(t)) { return null; }
+    while (t.length < 6) { t = '0' + t; }
+    return 'GW-' + t;
+  }
+  function statePill(state) {
+    var span = el('span', 'ops-state ops-state-' + state, String(state).replace(/_/g, ' '));
+    return span;
+  }
+
+  /* ============================================================
+     TABS. Hash routing so a reload lands on the same area.
+     ============================================================ */
+  var tabBilling = byId('tabBilling');
+  var tabCommissions = byId('tabCommissions');
+  var areaBilling = byId('areaBilling');
+  var areaCommissions = byId('areaCommissions');
+  var commissionsLoaded = false;
+  var billingLoaded = false;
+
+  function selectTab(which) {
+    var billing = which === 'billing';
+    tabBilling.setAttribute('aria-selected', billing ? 'true' : 'false');
+    tabCommissions.setAttribute('aria-selected', billing ? 'false' : 'true');
+    areaBilling.hidden = !billing;
+    areaCommissions.hidden = billing;
+    try { window.history.replaceState(null, '', billing ? '#billing' : '#commissions'); } catch (e) { /* fine */ }
+    if (billing && !billingLoaded) { billingLoaded = true; loadBillingArea(); }
+    if (!billing && !commissionsLoaded) { commissionsLoaded = true; loadCommissionArea(); }
+  }
+  tabBilling.addEventListener('click', function () { selectTab('billing'); });
+  tabCommissions.addEventListener('click', function () { selectTab('commissions'); });
+
+  /* ============================================================
+     AREA 1: BILLING CONSOLE
+     ============================================================ */
+
+  function renderHonestyNotes(container, data) {
+    clearNode(container);
+    (data.honesty_notes || []).forEach(function (note) {
+      container.appendChild(el('div', 'ops-warn', note));
+    });
+    if (data.engine && data.engine.clock_initialized) {
+      container.appendChild(el('div', 'ops-note',
+        'Engine clock: ' + fmtDate(data.engine.clock_date) +
+        ' (epoch ' + fmtDate(data.engine.engine_epoch) + '). Clock source: simulated.'));
+    }
+  }
+
+  function loadBillingArea() {
+    loadOverview();
+    loadForecast();
+    loadRunHistory();
+    loadRetryQueue();
+    loadAttention();
+  }
+
+  /* ---------- overview, schedule ---------- */
+  var schedStatus = byId('schedStatus');
+
+  function loadOverview() {
+    opsCall('billing-console', { action: 'overview' }).then(function (result) {
+      if (result.status !== 200) {
+        byId('billingNotes').appendChild(el('div', 'ops-bad', serverMessage(result, 'Could not load the billing console overview.')));
+        return;
+      }
+      var d = result.data;
+      renderHonestyNotes(byId('billingNotes'), d);
+
+      var stats = byId('billingStats');
+      clearNode(stats);
+      var items = [
+        ['Active subscriptions', d.counts.active_subscriptions],
+        ['Paused', d.counts.paused_subscriptions],
+        ['In trouble states', d.counts.troubled_subscriptions],
+        ['Billing runs', d.counts.billing_runs],
+        ['Retry pointers', d.counts.retry_pointers],
+        ['Attention rows', d.counts.attention_rows]
+      ];
+      items.forEach(function (pair) {
+        var box = el('div', 'ops-stat');
+        box.appendChild(el('span', 'ops-stat-label', pair[0]));
+        box.appendChild(el('span', 'ops-stat-value', pair[1]));
+        stats.appendChild(box);
+      });
+
+      var s = d.schedule || {};
+      byId('schedEnabled').checked = !!s.enabled;
+      byId('schedTime').value = s.run_at_time ? String(s.run_at_time).slice(0, 5) : '';
+      byId('schedTz').value = s.timezone || 'UTC';
+      schedStatus.textContent = s.updated_by
+        ? ('Last changed by ' + s.updated_by + ' at ' + fmtWhen(s.updated_at) + '.')
+        : 'Never changed; shipped disabled.';
+    }).catch(function () {
+      byId('billingNotes').appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.'));
+    });
+  }
+
+  byId('schedSaveBtn').addEventListener('click', function () {
+    var enabled = byId('schedEnabled').checked;
+    var time = byId('schedTime').value.trim();
+    var tz = byId('schedTz').value.trim() || 'UTC';
+    schedStatus.textContent = 'Saving...';
+    opsCall('billing-console', {
+      action: 'schedule_set',
+      enabled: enabled,
+      run_at_time: time === '' ? null : time,
+      timezone: tz
+    }).then(function (result) {
+      if (result.status !== 200) {
+        schedStatus.textContent = serverMessage(result, 'The server refused that schedule.');
+        return;
+      }
+      var s = result.data.schedule || {};
+      schedStatus.textContent = 'Saved. ' + (s.enabled
+        ? ('Daily run enabled at ' + String(s.run_at_time).slice(0, 5) + ' ' + s.timezone + '.')
+        : 'Daily run disabled; the engine runs manually only.');
+      renderHonestyNotes(byId('billingNotes'), result.data);
+    }).catch(function () { schedStatus.textContent = 'Could not reach the billing console service.'; });
+  });
+
+  /* ---------- run now: preview, then the S2-pending execute ---------- */
+  var previewStatus = byId('previewStatus');
+  var previewBody = byId('previewBody');
+
+  byId('previewBtn').addEventListener('click', function () {
+    previewStatus.textContent = 'Gathering the dry run preview...';
+    clearNode(previewBody);
+    opsCall('billing-console', { action: 'run_preview' }).then(function (result) {
+      if (result.status !== 200) {
+        previewStatus.textContent = serverMessage(result, 'Could not compute the preview.');
+        return;
+      }
+      var d = result.data;
+      previewStatus.textContent = '';
+      if (d.inert) {
+        var b = d.backlog || {};
+        previewBody.appendChild(el('div', 'ops-warn',
+          'ENGINE INERT: no dollar preview is claimed. ' + (b.explanation || '')));
+        var dl = el('div', 'ops-note',
+          'Active subscriptions with derived billing dates in the past: ' +
+          b.active_subscriptions_with_past_derived_dates +
+          ' (earliest ' + fmtDate(b.earliest_derived_date) +
+          ', latest ' + fmtDate(b.latest_derived_date) + '). ' +
+          'Active subscriptions due in the future: ' + b.active_subscriptions_due_in_future + '.');
+        previewBody.appendChild(dl);
+        return;
+      }
+      var p = d.preview;
+      previewBody.appendChild(el('div', 'ops-ok',
+        'Dry run for tick date ' + fmtDate(p.tick_date) + ': ' +
+        p.new_cycles.count + ' new billing(s) totaling ' + fmtMoney(p.new_cycles.amount) +
+        ', ' + p.retries.count + ' retry(ies) totaling ' + fmtMoney(p.retries.amount) +
+        (p.retries.will_clip_count ? (', ' + p.retries.will_clip_count + ' retry(ies) would be clipped by the calendar rule') : '') +
+        ', ' + p.housekeeping.pause_auto_resumes_due + ' pause auto-resume(s) due. ' +
+        'Total that would bill: ' + fmtMoney(p.total_would_bill) + '. Nothing was created.'));
+      if (p.new_cycles.by_frequency.length) {
+        var t = el('table', 'ops-table');
+        var thead = el('thead'); var htr = el('tr');
+        ['Frequency', 'Count', 'Amount'].forEach(function (h, i) { htr.appendChild(el('th', i > 0 ? 'ops-num' : null, h)); });
+        thead.appendChild(htr); t.appendChild(thead);
+        var tb = el('tbody');
+        p.new_cycles.by_frequency.forEach(function (f) {
+          var tr = el('tr');
+          cell(tr, f.frequency_months + ' month(s)');
+          cell(tr, f.count, 'ops-num');
+          cell(tr, fmtMoney(f.amount), 'ops-num');
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+        previewBody.appendChild(wrap);
+      }
+    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service.'; });
+  });
+
+  /* The execute button stays disabled in this build; the click
+     handler exists so that IF markup is tampered with, the user
+     still just sees the server's own s2_pending refusal, which is
+     the honest answer either way. */
+  byId('executeBtn').addEventListener('click', function () {
+    previewStatus.textContent = 'Asking the server...';
+    opsCall('billing-console', { action: 'run_execute' }).then(function (result) {
+      previewStatus.textContent = serverMessage(result, 'The server refused the execution.');
+    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service.'; });
+  });
+
+  /* ---------- forecast ---------- */
+  function loadForecast() {
+    var status = byId('forecastStatus');
+    var body = byId('forecastBody');
+    status.textContent = 'Loading...';
+    opsCall('billing-console', { action: 'forecast' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the forecast.'); return; }
+      var d = result.data;
+      clearNode(body);
+      status.textContent = '';
+      if (d.past_due_backlog_subscriptions > 0) {
+        body.appendChild(el('div', 'ops-note',
+          d.past_due_backlog_subscriptions + ' active subscription(s) carry derived billing dates in the past. ' +
+          (d.engine && d.engine.clock_initialized
+            ? 'The next tick gathers them (the catch-up rule).'
+            : 'They await the engine start and epoch decision at Phase S2; the first real tick gathers per that epoch.')));
+      }
+      if (!d.days.length && !d.retry_days.length) {
+        body.appendChild(el('p', 'ops-status-line', 'Nothing is scheduled to bill in the next seven days.'));
+        return;
+      }
+      var t = el('table', 'ops-table');
+      var thead = el('thead'); var htr = el('tr');
+      ['Day', 'New billings', 'Amount', 'PV', 'Retries', 'Retry amount'].forEach(function (h, i) { htr.appendChild(el('th', i > 0 ? 'ops-num' : null, h)); });
+      thead.appendChild(htr); t.appendChild(thead);
+      var tb = el('tbody');
+      var byDay = {};
+      d.days.forEach(function (r) { byDay[fmtDate(r.day)] = { subs: r.subscriptions, amount: r.amount, pv: r.pv, retries: 0, ramount: 0 }; });
+      d.retry_days.forEach(function (r) {
+        var k = fmtDate(r.day);
+        byDay[k] = byDay[k] || { subs: 0, amount: 0, pv: 0, retries: 0, ramount: 0 };
+        byDay[k].retries = r.retries; byDay[k].ramount = r.amount;
+      });
+      Object.keys(byDay).sort().forEach(function (k) {
+        var r = byDay[k]; var tr = el('tr');
+        cell(tr, k);
+        cell(tr, r.subs, 'ops-num');
+        cell(tr, fmtMoney(r.amount), 'ops-num');
+        cell(tr, fmtPv(r.pv), 'ops-num');
+        cell(tr, r.retries, 'ops-num');
+        cell(tr, fmtMoney(r.ramount), 'ops-num');
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+      body.appendChild(wrap);
+    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  /* ---------- run history + drill ---------- */
+  function loadRunHistory() {
+    var status = byId('runHistStatus');
+    status.textContent = 'Loading...';
+    opsCall('billing-console', { action: 'run_history', limit: 50 }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load run history.'); return; }
+      var runs = result.data.runs || [];
+      var tbody = byId('runHistBody');
+      clearNode(tbody);
+      byId('runHistTable').hidden = runs.length === 0;
+      status.textContent = runs.length === 0
+        ? 'No billing runs yet. The engine has never ticked on this database, which is the expected state before Phase S2.'
+        : 'Showing ' + runs.length + ' of ' + result.data.total + ' runs, newest first. Click a run for its attempts.';
+      runs.forEach(function (r) {
+        var tr = el('tr', 'ops-row-click');
+        tr.tabIndex = 0;
+        cell(tr, r.id, 'ops-mono');
+        cell(tr, fmtDate(r.tick_date));
+        cell(tr, r.status);
+        cell(tr, r.clock_source);
+        cell(tr, r.subscriptions_due, 'ops-num');
+        cell(tr, r.attempts_made, 'ops-num');
+        cell(tr, r.succeeded, 'ops-num');
+        cell(tr, r.declined, 'ops-num');
+        cell(tr, r.member_fault_failures, 'ops-num');
+        cell(tr, r.system_fault_failures, 'ops-num');
+        cell(tr, fmtWhen(r.finished_at));
+        tr.addEventListener('click', function () { openRunDetail(r.id); });
+        tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRunDetail(r.id); } });
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  function openRunDetail(runId) {
+    var body = byId('runDetailBody');
+    clearNode(body);
+    body.appendChild(el('p', 'ops-status-line', 'Loading run ' + runId + '...'));
+    opsCall('billing-console', { action: 'run_detail', run_id: runId }).then(function (result) {
+      clearNode(body);
+      if (result.status !== 200) { body.appendChild(el('div', 'ops-bad', serverMessage(result, 'Could not open that run.'))); return; }
+      var run = result.data.run;
+      var drawer = el('div', 'ops-drawer');
+      drawer.appendChild(el('h3', 'panel-title', 'Run ' + run.id + ', tick ' + fmtDate(run.tick_date) + ' (' + run.status + ')'));
+      drawer.appendChild(el('p', 'ops-status-line',
+        'Due ' + run.subscriptions_due + ', attempts ' + run.attempts_made + ', succeeded ' + run.succeeded +
+        ', declined ' + run.declined + '. Member fault ' + run.member_fault_failures +
+        ', system fault ' + run.system_fault_failures + ' (reported separately by design). ' +
+        'Reconciled at open: ' + run.attempts_reconciled + '. Promo hook identity: ' + run.promo_hook_identity +
+        '. No interactive authentication requested: ' + run.mit_invariant_ok + '.'));
+      if (run.notes) { drawer.appendChild(el('p', 'ops-status-line', 'Notes: ' + run.notes)); }
+      var attempts = result.data.attempts || [];
+      if (attempts.length) {
+        var t = el('table', 'ops-table');
+        var thead = el('thead'); var htr = el('tr');
+        ['Member', 'Sub', 'Cycle', 'Attempt', 'Kind', 'Order', 'Outcome', 'Code', 'Class', 'Fault', 'Next action'].forEach(function (h) { htr.appendChild(el('th', null, h)); });
+        thead.appendChild(htr); t.appendChild(thead);
+        var tb = el('tbody');
+        attempts.forEach(function (a) {
+          var tr = el('tr');
+          cell(tr, a.member_code, 'ops-mono');
+          cell(tr, a.subscription_id, 'ops-num');
+          cell(tr, a.renewal_index, 'ops-num');
+          cell(tr, a.attempt_no, 'ops-num');
+          cell(tr, a.attempt_kind);
+          cell(tr, a.order_number, 'ops-mono');
+          cell(tr, a.outcome);
+          cell(tr, a.decline_code);
+          cell(tr, a.decline_class);
+          cell(tr, a.member_fault === null ? 'none' : (a.member_fault ? 'member' : 'system'));
+          cell(tr, a.next_action + (a.next_retry_date ? (' ' + fmtDate(a.next_retry_date)) : ''));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+        drawer.appendChild(wrap);
+      } else {
+        drawer.appendChild(el('p', 'ops-status-line', 'No attempts on this run.'));
+      }
+      body.appendChild(drawer);
+    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.')); });
+  }
+
+  /* ---------- retry queue ---------- */
+  function loadRetryQueue() {
+    var status = byId('retryStatus');
+    status.textContent = 'Loading...';
+    opsCall('billing-console', { action: 'retry_queue' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the retry queue.'); return; }
+      var rows = result.data.retries || [];
+      var tbody = byId('retryBody');
+      clearNode(tbody);
+      byId('retryTable').hidden = rows.length === 0;
+      status.textContent = rows.length === 0 ? 'Nothing is scheduled to retry.' : rows.length + ' scheduled retry(ies), soonest first.';
+      rows.forEach(function (r) {
+        var tr = el('tr');
+        cell(tr, r.member_code, 'ops-mono');
+        cell(tr, r.subscription_id, 'ops-num');
+        cell(tr, r.decline_class);
+        cell(tr, r.decline_code);
+        cell(tr, fmtDate(r.next_retry_date));
+        cell(tr, r.ladder_step, 'ops-num');
+        cell(tr, fmtMoney(r.amount), 'ops-num');
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  /* ---------- attention queue ---------- */
+  function loadAttention() {
+    var status = byId('attentionStatus');
+    status.textContent = 'Loading...';
+    opsCall('billing-console', { action: 'attention' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the attention queue.'); return; }
+      var rows = result.data.rows || [];
+      var tbody = byId('attentionBody');
+      clearNode(tbody);
+      byId('attentionTable').hidden = rows.length === 0;
+      status.textContent = rows.length === 0 ? 'Nothing needs a human right now.' : rows.length + ' row(s) need a human.';
+      rows.forEach(function (r) {
+        var tr = el('tr');
+        cell(tr, r.reason);
+        cell(tr, r.member_code, 'ops-mono');
+        cell(tr, r.subscription_id, 'ops-num');
+        cell(tr, r.detail);
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  /* ---------- subscription management ---------- */
+  var subStatus = byId('subStatus');
+  var subList = byId('subList');
+  var subEvents = byId('subEvents');
+  var currentMemberCode = null;
+
+  byId('subLookupBtn').addEventListener('click', lookupSubs);
+  byId('subMemberInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); lookupSubs(); } });
+
+  function lookupSubs() {
+    var code = normalizeCode(byId('subMemberInput').value);
+    if (!code) { subStatus.textContent = 'Member codes look like GW-000123.'; return; }
+    currentMemberCode = code;
+    subStatus.textContent = 'Loading ' + code + '...';
+    clearNode(subList); clearNode(subEvents);
+    opsCall('billing-console', { action: 'member_subscriptions', member_code: code }).then(function (result) {
+      if (result.status !== 200) { subStatus.textContent = serverMessage(result, 'Could not open that member.'); return; }
+      var d = result.data;
+      subStatus.textContent = d.display_name + ' (' + d.member_code + '), ' + d.subscriptions.length + ' subscription(s).';
+      d.subscriptions.forEach(function (s) { subList.appendChild(renderSubCard(s)); });
+      if ((d.recent_events || []).length) {
+        var drawer = el('div', 'ops-drawer');
+        drawer.appendChild(el('h3', 'panel-title', 'Recent subscription events'));
+        var t = el('table', 'ops-table');
+        var thead = el('thead'); var htr = el('tr');
+        ['Sub', 'Date', 'Event', 'From', 'To', 'Actor', 'Record'].forEach(function (h) { htr.appendChild(el('th', null, h)); });
+        thead.appendChild(htr); t.appendChild(thead);
+        var tb = el('tbody');
+        d.recent_events.forEach(function (ev) {
+          var tr = el('tr');
+          cell(tr, ev.subscription_id, 'ops-num');
+          cell(tr, fmtDate(ev.occurred_on));
+          cell(tr, ev.event_type);
+          cell(tr, ev.from_state);
+          cell(tr, ev.to_state);
+          cell(tr, ev.actor);
+          cell(tr, ev.cause);
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+        drawer.appendChild(wrap);
+        subEvents.appendChild(drawer);
+      }
+    }).catch(function () { subStatus.textContent = 'Could not reach the billing console service.'; });
+  }
+
+  function renderSubCard(s) {
+    var card = el('div', 'ops-sub-card');
+    var head = el('div', 'ops-sub-head');
+    head.appendChild(el('span', 'ops-sub-title', s.product_name + ' (' + s.sku + ') x' + s.quantity));
+    head.appendChild(statePill(s.state));
+    head.appendChild(el('span', 'ops-status-line',
+      'Sub ' + s.subscription_id + '. Every ' + s.frequency_months + ' month(s), ' +
+      fmtMoney(s.monthly_price * s.quantity * s.frequency_months) + ' per billing. ' +
+      'Billing day: ' + (s.billing_day === null ? 'anchor day (' + fmtDate(s.billing_anchor_date) + ')' : s.billing_day) + '. ' +
+      'Derived next billing: ' + fmtDate(s.next_billing_date) + '.'));
+    card.appendChild(head);
+    if (s.credential) {
+      card.appendChild(el('p', 'ops-status-line',
+        'Card on file: ' + s.credential.brand + ' ending ' + s.credential.last4 +
+        ', expires ' + s.credential.expiry_month + '/' + s.credential.expiry_year +
+        (s.credential.retired_on ? (' (RETIRED ' + fmtDate(s.credential.retired_on) + ')') : '') + '.'));
+    }
+
+    var actions = el('div', 'ops-actions');
+    var confirmZone = el('div');
+
+    function actionButton(label, build) {
+      var b = el('button', 'ops-btn-quiet', label);
+      b.type = 'button';
+      b.addEventListener('click', function () { clearNode(confirmZone); confirmZone.appendChild(build()); });
+      actions.appendChild(b);
+    }
+
+    function confirmStrip(text, fields, dangerLabel, payloadFn) {
+      var strip = el('div', 'ops-confirm');
+      strip.appendChild(el('p', null, text));
+      var row = el('div', 'ops-form-row');
+      (fields || []).forEach(function (f) { row.appendChild(f.node); });
+      var go = el('button', dangerLabel.danger ? 'ops-btn-danger' : 'btn-addline', dangerLabel.label);
+      go.type = 'button';
+      var cancelB = el('button', 'ops-btn-quiet', 'Never mind');
+      cancelB.type = 'button';
+      cancelB.addEventListener('click', function () { clearNode(confirmZone); });
+      row.appendChild(go); row.appendChild(cancelB);
+      strip.appendChild(row);
+      var out = el('div');
+      strip.appendChild(out);
+      go.addEventListener('click', function () {
+        var payload = payloadFn();
+        if (!payload) { return; }
+        clearNode(out);
+        out.appendChild(el('p', 'ops-status-line', 'Asking the server...'));
+        payload.action = 'sub_action';
+        payload.subscription_id = s.subscription_id;
+        opsCall('billing-console', payload).then(function (result) {
+          clearNode(out);
+          if (result.status !== 200) {
+            /* The server's refusal, verbatim: the rule lives there. */
+            out.appendChild(el('div', 'ops-bad', serverMessage(result, 'The server refused that change.')));
+            return;
+          }
+          var d = result.data;
+          out.appendChild(el('div', 'ops-ok', 'Done. New state: ' + d.new_state + '.'));
+          if (d.engine_record && d.engine_record.cause) {
+            /* The ENGINE'S disclosure text, never a paraphrase
+               (the 12.1 double-billing disclosure arrives here). */
+            out.appendChild(el('div', 'ops-disclosure', d.engine_record.cause));
+          }
+          if (currentMemberCode) { lookupSubs(); }
+        }).catch(function () {
+          clearNode(out);
+          out.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service.'));
+        });
+      });
+      return strip;
+    }
+
+    function selectField(labelText, id, options) {
+      var wrap = el('div', 'ops-field');
+      var lab = el('label', 'order-label', labelText);
+      var sel = el('select');
+      sel.id = id;
+      options.forEach(function (o) {
+        var opt = el('option', null, o.label);
+        opt.value = o.value;
+        sel.appendChild(opt);
+      });
+      lab.htmlFor = id;
+      wrap.appendChild(lab); wrap.appendChild(sel);
+      return { node: wrap, value: function () { return sel.value; } };
+    }
+    function textField(labelText, id, placeholder) {
+      var wrap = el('div', 'ops-field');
+      var lab = el('label', 'order-label', labelText);
+      var inp = el('input');
+      inp.type = 'text'; inp.id = id; inp.placeholder = placeholder || '';
+      lab.htmlFor = id;
+      wrap.appendChild(lab); wrap.appendChild(inp);
+      return { node: wrap, value: function () { return inp.value.trim(); } };
+    }
+
+    actionButton('Pause', function () {
+      var months = selectField('Months', 'pm' + s.subscription_id, [
+        { value: '1', label: '1 month' }, { value: '2', label: '2 months' }]);
+      return confirmStrip(
+        'Pause this subscription? While paused: no billing, no volume, and it does not qualify the member. The pause defers whole billing periods.',
+        [months], { label: 'Pause it', danger: false },
+        function () { return { op: 'pause', months: Number(months.value()) }; });
+    });
+    actionButton('Resume', function () {
+      return confirmStrip('Resume this subscription early?', [],
+        { label: 'Resume it', danger: false },
+        function () { return { op: 'resume' }; });
+    });
+    actionButton('Cancel', function () {
+      return confirmStrip(
+        'Cancel this subscription? Cancellation is TERMINAL: a returning member is a new subscription. Remaining retries are cancelled and unpaid periods stay unpaid forever.',
+        [], { label: 'Cancel the subscription', danger: true },
+        function () { return { op: 'cancel' }; });
+    });
+    actionButton('Change billing day', function () {
+      var day = textField('New day (1 to 28)', 'day' + s.subscription_id, '25');
+      return confirmStrip(
+        'Change the billing day? The transition charge runs on the first occurrence of the new day strictly after today, covering the next uncovered month, so the change month may contain two billings, exactly once. The engine\'s own disclosure is shown after the change.',
+        [day], { label: 'Change the day', danger: false },
+        function () {
+          var v = Number(day.value());
+          if (!(v >= 1 && v <= 28)) { window.alert('Billing day picks run 1 to 28.'); return null; }
+          return { op: 'change_day', new_day: v };
+        });
+    });
+    actionButton('Change frequency', function () {
+      var f = selectField('New frequency', 'fq' + s.subscription_id, [
+        { value: '1', label: 'Monthly' }, { value: '2', label: 'Every 2 months' },
+        { value: '3', label: 'Quarterly' }, { value: '6', label: 'Every 6 months' }]);
+      return confirmStrip(
+        'Change the billing frequency? The new frequency takes effect at the next uncovered month; covered months stay covered exactly once.',
+        [f], { label: 'Change the frequency', danger: false },
+        function () { return { op: 'change_frequency', new_frequency: Number(f.value()) }; });
+    });
+    actionButton('Flag card update', function () {
+      return confirmStrip(
+        'Flag this subscription as needing a card update? No retry will run until the member completes a fresh checkout with a new card.',
+        [], { label: 'Flag it', danger: false },
+        function () { return { op: 'flag_card_update' }; });
+    });
+    actionButton('Reactivate', function () {
+      var brand = textField('Card brand', 'br' + s.subscription_id, 'visa');
+      var last4 = textField('Last four digits', 'l4' + s.subscription_id, '4242');
+      return confirmStrip(
+        'Reactivate with a fresh payment? A fresh cardholder-present payment mints a new stored credential; coverage restarts forward only, with no back-billing.',
+        [brand, last4], { label: 'Reactivate', danger: false },
+        function () {
+          if (!/^\d{4}$/.test(last4.value())) { window.alert('Last four digits are four digits.'); return null; }
+          return { op: 'reactivate', brand: brand.value() || 'visa', last4: last4.value() };
+        });
+    });
+
+    card.appendChild(actions);
+    card.appendChild(confirmZone);
+    return card;
+  }
+
+  /* ============================================================
+     AREA 2: COMMISSION DASHBOARD
+     ============================================================ */
+
+  function loadCommissionArea() {
+    loadCurrentMonth();
+    loadRunsBoard();
+    loadHouseLedger();
+    loadTrail();
+  }
+
+  /* ---------- current month + projection ---------- */
+  function loadCurrentMonth() {
+    var status = byId('cmStatus');
+    status.textContent = 'Loading...';
+    opsCall('commission-report', { panel: 'current_month' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the current month.'); return; }
+      var d = result.data;
+      byId('cmChip').textContent = periodLabel(d.open_period) + (d.has_final_run ? ' (already finalized)' : ', accumulating');
+      var stats = byId('cmStats');
+      clearNode(stats);
+      [
+        ['Bridged SV so far', fmtPv(d.bridged_sv)],
+        ['Bridged orders', d.bridged_orders],
+        ['House retained PV (' + d.house_slices + ' slices)', fmtPv(d.house_retained_pv)]
+      ].forEach(function (pair) {
+        var box = el('div', 'ops-stat');
+        box.appendChild(el('span', 'ops-stat-label', pair[0]));
+        box.appendChild(el('span', 'ops-stat-value', pair[1]));
+        stats.appendChild(box);
+      });
+      var tbody = byId('cmBody');
+      clearNode(tbody);
+      byId('cmTable').hidden = d.members.length === 0;
+      status.textContent = d.members.length === 0
+        ? 'No bridged volume yet this month.'
+        : 'Attributed and house-retained money shown together, by design. Members with bridged volume this month:';
+      d.members.forEach(function (m) {
+        var tr = el('tr');
+        cell(tr, m.member_code, 'ops-mono');
+        cell(tr, m.display_name);
+        cell(tr, m.orders, 'ops-num');
+        cell(tr, fmtPv(m.sv), 'ops-num');
+        cell(tr, m.sv >= 100 ? 'yes (at or above 100.00)' : 'not yet');
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  }
+
+  byId('projectionBtn').addEventListener('click', function () {
+    var status = byId('projectionStatus');
+    var body = byId('projectionBody');
+    status.textContent = 'Running the engine inside a rolled-back transaction...';
+    clearNode(body);
+    opsCall('commission-report', { panel: 'projection' }).then(function (result) {
+      status.textContent = '';
+      if (result.status !== 200) { body.appendChild(el('div', 'ops-bad', serverMessage(result, 'Could not compute the projection.'))); return; }
+      var d = result.data;
+      /* THE LABELING RULE (dashboard spec 3.2), enforced in the
+         rendering: the banner is the SERVER'S literal text, in the
+         warning treatment, never the neutral one; no run id exists
+         anywhere in this block because the server sends none. */
+      body.appendChild(el('div', 'ops-warn', d.banner));
+      if (!d.left_nothing_behind) {
+        body.appendChild(el('div', 'ops-bad', 'ALERT: the server reports the dry run may have left rows behind. Stop and tell the engineer; do not trust these numbers.'));
+      }
+      var stats = el('div', 'ops-stats');
+      [
+        ['Projected total SV', fmtPv(d.totals.total_sv)],
+        ['Projected total CV', fmtPv(d.totals.total_cv)],
+        ['Projected payout', fmtMoney(d.totals.total_payout)],
+        ['Members paid', d.totals.members_paid],
+        ['Qualified members', d.qualified_members]
+      ].forEach(function (pair) {
+        var box = el('div', 'ops-stat');
+        box.appendChild(el('span', 'ops-stat-label', pair[0]));
+        box.appendChild(el('span', 'ops-stat-value', pair[1]));
+        stats.appendChild(box);
+      });
+      body.appendChild(stats);
+      if ((d.top_projected_earners || []).length) {
+        var t = el('table', 'ops-table');
+        var thead = el('thead'); var htr = el('tr');
+        ['Member', 'Name', 'Rank', 'Projected earnings'].forEach(function (h, i) { htr.appendChild(el('th', i === 3 ? 'ops-num' : null, h)); });
+        thead.appendChild(htr); t.appendChild(thead);
+        var tb = el('tbody');
+        d.top_projected_earners.forEach(function (r) {
+          var tr = el('tr');
+          cell(tr, r.member_code, 'ops-mono');
+          cell(tr, r.display_name);
+          cell(tr, r.rank_earned);
+          cell(tr, fmtMoney(r.total_earned), 'ops-num');
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+        body.appendChild(wrap);
+      }
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  });
+
+  /* ---------- runs board + movers + drill ---------- */
+  function loadRunsBoard() {
+    var status = byId('runsBoardStatus');
+    status.textContent = 'Loading...';
+    opsCall('commission-report', { panel: 'runs_board' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the runs board.'); return; }
+      var runs = result.data.runs || [];
+      var tbody = byId('runsBoardBody');
+      clearNode(tbody);
+      byId('runsBoardTable').hidden = runs.length === 0;
+      status.textContent = runs.length === 0 ? 'No finalized runs.' : runs.length + ' finalized run(s). Click a row to drill; Movers shows the top ten by absolute change versus the prior period.';
+      runs.forEach(function (r) {
+        var tr = el('tr', 'ops-row-click');
+        tr.tabIndex = 0;
+        cell(tr, periodLabel(r.period));
+        cell(tr, 'run ' + r.run_id, 'ops-mono');
+        cell(tr, r.spec_version);
+        cell(tr, fmtPv(r.total_sv), 'ops-num');
+        cell(tr, fmtPv(r.total_cv), 'ops-num');
+        cell(tr, fmtMoney(r.total_payout), 'ops-num');
+        cell(tr, r.members_paid, 'ops-num');
+        cell(tr, fmtWhen(r.finished_at));
+        var td = el('td');
+        if ((r.top_movers || []).length) {
+          var mb = el('button', 'ops-btn-quiet', 'Movers');
+          mb.type = 'button';
+          mb.addEventListener('click', function (e) { e.stopPropagation(); showMovers(r); });
+          td.appendChild(mb);
+        } else {
+          td.textContent = 'first period';
+        }
+        tr.appendChild(td);
+        tr.addEventListener('click', function () { drillRun(r.run_id); });
+        tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillRun(r.run_id); } });
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  }
+
+  function showMovers(run) {
+    var body = byId('runsDrillBody');
+    clearNode(body);
+    var drawer = el('div', 'ops-drawer');
+    drawer.appendChild(el('h3', 'panel-title', 'Top movers, ' + periodLabel(run.period) + ' (run ' + run.run_id + ') versus the prior final period'));
+    var t = el('table', 'ops-table');
+    var thead = el('thead'); var htr = el('tr');
+    ['Member', 'Name', 'Prior', 'This period', 'Change'].forEach(function (h, i) { htr.appendChild(el('th', i > 1 ? 'ops-num' : null, h)); });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = el('tbody');
+    run.top_movers.forEach(function (m) {
+      var tr = el('tr');
+      cell(tr, m.member_code, 'ops-mono');
+      cell(tr, m.display_name);
+      cell(tr, fmtMoney(m.earned_prior), 'ops-num');
+      cell(tr, fmtMoney(m.earned_now), 'ops-num');
+      cell(tr, (m.delta >= 0 ? '+' : '') + fmtMoney(m.delta), 'ops-num');
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+    drawer.appendChild(wrap);
+    body.appendChild(drawer);
+  }
+
+  function drillRun(runId) {
+    var body = byId('runsDrillBody');
+    clearNode(body);
+    body.appendChild(el('p', 'ops-status-line', 'Loading run ' + runId + '...'));
+    opsCall('commission-report', { panel: 'runs_board', run_id: runId, lines_limit: 50, results_limit: 50 }).then(function (result) {
+      clearNode(body);
+      if (result.status !== 200) { body.appendChild(el('div', 'ops-bad', serverMessage(result, 'Could not drill that run.'))); return; }
+      var d = result.data.drill;
+      var drawer = el('div', 'ops-drawer');
+      var title = 'Run ' + d.run_id + ', ' + periodLabel(d.period) + ', spec ' + d.spec_version + ' ';
+      var h = el('h3', 'panel-title', title);
+      h.appendChild(el('span', d.status === 'final' ? 'ops-final-chip' : 'ops-superseded-chip', d.status));
+      drawer.appendChild(h);
+      drawer.appendChild(el('p', 'ops-status-line',
+        'Total SV ' + fmtPv(d.total_sv) + ', total CV ' + fmtPv(d.total_cv) +
+        ', payout ' + fmtMoney(d.total_payout) + ', members paid ' + d.members_paid + '.'));
+
+      drawer.appendChild(el('h3', 'panel-title', 'Member results (top ' + d.results.length + ' of ' + d.results_total + ' by earnings)'));
+      var rt = el('table', 'ops-table');
+      var rthead = el('thead'); var rhtr = el('tr');
+      ['Member', 'Name', 'Rank', 'SV', 'CV', 'TV', 'Depth', 'Earned'].forEach(function (hd, i) { rhtr.appendChild(el('th', i > 2 ? 'ops-num' : null, hd)); });
+      rthead.appendChild(rhtr); rt.appendChild(rthead);
+      var rtb = el('tbody');
+      d.results.forEach(function (r) {
+        var tr = el('tr');
+        cell(tr, r.member_code, 'ops-mono');
+        cell(tr, r.display_name);
+        cell(tr, r.rank_earned);
+        cell(tr, fmtPv(r.sv), 'ops-num');
+        cell(tr, fmtPv(r.cv), 'ops-num');
+        cell(tr, fmtPv(r.tv), 'ops-num');
+        cell(tr, r.paid_depth, 'ops-num');
+        cell(tr, fmtMoney(r.total_earned), 'ops-num');
+        rtb.appendChild(tr);
+      });
+      rt.appendChild(rtb);
+      var rwrap = el('div', 'ops-table-wrap'); rwrap.appendChild(rt);
+      drawer.appendChild(rwrap);
+
+      drawer.appendChild(el('h3', 'panel-title', 'Commission lines (first ' + d.lines.length + ' of ' + d.lines_total + ')'));
+      var lt = el('table', 'ops-table');
+      var lthead = el('thead'); var lhtr = el('tr');
+      ['Earner', 'Source', 'Level', 'Source CV', 'Rate', 'Amount'].forEach(function (hd, i) { lhtr.appendChild(el('th', i > 1 ? 'ops-num' : null, hd)); });
+      lthead.appendChild(lhtr); lt.appendChild(lthead);
+      var ltb = el('tbody');
+      d.lines.forEach(function (l) {
+        var tr = el('tr');
+        cell(tr, l.earner_code, 'ops-mono');
+        cell(tr, l.source_code, 'ops-mono');
+        cell(tr, l.level, 'ops-num');
+        cell(tr, fmtPv(l.source_cv), 'ops-num');
+        cell(tr, (l.rate * 100).toFixed(2) + '%', 'ops-num');
+        cell(tr, fmtMoney(l.amount), 'ops-num');
+        ltb.appendChild(tr);
+      });
+      lt.appendChild(ltb);
+      var lwrap = el('div', 'ops-table-wrap'); lwrap.appendChild(lt);
+      drawer.appendChild(lwrap);
+
+      body.appendChild(drawer);
+    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the commission report service.')); });
+  }
+
+  /* ---------- member drill ---------- */
+  byId('drillBtn').addEventListener('click', memberDrill);
+  byId('drillMemberInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); memberDrill(); } });
+
+  function memberDrill() {
+    var status = byId('drillStatus');
+    var body = byId('drillBody');
+    var code = normalizeCode(byId('drillMemberInput').value);
+    if (!code) { status.textContent = 'Member codes look like GW-000123.'; return; }
+    status.textContent = 'Loading ' + code + '...';
+    clearNode(body);
+    opsCall('commission-report', { panel: 'member_drill', member_code: code }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not open that member.'); return; }
+      var d = result.data;
+      status.textContent = '';
+
+      var stats = el('div', 'ops-stats');
+      [
+        ['Member', d.member_code],
+        ['Current rank (run ' + d.current_rank_run_id + ')', d.current_rank || 'none'],
+        ['Open month SV so far', fmtPv(d.open_month.sv)],
+        ['Qualified so far', d.open_month.qualified_so_far ? 'yes' : ('not yet (gate ' + fmtPv(d.open_month.qualification_gate) + ')')]
+      ].forEach(function (pair) {
+        var box = el('div', 'ops-stat');
+        box.appendChild(el('span', 'ops-stat-label', pair[0]));
+        box.appendChild(el('span', 'ops-stat-value', pair[1]));
+        stats.appendChild(box);
+      });
+      body.appendChild(el('p', 'ops-status-line', d.display_name + ', enrolled ' + fmtDate(d.enrolled_on) + '.'));
+      body.appendChild(stats);
+
+      body.appendChild(el('h3', 'panel-title', 'Commission history, final runs only'));
+      var t = el('table', 'ops-table');
+      var thead = el('thead'); var htr = el('tr');
+      ['Period', 'Run', 'Rank', 'SV', 'CV', 'TV', 'Qualified', 'Earned'].forEach(function (h, i) { htr.appendChild(el('th', i > 2 && i !== 6 ? 'ops-num' : null, h)); });
+      thead.appendChild(htr); t.appendChild(thead);
+      var tb = el('tbody');
+      d.history.forEach(function (h) {
+        var tr = el('tr');
+        cell(tr, periodLabel(h.period));
+        cell(tr, 'run ' + h.run_id, 'ops-mono');
+        cell(tr, h.rank_earned);
+        cell(tr, fmtPv(h.sv), 'ops-num');
+        cell(tr, fmtPv(h.cv), 'ops-num');
+        cell(tr, fmtPv(h.tv), 'ops-num');
+        cell(tr, h.is_active ? 'yes' : 'no');
+        cell(tr, fmtMoney(h.total_earned), 'ops-num');
+        tb.appendChild(tr);
+      });
+      t.appendChild(tb);
+      var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+      body.appendChild(wrap);
+
+      if (d.contribution) {
+        body.appendChild(el('h3', 'panel-title',
+          'Downline contribution, ' + periodLabel(d.contribution.period) + ' (run ' + d.contribution.run_id + '), active legs: ' + d.contribution.active_legs));
+        var ct = el('table', 'ops-table');
+        var cthead = el('thead'); var chtr = el('tr');
+        ['Level', 'Lines', 'Amount'].forEach(function (h, i) { chtr.appendChild(el('th', i > 0 ? 'ops-num' : null, h)); });
+        cthead.appendChild(chtr); ct.appendChild(cthead);
+        var ctb = el('tbody');
+        d.contribution.by_level.forEach(function (l) {
+          var tr = el('tr');
+          cell(tr, 'Level ' + l.level);
+          cell(tr, l.line_count, 'ops-num');
+          cell(tr, fmtMoney(l.amount), 'ops-num');
+          ctb.appendChild(tr);
+        });
+        ct.appendChild(ctb);
+        var cwrap = el('div', 'ops-table-wrap'); cwrap.appendChild(ct);
+        body.appendChild(cwrap);
+      }
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  }
+
+  /* ---------- house ledger ---------- */
+  function loadHouseLedger() {
+    var status = byId('houseStatus');
+    status.textContent = 'Loading...';
+    opsCall('commission-report', { panel: 'house_ledger' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the house ledger.'); return; }
+      var months = result.data.months || [];
+      var tbody = byId('houseBody');
+      clearNode(tbody);
+      byId('houseTable').hidden = months.length === 0;
+      status.textContent = months.length === 0 ? 'No retained volume recorded.' : '';
+      months.forEach(function (m) {
+        var tr = el('tr');
+        cell(tr, periodLabel(m.period));
+        cell(tr, m.slice_count, 'ops-num');
+        cell(tr, fmtPv(m.retained_pv), 'ops-num');
+        cell(tr, fmtPv(m.cumulative_pv), 'ops-num');
+        cell(tr, m.direction === 'first' ? 'first month' : m.direction);
+        tbody.appendChild(tr);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  }
+
+  /* ---------- superseded trail ---------- */
+  function loadTrail() {
+    var status = byId('trailStatus');
+    var body = byId('trailBody');
+    status.textContent = 'Loading...';
+    opsCall('commission-report', { panel: 'superseded_trail' }).then(function (result) {
+      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the superseded trail.'); return; }
+      var periods = result.data.periods || [];
+      clearNode(body);
+      status.textContent = periods.length === 0
+        ? 'No period holds more than one run.'
+        : 'Old runs are frozen history; the final run has the last word. Click any run number in the runs board to drill it.';
+      periods.forEach(function (p) {
+        var drawer = el('div', 'ops-drawer');
+        drawer.appendChild(el('h3', 'panel-title', periodLabel(p.period)));
+        var t = el('table', 'ops-table');
+        var thead = el('thead'); var htr = el('tr');
+        ['Run', 'Spec', 'Status', 'SV', 'CV', 'Payout', 'Paid', 'Finished'].forEach(function (h, i) { htr.appendChild(el('th', i > 2 ? 'ops-num' : null, h)); });
+        thead.appendChild(htr); t.appendChild(thead);
+        var tb = el('tbody');
+        p.runs.forEach(function (r) {
+          var tr = el('tr', r.status === 'superseded' ? 'ops-superseded' : null);
+          cell(tr, 'run ' + r.run_id, 'ops-mono');
+          cell(tr, r.spec_version);
+          var td = el('td');
+          td.appendChild(el('span', r.status === 'final' ? 'ops-final-chip' : 'ops-superseded-chip', r.status));
+          tr.appendChild(td);
+          cell(tr, fmtPv(r.total_sv), 'ops-num');
+          cell(tr, fmtPv(r.total_cv), 'ops-num');
+          cell(tr, fmtMoney(r.total_payout), 'ops-num');
+          cell(tr, r.members_paid, 'ops-num');
+          cell(tr, fmtWhen(r.finished_at));
+          tb.appendChild(tr);
+        });
+        t.appendChild(tb);
+        var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+        drawer.appendChild(wrap);
+        body.appendChild(drawer);
+      });
+    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+  }
+
+  /* ============================================================
+     DEVELOPMENT MOCK FIXTURES.
+
+     Recorded response shapes, measured against the LIVE database
+     on 2026-08-16 (the commission figures are the real finalized
+     numbers; the billing figures are the real inert-production
+     state). They exist so the browser pass can drive every screen
+     before the two functions are deployed, and they are reachable
+     only under the localhost-plus-flag fence above. When the
+     functions deploy, the same page runs live with MOCK false and
+     this block is dead weight the minifier-free build simply
+     carries; it sends nothing and can never activate in
+     production.
+     ============================================================ */
+  function mockCall(fnName, body) {
+    function ok(data) { return Promise.resolve({ status: 200, data: data }); }
+    function err(status, code, message) {
+      return Promise.resolve({ status: status, data: { error: { code: code, message: message } } });
+    }
+    var ENGINE_INERT = {
+      clock_initialized: false, clock_date: null, engine_epoch: null,
+      pg_cron_installed: false
+    };
+    var NOTES = [
+      'The scheduler extension (pg_cron) is not installed on this database instance, so the daily schedule cannot fire server-side yet. The schedule you set here is stored and will be honored once the scheduler is installed, an infrastructure step recorded for the coordinator.',
+      'The renewal engine is deliberately inert in production (Phase S1, ruling OQ8): its clock is not initialized and no billing run can execute here. RUN NOW offers the dry-run preview only; execution arrives with Phase S2.'
+    ];
+    var mockSchedule = { enabled: false, run_at_time: null, timezone: 'UTC', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
+
+    if (fnName === 'billing-console') {
+      if (body.action === 'overview') {
+        return ok({
+          action: 'overview', engine: ENGINE_INERT, honesty_notes: NOTES,
+          schedule: mockSchedule,
+          counts: { billing_runs: 0, last_final_tick: null, retry_pointers: 0, attention_rows: 0, active_subscriptions: 1419, paused_subscriptions: 0, troubled_subscriptions: 0 }
+        });
+      }
+      if (body.action === 'schedule_set') {
+        if (body.enabled && !body.run_at_time) { return err(400, 'time_required', 'Enabling the daily run needs a time of day; an enabled schedule with no time would look armed and never fire.'); }
+        return ok({
+          action: 'schedule_set', engine: ENGINE_INERT, honesty_notes: NOTES,
+          schedule: { enabled: body.enabled, run_at_time: body.run_at_time, timezone: body.timezone || 'UTC', updated_by: 'Orvanna_Staff', updated_at: new Date().toISOString() }
+        });
+      }
+      if (body.action === 'run_preview') {
+        return ok({
+          action: 'run_preview', engine: ENGINE_INERT, honesty_notes: NOTES, inert: true, preview: null,
+          backlog: {
+            active_subscriptions_with_past_derived_dates: 1419,
+            earliest_derived_date: '2024-09-01', latest_derived_date: '2026-08-01',
+            active_subscriptions_due_in_future: 0,
+            explanation: 'These derived dates predate the engine because the seeded subscriptions\' history is owned by seeded orders. What the first real tick will actually gather depends on the engine epoch chosen at S2 clock initialization; pricing this backlog now would claim a number no run would ever bill.'
+          }
+        });
+      }
+      if (body.action === 'run_execute') {
+        return err(409, 's2_pending', 'Executing a billing run arrives with Phase S2. Today the console previews only: the engine is deliberately inert in production, and no run can be executed from here.');
+      }
+      if (body.action === 'run_history') { return ok({ action: 'run_history', runs: [], total: 0, limit: 50, offset: 0 }); }
+      if (body.action === 'retry_queue') { return ok({ action: 'retry_queue', retries: [] }); }
+      if (body.action === 'attention') { return ok({ action: 'attention', rows: [] }); }
+      if (body.action === 'forecast') {
+        return ok({ action: 'forecast', engine: ENGINE_INERT, honesty_notes: NOTES, days: [], retry_days: [], past_due_backlog_subscriptions: 1419 });
+      }
+      if (body.action === 'member_subscriptions') {
+        if (body.member_code !== 'GW-000003') { return err(404, 'member_not_found', 'No such member (the mock knows GW-000003 only).'); }
+        return ok({
+          action: 'member_subscriptions', member_code: 'GW-000003', display_name: 'Member Three',
+          subscriptions: [
+            { subscription_id: 8, product_name: 'Inventory Agent', sku: 'AGT-D-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 100, monthly_pv: 100, credential: null },
+            { subscription_id: 9, product_name: 'Chief Executive', sku: 'AGT-S-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 50, monthly_pv: 50, credential: null }
+          ],
+          recent_events: []
+        });
+      }
+      if (body.action === 'sub_action') {
+        return err(409, 'engine_inert', 'The renewal engine is deliberately inert in production (Phase S1): its clock is not initialized, so subscription changes cannot be recorded on the engine\'s ledger yet. This control goes live with Phase S2.');
+      }
+    }
+
+    if (fnName === 'commission-report') {
+      if (body.panel === 'current_month') {
+        return ok({
+          panel: 'current_month', open_period: '2026-08-01', has_final_run: false,
+          bridged_orders: 11, bridged_sv: 2000, house_retained_pv: 3050, house_slices: 21,
+          members: [
+            { member_code: 'GW-000003', display_name: 'Member Three', sv: 900, orders: 2 },
+            { member_code: 'GW-000014', display_name: 'Member Fourteen', sv: 600, orders: 3 },
+            { member_code: 'GW-000001', display_name: 'Member One', sv: 300, orders: 3 },
+            { member_code: 'GW-000002', display_name: 'Member Two', sv: 200, orders: 3 }
+          ]
+        });
+      }
+      if (body.panel === 'projection') {
+        var when = new Date().toISOString();
+        return ok({
+          panel: 'projection', projection: true,
+          banner: 'WHAT-IF PROJECTION, not a statement. Computed ' + when + '. Numbers change as the month accumulates and are not payable.',
+          computed_at: when, period: '2026-08-01',
+          totals: { total_sv: 2000, total_cv: 1600, total_payout: 289.6, members_paid: 7 },
+          qualified_members: 4,
+          rank_distribution: [{ rank: 'member', members: 996 }, { rank: 'builder', members: 4 }],
+          top_projected_earners: [
+            { member_code: 'GW-000001', display_name: 'Member One', rank_earned: 'builder', total_earned: 120 },
+            { member_code: 'GW-000002', display_name: 'Member Two', rank_earned: 'builder', total_earned: 90 }
+          ],
+          left_nothing_behind: true
+        });
+      }
+      if (body.panel === 'runs_board') {
+        if (body.run_id) {
+          return ok({
+            panel: 'runs_board',
+            drill: {
+              run_id: Number(body.run_id), period: '2026-07-01', spec_version: 'v1.3', status: Number(body.run_id) <= 6 ? 'superseded' : 'final',
+              total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-15T00:00:00Z',
+              lines: [
+                { earner_code: 'GW-000001', source_code: 'GW-000004', level: 1, source_cv: 120, rate: 0.10, amount: 12 },
+                { earner_code: 'GW-000001', source_code: 'GW-000009', level: 2, source_cv: 80, rate: 0.05, amount: 4 }
+              ],
+              lines_total: 2187, lines_limit: 50, lines_offset: 0,
+              results: [
+                { member_code: 'GW-000003', display_name: 'Member Three', sv: 750, cv: 600, tv: 42000, is_active: true, rank_earned: 'executive', paid_depth: 5, total_earned: 2680.8 }
+              ],
+              results_total: 1000, results_limit: 50, results_offset: 0
+            }
+          });
+        }
+        return ok({
+          panel: 'runs_board',
+          runs: [
+            { run_id: 7, period: '2026-02-01', spec_version: 'v1.3', status: 'final', total_sv: 84150, total_cv: 67320, total_payout: 11906, members_paid: 179, finished_at: '2026-08-15T00:00:00Z', top_movers: [] },
+            { run_id: 8, period: '2026-03-01', spec_version: 'v1.3', status: 'final', total_sv: 89300, total_cv: 71440, total_payout: 13434, members_paid: 206, finished_at: '2026-08-15T00:00:00Z', top_movers: [{ member_code: 'GW-000002', display_name: 'Member Two', earned_prior: 500, earned_now: 700, delta: 200 }] },
+            { run_id: 12, period: '2026-07-01', spec_version: 'v1.3', status: 'final', total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-15T00:00:00Z', top_movers: [
+              { member_code: 'GW-000002', display_name: 'Member Two', earned_prior: 2000, earned_now: 2563.6, delta: 563.6 },
+              { member_code: 'GW-000003', display_name: 'Member Three', earned_prior: 2384, earned_now: 2680.8, delta: 296.8 },
+              { member_code: 'GW-000001', display_name: 'Member One', earned_prior: 2100, earned_now: 2381.2, delta: 281.2 }
+            ] }
+          ]
+        });
+      }
+      if (body.panel === 'member_drill') {
+        if (body.member_code !== 'GW-000003') { return err(404, 'member_not_found', 'No such member (the mock knows GW-000003 only).'); }
+        return ok({
+          panel: 'member_drill', member_code: 'GW-000003', display_name: 'Member Three', enrolled_on: '2024-09-01',
+          current_rank: 'executive', current_rank_run_id: 12,
+          open_month: { open_period: '2026-08-01', sv: 900, orders: 2, qualification_gate: 100, qualified_so_far: true },
+          history: [
+            { run_id: 7, period: '2026-02-01', rank_earned: 'director', sv: 750, cv: 600, tv: 30000, is_active: true, total_earned: 1709.2 },
+            { run_id: 12, period: '2026-07-01', rank_earned: 'executive', sv: 750, cv: 600, tv: 42000, is_active: true, total_earned: 2680.8 }
+          ],
+          contribution: {
+            run_id: 12, period: '2026-07-01',
+            by_level: [
+              { level: 1, line_count: 56, amount: 916 },
+              { level: 2, line_count: 65, amount: 654 },
+              { level: 3, line_count: 85, amount: 610 },
+              { level: 4, line_count: 70, amount: 338.4 },
+              { level: 5, line_count: 42, amount: 162.4 }
+            ],
+            active_legs: 51
+          }
+        });
+      }
+      if (body.panel === 'house_ledger') {
+        return ok({
+          panel: 'house_ledger', house_code: 'GW-000',
+          note: 'Retained volume is bookkeeping, never a disbursement; no commission run reads it.',
+          months: [
+            { period: '2026-08-01', slice_count: 21, retained_pv: 3050, cumulative_pv: 3050, direction: 'first' },
+            { period: '2026-09-01', slice_count: 1, retained_pv: 100, cumulative_pv: 3150, direction: 'down' }
+          ]
+        });
+      }
+      if (body.panel === 'superseded_trail') {
+        return ok({
+          panel: 'superseded_trail',
+          periods: [
+            { period: '2026-02-01', runs: [
+              { run_id: 1, spec_version: 'v1.2', status: 'superseded', total_sv: 84150, total_cv: 67320, total_payout: 12014, members_paid: 179, finished_at: '2026-08-13T00:00:00Z' },
+              { run_id: 7, spec_version: 'v1.3', status: 'final', total_sv: 84150, total_cv: 67320, total_payout: 11906, members_paid: 179, finished_at: '2026-08-15T00:00:00Z' }
+            ] },
+            { period: '2026-07-01', runs: [
+              { run_id: 6, spec_version: 'v1.2', status: 'superseded', total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-13T00:00:00Z' },
+              { run_id: 12, spec_version: 'v1.3', status: 'final', total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-15T00:00:00Z' }
+            ] }
+          ]
+        });
+      }
+    }
+    return err(400, 'bad_request', 'The mock does not know that call.');
+  }
+
+  /* ---------- boot: land on the hash-selected tab ---------- */
+  selectTab(window.location.hash === '#commissions' ? 'commissions' : 'billing');
+})();
+</script>
+</body>
+</html>

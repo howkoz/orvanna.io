@@ -5,13 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Sign In</title>
 <meta name="description" content="Orvanna sign in. Credentials are checked against the demonstration database on the server; nothing is compared in this page.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fc000256520a">
-<link rel="stylesheet" href="css/corporate.css?v=fc000256520a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=86fbad344957">
+<link rel="stylesheet" href="css/corporate.css?v=86fbad344957">
 </head>
 <body class="login-body">
 
 <a class="login-logo" href="index.html" aria-label="Orvanna home">
-  <img src="assets/logo-header-dark.svg?v=fc000256520a" alt="Orvanna">
+  <span class="brand-mark" aria-hidden="true"></span>
+  <span class="brand-word">Orvanna</span>
 </a>
 
 <div class="login-card glass glass-cyan">
@@ -90,14 +91,15 @@
   var role = params.get('role') === 'staff' ? 'staff' : 'admin';
   var door = DOORS[role];
 
-  /* Only the two known doors are accepted as a destination, so the
-     address bar cannot turn this page into a redirector to anywhere
-     else. Anything unrecognized falls back to the role's own door. */
+  /* Only KNOWN destinations are accepted, so the address bar cannot
+     turn this page into a redirector to anywhere else. Anything
+     unrecognized falls back to the role's own door.
+     staff-operations.html added 2026-08-16 (the staff operations
+     area: billing console and commission dashboard); it uses the
+     same staff sign-in as staff.html. */
   var requested = params.get('next');
-  var destination =
-    (requested === DOORS.admin.next || requested === DOORS.staff.next)
-      ? requested
-      : door.next;
+  var KNOWN_NEXT = [DOORS.admin.next, DOORS.staff.next, 'staff-operations.html'];
+  var destination = KNOWN_NEXT.indexOf(requested) >= 0 ? requested : door.next;
 
   document.title = door.tab;
   document.getElementById('loginTitle').textContent = door.heading;
