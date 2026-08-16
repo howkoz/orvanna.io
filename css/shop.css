@@ -610,7 +610,7 @@
    CHECKOUT VIEW: distraction-free, catalog hidden
    ============================================================ */
 
-.checkout-band { padding: 72px 0 110px; position: relative; overflow: hidden; }
+.checkout-band { padding: 72px 0 110px; position: relative; overflow: visible; }
 
 .checkout-grid {
   display: grid;
@@ -621,6 +621,16 @@
 }
 
 .checkout-panel { padding: 34px 30px 30px; }
+
+.checkout-summary {
+  position: sticky;
+  top: 96px;
+  align-self: start;
+  max-height: calc(100vh - 120px);
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  z-index: 2;
+}
 
 .checkout-panel-title {
   font-size: 0.88rem;
@@ -1453,7 +1463,12 @@ a.back-to-shop { text-decoration: none; }
   .product-grid { grid-template-columns: repeat(2, 1fr); }
   .checkout-grid { grid-template-columns: 1fr; }
   /* summary first on small screens so the order is visible before the form */
-  .checkout-grid .checkout-summary { order: -1; }
+  .checkout-grid .checkout-summary {
+    order: -1;
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
   .pdp-grid { grid-template-columns: 1fr; gap: 32px; }
   .pdp-mark { max-width: 380px; padding: 40px 32px; }
   .prose-grid { grid-template-columns: 1fr; }
