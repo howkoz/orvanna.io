@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=678ca8081176">
-<link rel="stylesheet" href="css/corporate.css?v=678ca8081176">
-<link rel="stylesheet" href="css/shop.css?v=678ca8081176">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b568b18d7dd7">
+<link rel="stylesheet" href="css/corporate.css?v=b568b18d7dd7">
+<link rel="stylesheet" href="css/shop.css?v=b568b18d7dd7">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -16,7 +16,7 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <img src="assets/logo-header-dark.svg?v=678ca8081176" alt="Orvanna" class="nav-logo">
+      <img src="assets/logo-header-dark.svg?v=b568b18d7dd7" alt="Orvanna" class="nav-logo">
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
@@ -745,8 +745,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=678ca8081176"></script>
-<script src="js/payments.js?v=678ca8081176"></script>
+<script src="js/catalog.js?v=b568b18d7dd7"></script>
+<script src="js/payments.js?v=b568b18d7dd7"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1513,7 +1513,11 @@
 
   function canOpenLivePayment() {
     return selectedCurrency() === 'USD' &&
-      (payMethod === 'card' || payMethod === 'googlepay' || payMethod === 'paypal');
+      payMethod === 'card';
+  }
+
+  function demoWalletPayment() {
+    return payMethod === 'googlepay' || payMethod === 'paypal';
   }
 
   function bankMethodAllowed() {
@@ -1536,16 +1540,21 @@
     if (payMethod === 'card') {
       return selectedCurrency() === 'USD' ? 'Continue to card details' : 'Card checkout is USD only';
     }
-    if (payMethod === 'googlepay' || payMethod === 'paypal') {
+    if (demoWalletPayment()) {
       return selectedCurrency() === 'USD'
-        ? 'Continue to ' + PAY_LABELS[payMethod]
-        : PAY_LABELS[payMethod] + ' is USD only';
+        ? 'Place demo order with ' + PAY_LABELS[payMethod]
+        : PAY_LABELS[payMethod] + ' demo checkout is USD only';
     }
     if (payMethod === 'bank') return 'Bank checkout staged';
     return 'Place order with ' + PAY_LABELS[payMethod];
   }
 
   function stagedPaymentMessage() {
+    if (demoWalletPayment()) {
+      return selectedCurrency() === 'USD'
+        ? PAY_LABELS[payMethod] + ' is in storefront demo mode for now. Press the order button to place a demo order without opening a wallet window or validating a wallet card.'
+        : PAY_LABELS[payMethod] + ' demo checkout is guarded to USD for now. Nothing was charged.';
+    }
     if (payMethod === 'bank') {
       return 'Plaid/Open Banking is connected in HyperSwitch, but bank checkout is not live on this storefront yet. This is a staged sandbox button until the order currency storage and Open Banking create-payment path are deployed for ' + selectedCurrency() + '. Nothing was charged.';
     }
@@ -1646,12 +1655,12 @@
     cardFields.hidden = !isCard || LIVE_PAYMENTS;
     walletNote.hidden = isCard;
     if (!isCard) {
-      walletNote.textContent = method === 'bank'
+      walletNote.textContent = method === 'bank' || demoWalletPayment()
         ? stagedPaymentMessage()
         : PAY_LABELS[method] + ' opens inside the secure HyperSwitch payment form. No card details are typed on this page.';
     }
     if (threeDsNotice) threeDsNotice.hidden = method === 'bank';
-    if (method === 'bank' && LIVE_PAYMENTS) {
+    if ((method === 'bank' || demoWalletPayment()) && LIVE_PAYMENTS) {
       revealStagedPaymentMessage(false);
     } else if (LIVE_PAYMENTS && livePayArea && !liveState.clientSecret) {
       livePayArea.hidden = true;
@@ -2439,6 +2448,13 @@
       return;
     }
     if (Object.keys(cart).length === 0) { showView('catalog'); return; }
+    if (demoWalletPayment() && selectedCurrency() === 'USD') {
+      demoPlaceOrder({
+        paymentLabel: PAY_LABELS[payMethod] + ' sandbox',
+        demoNote: PAY_LABELS[payMethod] + ' demo checkout complete. This storefront preview placed a demo order without opening a wallet window, validating a wallet card, or charging real money.'
+      });
+      return;
+    }
     if (revealStagedPaymentMessage(true)) return;
     if (liveState.clientSecret) { liveConfirm(); } else { liveStart(); }
   }
@@ -2560,7 +2576,7 @@
          4000 1111 1111 1115  approval screen, then the card declines
        Expiry month 01, year = current + 3. Full matrix:
        docs/TEST-CARDS.html. See also ROADMAP.md. */
-    livePayNote.textContent = payMethod === 'googlepay' || payMethod === 'paypal'
+    livePayNote.textContent = payMethod === 'paypal'
       ? PAY_LABELS[payMethod] + ' is enabled on the Braintree connector. Choose it inside the secure HyperSwitch form if it is available in this browser. Nothing is ever charged.'
       : 'Test mode, expiry 01/29, any three digit security code. ' +
         '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. ' +
