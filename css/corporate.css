@@ -8,6 +8,35 @@
    in this style; cyan stays the loudest.
    ============================================================ */
 
+/* ============================================================
+   THEMING, added 2026-08-17 per docs/CORPORATE-CHROME-CONTRACT.md
+
+   Dark is the DEFAULT and it is what a visitor who never touches
+   the theme icon sees, exactly as before this change. So the
+   complete palette is declared on bare :root in its DARK form,
+   with every value identical to the one it had before, and the
+   light theme only RESTATES tokens under :root[data-theme="light"].
+   No system preference query is involved anywhere in this file:
+   the theme is a deliberate choice or it is dark. That is why
+   login.html, which shares this stylesheet but carries no theme
+   control and no theme boot snippet, is unchanged by this work.
+
+   THE CHROME IS DARK IN BOTH THEMES. The --chrome-* tokens below
+   are declared once and never restated. The navigation bar and
+   the footer are the brand's fixed frame; they carry the dark
+   lockup and they are shared with library.css, comp-plan.html,
+   conductor.html and faq.html, all of which already held that
+   rule. A theme-aware reading surface inside a fixed dark frame
+   is the arrangement the whole site now uses.
+
+   THE HERO IS DARK IN BOTH THEMES, deliberately. The home page
+   hero is a live constellation canvas drawn in indigo and cyan
+   on a night field. On white it disappears. It keeps its dark
+   treatment inside the light theme, the way a photographic hero
+   stays dark on a light page, and --hero-bg below is where that
+   decision lives.
+   ============================================================ */
+
 :root {
   --navy:       #060B18;   /* page field, deeper than ink */
   --navy-2:     #0A1226;   /* raised field */
@@ -23,7 +52,183 @@
   --hairline:   rgba(129, 140, 248, 0.18);
   --glass-bg:   linear-gradient(165deg, rgba(30, 41, 59, 0.62), rgba(13, 20, 38, 0.44));
   --maxw:       1100px;
+
+  /* ---- tokens lifted out of hardcoded hex values, dark form ---- */
+  --heading:      #F1F5F9;   /* section, card, feature and profile headings */
+  --heading-hi:   #FFFFFF;   /* the loudest headings and the pull quote */
+  --quiet:        #7C8AA0;   /* the "not yet" register and legal small print */
+  --band-line:    rgba(129, 140, 248, 0.08);
+  --panel-bd:     rgba(129, 140, 248, 0.26);
+  --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-bd-cyan:       rgba(34, 211, 238, 0.3);
+  --panel-shadow-cyan:   0 0 26px rgba(34, 211, 238, 0.12),
+                         inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-bd-violet:     rgba(167, 139, 250, 0.3);
+  --panel-shadow-violet: 0 0 26px rgba(167, 139, 250, 0.13),
+                         inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --glow-a:       rgba(79, 70, 229, 0.17);
+  --glow-b:       rgba(167, 139, 250, 0.13);
+  --glow-c:       rgba(34, 211, 238, 0.12);
+  --solid-bg:     #22D3EE;   /* the solid accent button */
+  --solid-hv:     #67E3F4;
+  --solid-fg:     #05121C;   /* ink on the solid accent button */
+  --ghost-fg:     #E2E8F0;
+  --ghost-bg:     linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
+  --ghost-bd:     rgba(129, 140, 248, 0.55);
+  --field-bg:     rgba(6, 11, 24, 0.6);
+  --field-fg:     #E2E8F0;
+  --field-bd:     rgba(129, 140, 248, 0.3);
+
+  /* ---- the hero: dark in both themes (see the note above) ---- */
+  --hero-bg:      #060B18;
+
+  /* The --chrome-* tokens moved to css/site-chrome.css, which is
+     now the single source of chrome presentation for all nine
+     corporate pages. Rules in this file may still READ them. */
 }
+
+/* ------------------------------------------------------------
+   THE LIGHT THEME. Only tokens are restated.
+
+   MEASURED, NOT ASSERTED. 4,314 rendered elements were swept
+   across the nine corporate pages in both themes on 2026-08-17,
+   compositing every translucent and gradient layer down to an
+   opaque backdrop. Zero fall below the floor. The lowest in the
+   light theme is 4.510, the "approved, not built" chip on the
+   compensation plan; the lowest in the dark theme among
+   load-state elements is 5.258, and the property's true dark
+   floor is 5.101 at the shop's Checkout button, which the
+   verifier reached by driving the checkout.
+
+   The evidence, the raw rows and the script that produces them
+   are in docs/verification/CONTRAST-SWEEP-2026-08-17.md.
+
+   An earlier version of this comment claimed "fifty-six pairs"
+   and a 5.32 dark floor. That was a token-pair matrix presented
+   as though it were page coverage, and the 5.32 was a real token
+   pair attached to the wrong element. Both were corrected after
+   the verifier could not reproduce them. The per-token figures
+   below are individually checked.
+   ------------------------------------------------------------ */
+
+:root[data-theme="light"] {
+  --navy:       #FFFFFF;
+  --navy-2:     #F1F4FA;
+  --indigo-d:   #4F46E5;
+  --indigo-l:   #4338CA;   /* 7.40 to 1 on white */
+  --violet:     #6D28D9;
+  --cyan:       #0E7490;   /* the lit accent, light form. 5.36 to 1 on white */
+  --text-d:     #263244;   /* 12.63 to 1 on white */
+  --muted-d:    #5B6472;   /* 6.03 to 1 on white */
+  --hairline:   rgba(15, 23, 42, 0.14);
+  --glass-bg:   linear-gradient(165deg, #FFFFFF, #F8FAFC);
+
+  --heading:      #0F172A;
+  --heading-hi:   #0B1220;
+  --quiet:        #5B6472;
+  --band-line:    rgba(15, 23, 42, 0.10);
+  --panel-bd:     rgba(15, 23, 42, 0.13);
+  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --panel-bd-cyan:       rgba(14, 116, 144, 0.35);
+  --panel-shadow-cyan:   0 4px 14px rgba(15, 23, 42, 0.10);
+  --panel-bd-violet:     rgba(109, 40, 217, 0.30);
+  --panel-shadow-violet: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --glow-a:       rgba(79, 70, 229, 0.06);
+  --glow-b:       rgba(167, 139, 250, 0.06);
+  --glow-c:       rgba(14, 116, 144, 0.06);
+  --solid-bg:     #0E7490;
+  --solid-hv:     #0B5C72;
+  --solid-fg:     #FFFFFF;
+  --ghost-fg:     #0F172A;
+  --ghost-bg:     linear-gradient(180deg, #FFFFFF, #F8FAFC);
+  --ghost-bd:     rgba(79, 70, 229, 0.45);
+  --field-bg:     #FFFFFF;
+  --field-fg:     #0F172A;
+  --field-bd:     rgba(79, 70, 229, 0.32);
+}
+
+/* ------------------------------------------------------------
+   DECORATIVE MARKS IN THE LIGHT THEME
+
+   The inline drawings on index.html and team.html carry their
+   colours as Scalable Vector Graphics (SVG) presentation
+   attributes: indigo #818CF8 strokes, a cyan #22D3EE lit node,
+   and a near-black #0A1226 hexagon fill. On the night field that
+   is correct. On white the indigo strokes wash out to roughly
+   2.6 to 1 and the drawings read as smudges.
+
+   A presentation attribute is the weakest author-level
+   declaration there is, so any Cascading Style Sheets (CSS) rule
+   at all overrides it. These rules restate the same three
+   colours in their light-theme forms without touching a single
+   line of markup. They are decoration (every one of these
+   drawings is aria-hidden), so the 4.5 to 1 text floor does not
+   govern them; the replacements clear 3 to 1 as non-text
+   contrast, and #4338CA on white measures 7.40 to 1.
+   ------------------------------------------------------------ */
+
+:root[data-theme="light"] .card-icon [stroke="#818CF8"],
+:root[data-theme="light"] .feature-mark [stroke="#818CF8"],
+:root[data-theme="light"] .origin-art [stroke="#818CF8"],
+:root[data-theme="light"] .teaser-marks [stroke="#818CF8"],
+:root[data-theme="light"] .member-mark [stroke="#818CF8"],
+:root[data-theme="light"] .profile-mark [stroke="#818CF8"],
+:root[data-theme="light"] .avatar [stroke="#818CF8"],
+:root[data-theme="light"] .gate-figure [stroke="#818CF8"],
+:root[data-theme="light"] .login-badge [stroke="#818CF8"] { stroke: #4338CA; }
+
+:root[data-theme="light"] .card-icon [fill="#818CF8"],
+:root[data-theme="light"] .feature-mark [fill="#818CF8"],
+:root[data-theme="light"] .origin-art [fill="#818CF8"],
+:root[data-theme="light"] .teaser-marks [fill="#818CF8"],
+:root[data-theme="light"] .member-mark [fill="#818CF8"],
+:root[data-theme="light"] .profile-mark [fill="#818CF8"],
+:root[data-theme="light"] .avatar [fill="#818CF8"],
+:root[data-theme="light"] .gate-figure [fill="#818CF8"],
+:root[data-theme="light"] .login-badge [fill="#818CF8"] { fill: #4338CA; }
+
+:root[data-theme="light"] .card-icon [fill="#22D3EE"],
+:root[data-theme="light"] .feature-mark [fill="#22D3EE"],
+:root[data-theme="light"] .origin-art [fill="#22D3EE"],
+:root[data-theme="light"] .teaser-marks [fill="#22D3EE"],
+:root[data-theme="light"] .member-mark [fill="#22D3EE"],
+:root[data-theme="light"] .profile-mark [fill="#22D3EE"],
+:root[data-theme="light"] .avatar [fill="#22D3EE"],
+:root[data-theme="light"] .gate-figure [fill="#22D3EE"],
+:root[data-theme="light"] .login-badge [fill="#22D3EE"] { fill: #0E7490; }
+
+:root[data-theme="light"] .card-icon [stroke="#22D3EE"],
+:root[data-theme="light"] .feature-mark [stroke="#22D3EE"],
+:root[data-theme="light"] .origin-art [stroke="#22D3EE"],
+:root[data-theme="light"] .teaser-marks [stroke="#22D3EE"],
+:root[data-theme="light"] .member-mark [stroke="#22D3EE"],
+:root[data-theme="light"] .profile-mark [stroke="#22D3EE"],
+:root[data-theme="light"] .avatar [stroke="#22D3EE"],
+:root[data-theme="light"] .gate-figure [stroke="#22D3EE"],
+:root[data-theme="light"] .login-badge [stroke="#22D3EE"] { stroke: #0E7490; }
+
+/* the hexagon body: night navy becomes a pale panel */
+:root[data-theme="light"] .card-icon [fill="#0A1226"],
+:root[data-theme="light"] .feature-mark [fill="#0A1226"],
+:root[data-theme="light"] .origin-art [fill="#0A1226"],
+:root[data-theme="light"] .teaser-marks [fill="#0A1226"],
+:root[data-theme="light"] .member-mark [fill="#0A1226"],
+:root[data-theme="light"] .profile-mark [fill="#0A1226"],
+:root[data-theme="light"] .avatar [fill="#0A1226"],
+:root[data-theme="light"] .gate-figure [fill="#0A1226"],
+:root[data-theme="light"] .login-badge [fill="#0A1226"] { fill: #EEF1F8; }
+
+/* the glow haloes around those drawings are tuned for a night
+   field; on paper they read as dirt, so they are switched off */
+:root[data-theme="light"] .card-icon,
+:root[data-theme="light"] .feature-mark,
+:root[data-theme="light"] .origin-art,
+:root[data-theme="light"] .member-mark,
+:root[data-theme="light"] .profile-mark,
+:root[data-theme="light"] .avatar,
+:root[data-theme="light"] .gate-figure,
+:root[data-theme="light"] .teaser-marks svg { filter: none; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -65,19 +270,19 @@ section { scroll-margin-top: 84px; }
 }
 .glow-indigo::before {
   left: -220px; top: -160px;
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.17), transparent 70%);
+  background: radial-gradient(closest-side, var(--glow-a), transparent 70%);
 }
 .glow-violet::before {
   right: -240px; top: 10%;
-  background: radial-gradient(closest-side, rgba(167, 139, 250, 0.13), transparent 70%);
+  background: radial-gradient(closest-side, var(--glow-b), transparent 70%);
 }
 .glow-cyan::before {
   left: 50%; transform: translateX(-50%); bottom: -320px;
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.12), transparent 70%);
+  background: radial-gradient(closest-side, var(--glow-c), transparent 70%);
 }
 
 /* faint horizon line between bands */
-.band + .band { border-top: 1px solid rgba(129, 140, 248, 0.08); }
+.band + .band { border-top: 1px solid var(--band-line); }
 
 /* ---------- type ---------- */
 
@@ -99,11 +304,13 @@ section { scroll-margin-top: 84px; }
   text-transform: uppercase;
   letter-spacing: 0.1em;
   line-height: 1.25;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 26px;
 }
 
-.section-title.on-dark { color: #F1F5F9; }
+/* .on-dark predates the light theme. It now resolves to the same
+   heading token, so the class is a no-op kept for markup stability. */
+.section-title.on-dark { color: var(--heading); }
 
 .lead {
   max-width: 46em;
@@ -141,27 +348,27 @@ section { scroll-margin-top: 84px; }
 }
 
 .btn-solid {
-  background: var(--cyan);
-  color: #05121C;
+  background: var(--solid-bg);
+  color: var(--solid-fg);
   box-shadow: 0 0 20px rgba(34, 211, 238, 0.32);
 }
 .btn-solid:hover {
-  background: #67E3F4;
+  background: var(--solid-hv);
   transform: translateY(-2px);
   box-shadow: 0 0 34px rgba(34, 211, 238, 0.55);
 }
 
 .btn-ghost {
-  color: #E2E8F0;
-  background: linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
-  border-color: rgba(129, 140, 248, 0.55);
+  color: var(--ghost-fg);
+  background: var(--ghost-bg);
+  border-color: var(--ghost-bd);
   box-shadow: 0 0 14px rgba(79, 70, 229, 0.14),
               inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 .btn-ghost:hover {
   border-color: var(--cyan);
   color: var(--cyan);
-  background: linear-gradient(180deg, rgba(13, 20, 38, 0.95), rgba(6, 11, 24, 0.95));
+  background: var(--ghost-bg);
   transform: translateY(-2px);
   box-shadow: 0 0 22px rgba(34, 211, 238, 0.25),
               inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -175,24 +382,21 @@ section { scroll-margin-top: 84px; }
 .glass {
   position: relative;
   background: var(--glass-bg);
-  border: 1px solid rgba(129, 140, 248, 0.26);
+  border: 1px solid var(--panel-bd);
   border-radius: 14px;
-  box-shadow: 0 0 26px rgba(79, 70, 229, 0.14),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: var(--panel-shadow);
   backdrop-filter: blur(9px);
   -webkit-backdrop-filter: blur(9px);
 }
 
 .glass-cyan {
-  border-color: rgba(34, 211, 238, 0.3);
-  box-shadow: 0 0 26px rgba(34, 211, 238, 0.12),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: var(--panel-bd-cyan);
+  box-shadow: var(--panel-shadow-cyan);
 }
 
 .glass-violet {
-  border-color: rgba(167, 139, 250, 0.3);
-  box-shadow: 0 0 26px rgba(167, 139, 250, 0.13),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border-color: var(--panel-bd-violet);
+  box-shadow: var(--panel-shadow-violet);
 }
 
 /* gradient accent bar across a panel top */
@@ -210,148 +414,41 @@ section { scroll-margin-top: 84px; }
 .accent-bar.bar-violet { background: linear-gradient(90deg, var(--violet), var(--cyan)); }
 
 /* ============================================================
-   NAV: glass, sticky, underline sweep
+   NAV, THEME BUTTON, SUPPORT BUTTON, FOOTER: all moved to
+   css/site-chrome.css on 2026-08-17.
+
+   They were here, and in library.css, and inline in
+   comp-plan.html and conductor.html: four hand-maintained
+   copies of one component. Quality assurance measured the
+   consequence and comp-plan rendered the bar at 12.80 pixel
+   type with a 20 pixel gap in a 65 pixel header while these
+   pages rendered 13.44, 26 and 69, so the bar still changed
+   when the reader clicked Plan. Do not reintroduce a chrome
+   rule here; deploy/build_dist.py fails the build on it.
    ============================================================ */
-
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: rgba(6, 11, 24, 0.78);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--hairline);
-}
-
-.nav-inner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.nav-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #F8FAFC;
-  text-decoration: none;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.nav-logo  { height: 30px; width: auto; }
-
-.brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(34, 211, 238, 0.75);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
-}
-
-.brand-word {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 26px;
-  flex-wrap: wrap;
-}
-
-.nav-link {
-  position: relative;
-  font-size: 0.84rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: var(--text-d);
-  padding-bottom: 3px;
-  transition: color 0.15s ease;
-}
-
-a.nav-link:hover { color: #FFFFFF; }
-
-/* underline sweep: gradient bar grows from the left on hover */
-a.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--cyan), var(--indigo-d));
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.28s ease;
-}
-a.nav-link:hover::after,
-a.nav-link.is-active::after { transform: scaleX(1); }
-
-.nav-link.is-active { color: #FFFFFF; }
-
-.nav-link.is-soon {
-  /* #7C8AA0 (the .legal tone) instead of #64748B: the old value
-     computed 4.13 to 1 against the nav field, under the 4.5 to 1
-     floor. This one computes 5.61 to 1 on solid navy and 5.48 to 1
-     over the strongest glow wash, and still sits well below the
-     live links (Sign In 7.66, nav links 12.64), so the pill keeps
-     its muted "not yet" register. */
-  color: #7C8AA0;
-  cursor: default;
-}
-
-.soon-pill {
-  display: inline-block;
-  margin-left: 7px;
-  padding: 1px 7px 2px;
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  border: 1px solid rgba(124, 138, 160, 0.7);
-  border-radius: 999px;
-  vertical-align: 2px;
-}
-
-/* Quiet member entry: the one door to the member area.
-   Deliberately understated so first-time visitors skim past it. */
-.nav-signin {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: var(--muted-d);
-  border-left: 1px solid var(--hairline);
-  padding-left: 24px;
-  transition: color 0.15s ease, text-shadow 0.15s ease;
-}
-
-.nav-signin:hover {
-  color: var(--cyan);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
-}
 
 /* ============================================================
    HERO: live constellation canvas behind centered copy
    ============================================================ */
 
+/* The hero keeps the dark field in BOTH themes. The constellation
+   canvas is drawn in indigo and cyan on night; on white it simply
+   vanishes. This is the named fallback in the chrome contract: a
+   surface that cannot be made presentable in light keeps its dark
+   treatment, deliberately, and every piece of text inside it is
+   coloured from the fixed --chrome-* tokens so it stays legible
+   whichever theme the reader has chosen. */
 .hero {
   position: relative;
   padding: 150px 0 160px;
   overflow: hidden;
+  background: var(--hero-bg);
   border-bottom: 1px solid rgba(129, 140, 248, 0.08);
 }
+
+.hero .kicker { color: var(--chrome-accent); }
+.hero .btn-solid { background: var(--chrome-accent); color: #05121C; }
+.hero .btn-solid:hover { background: #67E3F4; }
 
 /* layered hero glows: indigo left, cyan right */
 .hero::before,
@@ -395,13 +492,13 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   text-transform: uppercase;
   letter-spacing: 0.09em;
   line-height: 1.22;
-  color: #FFFFFF;
+  color: var(--chrome-hi);
   margin-bottom: 24px;
 }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
   .hero-title {
-    background: linear-gradient(180deg, #FFFFFF 55%, var(--indigo-l));
+    background: linear-gradient(180deg, #FFFFFF 55%, #A5B4FC);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -409,7 +506,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
 }
 
 .hero-sub {
-  color: var(--muted-d);
+  color: var(--chrome-muted);
   max-width: 36em;
   margin: 0 auto 40px;
 }
@@ -534,7 +631,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 8px;
 }
 
@@ -566,7 +663,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   border-left: 3px solid var(--cyan);
   font-size: 1.18rem;
   line-height: 1.55;
-  color: #FFFFFF;
+  color: var(--heading-hi);
   font-weight: 350;
   text-shadow: 0 0 26px rgba(34, 211, 238, 0.18);
 }
@@ -611,7 +708,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 8px;
 }
 
@@ -651,7 +748,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-size: 1rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #F1F5F9;
+  color: var(--heading);
 }
 
 .leader-role {
@@ -685,95 +782,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   flex-wrap: wrap;
 }
 
-/* ============================================================
-   FOOTER
-   ============================================================ */
-
-.footer {
-  background: #050914;
-  border-top: 1px solid var(--hairline);
-  padding: 64px 0 40px;
-  color: var(--muted-d);
-}
-
-.footer-cols {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-  margin-bottom: 48px;
-}
-
-.footer-head {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: #F1F5F9;
-  margin-bottom: 14px;
-}
-
-.flink {
-  display: block;
-  font-size: 0.9rem;
-  color: var(--muted-d);
-  padding: 3px 0;
-  cursor: default;
-  transition: color 0.15s ease;
-}
-
-.flink:hover { color: var(--text-d); }
-
-.footer-meta {
-  border-top: 1px solid var(--hairline);
-  padding-top: 28px;
-}
-
-.footer-contact {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-bottom: 18px;
-}
-
-.footer-mail {
-  color: var(--text-d);
-  text-decoration: none;
-  font-size: 0.92rem;
-  letter-spacing: 0.04em;
-  transition: color 0.15s ease, text-shadow 0.15s ease;
-}
-.footer-mail:hover {
-  color: var(--cyan);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
-}
-
-.socials { display: flex; gap: 14px; }
-
-.social {
-  width: 34px;
-  height: 34px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--hairline);
-  border-radius: 50%;
-  color: var(--muted-d);
-  transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
-.social svg { width: 17px; height: 17px; }
-.social:hover {
-  color: var(--cyan);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.25);
-}
-
-.legal {
-  font-size: 0.78rem;
-  color: #7C8AA0;
-  letter-spacing: 0.02em;
-}
+/* The footer moved to css/site-chrome.css. See the note above. */
 
 /* ============================================================
    LOGIN PAGE (login.html): centered glass card on the navy field
@@ -820,6 +829,26 @@ a.nav-link.is-active::after { transform: scaleX(1); }
 }
 .login-logo img { height: 34px; width: auto; }
 
+/* The brand lockup, scoped to the login card. login.html is a
+   sign-in area, excluded from this round by name, so it does not
+   load css/site-chrome.css and cannot take the shared rule. This
+   is the one deliberate copy of .brand-mark and .brand-word, and
+   it is scoped so it can never style a navigation bar. */
+.login-logo .brand-mark {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(34, 211, 238, 0.75);
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
+}
+.login-logo .brand-word {
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
 .login-card {
   position: relative;
   z-index: 1;
@@ -840,7 +869,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 28px;
 }
 
@@ -862,9 +891,9 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   padding: 12px 14px;
   font: inherit;
   font-size: 0.95rem;
-  color: #E2E8F0;
-  background: rgba(6, 11, 24, 0.6);
-  border: 1px solid rgba(129, 140, 248, 0.3);
+  color: var(--field-fg);
+  background: var(--field-bg);
+  border: 1px solid var(--field-bd);
   border-radius: 8px;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
@@ -981,7 +1010,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: 0.04em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin: 10px 0 2px;
 }
 
@@ -1028,7 +1057,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-size: 0.88rem;
   font-weight: 600;
   letter-spacing: 0.03em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 2px;
 }
 
@@ -1097,7 +1126,7 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: #F1F5F9;
+  color: var(--heading);
   margin-bottom: 8px;
 }
 
@@ -1130,9 +1159,6 @@ a.nav-link.is-active::after { transform: scaleX(1); }
   margin: 0 auto 28px;
 }
 
-/* footer links that actually go somewhere */
-a.flink { text-decoration: none; cursor: pointer; }
-a.flink:hover { color: var(--cyan); }
 
 /* ============================================================
    REDUCED MOTION: static everything, content fully visible
@@ -1163,23 +1189,12 @@ a.flink:hover { color: var(--cyan); }
   .cards { grid-template-columns: 1fr; }
   .features { grid-template-columns: 1fr; }
   .metrics { grid-template-columns: 1fr; gap: 22px; }
-  .footer-cols { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 480px) {
   .wrap { padding: 0 20px; }
   .hero-inner { padding: 0 20px; }
-  .nav-inner { padding: 12px 20px; justify-content: center; }
-  .nav-links { gap: 13px; justify-content: center; }
-  /* min-height 24px: the links measured about 23 pixels tall at this
-     size (quality assurance finding L5, fixed 2026-08-16); inline-flex
-     centres the label inside the taller touch target. */
-  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em;
-    min-height: 24px; display: inline-flex; align-items: center; }
-  .nav-signin { padding-left: 13px; }
-  .soon-pill { margin-left: 5px; padding: 1px 5px 2px; font-size: 0.55rem; }
   .leaders { grid-template-columns: 1fr; }
-  .footer-contact { justify-content: center; }
   .login-card { padding: 36px 24px 30px; }
   .member-grid { grid-template-columns: 1fr; }
   .phase-rail { grid-template-columns: 1fr; }
@@ -1189,23 +1204,10 @@ a.flink:hover { color: var(--cyan); }
 }
 
 
-/* ---------- Support chat trigger (Botpress, nav driven) ----------
-   The vendor's floating action button is suppressed: the chat opens only from
-   the Support item in the navigation, so nothing floats over the cart control
-   on a phone or over the card form during checkout. The triggers are real
-   buttons, so the browser's own control styling is reset explicitly; color and
-   size still come from the companion nav class, which is the lesson from the
-   invisible-button defect of 2026-08-14. */
-.bpFab { display: none !important; }
-
-.nav-support {
-  font-family: inherit;
-  background: transparent;
-  border: 0;
-  padding: 0 0 3px;
-  cursor: pointer;
-}
-
+/* .bpFab and .nav-support moved to css/site-chrome.css.
+   .console-support is not corporate chrome: it is the support
+   trigger inside the member console, which does not load the
+   shared chrome sheet, so it stays here. */
 .console-support {
   font-family: inherit;
   background: transparent;

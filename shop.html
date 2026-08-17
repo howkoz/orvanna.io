@@ -5,10 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=bf8b1809957d">
-<link rel="stylesheet" href="css/corporate.css?v=bf8b1809957d">
-<link rel="stylesheet" href="css/shop.css?v=bf8b1809957d">
-<script>document.documentElement.classList.add('js');</script>
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
+<link rel="stylesheet" href="css/corporate.css?v=519868d84e3f">
+<!-- The shared chrome, in this order on purpose. corporate.css carries the
+     page tokens and the reading surface; css/site-chrome.css owns the bar and
+     the footer for all nine corporate pages, and it also DECLARES the
+     --chrome-* tokens, so it has to load before anything that reads them;
+     css/shop.css comes last because it owns the commerce layer and the cart,
+     which the contract calls a function of this page rather than chrome. -->
+<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
+<link rel="stylesheet" href="css/shop.css?v=519868d84e3f">
+<!-- Why this page in particular must never defer the block below: a deferred
+     script would let dark paint first and then snap to light, which on a
+     checkout reads as the page reloading mid-payment. The wording below is
+     the shared one, byte for byte, so build_dist.py's theme_boot lint holds
+     this page to the same snippet as the other eight. -->
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
+<script>
+(function () {
+  var theme = 'dark';
+  try {
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.add('js');
+})();
+</script>
 </head>
 <body>
 
@@ -21,7 +46,7 @@
     </a>
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
-      <a class="nav-link is-active" href="shop.html">Shop</a>
+      <a class="nav-link is-active" href="shop.html" aria-current="page">Shop</a>
       <a class="nav-link" href="library.html">Library</a>
       <a class="nav-link" href="comp-plan.html">Plan</a>
       <a class="nav-link" href="conductor.html">Conductors</a>
@@ -29,6 +54,25 @@
       <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
+      <button class="nav-theme" type="button" data-theme-toggle
+              aria-label="Switch to the light theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
+            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
+            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
+            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
+          </g>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <!-- The cart is the one permitted addition to the canonical navigation
+           (contract section 2, rule 3) and it sits immediately after the theme
+           button. Markup, identifiers and behaviour are unchanged. -->
       <button class="nav-cart" id="cartButton" type="button" aria-label="Open cart">
         <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <path d="M 4 6 h 2.4 l 2 10.2 h 9.4 l 2.2 -7.6 h -12.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
@@ -703,8 +747,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=bf8b1809957d"></script>
-<script src="js/payments.js?v=bf8b1809957d"></script>
+<script src="js/catalog.js?v=519868d84e3f"></script>
+<script src="js/payments.js?v=519868d84e3f"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -3253,49 +3297,27 @@
 })();
 </script>
 
-<!-- ============ SUPPORT CHAT (Botpress, hosted) ============
-     The second sanctioned external script after HyperLoader.js, recorded in
-     ROADMAP.md. Nav triggered on purpose: the vendor's floating action button
-     is hidden in the stylesheet, so nothing can open itself over the cart
-     control on a phone or over the card form during checkout. Conversation
-     text is handled by Botpress, a third party. -->
-<script src="https://cdn.botpress.cloud/webchat/v5.0/inject.js"></script>
-<script src="https://files.bpcontent.cloud/2026/08/14/20/20260814201237-9JS9TWQ7.js" defer></script>
-<script>
-(function () {
-  var triggers = document.querySelectorAll('[data-orvanna-support]');
-  if (!triggers.length) return;
-  var wantOpen = false, listening = false;
+<!-- ============ SHARED SITE CHROME ============
+     js/site-chrome.js owns the theme toggle and the support widget for all
+     nine corporate pages (corporate chrome contract, section 4). This page's
+     own inline copy of the support handler was deleted on 2026-08-17: it was
+     one of six pasted duplicates, which is the same disease payments.js was
+     created to cure.
 
-  function openNow() {
-    if (window.botpress && typeof window.botpress.open === 'function') {
-      try { window.botpress.open(); return true; } catch (err) { return false; }
-    }
-    return false;
-  }
+     WHAT MOVED OUT OF THIS FILE, so the shared module can be checked against
+     it: the Botpress loader pair
 
-  /* The widget arrives asynchronously. Watch for it, and if someone pressed
-     Support before it was ready, open the moment it reports ready. */
-  var waited = 0;
-  var poll = window.setInterval(function () {
-    if (!listening && window.botpress && typeof window.botpress.on === 'function') {
-      listening = true;
-      window.clearInterval(poll);
-      window.botpress.on('webchat:ready', function () {
-        if (wantOpen) { wantOpen = false; openNow(); }
-      });
-    } else if ((waited += 250) > 20000) {
-      window.clearInterval(poll);
-    }
-  }, 250);
+       https://cdn.botpress.cloud/webchat/v5.0/inject.js
+       https://files.bpcontent.cloud/2026/08/14/20/20260814201237-9JS9TWQ7.js  (defer)
 
-  Array.prototype.forEach.call(triggers, function (trigger) {
-    trigger.addEventListener('click', function (event) {
-      event.preventDefault();
-      if (!openNow()) { wantOpen = true; }
-    });
-  });
-})();
-</script>
+     and a click handler on every [data-orvanna-support] trigger that called
+     window.botpress.open(), and, when the widget had not arrived yet, polled
+     for it every 250 milliseconds for 20 seconds and opened on the
+     webchat:ready event. Support on this page is not working until
+     site-chrome.js does all of that. Botpress remains a sanctioned external
+     script, recorded in ROADMAP.md; the vendor's own floating button stays
+     hidden in the stylesheet so nothing can open itself over the cart control
+     on a phone or over the card form during checkout. -->
+<script src="js/site-chrome.js?v=519868d84e3f"></script>
 </body>
 </html>

@@ -5,24 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductor Library</title>
 <meta name="description" content="One agent at a time from the Orvanna Conductor Library: what it does, who it is for, the problem it solves, the jobs it handles, and its price in both billing modes. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=bf8b1809957d">
-<link rel="stylesheet" href="css/library.css?v=bf8b1809957d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
+<link rel="stylesheet" href="css/library.css?v=519868d84e3f">
+<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
 
-<!-- Theme boot. Runs before paint so a saved choice never flashes the other
-     theme. With nothing saved the page follows the reader's system setting. -->
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
 <script>
 (function () {
+  var theme = 'dark';
   try {
-    var saved = window.localStorage.getItem('orvannaLibraryTheme');
-    if (saved === 'light' || saved === 'dark') {
-      document.documentElement.setAttribute('data-theme', saved);
-    }
-  } catch (err) {
-    /* storage blocked: the page simply follows the system setting */
-  }
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.classList.add('js');
 })();
 </script>
+<!-- Shared chrome: the theme control and the Support control, for every
+     corporate page. Replaces the per-page copies of both. -->
+<script src="js/site-chrome.js?v=519868d84e3f" defer></script>
 </head>
 <body>
 
@@ -38,16 +41,29 @@
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
       <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link is-active" href="library.html">Library</a>
+      <a class="nav-link is-active" href="library.html" aria-current="page">Library</a>
+      <a class="nav-link" href="comp-plan.html">Plan</a>
+      <a class="nav-link" href="conductor.html">Conductors</a>
       <a class="nav-link" href="team.html">Team</a>
+      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
-      <div class="theme-set" role="group" aria-label="Page theme">
-        <span class="theme-legend" aria-hidden="true">Theme</span>
-        <button class="theme-btn" type="button" data-theme-set="system" aria-pressed="true">Auto</button>
-        <button class="theme-btn" type="button" data-theme-set="light" aria-pressed="false">Light</button>
-        <button class="theme-btn" type="button" data-theme-set="dark" aria-pressed="false">Dark</button>
-      </div>
+      <button class="nav-theme" type="button" data-theme-toggle
+              aria-label="Switch to the light theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
+            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
+            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
+            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
+          </g>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -249,8 +265,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=bf8b1809957d"></script>
-<script src="js/library-icons.js?v=bf8b1809957d"></script>
+<script src="js/catalog.js?v=519868d84e3f"></script>
+<script src="js/library-icons.js?v=519868d84e3f"></script>
 <script>
 /* ============================================================
    ORVANNA CONDUCTOR LIBRARY: the agent detail template.
@@ -519,49 +535,6 @@
     }
   };
 
-  /* ---------- theme: auto, light, or dark ---------- */
-  /* Declared before it is used, and called on both paths below, so
-     the control works on the missing-agent view too. */
-
-  function wireTheme() {
-    var root = document.documentElement;
-    var STORE_KEY = 'orvannaLibraryTheme';
-    var buttons = Array.prototype.slice.call(document.querySelectorAll('[data-theme-set]'));
-
-    function paint(choice) {
-      buttons.forEach(function (button) {
-        button.setAttribute('aria-pressed', String(button.getAttribute('data-theme-set') === choice));
-      });
-    }
-
-    function apply(choice) {
-      if (choice === 'light' || choice === 'dark') {
-        root.setAttribute('data-theme', choice);
-      } else {
-        root.removeAttribute('data-theme');
-      }
-      try {
-        if (choice === 'system') { window.localStorage.removeItem(STORE_KEY); }
-        else { window.localStorage.setItem(STORE_KEY, choice); }
-      } catch (err) {
-        /* storage blocked: the choice still applies for this visit */
-      }
-      paint(choice);
-    }
-
-    buttons.forEach(function (button) {
-      button.addEventListener('click', function () {
-        apply(button.getAttribute('data-theme-set'));
-      });
-    });
-
-    var saved = 'system';
-    try {
-      var value = window.localStorage.getItem(STORE_KEY);
-      if (value === 'light' || value === 'dark') { saved = value; }
-    } catch (err) { saved = 'system'; }
-    paint(saved);
-  }
 
   /* ---------- resolve the agent from the address ---------- */
 
@@ -594,7 +567,6 @@
     document.getElementById('missingMark').innerHTML = ICONS.constellation || '';
     document.getElementById('crumbHere').textContent = 'Not found';
     document.title = 'Not found | Orvanna Conductor Library';
-    wireTheme();
     return;
   }
 
@@ -706,7 +678,6 @@
   document.getElementById('nextName').textContent = next.name;
   document.getElementById('nextMark').innerHTML = ICONS[next.sku] || '';
 
-  wireTheme();
 })();
 </script>
 

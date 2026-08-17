@@ -12,106 +12,86 @@
    library is the one part of the site with a light theme and
    corporate.css hard-codes a dark field.
 
-   THEMING, per the system rule "a colour is never defined only
-   inside a media query or a data-theme block":
-     1. Bare :root carries the COMPLETE light palette.
-     2. A guarded dark media query RESTATES only what changes, so
-        an explicit light choice still wins over a dark system.
-     3. :root[data-theme="dark"] restates the same tokens again,
-        so the in-page toggle wins in both directions.
+   THEMING, changed 2026-08-17 per docs/CORPORATE-CHROME-CONTRACT.md.
 
-   One deliberate exception, stated plainly: the navigation bar
-   and the footer keep the brand's dark field in BOTH themes.
-   Those tokens are declared once on bare :root and never
-   restated. The reason is the logo. assets/logo-header-dark.svg
+   These two pages used to follow the reader's operating system
+   by default, which made the library the one part of the site
+   that could open light while every other page opened dark. The
+   site now behaves as one site:
+     1. Bare :root carries the COMPLETE palette in its DARK form,
+        because dark is the default on every corporate page.
+     2. :root[data-theme="light"] RESTATES only what changes.
+     3. No operating-system preference query is involved. The
+        theme is a deliberate choice, made with the icon in the
+        navigation, or it is dark.
+   Noted rather than hidden: a reader whose machine is set to
+   light, and who never touches the icon, now sees dark here
+   where they used to see light. That is the point of one site
+   with one default.
+
+   One deliberate exception, unchanged and stated plainly: the
+   navigation bar and the footer keep the brand's dark field in
+   BOTH themes. Those tokens are declared once on bare :root and
+   never restated. The reason is the logo. assets/logo-header-dark.svg
    draws its wordmark in white, the brand rules forbid recolouring
    a logo variant by hand, and no light variant is deployed in
    www/assets. A permanently dark chrome around a theme-aware
-   reading surface is the honest way to hold that rule.
+   reading surface is the honest way to hold that rule, and
+   corporate.css now holds it the same way.
    ============================================================ */
 
 :root {
-  /* ---------- reading surface: the COMPLETE light palette ---------- */
-  --bg:            #FFFFFF;
-  --bg-2:          #F1F4FA;
-  --panel:         #FFFFFF;
-  --panel-2:       #F8FAFC;
-  --heading:       #0F172A;
-  --text:          #263244;
-  --muted:         #5B6472;   /* 6.0 to 1 on white */
-  --quiet:         #6B7280;
-  --line:          rgba(15, 23, 42, 0.13);
-  --line-lit:      rgba(79, 70, 229, 0.32);
-  --accent:        #0E7490;   /* the single lit accent, light form. 5.36 to 1 on white */
-  --accent-ink:    #FFFFFF;
-  --accent-soft:   rgba(14, 116, 144, 0.08);
-  --indigo-t:      #4338CA;   /* indigo as text on light. 7.4 to 1 on white */
-  --violet-t:      #6D28D9;
-  --icon:          #4F46E5;
-  --icon-lit:      #0E7490;
-  --panel-shadow:  0 4px 14px rgba(15, 23, 42, 0.10);
-  --panel-lift:    0 10px 26px rgba(15, 23, 42, 0.14);
-  --rule:          linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(79, 70, 229, 0.28), transparent);
+  /* ---------- reading surface: the COMPLETE dark palette, the default ------- */
+  --bg:            #060B18;
+  --bg-2:          #0A1226;
+  --panel:         #101A31;
+  --panel-2:       #0C1424;
+  --heading:       #F1F5F9;
+  --text:          #C7D0DE;
+  --muted:         #94A3B8;
+  --quiet:         #7C8AA0;
+  --line:          rgba(129, 140, 248, 0.18);
+  --line-lit:      rgba(34, 211, 238, 0.38);
+  --accent:        #22D3EE;
+  --accent-ink:    #05121C;
+  --accent-soft:   rgba(34, 211, 238, 0.08);
+  --indigo-t:      #A5B4FC;
+  --violet-t:      #A78BFA;
+  --icon:          #818CF8;
+  --icon-lit:      #22D3EE;
+  --panel-shadow:  0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-lift:    0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --rule:          linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
 
-  /* ---------- chrome: dark in both themes, declared once ---------- */
-  --chrome-bg:     rgba(6, 11, 24, 0.92);
-  --chrome-foot:   #050914;
-  --chrome-head:   #F1F5F9;
-  --chrome-text:   #C7D0DE;
-  --chrome-muted:  #94A3B8;
-  --chrome-quiet:  #7C8AA0;   /* 5.61 to 1 on navy */
-  --chrome-line:   rgba(129, 140, 248, 0.18);
-  --chrome-accent: #22D3EE;
+  /* The --chrome-* tokens moved to css/site-chrome.css, which is
+     now the single source of chrome presentation for all nine
+     corporate pages. Rules in this file may still READ them. */
 
   --maxw:          1100px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg:           #060B18;
-    --bg-2:         #0A1226;
-    --panel:        #101A31;
-    --panel-2:      #0C1424;
-    --heading:      #F1F5F9;
-    --text:         #C7D0DE;
-    --muted:        #94A3B8;
-    --quiet:        #7C8AA0;
-    --line:         rgba(129, 140, 248, 0.18);
-    --line-lit:     rgba(34, 211, 238, 0.38);
-    --accent:       #22D3EE;
-    --accent-ink:   #05121C;
-    --accent-soft:  rgba(34, 211, 238, 0.08);
-    --indigo-t:     #A5B4FC;
-    --violet-t:     #A78BFA;
-    --icon:         #818CF8;
-    --icon-lit:     #22D3EE;
-    --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    --panel-lift:   0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    --rule:         linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg:           #060B18;
-  --bg-2:         #0A1226;
-  --panel:        #101A31;
-  --panel-2:      #0C1424;
-  --heading:      #F1F5F9;
-  --text:         #C7D0DE;
-  --muted:        #94A3B8;
-  --quiet:        #7C8AA0;
-  --line:         rgba(129, 140, 248, 0.18);
-  --line-lit:     rgba(34, 211, 238, 0.38);
-  --accent:       #22D3EE;
-  --accent-ink:   #05121C;
-  --accent-soft:  rgba(34, 211, 238, 0.08);
-  --indigo-t:     #A5B4FC;
-  --violet-t:     #A78BFA;
-  --icon:         #818CF8;
-  --icon-lit:     #22D3EE;
-  --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --panel-lift:   0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --rule:         linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
+/* The light theme: a deliberate choice, never a system default. */
+:root[data-theme="light"] {
+  --bg:           #FFFFFF;
+  --bg-2:         #F1F4FA;
+  --panel:        #FFFFFF;
+  --panel-2:      #F8FAFC;
+  --heading:      #0F172A;
+  --text:         #263244;   /* 12.63 to 1 on white */
+  --muted:        #5B6472;   /* 6.03 to 1 on white */
+  --quiet:        #6B7280;   /* 4.83 to 1 on white */
+  --line:         rgba(15, 23, 42, 0.13);
+  --line-lit:     rgba(79, 70, 229, 0.32);
+  --accent:       #0E7490;   /* the single lit accent, light form. 5.36 to 1 on white */
+  --accent-ink:   #FFFFFF;
+  --accent-soft:  rgba(14, 116, 144, 0.08);
+  --indigo-t:     #4338CA;   /* indigo as text on light. 7.40 to 1 on white */
+  --violet-t:     #6D28D9;
+  --icon:         #4F46E5;
+  --icon-lit:     #0E7490;
+  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --panel-lift:   0 10px 26px rgba(15, 23, 42, 0.14);
+  --rule:         linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(79, 70, 229, 0.28), transparent);
 }
 
 /* ============================================================
@@ -160,191 +140,14 @@ img, svg { max-width: 100%; display: block; }
   border: 0;
 }
 
-.skip-link {
-  position: absolute;
-  left: -9999px;
-  top: 0;
-  z-index: 100;
-  padding: 12px 20px;
-  background: var(--chrome-accent);
-  color: #05121C;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  text-decoration: none;
-}
-.skip-link:focus { left: 0; }
+/* The skip link, the navigation, the theme button, the Support
+   button and the footer all moved to css/site-chrome.css on
+   2026-08-17. They lived here and in corporate.css and inline in
+   two more pages: four hand-maintained copies of one component,
+   which is how the bar came to render at a different gap on the
+   library pages than on the rest of the site. Do not reintroduce
+   a chrome rule here; deploy/build_dist.py fails the build on it. */
 
-/* ============================================================
-   NAVIGATION: the brand chrome, dark in both themes
-   ============================================================ */
-
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: var(--chrome-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--chrome-line);
-}
-
-.nav-inner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 14px 28px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-}
-
-.nav-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #F8FAFC;
-  text-decoration: none;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.nav-logo  { height: 30px; width: auto; }
-
-.brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(34, 211, 238, 0.75);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
-}
-
-.brand-word {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.nav-links {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  flex-wrap: wrap;
-}
-
-.nav-link {
-  position: relative;
-  font-size: 0.84rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: var(--chrome-text);
-  padding-bottom: 3px;
-  transition: color 0.15s ease;
-}
-
-a.nav-link:hover { color: #FFFFFF; }
-
-a.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--chrome-accent), #818CF8);
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.28s ease;
-}
-a.nav-link:hover::after,
-a.nav-link.is-active::after { transform: scaleX(1); }
-
-.nav-link.is-active { color: #FFFFFF; }
-span.nav-link.is-active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--chrome-accent), #818CF8);
-}
-
-.nav-link.is-soon { color: var(--chrome-quiet); cursor: default; }
-
-.soon-pill {
-  display: inline-block;
-  margin-left: 7px;
-  padding: 1px 7px 2px;
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  border: 1px solid rgba(124, 138, 160, 0.7);
-  border-radius: 999px;
-  vertical-align: 2px;
-}
-
-.nav-signin {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: var(--chrome-muted);
-  border-left: 1px solid var(--chrome-line);
-  padding-left: 22px;
-  transition: color 0.15s ease, text-shadow 0.15s ease;
-}
-.nav-signin:hover {
-  color: var(--chrome-accent);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
-}
-
-/* ---------- theme control ---------- */
-
-.theme-set {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px;
-  border: 1px solid var(--chrome-line);
-  border-radius: 999px;
-}
-
-.theme-legend {
-  font-size: 0.6rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--chrome-quiet);
-  padding: 0 8px 0 10px;
-}
-
-.theme-btn {
-  font: inherit;
-  font-size: 0.64rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--chrome-muted);
-  background: transparent;
-  border: 0;
-  border-radius: 999px;
-  padding: 5px 11px 6px;
-  cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-.theme-btn:hover { color: #FFFFFF; }
-.theme-btn[aria-pressed="true"] {
-  color: #05121C;
-  background: var(--chrome-accent);
-}
 
 /* ============================================================
    TYPE, per the design system scale
@@ -1124,68 +927,7 @@ table a:focus-visible {
 }
 .btn-back:hover { transform: translateY(-2px); box-shadow: var(--panel-lift); }
 
-/* ============================================================
-   FOOTER: brand chrome, dark in both themes
-   ============================================================ */
-
-.footer {
-  background: var(--chrome-foot);
-  border-top: 1px solid var(--chrome-line);
-  padding: 56px 0 36px;
-  color: var(--chrome-muted);
-}
-
-.footer-cols {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-  margin-bottom: 44px;
-}
-
-.footer-head {
-  font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--chrome-head);
-  margin-bottom: 14px;
-}
-
-.flink {
-  display: block;
-  font-size: 0.9rem;
-  color: var(--chrome-muted);
-  padding: 3px 0;
-  cursor: default;
-}
-
-a.flink {
-  text-decoration: none;
-  cursor: pointer;
-  transition: color 0.15s ease;
-}
-a.flink:hover { color: var(--chrome-accent); }
-
-.footer-meta {
-  border-top: 1px solid var(--chrome-line);
-  padding-top: 26px;
-}
-
-.footer-mail {
-  color: var(--chrome-text);
-  text-decoration: none;
-  font-size: 0.92rem;
-  letter-spacing: 0.04em;
-  transition: color 0.15s ease;
-}
-.footer-mail:hover { color: var(--chrome-accent); }
-
-.legal {
-  font-size: 0.78rem;
-  color: var(--chrome-quiet);
-  letter-spacing: 0.02em;
-  margin-top: 14px;
-}
+/* The footer moved to css/site-chrome.css. See the note above. */
 
 /* ============================================================
    REDUCED MOTION
@@ -1215,7 +957,6 @@ a.flink:hover { color: var(--chrome-accent); }
   .handles { grid-template-columns: 1fr; }
   .panel-row-2 { grid-template-columns: 1fr; }
   .inside-grid { grid-template-columns: 1fr; }
-  .footer-cols { grid-template-columns: repeat(2, 1fr); }
   .rail { top: 0; }
   .detail-head { grid-template-columns: 72px minmax(0, 1fr); gap: 20px; }
   .detail-mark { width: 72px; height: 72px; }
@@ -1226,14 +967,6 @@ a.flink:hover { color: var(--chrome-accent); }
 @media (max-width: 560px) {
   .wrap { padding: 0 20px; }
   .rail-inner, .crumb { padding-left: 20px; padding-right: 20px; }
-  .nav-inner { padding: 12px 20px; justify-content: center; }
-  .nav-links { gap: 13px; justify-content: center; }
-  /* min-height 24px: the links measured about 23 pixels tall at this
-     size (quality assurance finding L5, fixed 2026-08-16); inline-flex
-     centres the label inside the taller touch target. */
-  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em;
-    min-height: 24px; display: inline-flex; align-items: center; }
-  .nav-signin { padding-left: 13px; border-left: 0; }
   .price { grid-template-columns: 1fr; }
   .panel { padding: 24px 20px 22px; }
   .situation { padding: 20px; }

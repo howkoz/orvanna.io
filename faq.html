@@ -5,8 +5,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Frequently Asked Questions</title>
 <meta name="description" content="Short, straight answers about the Orvanna Conductor program: the agents, the two purchase modes, how earning works, what makes a month qualified, and when commissions run. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=bf8b1809957d">
-<link rel="stylesheet" href="css/corporate.css?v=bf8b1809957d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
+<link rel="stylesheet" href="css/corporate.css?v=519868d84e3f">
+<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
+<script>
+(function () {
+  var theme = 'dark';
+  try {
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.add('js');
+})();
+</script>
+<!-- Shared chrome: the theme control and the Support control, for every
+     corporate page. Replaces the per-page copies of both. -->
+<script src="js/site-chrome.js?v=519868d84e3f" defer></script>
 <style>
 /* ============================================================
    FREQUENTLY ASKED QUESTIONS: page styles.
@@ -17,12 +35,15 @@
    tokens, so the reading surface works in a light theme and a
    dark one.
 
-   THEME RULE FOLLOWED HERE. Every colour has its value on bare
-   :root, which is the light palette. The dark theme only
-   REDEFINES tokens, twice: once under the system preference
-   (guarded so an explicit light choice still wins) and once
-   under an explicit dark selector. No colour is defined only
-   inside a media query.
+   THEME RULE, revised 2026-08-17 per
+   docs/CORPORATE-CHROME-CONTRACT.md. Every colour has its value
+   on bare :root, and bare :root is now the DARK palette, because
+   dark is the default on every corporate page. The light theme
+   only REDEFINES tokens, under :root[data-theme="light"], and it
+   is reached by a deliberate press of the icon in the navigation.
+   No operating-system preference query is involved: this page
+   used to open light on a light machine and dark on a dark one,
+   which made it disagree with the rest of the site.
 
    The navigation and the footer stay dark in both themes. They
    are the site's chrome, they carry the dark-theme logo lockup,
@@ -30,47 +51,7 @@
    ============================================================ */
 
 :root {
-  /* surfaces */
-  --faq-bg:          #FFFFFF;
-  --faq-bg-alt:      #F4F6FB;
-  --faq-card:        #FFFFFF;
-  --faq-card-hover:  #FAFBFF;
-  --faq-border:      rgba(79, 70, 229, 0.22);
-  --faq-border-soft: #E3E8F0;
-  --faq-shadow:      0 1px 2px rgba(15, 23, 42, 0.07);
-
-  /* text */
-  --faq-heading:     #0F172A;
-  --faq-text:        #2B3444;
-  --faq-muted:       #5B6472;
-
-  /* accents */
-  --faq-accent:      #4F46E5;   /* the readable accent: links, kickers */
-  --faq-accent-soft: rgba(79, 70, 229, 0.09);
-  --faq-focus:       #4F46E5;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --faq-bg:          #060B18;
-    --faq-bg-alt:      #0A1226;
-    --faq-card:        rgba(30, 41, 59, 0.52);
-    --faq-card-hover:  rgba(30, 41, 59, 0.72);
-    --faq-border:      rgba(129, 140, 248, 0.26);
-    --faq-border-soft: rgba(129, 140, 248, 0.16);
-    --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
-
-    --faq-heading:     #F1F5F9;
-    --faq-text:        #C7D0DE;
-    --faq-muted:       #94A3B8;
-
-    --faq-accent:      #22D3EE;
-    --faq-accent-soft: rgba(34, 211, 238, 0.10);
-    --faq-focus:       #22D3EE;
-  }
-}
-
-:root[data-theme="dark"] {
+  /* surfaces, dark: the default */
   --faq-bg:          #060B18;
   --faq-bg-alt:      #0A1226;
   --faq-card:        rgba(30, 41, 59, 0.52);
@@ -79,13 +60,34 @@
   --faq-border-soft: rgba(129, 140, 248, 0.16);
   --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
 
+  /* text */
   --faq-heading:     #F1F5F9;
   --faq-text:        #C7D0DE;
   --faq-muted:       #94A3B8;
 
-  --faq-accent:      #22D3EE;
+  /* accents */
+  --faq-accent:      #22D3EE;   /* the readable accent: links, kickers */
   --faq-accent-soft: rgba(34, 211, 238, 0.10);
   --faq-focus:       #22D3EE;
+}
+
+/* The light theme: a deliberate choice, never a system default. */
+:root[data-theme="light"] {
+  --faq-bg:          #FFFFFF;
+  --faq-bg-alt:      #F4F6FB;
+  --faq-card:        #FFFFFF;
+  --faq-card-hover:  #FAFBFF;
+  --faq-border:      rgba(79, 70, 229, 0.22);
+  --faq-border-soft: #E3E8F0;
+  --faq-shadow:      0 1px 2px rgba(15, 23, 42, 0.07);
+
+  --faq-heading:     #0F172A;
+  --faq-text:        #2B3444;
+  --faq-muted:       #5B6472;
+
+  --faq-accent:      #4F46E5;
+  --faq-accent-soft: rgba(79, 70, 229, 0.09);
+  --faq-focus:       #4F46E5;
 }
 
 /* corporate.css paints the body navy for the dark-only pages.
@@ -116,30 +118,10 @@ body {
   outline-color: #22D3EE;
 }
 
-/* ---------- theme control, in the navigation ----------
-   The navigation is dark in both themes, so this control is
-   coloured for a dark field rather than from the page tokens. */
-
-.faq-theme-btn {
-  font: inherit;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: #C7D0DE;
-  background: transparent;
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 999px;
-  padding: 5px 13px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: color 0.16s ease, border-color 0.16s ease;
-}
-
-.faq-theme-btn:hover {
-  color: #22D3EE;
-  border-color: rgba(34, 211, 238, 0.5);
-}
+/* The theme control is the shared .nav-theme icon button from
+   corporate.css. The text button that used to sit here, reading
+   the literal word Dark, is gone: the site carries an icon on
+   every page and no words. */
 
 /* ---------- hero ---------- */
 
@@ -448,7 +430,9 @@ body {
    rest: flat ink, no chrome, no chevrons. */
 
 @media print {
-  .nav, .footer, .faq-jump, .faq-sign { display: none !important; }
+  /* .nav and .footer are hidden by css/site-chrome.css, which owns
+     the chrome in print as well as on screen. */
+  .faq-jump, .faq-sign { display: none !important; }
   body { background: #FFFFFF; color: #111111; }
   .faq-hero, .faq-group, .faq-contact { background: #FFFFFF; padding: 18px 0; }
   .faq-item { border: 0; border-bottom: 1px solid #CCCCCC; border-radius: 0; margin: 0; }
@@ -469,13 +453,31 @@ body {
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link" href="index.html">Learn</a>
+      <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
       <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link" href="library.html">Library</a>
+      <a class="nav-link" href="comp-plan.html">Plan</a>
+      <a class="nav-link" href="conductor.html">Conductors</a>
       <a class="nav-link" href="team.html">Team</a>
       <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="faq-theme-btn" type="button" id="themeToggle" aria-pressed="false">Dark</button>
+      <button class="nav-theme" type="button" data-theme-toggle
+              aria-label="Switch to the light theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
+            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
+            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
+            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
+          </g>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -1008,22 +1010,21 @@ body {
 
 <script>
 /* ============================================================
-   Four small behaviours, all optional. With scripting off the
+   Two small behaviours, both optional. With scripting off the
    page is still complete: every question opens and closes on
-   its own, because the accordions are native details elements,
-   and the theme still follows the reader's system setting.
+   its own, because the accordions are native details elements.
 
    1. Expand all, which also keeps its own label and its
       aria-expanded state honest.
    2. Print handling: open everything before printing, then put
       the reader's own open and closed state back afterwards.
-   3. The Support control in the navigation, which on this page
-      sends the reader to the contact block at the foot rather
-      than opening the chat widget the other pages carry.
-   4. The theme control, written the same way as the one on the
-      compensation brochure: it sets data-theme on the root
-      element so an explicit choice beats the system preference
-      in both directions, and remembers that choice.
+
+   The Support control and the theme control both moved to
+   js/site-chrome.js. Support used to scroll to the contact
+   block at the foot of this page instead of opening the chat
+   the other pages carry, which was itself a piece of the drift
+   this round removes; the contact block is still there, still
+   linked from the page and from the footer.
    ============================================================ */
 (function () {
   'use strict';
@@ -1092,81 +1093,6 @@ body {
     }
   }
 
-  /* ---------- 3. Support control ---------- */
-
-  var ask = document.getElementById('ask');
-  var mail = ask ? ask.querySelector('.faq-mailto') : null;
-
-  Array.prototype.forEach.call(
-    document.querySelectorAll('[data-orvanna-support]'),
-    function (trigger) {
-      trigger.addEventListener('click', function (event) {
-        event.preventDefault();
-        if (!ask) return;
-        ask.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        if (mail) { mail.focus({ preventScroll: true }); }
-      });
-    }
-  );
-
-  /* ---------- 4. theme control ---------- */
-
-  var root = document.documentElement;
-  var themeBtn = document.getElementById('themeToggle');
-  var store = null;
-
-  try { store = window.localStorage; } catch (err) { store = null; }
-
-  function systemPrefersDark() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  }
-
-  function isDark() {
-    var set = root.getAttribute('data-theme');
-    if (set === 'dark') { return true; }
-    if (set === 'light') { return false; }
-    return systemPrefersDark();
-  }
-
-  function paintThemeBtn() {
-    if (!themeBtn) { return; }
-    var dark = isDark();
-    themeBtn.textContent = dark ? 'Light' : 'Dark';
-    themeBtn.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    themeBtn.setAttribute('aria-label', dark ? 'Switch to the light theme' : 'Switch to the dark theme');
-  }
-
-  var saved = null;
-  if (store) {
-    try { saved = store.getItem('orvanna-faq-theme'); } catch (err) { saved = null; }
-  }
-  if (saved === 'dark' || saved === 'light') {
-    root.setAttribute('data-theme', saved);
-  }
-  paintThemeBtn();
-
-  if (themeBtn) {
-    themeBtn.addEventListener('click', function () {
-      var next = isDark() ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      if (store) {
-        try { store.setItem('orvanna-faq-theme', next); } catch (err) { /* private mode, carry on */ }
-      }
-      paintThemeBtn();
-    });
-  }
-
-  if (window.matchMedia) {
-    var themeQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    var onSchemeChange = function () {
-      if (!root.getAttribute('data-theme')) { paintThemeBtn(); }
-    };
-    if (typeof themeQuery.addEventListener === 'function') {
-      themeQuery.addEventListener('change', onSchemeChange);
-    } else if (typeof themeQuery.addListener === 'function') {
-      themeQuery.addListener(onSchemeChange);
-    }
-  }
 })();
 </script>
 </body>

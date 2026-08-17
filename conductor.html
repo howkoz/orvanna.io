@@ -5,22 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductors</title>
 <meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=bf8b1809957d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
+<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
 <script>
-/* Applies a stored choice before first paint, so the page never flashes
-   the wrong palette. With no stored choice the attribute stays off and the
-   viewer's own system preference decides, which is the whole point of the
-   guarded media query in the stylesheet below. */
 (function () {
-  'use strict';
+  var theme = 'dark';
   try {
-    var saved = window.localStorage.getItem('orvanna-conductor-theme');
-    if (saved === 'light' || saved === 'dark') {
-      document.documentElement.setAttribute('data-theme', saved);
-    }
-  } catch (err) { /* storage unavailable: the system preference decides */ }
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.add('js');
 })();
 </script>
+<!-- Shared chrome: the theme control and the Support control, for every
+     corporate page. Replaces the per-page copies of both. -->
+<script src="js/site-chrome.js?v=519868d84e3f" defer></script>
 <style>
 /* ============================================================
    Orvanna: what is a Conductor.
@@ -30,104 +33,26 @@
    sit beside it on disk.
 
    THEMING RULE, from the design system: a colour is never
-   defined only inside a media query or a theme block. The
-   complete LIGHT palette is declared on bare :root below. The
-   dark palette only RESTATES tokens that already exist, twice:
-   once under a guarded preference query and once under an
-   explicit selector, so a viewer preference and a deliberate
-   choice both work and the choice wins.
+   defined only inside a media query or a theme block. Revised
+   2026-08-17 per docs/CORPORATE-CHROME-CONTRACT.md: the complete
+   DARK palette is declared on bare :root below, because dark is
+   the default on every corporate page. The light palette only
+   RESTATES tokens that already exist, under one explicit
+   selector, reached by a deliberate press of the icon in the
+   navigation. No operating-system preference query is involved.
+
+   The navigation bar and the footer are now dark in BOTH themes,
+   as they are on every other corporate page. They used to follow
+   the page theme here and nowhere else, which meant the light
+   theme produced a white navigation bar on this page and a dark
+   one everywhere else: drift of exactly the kind this round
+   removes. The --chrome-* tokens below are declared once and
+   never restated.
    ============================================================ */
 
-/* ---------- 1. the complete palette, light, on bare :root ---------- */
+/* ---------- 1. the complete palette, DARK, on bare :root ---------- */
 
 :root {
-  --field:        #FFFFFF;
-  --field-2:      #F4F6FB;
-  --field-3:      #EEF1F8;
-  --panel:        #FFFFFF;
-  --panel-border: rgba(79, 70, 229, 0.20);
-  --panel-lit:    rgba(14, 116, 144, 0.34);
-  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
-  --heading:      #0F172A;
-  --body:         #334155;
-  --muted:        #5B6472;
-  --legal:        #5B6472;
-  --accent:       #0E7490;
-  --accent-soft:  rgba(14, 116, 144, 0.10);
-  --indigo:       #4F46E5;
-  --indigo-soft:  #4338CA;
-  --violet:       #6D28D9;
-  --hairline:     rgba(15, 23, 42, 0.12);
-  --chip-bg:      rgba(79, 70, 229, 0.06);
-  --nav-bg:       #FFFFFF;
-  --nav-link:     #334155;
-  --nav-link-on:  #0F172A;
-  --footer-bg:    #F1F5F9;
-  --btn-solid-bg: #0E7490;
-  --btn-solid-fg: #FFFFFF;
-  --btn-solid-hv: #0B5C72;
-  --btn-ghost-bg: #FFFFFF;
-  --btn-ghost-fg: #0F172A;
-  --btn-ghost-bd: rgba(79, 70, 229, 0.45);
-  --glow-a:       rgba(79, 70, 229, 0.06);
-  --glow-b:       rgba(167, 139, 250, 0.06);
-  --glow-c:       rgba(14, 116, 144, 0.06);
-  --mark:         #4F46E5;
-  --mark-lit:     #0E7490;
-  --mark-line:    rgba(15, 23, 42, 0.22);
-  --mark-fill:    rgba(79, 70, 229, 0.07);
-  --logo-dark:    none;
-  --logo-light:   block;
-  --maxw:         1100px;
-}
-
-/* ---------- 2. the dark restatement, guarded preference ---------- */
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --field:        #060B18;
-    --field-2:      #0A1226;
-    --field-3:      #080F20;
-    --panel:        linear-gradient(165deg, rgba(30, 41, 59, 0.62), rgba(13, 20, 38, 0.44));
-    --panel-border: rgba(129, 140, 248, 0.26);
-    --panel-lit:    rgba(34, 211, 238, 0.30);
-    --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    --heading:      #F1F5F9;
-    --body:         #C7D0DE;
-    --muted:        #94A3B8;
-    --legal:        #7C8AA0;
-    --accent:       #22D3EE;
-    --accent-soft:  rgba(34, 211, 238, 0.10);
-    --indigo:       #818CF8;
-    --indigo-soft:  #A5B4FC;
-    --violet:       #A78BFA;
-    --hairline:     rgba(129, 140, 248, 0.18);
-    --chip-bg:      rgba(129, 140, 248, 0.10);
-    --nav-bg:       rgba(6, 11, 24, 0.78);
-    --nav-link:     #C7D0DE;
-    --nav-link-on:  #FFFFFF;
-    --footer-bg:    #050914;
-    --btn-solid-bg: #22D3EE;
-    --btn-solid-fg: #05121C;
-    --btn-solid-hv: #67E3F4;
-    --btn-ghost-bg: linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
-    --btn-ghost-fg: #E2E8F0;
-    --btn-ghost-bd: rgba(129, 140, 248, 0.55);
-    --glow-a:       rgba(79, 70, 229, 0.17);
-    --glow-b:       rgba(167, 139, 250, 0.13);
-    --glow-c:       rgba(34, 211, 238, 0.12);
-    --mark:         #818CF8;
-    --mark-lit:     #22D3EE;
-    --mark-line:    rgba(129, 140, 248, 0.40);
-    --mark-fill:    rgba(129, 140, 248, 0.08);
-    --logo-dark:    block;
-    --logo-light:   none;
-  }
-}
-
-/* ---------- 3. the dark restatement, explicit choice ---------- */
-
-:root[data-theme="dark"] {
   --field:        #060B18;
   --field-2:      #0A1226;
   --field-3:      #080F20;
@@ -146,10 +71,6 @@
   --violet:       #A78BFA;
   --hairline:     rgba(129, 140, 248, 0.18);
   --chip-bg:      rgba(129, 140, 248, 0.10);
-  --nav-bg:       rgba(6, 11, 24, 0.78);
-  --nav-link:     #C7D0DE;
-  --nav-link-on:  #FFFFFF;
-  --footer-bg:    #050914;
   --btn-solid-bg: #22D3EE;
   --btn-solid-fg: #05121C;
   --btn-solid-hv: #67E3F4;
@@ -163,8 +84,47 @@
   --mark-lit:     #22D3EE;
   --mark-line:    rgba(129, 140, 248, 0.40);
   --mark-fill:    rgba(129, 140, 248, 0.08);
-  --logo-dark:    block;
-  --logo-light:   none;
+
+  /* The --chrome-* tokens are declared once in css/site-chrome.css
+     and read from there. Rules in this file may still read them. */
+
+  --maxw:         1100px;
+}
+
+/* ---------- 2. the light restatement, a deliberate choice ---------- */
+
+:root[data-theme="light"] {
+  --field:        #FFFFFF;
+  --field-2:      #F4F6FB;
+  --field-3:      #EEF1F8;
+  --panel:        #FFFFFF;
+  --panel-border: rgba(79, 70, 229, 0.20);
+  --panel-lit:    rgba(14, 116, 144, 0.34);
+  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --heading:      #0F172A;
+  --body:         #334155;
+  --muted:        #5B6472;
+  --legal:        #5B6472;
+  --accent:       #0E7490;
+  --accent-soft:  rgba(14, 116, 144, 0.10);
+  --indigo:       #4F46E5;
+  --indigo-soft:  #4338CA;
+  --violet:       #6D28D9;
+  --hairline:     rgba(15, 23, 42, 0.12);
+  --chip-bg:      rgba(79, 70, 229, 0.06);
+  --btn-solid-bg: #0E7490;
+  --btn-solid-fg: #FFFFFF;
+  --btn-solid-hv: #0B5C72;
+  --btn-ghost-bg: #FFFFFF;
+  --btn-ghost-fg: #0F172A;
+  --btn-ghost-bd: rgba(79, 70, 229, 0.45);
+  --glow-a:       rgba(79, 70, 229, 0.06);
+  --glow-b:       rgba(167, 139, 250, 0.06);
+  --glow-c:       rgba(14, 116, 144, 0.06);
+  --mark:         #4F46E5;
+  --mark-lit:     #0E7490;
+  --mark-line:    rgba(15, 23, 42, 0.22);
+  --mark-fill:    rgba(79, 70, 229, 0.07);
 }
 
 /* ---------- 4. reset and page ---------- */
@@ -263,94 +223,14 @@ em.q { font-style: normal; color: var(--accent); font-weight: 600; }
 .btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
 .btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
 
-/* ---------- 7. navigation, matching the rest of the site ---------- */
-
-.nav {
-  position: sticky; top: 0; z-index: 50;
-  background: var(--nav-bg);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--hairline);
-}
-.nav-inner {
-  max-width: var(--maxw); margin: 0 auto; padding: 14px 28px;
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 18px; flex-wrap: wrap;
-}
-.nav-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: var(--nav-link-on);
-  text-decoration: none;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.nav-logo { height: 30px; width: auto; }
-.nav-logo.on-dark  { display: var(--logo-dark); }
-.nav-logo.on-light { display: var(--logo-light); }
-.brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid var(--mark-lit);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px var(--mark-fill);
-}
-.brand-word {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.nav-links { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
-
-.nav-link {
-  position: relative; font-size: 0.84rem; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.14em; text-decoration: none;
-  color: var(--nav-link); padding-bottom: 3px; transition: color 0.15s ease;
-}
-a.nav-link:hover { color: var(--nav-link-on); }
-a.nav-link::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
-  height: 2px; border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), var(--indigo));
-  transform: scaleX(0); transform-origin: left center;
-  transition: transform 0.28s ease;
-}
-a.nav-link:hover::after, a.nav-link.is-active::after { transform: scaleX(1); }
-.nav-link.is-active { color: var(--nav-link-on); }
-.nav-link.is-soon { color: var(--legal); cursor: default; }
-
-.soon-pill {
-  display: inline-block; margin-left: 7px; padding: 1px 7px 2px;
-  font-size: 0.6rem; letter-spacing: 0.18em;
-  border: 1px solid var(--legal); border-radius: 999px; vertical-align: 2px;
-}
-
-.nav-signin {
-  font-size: 0.8rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.14em; text-decoration: none; color: var(--muted);
-  border-left: 1px solid var(--hairline); padding-left: 24px;
-  transition: color 0.15s ease;
-}
-.nav-signin:hover { color: var(--accent); }
-
-.theme-btn {
-  font: inherit; display: inline-flex; align-items: center; gap: 7px;
-  padding: 5px 11px; border-radius: 999px;
-  border: 1px solid var(--hairline); background: transparent;
-  color: var(--muted); cursor: pointer;
-  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.16em;
-  transition: color 0.15s ease, border-color 0.15s ease;
-}
-.theme-btn:hover { color: var(--accent); border-color: var(--accent); }
-.theme-btn svg { width: 14px; height: 14px; }
-.theme-btn .icon-sun  { display: var(--logo-dark); }
-.theme-btn .icon-moon { display: var(--logo-light); }
-.theme-btn .label-light { display: var(--logo-dark); }
-.theme-btn .label-dark  { display: var(--logo-light); }
+/* ---------- 7. navigation ----------
+   Styled by css/site-chrome.css, linked in the head. It used to be
+   declared here in full, and separately in corporate.css,
+   library.css and comp-plan.html: four hand-maintained copies of
+   one component. This page happened to match the others by hand,
+   which is the more worrying half, because nothing enforced it.
+   Do not reintroduce a chrome rule here; deploy/build_dist.py
+   fails the build on it. */
 
 /* ---------- 8. panels, cards, rails ---------- */
 
@@ -467,31 +347,8 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
   color: var(--heading); font-size: 1.06rem;
 }
 
-/* ---------- 9. footer, matching the rest of the site ---------- */
-
-.footer {
-  background: var(--footer-bg); border-top: 1px solid var(--hairline);
-  padding: 64px 0 40px; color: var(--muted);
-}
-.footer-cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; margin-bottom: 48px; }
-.footer-head {
-  font-size: 0.78rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.2em; color: var(--heading); margin-bottom: 14px;
-}
-.flink { display: block; font-size: 0.9rem; color: var(--muted); padding: 3px 0; cursor: default; transition: color 0.15s ease; }
-a.flink { text-decoration: none; cursor: pointer; }
-a.flink:hover { color: var(--accent); }
-.footer-meta { border-top: 1px solid var(--hairline); padding-top: 28px; }
-.footer-contact { display: flex; align-items: center; justify-content: space-between; gap: 18px; flex-wrap: wrap; margin-bottom: 18px; }
-.footer-mail { color: var(--body); text-decoration: none; font-size: 0.92rem; letter-spacing: 0.04em; }
-.footer-mail:hover { color: var(--accent); }
-.socials { display: flex; gap: 14px; }
-.social {
-  width: 34px; height: 34px; display: flex; align-items: center; justify-content: center;
-  border: 1px solid var(--hairline); border-radius: 50%; color: var(--muted);
-}
-.social svg { width: 17px; height: 17px; }
-.legal { font-size: 0.78rem; color: var(--legal); letter-spacing: 0.02em; }
+/* ---------- 9. footer ----------
+   Also styled by css/site-chrome.css. See the note above. */
 
 /* ---------- 10. responsive ---------- */
 
@@ -501,17 +358,11 @@ a.flink:hover { color: var(--accent); }
 @media (max-width: 760px) {
   .band { padding: 64px 0; }
   .grid-2, .grid-3, .vs { grid-template-columns: 1fr; }
-  .footer-cols { grid-template-columns: repeat(2, 1fr); }
   .step { grid-template-columns: 1fr; gap: 12px; }
 }
 @media (max-width: 480px) {
   .wrap { padding: 0 20px; }
-  .nav-inner { padding: 12px 20px; justify-content: center; }
-  .nav-links { gap: 13px; justify-content: center; }
-  .nav-link, .nav-signin { font-size: 0.72rem; letter-spacing: 0.1em; }
-  .nav-signin { padding-left: 13px; border-left: 0; }
   .panel { padding: 24px 22px; }
-  .footer-contact { justify-content: center; }
 }
 
 /* ---------- 11. reduced motion ---------- */
@@ -535,13 +386,11 @@ a.flink:hover { color: var(--accent); }
     --accent: #0B5C72; --accent-soft: #FFFFFF;
     --indigo: #3730A3; --indigo-soft: #3730A3; --violet: #5B21B6;
     --hairline: #C7CBD6; --chip-bg: #FFFFFF;
-    --nav-bg: #FFFFFF; --footer-bg: #FFFFFF;
     --glow-a: transparent; --glow-b: transparent; --glow-c: transparent;
     --mark: #3730A3; --mark-lit: #0B5C72;
     --mark-line: #6B7280; --mark-fill: #FFFFFF;
-    --logo-dark: none; --logo-light: block;
+
   }
-  .nav, .footer .socials, .theme-btn { display: none !important; }
   .band { padding: 26px 0; break-inside: auto; }
   .band + .band { border-top: 1px solid #C7CBD6; }
   .panel, .step, table.week, .figure-frame { break-inside: avoid; }
@@ -565,11 +414,15 @@ a.flink:hover { color: var(--accent); }
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
       <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link" href="library.html">Library</a>
+      <a class="nav-link" href="comp-plan.html">Plan</a>
       <a class="nav-link is-active" href="conductor.html" aria-current="page">Conductors</a>
       <a class="nav-link" href="team.html">Team</a>
+      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="theme-btn" type="button" id="themeToggle" aria-label="Switch between the light and dark theme">
+      <button class="nav-theme" type="button" data-theme-toggle
+              aria-label="Switch to the light theme">
         <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
           <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
           <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
@@ -580,10 +433,9 @@ a.flink:hover { color: var(--accent); }
           </g>
         </svg>
         <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
         </svg>
-        <span class="label-light">Light</span>
-        <span class="label-dark">Dark</span>
       </button>
     </nav>
   </div>
@@ -1132,60 +984,9 @@ a.flink:hover { color: var(--accent); }
   </div>
 </footer>
 
-<script>
-/* ============================================================
-   The only behaviour on this page: the theme switch.
-   It writes data-theme on the root element, which is the same
-   mechanism the member portal uses, and remembers the choice.
-   Everything else here is static markup and Cascading Style
-   Sheets (CSS), so the page works with scripting turned off.
-   ============================================================ */
-(function () {
-  'use strict';
-
-  var STORE_KEY = 'orvanna-conductor-theme';
-  var root = document.documentElement;
-  var btn = document.getElementById('themeToggle');
-  if (!btn) { return; }
-
-  function systemPrefersDark() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  }
-
-  /* The theme in force right now: an explicit choice if one is set,
-     otherwise whatever the viewer's system asks for. Nothing is stored
-     until somebody actually presses the button, so a page that has never
-     been switched keeps following the system. */
-  function current() {
-    var set = root.getAttribute('data-theme');
-    if (set === 'light' || set === 'dark') { return set; }
-    return systemPrefersDark() ? 'dark' : 'light';
-  }
-
-  function paint() {
-    btn.setAttribute('aria-label', current() === 'dark'
-      ? 'Switch to the light theme'
-      : 'Switch to the dark theme');
-  }
-
-  paint();
-
-  btn.addEventListener('click', function () {
-    var next = current() === 'dark' ? 'light' : 'dark';
-    root.setAttribute('data-theme', next);
-    paint();
-    try { window.localStorage.setItem(STORE_KEY, next); } catch (err) { /* private mode: the choice lasts for this visit */ }
-  });
-
-  /* If the viewer never chose, follow the system when it changes. */
-  if (window.matchMedia) {
-    var query = window.matchMedia('(prefers-color-scheme: dark)');
-    var onChange = function () { if (!root.getAttribute('data-theme')) { paint(); } };
-    if (query.addEventListener) { query.addEventListener('change', onChange); }
-    else if (query.addListener) { query.addListener(onChange); }
-  }
-})();
-</script>
-
+<!-- The Support control and the theme control both live in
+     js/site-chrome.js, loaded from the head. The inline copy of the chat
+     wiring that used to sit here was one of five; see
+     docs/CORPORATE-CHROME-CONTRACT.md. -->
 </body>
 </html>

@@ -5,7 +5,25 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Compensation Plan</title>
 <meta name="description" content="The Orvanna compensation plan, version 1.3: how a Conductor earns, every term defined, every earning mechanism with worked arithmetic, the rank ladder, and the qualification rules. Demonstration document, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=bf8b1809957d">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
+<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
+<script>
+(function () {
+  var theme = 'dark';
+  try {
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.add('js');
+})();
+</script>
+<!-- Shared chrome: the theme control and the Support control, for every
+     corporate page. Replaces the per-page copies of both. -->
+<script src="js/site-chrome.js?v=519868d84e3f" defer></script>
 <style>
 /* ==========================================================================
    Orvanna compensation plan brochure.
@@ -14,123 +32,19 @@
    opened from a memory stick, a static server, and a printer.
 
    THEMING RULE, from the design system: a colour is never defined only
-   inside a media query or a data-theme block. The complete palette is
-   declared on bare :root in its LIGHT form, because a brochure's resting
-   state is paper. The dark blocks only RESTATE tokens that already exist.
+   inside a media query or a data-theme block. Revised 2026-08-17 per
+   docs/CORPORATE-CHROME-CONTRACT.md: the complete palette is declared on
+   bare :root in its DARK form, because dark is the default on every
+   corporate page and this brochure is part of the site before it is a
+   printed object. The light block only RESTATES tokens that already
+   exist, and it is reached by a deliberate press of the icon in the
+   navigation. No operating-system preference query is involved. The
+   print stylesheet at the foot of this file still forces the paper
+   palette, so a printed copy is unaffected by any of this.
    ========================================================================== */
 
 :root {
-  /* --- surfaces and text, light --- */
-  --paper:        #FFFFFF;
-  --band-a:       #FFFFFF;
-  --band-b:       #F4F6FB;
-  --surface:      #F7F8FC;
-  --surface-2:    #EEF0FF;
-  --ink:          #0F172A;
-  --body:         #334155;
-  --muted:        #5B6472;
-  --line:         #D8DCE5;
-  --hairline:     rgba(79, 70, 229, 0.20);
-  --code-bg:      #F1F5F9;
-  --shadow:       0 4px 14px rgba(15, 23, 42, 0.10);
-  --shadow-lift:  0 8px 22px rgba(15, 23, 42, 0.14);
-
-  /* --- accents, light --- */
-  --indigo:       #4F46E5;
-  --indigo-soft:  #6366F1;
-  --violet:       #6D28D9;
-  --accent:       #0E7490;   /* the single lit accent, light-safe cyan */
-  --accent-bg:    #E7F6FB;
-  --accent-line:  rgba(14, 116, 144, 0.35);
-  --good:         #065F46;
-  --good-bg:      #E3F5EE;
-  --bad:          #B91C1C;
-  --bad-bg:       #FDE8E6;
-  --amber:        #B45309;
-  --amber-bg:     #FEF3C7;
-
-  /* --- drawing tokens: every diagram resolves its colour through these,
-         so a diagram restates itself with the theme instead of being
-         redrawn twice --- */
-  --d-line:        #9AA3B2;
-  --d-node-bg:     #F7F8FC;
-  --d-node-stroke: #9AA3B2;
-  --d-text:        #0F172A;
-  --d-muted:       #5B6472;
-  --d-lit-bg:      #E7F6FB;
-  --d-lit-stroke:  #0E7490;
-  --d-key-bg:      #EEF0FF;
-  --d-key-stroke:  #4F46E5;
-  --d-bad-bg:      #FDE8E6;
-  --d-bad-stroke:  #B91C1C;
-  --d-good-bg:     #E3F5EE;
-  --d-good-stroke: #065F46;
-  --d-hatch:       #C7CDDA;
-
-  /* --- chrome that never themes: the navigation strip and the cover are
-         dark in both themes, the way a printed brochure's cover is a fixed
-         object rather than a preference --- */
-  --chrome:       #060B18;
-  --chrome-2:     #0A1226;
-  --chrome-text:  #C7D0DE;
-  --chrome-head:  #F1F5F9;
-  --chrome-muted: #94A3B8;
-  --chrome-line:  rgba(129, 140, 248, 0.18);
-  --chrome-lit:   #22D3EE;
-  --chrome-ind:   #A5B4FC;
-
-  --maxw: 1100px;
-}
-
-/* Dark, by system preference, unless the reader has explicitly asked for light. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --paper:       #060B18;
-    --band-a:      #060B18;
-    --band-b:      #080F20;
-    --surface:     #0A1226;
-    --surface-2:   rgba(30, 41, 59, 0.55);
-    --ink:         #F1F5F9;
-    --body:        #C7D0DE;
-    --muted:       #94A3B8;
-    --line:        rgba(129, 140, 248, 0.22);
-    --hairline:    rgba(129, 140, 248, 0.18);
-    --code-bg:     #0A1226;
-    --shadow:      0 0 26px rgba(79, 70, 229, 0.14);
-    --shadow-lift: 0 0 38px rgba(34, 211, 238, 0.16);
-
-    --indigo:      #818CF8;
-    --indigo-soft: #A5B4FC;
-    --violet:      #A78BFA;
-    --accent:      #22D3EE;
-    --accent-bg:   rgba(34, 211, 238, 0.10);
-    --accent-line: rgba(34, 211, 238, 0.38);
-    --good:        #6EE7B7;
-    --good-bg:     rgba(52, 211, 153, 0.13);
-    --bad:         #FCA5A5;
-    --bad-bg:      rgba(248, 113, 113, 0.14);
-    --amber:       #FDE68A;
-    --amber-bg:    rgba(250, 204, 21, 0.13);
-
-    --d-line:        rgba(129, 140, 248, 0.45);
-    --d-node-bg:     rgba(30, 41, 59, 0.62);
-    --d-node-stroke: rgba(129, 140, 248, 0.45);
-    --d-text:        #F1F5F9;
-    --d-muted:       #94A3B8;
-    --d-lit-bg:      rgba(34, 211, 238, 0.12);
-    --d-lit-stroke:  #22D3EE;
-    --d-key-bg:      rgba(79, 70, 229, 0.24);
-    --d-key-stroke:  #818CF8;
-    --d-bad-bg:      rgba(248, 113, 113, 0.14);
-    --d-bad-stroke:  #FCA5A5;
-    --d-good-bg:     rgba(52, 211, 153, 0.13);
-    --d-good-stroke: #6EE7B7;
-    --d-hatch:       rgba(129, 140, 248, 0.30);
-  }
-}
-
-/* Dark, chosen explicitly. Same restatements, so the toggle wins both ways. */
-:root[data-theme="dark"] {
+  /* --- the complete palette, DARK, which is the default --- */
   --paper:       #060B18;
   --band-a:      #060B18;
   --band-b:      #080F20;
@@ -172,6 +86,63 @@
   --d-good-bg:     rgba(52, 211, 153, 0.13);
   --d-good-stroke: #6EE7B7;
   --d-hatch:       rgba(129, 140, 248, 0.30);
+
+  /* --- the cover's own fixed-dark tokens. The cover is dark in both
+         themes the way a printed brochure's cover is a fixed object
+         rather than a preference. The rest of the --chrome-* family
+         (text, head, muted, quiet, line) is declared once in
+         css/site-chrome.css and read from there. --- */
+  --chrome:       #060B18;
+  --chrome-2:     #0A1226;
+  --chrome-lit:   #22D3EE;
+  --chrome-ind:   #A5B4FC;
+
+  --maxw: 1100px;
+}
+
+/* The light theme: a deliberate choice, never a system default. */
+:root[data-theme="light"] {
+  --paper:        #FFFFFF;
+  --band-a:       #FFFFFF;
+  --band-b:       #F4F6FB;
+  --surface:      #F7F8FC;
+  --surface-2:    #EEF0FF;
+  --ink:          #0F172A;
+  --body:         #334155;
+  --muted:        #5B6472;
+  --line:         #D8DCE5;
+  --hairline:     rgba(79, 70, 229, 0.20);
+  --code-bg:      #F1F5F9;
+  --shadow:       0 4px 14px rgba(15, 23, 42, 0.10);
+  --shadow-lift:  0 8px 22px rgba(15, 23, 42, 0.14);
+
+  --indigo:       #4F46E5;
+  --indigo-soft:  #4338CA;
+  --violet:       #6D28D9;
+  --accent:       #0E7490;   /* the single lit accent, light-safe cyan */
+  --accent-bg:    #E7F6FB;
+  --accent-line:  rgba(14, 116, 144, 0.35);
+  --good:         #065F46;
+  --good-bg:      #E3F5EE;
+  --bad:          #B91C1C;
+  --bad-bg:       #FDE8E6;
+  --amber:        #B45309;
+  --amber-bg:     #FEF3C7;
+
+  --d-line:        #9AA3B2;
+  --d-node-bg:     #F7F8FC;
+  --d-node-stroke: #9AA3B2;
+  --d-text:        #0F172A;
+  --d-muted:       #5B6472;
+  --d-lit-bg:      #E7F6FB;
+  --d-lit-stroke:  #0E7490;
+  --d-key-bg:      #EEF0FF;
+  --d-key-stroke:  #4F46E5;
+  --d-bad-bg:      #FDE8E6;
+  --d-bad-stroke:  #B91C1C;
+  --d-good-bg:     #E3F5EE;
+  --d-good-stroke: #065F46;
+  --d-hatch:       #C7CDDA;
 }
 
 /* ---------------------------------------------------------------- reset */
@@ -195,83 +166,20 @@ img, svg { max-width: 100%; display: block; }
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 .narrow { max-width: 760px; }
 
-/* ------------------------------------------------------- navigation strip */
+/* ------------------------------------------------------- navigation strip
+   The navigation bar, the theme control, the Support control and the
+   Sign In link are styled by css/site-chrome.css, linked above. They
+   used to be declared here in full, and separately in corporate.css,
+   library.css and conductor.html. Quality assurance measured this page
+   on 2026-08-17 and it rendered the bar at 12.80 pixel type with a 20
+   pixel gap in a 65 pixel header, against 13.44, 26 and 69 elsewhere,
+   and at 390 pixels wide it left-packed the items instead of centring
+   them. Same markup, different bar: the owner's original complaint,
+   surviving on this page. Do not reintroduce a chrome rule here;
+   deploy/build_dist.py fails the build on it. */
 
-.nav {
-  position: sticky;
-  top: 0;
-  z-index: 40;
-  background: rgba(6, 11, 24, 0.92);
-  border-bottom: 1px solid var(--chrome-line);
-  backdrop-filter: blur(9px);
-}
-.nav-inner {
-  max-width: var(--maxw);
-  margin: 0 auto;
-  padding: 12px 28px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
-}
-.nav-brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #F8FAFC;
-  text-decoration: none;
-  flex-shrink: 0;
-  min-width: 0;
-}
-.nav-logo { height: 30px; width: auto; }
-.brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(34, 211, 238, 0.75);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
-}
-.brand-word {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-.nav-links {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.nav-link {
-  color: var(--chrome-text);
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  transition: color 0.16s ease;
-}
-.nav-link:hover { color: var(--chrome-lit); }
-.nav-link.is-active { color: var(--chrome-lit); }
-.nav-link.is-soon { color: #7C8AA0; cursor: default; }
-.soon-pill {
-  margin-left: 7px;
-  font-size: 0.58rem;
-  letter-spacing: 0.18em;
-  border: 1px solid #7C8AA0;
-  border-radius: 999px;
-  padding: 1px 7px;
-}
-.nav-signin {
-  color: var(--chrome-lit);
-  text-decoration: none;
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-}
+/* .chrome-btn is NOT chrome despite the name: it is the brochure's own
+   Print and Contents buttons on the cover. It keeps its rules here. */
 .chrome-btn {
   font: inherit;
   font-size: 0.7rem;
@@ -289,6 +197,7 @@ img, svg { max-width: 100%; display: block; }
 }
 .chrome-btn:hover { color: var(--chrome-lit); border-color: var(--accent-line); }
 .chrome-btn:focus-visible { outline: 2px solid var(--chrome-lit); outline-offset: 2px; }
+
 
 /* -------------------------------------------------------------- the cover */
 
@@ -524,7 +433,9 @@ details.ledger[open] { padding-bottom: 18px; }
 .foot a { color: var(--chrome-ind); }
 .foot-links { display: flex; flex-wrap: wrap; gap: 22px; margin-bottom: 18px; }
 .foot-links a { text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
-.legal { color: #7C8AA0; max-width: 62em; }
+/* Inside .foot, the brochure's own footer, which is a different
+   element from the shared site footer that css/site-chrome.css owns. */
+.foot .legal { color: #7C8AA0; max-width: 62em; font-size: 0.86rem; }
 
 /* ------------------------------------------------------------ responsive */
 
@@ -539,8 +450,6 @@ details.ledger[open] { padding-bottom: 18px; }
   .deflist { grid-template-columns: 1fr; }
   .deflist dt { border-bottom: 0; padding-bottom: 0; }
   .deflist dd { padding-top: 4px; }
-  .nav-links { gap: 13px; }
-  .nav-link, .nav-signin { font-size: 0.7rem; letter-spacing: 0.1em; }
   .toc a { flex-wrap: wrap; }
   .toc .toc-note { margin-left: 3.2em; text-align: left; }
 }
@@ -578,7 +487,9 @@ details.ledger[open] { padding-bottom: 18px; }
   }
   @page { margin: 15mm 14mm; }
   body { background: #FFFFFF; color: #1F2937; font-size: 11pt; line-height: 1.5; }
-  .nav, .cover-actions, .no-print { display: none !important; }
+  /* .nav is hidden by css/site-chrome.css, which owns the chrome in
+     print as well as on screen. */
+  .cover-actions, .no-print { display: none !important; }
   .cover { background: #FFFFFF; color: #0F172A; padding: 0 0 18px; border-bottom: 2px solid #4F46E5; }
   .cover::before, .cover::after { display: none; }
   .cover h1 { color: #0F172A; }
@@ -600,7 +511,7 @@ details.ledger[open] { padding-bottom: 18px; }
   details.ledger > summary { list-style: none; }
   .foot { background: #FFFFFF; color: #4B5563; border-top: 2px solid #4F46E5; padding: 14px 0 0; }
   .foot a, .foot-links { color: #1F2937; }
-  .legal { color: #4B5563; }
+  .foot .legal { color: #4B5563; }
   a { color: #0F172A; text-decoration: none; }
 }
 
@@ -619,11 +530,29 @@ details.ledger[open] { padding-bottom: 18px; }
     <nav class="nav-links" aria-label="Primary">
       <a class="nav-link" href="index.html">Learn</a>
       <a class="nav-link" href="shop.html">Shop</a>
+      <a class="nav-link" href="library.html">Library</a>
       <a class="nav-link is-active" href="comp-plan.html" aria-current="page">Plan</a>
+      <a class="nav-link" href="conductor.html">Conductors</a>
       <a class="nav-link" href="team.html">Team</a>
+      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
       <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
       <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="chrome-btn" type="button" id="themeToggle" aria-pressed="false">Dark</button>
+      <button class="nav-theme" type="button" data-theme-toggle
+              aria-label="Switch to the light theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
+            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
+            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
+            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
+          </g>
+        </svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
+                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        </svg>
+      </button>
     </nav>
   </div>
 </header>
@@ -634,8 +563,8 @@ details.ledger[open] { padding-bottom: 18px; }
 <section class="cover" id="cover">
   <div class="wrap">
     <div class="cover-mark">
-      <img src="assets/logo-header-dark.svg?v=bf8b1809957d" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
-      <img src="assets/logo-final-primary.svg?v=bf8b1809957d" alt="Orvanna" class="logo-light">
+      <img src="assets/logo-header-dark.svg?v=519868d84e3f" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
+      <img src="assets/logo-final-primary.svg?v=519868d84e3f" alt="Orvanna" class="logo-light">
     </div>
     <p class="cover-kicker">The compensation plan</p>
     <h1>Build an ensemble.<br>Build a team.</h1>
@@ -1702,66 +1631,12 @@ details.ledger[open] { padding-bottom: 18px; }
 
 <script>
 /* ============================================================
-   Two small things, and nothing else runs on this page.
-   1. The theme toggle writes data-theme on <html>, so the
-      explicit choice beats the system preference in both
-      directions, and remembers the choice for next time.
-   2. The print button, which is the whole reason a brochure
-      has a print stylesheet.
+   One thing runs on this page: the print button, which is the
+   whole reason a brochure has a print stylesheet. The theme
+   control moved to js/site-chrome.js, which every corporate
+   page now shares.
    ============================================================ */
 (function () {
-  var root = document.documentElement;
-  var toggle = document.getElementById('themeToggle');
-  var store = null;
-
-  try { store = window.localStorage; } catch (err) { store = null; }
-
-  function systemPrefersDark() {
-    return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
-  }
-
-  function isDark() {
-    var set = root.getAttribute('data-theme');
-    if (set === 'dark') { return true; }
-    if (set === 'light') { return false; }
-    return systemPrefersDark();
-  }
-
-  function paintToggle() {
-    if (!toggle) { return; }
-    var dark = isDark();
-    toggle.textContent = dark ? 'Light' : 'Dark';
-    toggle.setAttribute('aria-pressed', dark ? 'true' : 'false');
-    toggle.setAttribute('aria-label', dark ? 'Switch to the light theme' : 'Switch to the dark theme');
-  }
-
-  var saved = null;
-  if (store) {
-    try { saved = store.getItem('orvanna-comp-plan-theme'); } catch (err) { saved = null; }
-  }
-  if (saved === 'dark' || saved === 'light') {
-    root.setAttribute('data-theme', saved);
-  }
-  paintToggle();
-
-  if (toggle) {
-    toggle.addEventListener('click', function () {
-      var next = isDark() ? 'light' : 'dark';
-      root.setAttribute('data-theme', next);
-      if (store) {
-        try { store.setItem('orvanna-comp-plan-theme', next); } catch (err) { /* private mode, carry on */ }
-      }
-      paintToggle();
-    });
-  }
-
-  if (window.matchMedia) {
-    var query = window.matchMedia('(prefers-color-scheme: dark)');
-    var onChange = function () { if (!root.getAttribute('data-theme')) { paintToggle(); } };
-    if (query.addEventListener) { query.addEventListener('change', onChange); }
-    else if (query.addListener) { query.addListener(onChange); }
-  }
-
   var printBtn = document.getElementById('printBtn');
   if (printBtn) {
     printBtn.addEventListener('click', function () { window.print(); });
