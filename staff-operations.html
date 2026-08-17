@@ -43,7 +43,7 @@
   <div class="console-wrap">
 
     <div class="ops-mock ops-hidden" id="mockBanner">
-      DEVELOPMENT MOCK MODE. The two operations services are not deployed yet, so this page is answering from recorded response shapes, not the live database. This banner cannot appear on the public site: mock mode only activates on a localhost address with dev=mock in the address bar.
+      DEVELOPMENT MOCK MODE. This page is answering from recorded response shapes, not the live database. This banner cannot appear on the public site: mock mode only activates on a localhost address with dev=mock in the address bar.
     </div>
 
     <!-- ============ TABS ============ -->
@@ -263,7 +263,7 @@
 </main>
 
 <footer class="console-foot">
-  <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing engine deliberately inert until Phase S2</div>
+  <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
 <script src="js/catalog.js?v=35dc88905d19"></script>
@@ -378,6 +378,10 @@
     return (result && result.data && result.data.error && result.data.error.message) || fallback;
   }
 
+  function serviceUnavailable(label) {
+    return 'Could not reach the ' + label + ' service. Refresh and try again; if it persists, the service may be unavailable or refusing the current staff session.';
+  }
+
   /* ---------- tiny DOM helpers (textContent only, never
        innerHTML with data: a server value can never be markup) */
   function el(tag, cls, text) {
@@ -443,6 +447,9 @@
   }
   tabBilling.addEventListener('click', function () { selectTab('billing'); });
   tabCommissions.addEventListener('click', function () { selectTab('commissions'); });
+  window.addEventListener('hashchange', function () {
+    selectTab(window.location.hash === '#commissions' ? 'commissions' : 'billing');
+  });
 
   /* ============================================================
      AREA 1: BILLING CONSOLE
@@ -505,7 +512,7 @@
         ? ('Last changed by ' + s.updated_by + ' at ' + fmtWhen(s.updated_at) + '.')
         : 'Never changed; shipped disabled.';
     }).catch(function () {
-      byId('billingNotes').appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
+      byId('billingNotes').appendChild(el('div', 'ops-bad', serviceUnavailable('billing console')));
     });
   }
 
@@ -529,10 +536,10 @@
         ? ('Daily run enabled at ' + String(s.run_at_time).slice(0, 5) + ' ' + s.timezone + '.')
         : 'Daily run disabled; the engine runs manually only.');
       renderHonestyNotes(byId('billingNotes'), result.data);
-    }).catch(function () { schedStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { schedStatus.textContent = serviceUnavailable('billing console'); });
   });
 
-  /* ---------- run now: preview, then the S2-pending execute ---------- */
+  /* ---------- run now: preview, then server-gated execute ---------- */
   var previewStatus = byId('previewStatus');
   var previewBody = byId('previewBody');
 
@@ -549,10 +556,29 @@
      source of the tick date the execute sends, so what executes is
      what was previewed. */
   var lastPreview = null;
+  var executeArmed = false;
+
+  function invalidateRunPreview() {
+    lastPreview = null;
+    executeArmed = false;
+    byId('executeBtn').disabled = true;
+    byId('executeBtn').textContent = 'Execute run';
+    clearNode(byId('executeBody'));
+  }
+
+  function lockStaleRunPreview() {
+    lastPreview = null;
+    executeArmed = false;
+    byId('executeBtn').disabled = true;
+    byId('executeBtn').textContent = 'Execute run';
+  }
+
+  byId('runLimitInput').addEventListener('input', invalidateRunPreview);
 
   byId('previewBtn').addEventListener('click', function () {
     previewStatus.textContent = 'Gathering the dry run preview...';
     clearNode(previewBody);
+    invalidateRunPreview();
     opsCall('billing-console', { action: 'run_preview', run_limit: runLimitValue() }).then(function (result) {
       if (result.status !== 200) {
         previewStatus.textContent = serverMessage(result, 'Could not compute the preview.');
@@ -560,15 +586,11 @@
       }
       var d = result.data;
       previewStatus.textContent = '';
-      lastPreview = d;
-      /* Preview ran: the execute step unlocks (courtesy order;
-         the server enforces its own gates regardless). */
-      byId('executeBtn').disabled = false;
       if (d.inert) {
         var b = d.backlog || {};
         if (d.requested_run_limit) {
           previewBody.appendChild(el('div', 'ops-note',
-            'Number to run: ' + d.requested_run_limit + '. The limit rides the execute payload; an execute is refused until the engine seam is applied and its clock initialized.'));
+            'Number to run: ' + d.requested_run_limit + '. The limit is saved for the next runnable preview.'));
         }
         previewBody.appendChild(el('div', 'ops-warn',
           'ENGINE INERT: no dollar preview is claimed. ' + (b.explanation || '')));
@@ -579,9 +601,16 @@
           ', latest ' + fmtDate(b.latest_derived_date) + '). ' +
           'Active subscriptions due in the future: ' + b.active_subscriptions_due_in_future + '.');
         previewBody.appendChild(dl);
+        previewBody.appendChild(el('div', 'ops-note', 'Execution stays locked because this preview did not return a runnable tick date.'));
         return;
       }
       var p = d.preview;
+      if (!p || !p.tick_date) {
+        previewBody.appendChild(el('div', 'ops-bad', 'The server did not return a runnable tick date, so execution stays locked.'));
+        return;
+      }
+      lastPreview = d;
+      byId('executeBtn').disabled = false;
       previewBody.appendChild(el('div', 'ops-ok',
         'Dry run for tick date ' + fmtDate(p.tick_date) + ': ' +
         p.new_cycles.count + ' new billing(s) totaling ' + fmtMoney(p.new_cycles.amount) +
@@ -639,7 +668,7 @@
         var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
         previewBody.appendChild(wrap);
       }
-    }).catch(function () { previewStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { previewStatus.textContent = serviceUnavailable('billing console'); });
   });
 
   /* EXECUTE: live as of migrations 028 and 029. Two clicks arm and
@@ -648,12 +677,17 @@
      one anyway), and the tick date sent is the PREVIEW'S tick date
      so what executes is what was previewed. Every refusal the
      server sends renders verbatim: the rules live there. */
-  var executeArmed = false;
   byId('dispatchSelect').addEventListener('change', function () { executeArmed = false; byId('executeBtn').textContent = 'Execute run'; });
 
   byId('executeBtn').addEventListener('click', function () {
     var body = byId('executeBody');
     var dispatch = byId('dispatchSelect').value;
+    if (!lastPreview || !lastPreview.preview || !lastPreview.preview.tick_date) {
+      previewStatus.textContent = 'Preview a runnable tick first. Execution uses the tick date returned by that preview.';
+      byId('executeBtn').disabled = true;
+      executeArmed = false;
+      return;
+    }
     if (dispatch !== 'live' && dispatch !== 'simulated') {
       previewStatus.textContent = 'Choose the dispatch mode first: live or simulated. The console never defaults this.';
       return;
@@ -667,9 +701,7 @@
     }
     executeArmed = false;
     byId('executeBtn').textContent = 'Execute run';
-    var tickDate = (lastPreview && lastPreview.preview && lastPreview.preview.tick_date)
-      ? fmtDate(lastPreview.preview.tick_date)
-      : new Date().toISOString().slice(0, 10);
+    var tickDate = fmtDate(lastPreview.preview.tick_date);
     previewStatus.textContent = 'Executing (' + dispatch + ') for ' + tickDate + '...';
     clearNode(body);
     opsCall('billing-console', {
@@ -695,11 +727,12 @@
           ', without a chargeable card ' + d.worker.no_card +
           '. Pending and mismatched attempts stay honestly dispatched and the next execute sweeps them from the rail\'s own ledger.'));
       }
+      lockStaleRunPreview();
       loadRunHistory();
       loadOverview();
     }).catch(function () {
       previewStatus.textContent = '';
-      body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
+      body.appendChild(el('div', 'ops-bad', serviceUnavailable('billing console')));
     });
   });
 
@@ -718,7 +751,7 @@
           d.past_due_backlog_subscriptions + ' active subscription(s) carry derived billing dates in the past. ' +
           (d.engine && d.engine.clock_initialized
             ? 'The next tick gathers them (the catch-up rule).'
-            : 'They await the engine start and epoch decision at Phase S2; the first real tick gathers per that epoch.')));
+            : 'They await a clock and epoch decision; the first real tick gathers per that epoch.')));
       }
       if (!d.days.length && !d.retry_days.length) {
         body.appendChild(el('p', 'ops-status-line', 'Nothing is scheduled to bill in the next seven days.'));
@@ -749,7 +782,7 @@
       t.appendChild(tb);
       var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
       body.appendChild(wrap);
-    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
   /* ---------- run history + drill ---------- */
@@ -763,7 +796,7 @@
       clearNode(tbody);
       byId('runHistTable').hidden = runs.length === 0;
       status.textContent = runs.length === 0
-        ? 'No billing runs yet. The engine has never ticked on this database, which is the expected state before Phase S2.'
+        ? 'No billing runs yet on this database.'
         : 'Showing ' + runs.length + ' of ' + result.data.total + ' runs, newest first. Click a run for its attempts.';
       runs.forEach(function (r) {
         var tr = el('tr', 'ops-row-click');
@@ -788,7 +821,7 @@
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openRunDetail(r.id); } });
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
   /* Migration 028's run-record arithmetic, real field names
@@ -858,7 +891,7 @@
         drawer.appendChild(el('p', 'ops-status-line', 'No attempts on this run.'));
       }
       body.appendChild(drawer);
-    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.')); });
+    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', serviceUnavailable('billing console'))); });
   }
 
   /* ---------- retry queue ---------- */
@@ -883,7 +916,7 @@
         cell(tr, fmtMoney(r.amount), 'ops-num');
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
   /* ---------- attention queue ---------- */
@@ -905,7 +938,7 @@
         cell(tr, r.detail);
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
   /* ---------- subscription management ---------- */
@@ -952,7 +985,7 @@
         drawer.appendChild(wrap);
         subEvents.appendChild(drawer);
       }
-    }).catch(function () { subStatus.textContent = 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'; });
+    }).catch(function () { subStatus.textContent = serviceUnavailable('billing console'); });
   }
 
   function renderSubCard(s) {
@@ -1021,7 +1054,7 @@
           if (currentMemberCode) { lookupSubs(); }
         }).catch(function () {
           clearNode(out);
-          out.appendChild(el('div', 'ops-bad', 'Could not reach the billing console service. Refresh and try again; if it persists, the console functions are not deployed yet, which the deploy round cures.'));
+          out.appendChild(el('div', 'ops-bad', serviceUnavailable('billing console')));
         });
       });
       return strip;
@@ -1159,7 +1192,7 @@
         cell(tr, m.sv >= 100 ? 'yes (at or above 100.00)' : 'not yet');
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
   byId('projectionBtn').addEventListener('click', function () {
@@ -1211,7 +1244,7 @@
         var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
         body.appendChild(wrap);
       }
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   });
 
   /* ---------- runs board + movers + drill ---------- */
@@ -1250,7 +1283,7 @@
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillRun(r.run_id); } });
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
   function showMovers(run) {
@@ -1338,7 +1371,7 @@
       drawer.appendChild(lwrap);
 
       body.appendChild(drawer);
-    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', 'Could not reach the commission report service.')); });
+    }).catch(function () { clearNode(body); body.appendChild(el('div', 'ops-bad', serviceUnavailable('commission report'))); });
   }
 
   /* ---------- member drill ---------- */
@@ -1413,7 +1446,7 @@
         var cwrap = el('div', 'ops-table-wrap'); cwrap.appendChild(ct);
         body.appendChild(cwrap);
       }
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
   /* ---------- house ledger ---------- */
@@ -1436,7 +1469,7 @@
         cell(tr, m.direction === 'first' ? 'first month' : m.direction);
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
   /* ---------- superseded trail ---------- */
@@ -1478,7 +1511,7 @@
         drawer.appendChild(wrap);
         body.appendChild(drawer);
       });
-    }).catch(function () { status.textContent = 'Could not reach the commission report service.'; });
+    }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
   /* ============================================================
@@ -1506,7 +1539,7 @@
     };
     var NOTES = [
       'The scheduler extension (pg_cron) is not installed on this database instance, so the daily schedule cannot fire server-side yet. The schedule you set here is stored and will be honored once the scheduler is installed, an infrastructure step recorded for the coordinator.',
-      'The renewal engine\'s clock is not initialized on this database, so no billing run can execute here yet. RUN NOW previews; an execute is refused honestly until the deploy round applies the engine seam (migrations 028 and 029), seeds the test credentials, and initializes the clock per the recorded acceptance procedure.'
+      'The renewal engine clock is not initialized on this fixture, so no billing run can execute here yet. Run now can preview fixture data, but execution stays locked until a runnable tick date exists.'
     ];
     var mockSchedule = { enabled: false, run_at_time: null, timezone: 'UTC', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
 
@@ -1542,9 +1575,9 @@
         if (body.dispatch !== 'live' && body.dispatch !== 'simulated') {
           return err(400, 'dispatch_required', 'Say explicitly how to dispatch: live (the real test rail) or simulated (the scripted processor). The console never defaults this.');
         }
-        /* The pre-deploy production truth: the engine seam is not
-           applied until the deploy round ships 028 and 029. */
-        return err(409, 'engine_not_ready', 'The engine\'s execute seam (migrations 028 and 029) is not applied to this database yet; the deploy round applies it after the gates. Until then the console previews only.');
+        /* Even in mock mode, the browser cannot invent writes without
+           a runnable preview tick from the server. */
+        return err(409, 'engine_not_ready', 'The fixture has no runnable execution seam. Preview only.');
       }
       if (body.action === 'run_history') { return ok({ action: 'run_history', runs: [], total: 0, limit: 50, offset: 0 }); }
       if (body.action === 'retry_queue') { return ok({ action: 'retry_queue', retries: [] }); }
@@ -1564,7 +1597,7 @@
         });
       }
       if (body.action === 'sub_action') {
-        return err(409, 'engine_inert', 'The renewal engine is deliberately inert in production (Phase S1): its clock is not initialized, so subscription changes cannot be recorded on the engine\'s ledger yet. This control goes live with Phase S2.');
+        return err(409, 'engine_inert', 'The renewal engine clock is not initialized on this fixture, so subscription changes cannot be recorded on the engine ledger yet.');
       }
     }
 
