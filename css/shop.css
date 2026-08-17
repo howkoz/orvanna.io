@@ -1473,6 +1473,12 @@ a.back-to-shop { text-decoration: none; }
   grid-column: 1;
 }
 
+.pdp-buy > .tier-badge {
+  justify-self: start;
+  width: max-content;
+  max-width: 100%;
+}
+
 .pdp-price-box {
   grid-column: 2;
   grid-row: 1 / span 5;
