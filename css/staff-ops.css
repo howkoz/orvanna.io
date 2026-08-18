@@ -422,3 +422,5 @@
 .ops-table td.ops-next-cycle { color: var(--ops-ok, #86efac); white-space: nowrap; }
 .ops-table td.ops-next-retry { color: var(--ops-warn, #fcd34d); white-space: nowrap; font-weight: 600; }
 .ops-table td.ops-next-none  { color: var(--ops-muted, #94a3b8); white-space: nowrap; }
+
+.ops-table td.ops-next-pending { color: var(--ops-muted, #94a3b8); white-space: nowrap; font-style: italic; }
