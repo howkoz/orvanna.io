@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=712a80caa8df">
-<link rel="stylesheet" href="css/corporate.css?v=712a80caa8df">
-<link rel="stylesheet" href="css/staff.css?v=712a80caa8df">
-<link rel="stylesheet" href="css/staff-ops.css?v=712a80caa8df">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=da1f848471f0">
+<link rel="stylesheet" href="css/corporate.css?v=da1f848471f0">
+<link rel="stylesheet" href="css/staff.css?v=da1f848471f0">
+<link rel="stylesheet" href="css/staff-ops.css?v=da1f848471f0">
 </head>
 <body class="console-body">
 
@@ -266,7 +266,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=712a80caa8df"></script>
+<script src="js/catalog.js?v=da1f848471f0"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -895,7 +895,7 @@
       if (attempts.length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
-        ['Member', 'Sub', 'Cycle', 'Attempt', 'Kind', 'Order', 'Outcome', 'Code', 'Class', 'Fault', 'Next action'].forEach(function (h) { htr.appendChild(el('th', null, h)); });
+        ['Member', 'Sub', 'Cycle', 'Attempt', 'Kind', 'Order', 'Outcome', 'Code', 'Class', 'Fault', 'Next action', 'Next run date'].forEach(function (h, i) { htr.appendChild(el('th', i === 2 ? 'ops-code' : null, h)); });
         thead.appendChild(htr); t.appendChild(thead);
         var tb = el('tbody');
         attempts.forEach(function (a) {
@@ -911,6 +911,8 @@
           cell(tr, a.decline_class);
           cell(tr, a.member_fault === null ? 'none' : (a.member_fault ? 'member' : 'system'));
           cell(tr, a.next_action + (a.next_retry_date ? (' ' + fmtDate(a.next_retry_date)) : ''));
+          var nr = nextRunLabel(a);
+          cell(tr, nr.text, nr.cls);
           tb.appendChild(tr);
         });
         t.appendChild(tb);
@@ -1082,6 +1084,43 @@
     box.appendChild(toggle);
     box.appendChild(scroll);
     return box;
+  }
+
+  /* WHEN DOES THIS ONE COME ROUND AGAIN (owner request, 2026-08-18).
+
+     A run report that says only "succeeded" or "declined" leaves the reader
+     doing calendar arithmetic to answer the question they actually have. So
+     every row states its own next date, and WHICH KIND of date it is:
+
+       succeeded            the ordinary next cycle, about 30 days out
+       declined, retryable  the RETRY date, which is sooner and is a
+                            different promise entirely
+       declined, terminal   no retry is coming, said plainly rather than
+                            left as an empty cell a reader has to interpret
+
+     The distinction matters because a retry date and a renewal date look
+     identical in a table and mean opposite things: one is dunning, the
+     other is business as usual. */
+  function nextRunLabel(a) {
+    var retryable = a.next_action === 'retry' || a.next_action === 'infra_immediate';
+    if (retryable) {
+      return {
+        text: (a.next_retry_date ? fmtDate(a.next_retry_date) : 'date pending') +
+              ' · retry' + (a.ladder_step ? ' ' + a.ladder_step : ''),
+        cls: 'ops-next-retry'
+      };
+    }
+    if (a.outcome === 'succeeded') {
+      return {
+        text: (a.next_billing_date ? fmtDate(a.next_billing_date) : 'next cycle') + ' · next cycle',
+        cls: 'ops-next-cycle'
+      };
+    }
+    /* Declined with nothing scheduled: terminal for this cycle. */
+    return {
+      text: (a.next_billing_date ? fmtDate(a.next_billing_date) + ' · ' : '') + 'no retry',
+      cls: 'ops-next-none'
+    };
   }
 
   function subCode(id) {

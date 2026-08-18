@@ -413,3 +413,12 @@
   z-index: 1;
   background: var(--ops-panel, #0b1220);
 }
+
+
+/* THE NEXT-RUN COLUMN. A retry date and a renewal date look identical in a
+   table and mean opposite things: one is dunning, the other is business as
+   usual. Colour separates them, and the WORD beside each date says which it
+   is, so the meaning survives greyscale and colour blindness. */
+.ops-table td.ops-next-cycle { color: var(--ops-ok, #86efac); white-space: nowrap; }
+.ops-table td.ops-next-retry { color: var(--ops-warn, #fcd34d); white-space: nowrap; font-weight: 600; }
+.ops-table td.ops-next-none  { color: var(--ops-muted, #94a3b8); white-space: nowrap; }
