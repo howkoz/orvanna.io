@@ -341,3 +341,75 @@
   margin: 10px 0;
   background: rgba(34, 211, 238, 0.05);
 }
+
+
+/* ============================================================
+   THE PEEK LIST: two rows at rest, ten when opened, scroll for the rest.
+   Added 2026-08-18 (owner request) so a run can be inspected before it
+   charges anything.
+
+   The row height is a VARIABLE, not a height on a row. Rows still size to
+   their own content; the variable only tells the CONTAINER how tall two or
+   ten of them come to. If a row ever wraps to two lines the container shows
+   slightly fewer, which is correct behaviour and not a broken layout.
+   ============================================================ */
+.ops-peek {
+  --peek-row: 34px;
+  --peek-head: 34px;
+  margin: 14px 0 6px;
+  border: 1px solid var(--ops-line, rgba(148, 163, 184, 0.22));
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.ops-peek-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  background: rgba(148, 163, 184, 0.07);
+  border: 0;
+  border-bottom: 1px solid var(--ops-line, rgba(148, 163, 184, 0.22));
+  color: inherit;
+  font: inherit;
+  font-size: 0.82rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.ops-peek-toggle:hover { background: rgba(148, 163, 184, 0.12); }
+.ops-peek-toggle:focus-visible { outline: 2px solid var(--ops-accent, #38bdf8); outline-offset: -2px; }
+
+.ops-peek-label { font-weight: 600; }
+
+.ops-peek-hint {
+  font-size: 0.72rem;
+  opacity: 0.72;
+  white-space: nowrap;
+}
+
+/* COLLAPSED: the header row plus two data rows. */
+.ops-peek-scroll {
+  max-height: calc(var(--peek-head) + (2 * var(--peek-row)));
+  overflow: hidden;
+  transition: max-height 0.18s ease;
+}
+
+/* OPEN: ten data rows, and the rest arrive by scrolling. */
+.ops-peek[data-open="true"] .ops-peek-scroll {
+  max-height: calc(var(--peek-head) + (10 * var(--peek-row)));
+  overflow-y: auto;
+}
+
+.ops-peek-table { margin: 0; }
+
+/* The header stays put while the body scrolls under it, so the columns
+   remain identifiable at row 27 as at row 1. */
+.ops-peek-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--ops-panel, #0b1220);
+}

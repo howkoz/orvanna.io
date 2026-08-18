@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=697129716004">
-<link rel="stylesheet" href="css/corporate.css?v=697129716004">
-<link rel="stylesheet" href="css/staff.css?v=697129716004">
-<link rel="stylesheet" href="css/staff-ops.css?v=697129716004">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=712a80caa8df">
+<link rel="stylesheet" href="css/corporate.css?v=712a80caa8df">
+<link rel="stylesheet" href="css/staff.css?v=712a80caa8df">
+<link rel="stylesheet" href="css/staff-ops.css?v=712a80caa8df">
 </head>
 <body class="console-body">
 
@@ -266,7 +266,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=697129716004"></script>
+<script src="js/catalog.js?v=712a80caa8df"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -651,6 +651,32 @@
           previewBody.appendChild(swrap);
         }
       }
+      /* The subscriptions themselves. The console has always RECEIVED these
+         (preview.new_cycles.rows, up to 50) and only ever displayed the
+         totals, so a run could be started without once seeing what it would
+         charge. */
+      if ((p.new_cycles.rows || []).length) {
+        previewBody.appendChild(peekTable(
+          'Subscriptions this run would bill',
+          p.new_cycles.rows,
+          p.new_cycles.count,
+          [{ text: '#', cls: 'ops-num' }, { text: 'Member' }, { text: 'Sub', cls: 'ops-code' },
+           { text: 'Cycle', cls: 'ops-num' }, { text: 'Due date' },
+           { text: 'Every', cls: 'ops-num' }, { text: 'Amount', cls: 'ops-num' },
+           { text: 'PV', cls: 'ops-num' }],
+          function (r, i) {
+            var tr = el('tr');
+            cell(tr, i + 1, 'ops-num');
+            cell(tr, r.member_code, 'ops-mono');
+            cell(tr, subCode(r.subscription_id), 'ops-code');
+            cell(tr, r.renewal_index, 'ops-num');
+            cell(tr, fmtDate(r.scheduled_date));
+            cell(tr, r.frequency_months + ' mo', 'ops-num');
+            cell(tr, fmtMoney(r.amount), 'ops-num');
+            cell(tr, r.pv, 'ops-num');
+            return tr;
+          }));
+      }
       if (p.new_cycles.by_frequency.length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
@@ -1001,6 +1027,60 @@
 
      The offset is what makes it look like an account rather than a count:
      subscription 1 reads A-100001, not A-1. */
+  /* A LIST YOU CAN GLANCE AT OR READ (owner request, 2026-08-18: show a
+     couple, click to open a window of ten, scroll for the rest).
+
+     Two rows collapsed is a PEEK: enough to prove the list is real and see
+     what a row looks like, without a 27-row wall above the button that runs
+     the money. Ten expanded is a WINDOW: enough to judge a batch, still short
+     enough that the Execute button stays on screen.
+
+     The height is set on the SCROLL CONTAINER, never on a row. A class that
+     sets a height on a box containing text is what collapsed a callout to
+     three pixels on this site once already; rows here size to their own
+     content and the container clips them.
+
+     No inset shadow is used as the scroll cue: an inset shadow paints
+     UNDERNEATH its content, so an opaque table hides the very hint it is
+     meant to give. The row count in the summary carries that job instead. */
+  function peekTable(title, rows, total, headers, rowFn) {
+    var box = el('div', 'ops-peek');
+    box.setAttribute('data-open', 'false');
+
+    var shown = rows.length;
+    var label = title + ' · ' + shown +
+      (total && total > shown ? ' of ' + total : '') +
+      (shown === 1 ? ' subscription' : ' subscriptions');
+
+    var toggle = el('button', 'ops-peek-toggle');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-expanded', 'false');
+    var cap = el('span', 'ops-peek-label', label);
+    var hint = el('span', 'ops-peek-hint', shown > 2 ? 'click to expand' : '');
+    toggle.appendChild(cap); toggle.appendChild(hint);
+
+    var scroll = el('div', 'ops-peek-scroll');
+    var t = el('table', 'ops-table ops-peek-table');
+    var thead = el('thead'); var htr = el('tr');
+    headers.forEach(function (h) { htr.appendChild(el('th', h.cls || null, h.text)); });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = el('tbody');
+    rows.forEach(function (r, i) { tb.appendChild(rowFn(r, i)); });
+    t.appendChild(tb);
+    scroll.appendChild(t);
+
+    toggle.addEventListener('click', function () {
+      var open = box.getAttribute('data-open') === 'true';
+      box.setAttribute('data-open', open ? 'false' : 'true');
+      toggle.setAttribute('aria-expanded', open ? 'false' : 'true');
+      hint.textContent = open ? (shown > 2 ? 'click to expand' : '') : 'click to collapse';
+    });
+
+    box.appendChild(toggle);
+    box.appendChild(scroll);
+    return box;
+  }
+
   function subCode(id) {
     var n = Number(id);
     return isFinite(n) && n > 0 ? 'A-' + (100000 + n) : String(id);
