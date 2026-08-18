@@ -75,11 +75,11 @@
             </div>
             <div class="ops-field">
               <label class="order-label" for="schedTz">Timezone</label>
-              <input id="schedTz" type="text" list="tzList" placeholder="UTC" spellcheck="false">
+              <input id="schedTz" type="text" list="tzList" placeholder="America/New_York" spellcheck="false">
               <datalist id="tzList">
-                <option value="UTC"></option>
-                <option value="America/Chicago"></option>
                 <option value="America/New_York"></option>
+                <option value="America/Chicago"></option>
+                <option value="UTC"></option>
                 <option value="America/Denver"></option>
                 <option value="America/Los_Angeles"></option>
                 <option value="Europe/Berlin"></option>
@@ -507,7 +507,10 @@
       var s = d.schedule || {};
       byId('schedEnabled').checked = !!s.enabled;
       byId('schedTime').value = s.run_at_time ? String(s.run_at_time).slice(0, 5) : '';
-      byId('schedTz').value = s.timezone || 'UTC';
+      /* Eastern is the house zone (owner request 2026-08-18). A NAMED zone,
+       never a fixed offset: America/New_York carries itself between EDT and
+       EST, where 'EST' would sit an hour wrong for half the year. */
+      byId('schedTz').value = s.timezone || 'America/New_York';
       schedStatus.textContent = s.updated_by
         ? ('Last changed by ' + s.updated_by + ' at ' + fmtWhen(s.updated_at) + '.')
         : 'Never changed; shipped disabled.';
@@ -519,7 +522,7 @@
   byId('schedSaveBtn').addEventListener('click', function () {
     var enabled = byId('schedEnabled').checked;
     var time = byId('schedTime').value.trim();
-    var tz = byId('schedTz').value.trim() || 'UTC';
+    var tz = byId('schedTz').value.trim() || 'America/New_York';
     schedStatus.textContent = 'Saving...';
     opsCall('billing-console', {
       action: 'schedule_set',
@@ -1639,7 +1642,7 @@
       'The scheduler extension (pg_cron) is not installed on this database instance, so the daily schedule cannot fire server-side yet. The schedule you set here is stored and will be honored once the scheduler is installed, an infrastructure step recorded for the coordinator.',
       'The renewal engine clock is not initialized on this fixture, so no billing run can execute here yet. Run now can preview fixture data, but execution stays locked until a runnable tick date exists.'
     ];
-    var mockSchedule = { enabled: false, run_at_time: null, timezone: 'UTC', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
+    var mockSchedule = { enabled: false, run_at_time: null, timezone: 'America/New_York', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
 
     if (fnName === 'billing-console') {
       if (body.action === 'overview') {
@@ -1653,7 +1656,7 @@
         if (body.enabled && !body.run_at_time) { return err(400, 'time_required', 'Enabling the daily run needs a time of day; an enabled schedule with no time would look armed and never fire.'); }
         return ok({
           action: 'schedule_set', engine: ENGINE_INERT, honesty_notes: NOTES,
-          schedule: { enabled: body.enabled, run_at_time: body.run_at_time, timezone: body.timezone || 'UTC', updated_by: 'Orvanna_Staff', updated_at: new Date().toISOString() }
+          schedule: { enabled: body.enabled, run_at_time: body.run_at_time, timezone: body.timezone || 'America/New_York', updated_by: 'Orvanna_Staff', updated_at: new Date().toISOString() }
         });
       }
       if (body.action === 'run_preview') {
