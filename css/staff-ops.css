@@ -424,3 +424,14 @@
 .ops-table td.ops-next-none  { color: var(--ops-muted, #94a3b8); white-space: nowrap; }
 
 .ops-table td.ops-next-pending { color: var(--ops-muted, #94a3b8); white-space: nowrap; font-style: italic; }
+
+/* The processor that actually handled the attempt. */
+.ops-table td.ops-conn { white-space: nowrap; font-variant-numeric: tabular-nums; }
+
+/* THE PROCESSOR MESSAGE, last column, deliberately NOT wrapped. A vendor
+   message can be several hundred characters; wrapping it would stretch one
+   row to five lines and push every neighbouring row apart. It runs off the
+   right instead and the table scrolls to it. */
+.ops-table td.ops-msg,
+.ops-table th.ops-msg { white-space: nowrap; max-width: none; }
+.ops-table td.ops-msg { color: var(--ops-muted, #94a3b8); font-size: 0.78rem; }

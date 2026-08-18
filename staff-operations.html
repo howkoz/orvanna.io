@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=2c30f7cfbfd2">
-<link rel="stylesheet" href="css/corporate.css?v=2c30f7cfbfd2">
-<link rel="stylesheet" href="css/staff.css?v=2c30f7cfbfd2">
-<link rel="stylesheet" href="css/staff-ops.css?v=2c30f7cfbfd2">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
+<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
+<link rel="stylesheet" href="css/staff.css?v=cef144c6cb42">
+<link rel="stylesheet" href="css/staff-ops.css?v=cef144c6cb42">
 </head>
 <body class="console-body">
 
@@ -266,7 +266,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=2c30f7cfbfd2"></script>
+<script src="js/catalog.js?v=cef144c6cb42"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -895,7 +895,7 @@
       if (attempts.length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
-        ['Member', 'Sub', 'Cycle', 'Attempt', 'Kind', 'Order', 'Outcome', 'Code', 'Class', 'Fault', 'Next action', 'Next run date'].forEach(function (h, i) { htr.appendChild(el('th', i === 2 ? 'ops-code' : null, h)); });
+        ['Member', 'Sub', 'Cycle', 'Attempt', 'Kind', 'Order', 'Processor', 'Outcome', 'Code', 'Class', 'Fault', 'Next action', 'Next run date', 'Processor message'].forEach(function (h, i) { htr.appendChild(el('th', i === 2 ? 'ops-code' : (i === 13 ? 'ops-msg' : null), h)); });
         thead.appendChild(htr); t.appendChild(thead);
         var tb = el('tbody');
         attempts.forEach(function (a) {
@@ -906,6 +906,10 @@
           cell(tr, a.attempt_no, 'ops-num');
           cell(tr, a.attempt_kind);
           cell(tr, a.order_number, 'ops-mono');
+          /* WHICH PROCESSOR TOOK IT. With routing juggling connectors, the
+             alternative is exporting from the vendor dashboard to find out
+             where a payment or a decline actually happened. */
+          cell(tr, a.connector || 'not recorded', 'ops-conn');
           cell(tr, a.outcome);
           cell(tr, a.decline_code);
           cell(tr, a.decline_class);
@@ -913,6 +917,13 @@
           cell(tr, a.next_action + (a.next_retry_date ? (' ' + fmtDate(a.next_retry_date)) : ''));
           var nr = nextRunLabel(a);
           cell(tr, nr.text, nr.cls);
+          /* THE PROCESSOR'S OWN WORDS, last on purpose. A long message must
+             run off the right-hand edge, never wrap into the middle of the
+             table and shove every other row's height around; the table
+             already scrolls sideways. Unlike the shopper-facing copy, this
+             is staff-facing and is NOT filtered: whoever reads this needs
+             the vendor's exact words, links and all. */
+          cell(tr, a.processor_message || '', 'ops-msg');
           tb.appendChild(tr);
         });
         t.appendChild(tb);
