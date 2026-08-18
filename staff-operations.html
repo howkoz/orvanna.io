@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1e9e41a2a72c">
-<link rel="stylesheet" href="css/corporate.css?v=1e9e41a2a72c">
-<link rel="stylesheet" href="css/staff.css?v=1e9e41a2a72c">
-<link rel="stylesheet" href="css/staff-ops.css?v=1e9e41a2a72c">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=697129716004">
+<link rel="stylesheet" href="css/corporate.css?v=697129716004">
+<link rel="stylesheet" href="css/staff.css?v=697129716004">
+<link rel="stylesheet" href="css/staff-ops.css?v=697129716004">
 </head>
 <body class="console-body">
 
@@ -266,7 +266,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=1e9e41a2a72c"></script>
+<script src="js/catalog.js?v=697129716004"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -632,14 +632,14 @@
         if ((p.limit.selected || []).length) {
           var st = el('table', 'ops-table');
           var sthead = el('thead'); var shtr = el('tr');
-          ['Order', 'Member', 'Sub', 'Cycle', 'Due date', 'Billing', 'Amount'].forEach(function (h, i) { shtr.appendChild(el('th', (i === 2 || i === 3 || i === 6) ? 'ops-num' : null, h)); });
+          ['Order', 'Member', 'Sub', 'Cycle', 'Due date', 'Billing', 'Amount'].forEach(function (h, i) { shtr.appendChild(el('th', i === 2 ? 'ops-code' : ((i === 3 || i === 6) ? 'ops-num' : null), h)); });
           sthead.appendChild(shtr); st.appendChild(sthead);
           var stb = el('tbody');
           p.limit.selected.forEach(function (r, i) {
             var tr = el('tr');
             cell(tr, i + 1);
             cell(tr, r.member_code, 'ops-mono');
-            cell(tr, r.subscription_id, 'ops-num');
+            cell(tr, subCode(r.subscription_id), 'ops-code');
             cell(tr, r.renewal_index, 'ops-num');
             cell(tr, fmtDate(r.due_date));
             cell(tr, 'new billing, ' + r.detail);
@@ -872,7 +872,7 @@
         attempts.forEach(function (a) {
           var tr = el('tr');
           cell(tr, a.member_code, 'ops-mono');
-          cell(tr, a.subscription_id, 'ops-num');
+          cell(tr, subCode(a.subscription_id), 'ops-code');
           cell(tr, a.renewal_index, 'ops-num');
           cell(tr, a.attempt_no, 'ops-num');
           cell(tr, a.attempt_kind);
@@ -908,7 +908,7 @@
       rows.forEach(function (r) {
         var tr = el('tr');
         cell(tr, r.member_code, 'ops-mono');
-        cell(tr, r.subscription_id, 'ops-num');
+        cell(tr, subCode(r.subscription_id), 'ops-code');
         cell(tr, r.decline_class);
         cell(tr, r.decline_code);
         cell(tr, fmtDate(r.next_retry_date));
@@ -934,7 +934,7 @@
         var tr = el('tr');
         cell(tr, r.reason);
         cell(tr, r.member_code, 'ops-mono');
-        cell(tr, r.subscription_id, 'ops-num');
+        cell(tr, subCode(r.subscription_id), 'ops-code');
         cell(tr, r.detail);
         tbody.appendChild(tr);
       });
@@ -971,7 +971,7 @@
         var tb = el('tbody');
         d.recent_events.forEach(function (ev) {
           var tr = el('tr');
-          cell(tr, ev.subscription_id, 'ops-num');
+          cell(tr, subCode(ev.subscription_id), 'ops-code');
           cell(tr, fmtDate(ev.occurred_on));
           cell(tr, ev.event_type);
           cell(tr, ev.from_state);
@@ -988,13 +988,31 @@
     }).catch(function () { subStatus.textContent = serviceUnavailable('billing console'); });
   }
 
+  /* A SUBSCRIPTION'S DISPLAY CODE, defined once and used everywhere one is
+     shown (owner request, 2026-08-18: A-100001).
+
+     Deliberately a FORMATTER, not a stored column, and that is the whole
+     design decision. An order number is written into the processor's own
+     payment record, so it has to be stored and preserved; a subscription
+     code is ours alone and appears on no external system, so deriving it
+     from the primary key keeps one identity rather than two that can drift.
+     Reversible in the head: subtract 100000 and you have the row id, which
+     matters when a console action or a log line names the raw number.
+
+     The offset is what makes it look like an account rather than a count:
+     subscription 1 reads A-100001, not A-1. */
+  function subCode(id) {
+    var n = Number(id);
+    return isFinite(n) && n > 0 ? 'A-' + (100000 + n) : String(id);
+  }
+
   function renderSubCard(s) {
     var card = el('div', 'ops-sub-card');
     var head = el('div', 'ops-sub-head');
     head.appendChild(el('span', 'ops-sub-title', s.product_name + ' (' + s.sku + ') x' + s.quantity));
     head.appendChild(statePill(s.state));
     head.appendChild(el('span', 'ops-status-line',
-      'Sub ' + s.subscription_id + '. Every ' + s.frequency_months + ' month(s), ' +
+      subCode(s.subscription_id) + '. Every ' + s.frequency_months + ' month(s), ' +
       fmtMoney(s.monthly_price * s.quantity * s.frequency_months) + ' per billing. ' +
       'Billing day: ' + (s.billing_day === null ? 'anchor day (' + fmtDate(s.billing_anchor_date) + ')' : s.billing_day) + '. ' +
       'Derived next billing: ' + fmtDate(s.next_billing_date) + '.'));

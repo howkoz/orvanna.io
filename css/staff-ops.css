@@ -123,6 +123,14 @@
 .ops-table td.ops-num { font-variant-numeric: tabular-nums; text-align: right; }
 .ops-table th.ops-num { text-align: right; }
 
+/* A subscription code (A-101822) is an identifier, not a quantity. It aligns
+   LEFT, matching the plain headers these columns already use, and keeps
+   tabular figures so the digits stay in vertical register down the column.
+   Added 2026-08-18: the codes were inheriting the right-aligned numeric class
+   while their headers were left-aligned, so the column read crooked. */
+.ops-table td.ops-code,
+.ops-table th.ops-code { text-align: left; font-variant-numeric: tabular-nums; }
+
 .ops-row-click { cursor: pointer; }
 .ops-row-click:hover, .ops-row-click:focus-visible {
   background: rgba(124, 138, 160, 0.12);
