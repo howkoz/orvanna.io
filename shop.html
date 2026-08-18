@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ae1b08640484">
-<link rel="stylesheet" href="css/corporate.css?v=ae1b08640484">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fe9f79af41e6">
+<link rel="stylesheet" href="css/corporate.css?v=fe9f79af41e6">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=ae1b08640484">
-<link rel="stylesheet" href="css/shop.css?v=ae1b08640484">
+<link rel="stylesheet" href="css/site-chrome.css?v=fe9f79af41e6">
+<link rel="stylesheet" href="css/shop.css?v=fe9f79af41e6">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -747,8 +747,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=ae1b08640484"></script>
-<script src="js/payments.js?v=ae1b08640484"></script>
+<script src="js/catalog.js?v=fe9f79af41e6"></script>
+<script src="js/payments.js?v=fe9f79af41e6"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -3325,6 +3325,6 @@
      script, recorded in ROADMAP.md; the vendor's own floating button stays
      hidden in the stylesheet so nothing can open itself over the cart control
      on a phone or over the card form during checkout. -->
-<script src="js/site-chrome.js?v=ae1b08640484"></script>
+<script src="js/site-chrome.js?v=fe9f79af41e6"></script>
 </body>
 </html>

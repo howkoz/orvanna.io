@@ -972,8 +972,47 @@
       return message;
     }
 
+    /* A PROCESSOR'S ERROR TEXT IS NOT ADDRESSED TO THE SHOPPER, and
+       most of it must never reach one. Added 2026-08-18 after a live
+       Stripe attempt printed this, word for word, on the checkout
+       page under the words "Your bank said":
+
+         "Sending credit card numbers directly to the Stripe API is
+          generally unsafe. We suggest you use test tokens ... see
+          https://stripe.com/docs/testing. To enable testing raw card
+          data APIs, see https://support.stripe.com/questions/..."
+
+       Three things wrong with that at once. The bank never said it,
+       and never saw the payment: it is the processor refusing our
+       INTEGRATION, not an issuer declining a card. It hands a
+       shopper two vendor support links and an instruction meant for
+       an engineer. And it names the processor, which a shopper has
+       no reason to see.
+
+       So a processor message is passed through only when it could
+       plausibly be a cardholder-facing decline reason: short, no web
+       address, and free of integration vocabulary. Anything else is
+       dropped, and the surrounding copy still tells the shopper the
+       truth that matters, which is that nothing was charged and the
+       cart is intact. The full text is never lost: it stays in
+       processor_summary for staff and for us. */
+    var PROCESSOR_MSG_MAX = 120;
+    var INTEGRATION_JARGON =
+      /\b(api|apis|token|tokens|sdk|endpoint|integration|documentation|docs|support|enable|enabling|test mode|raw card|dashboard|merchant account|configuration|not configured|unsupported|credential)\b/i;
+    var LOOKS_LIKE_URL = /(https?:\/\/|www\.|\.com|\.io|\.net\b)/i;
+
+    function shopperSafeProcessorMessage(raw) {
+      var msg = typeof raw === 'string' ? raw.trim() : '';
+      if (!msg) return '';
+      if (msg.length > PROCESSOR_MSG_MAX) return '';
+      if (LOOKS_LIKE_URL.test(msg)) return '';
+      if (INTEGRATION_JARGON.test(msg)) return '';
+      return msg;
+    }
+
     function buildOutcomeMessage(receipt) {
-      var bankMsg = (receipt.processor && receipt.processor.error_message) || '';
+      var bankMsg = shopperSafeProcessorMessage(
+        receipt.processor && receipt.processor.error_message);
       var bankSaid = bankMsg ? copy.bankSaidPrefix + bankMsg + '.' : '';
       /* SESSION STATE APPLIES ONLY TO THE SESSION'S OWN PAYMENT.
          Fixed 2026-08-16 (verifier finding M3, quality assurance
