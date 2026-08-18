@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
-<link rel="stylesheet" href="css/corporate.css?v=519868d84e3f">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ae1b08640484">
+<link rel="stylesheet" href="css/corporate.css?v=ae1b08640484">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=519868d84e3f">
-<link rel="stylesheet" href="css/shop.css?v=519868d84e3f">
+<link rel="stylesheet" href="css/site-chrome.css?v=ae1b08640484">
+<link rel="stylesheet" href="css/shop.css?v=ae1b08640484">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -439,7 +439,7 @@
           </svg>
         </div>
         <h1 class="confirm-title">Order placed</h1>
-        <p class="order-number" id="orderNumber">ORV-2026-08-0000</p>
+        <p class="order-number" id="orderNumber">O-10001</p>
 
         <div class="confirm-summary">
           <div class="summary-lines" id="confirmLines"></div>
@@ -499,7 +499,7 @@
         <h2 class="checkout-panel-title">Look up an order</h2>
         <p class="step-intro" id="resumeLookupIntro">Enter an Orvanna order number and we will tell you exactly what happened to it.</p>
         <label class="field-label" for="lookupOrder">Order number</label>
-        <input class="field" type="text" id="lookupOrder" placeholder="ORV-2026-08-XXXXXX" autocomplete="off" spellcheck="false">
+        <input class="field" type="text" id="lookupOrder" placeholder="O-10001" autocomplete="off" spellcheck="false">
         <p class="field-hint">The letters ORV, then the year, the month, then six characters.</p>
         <button class="btn btn-solid" type="button" id="lookupGo">Look up this order</button>
         <p class="confirm-note" id="lookupResult" role="status" aria-live="polite"></p>
@@ -747,8 +747,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=519868d84e3f"></script>
-<script src="js/payments.js?v=519868d84e3f"></script>
+<script src="js/catalog.js?v=ae1b08640484"></script>
+<script src="js/payments.js?v=ae1b08640484"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -2195,18 +2195,25 @@
 
   /* ---------- place order: always succeeds ---------- */
 
+  /* SIMULATED orders only. Real orders are numbered by the database
+     (app.fn_next_order_number, migration 030) and this function never runs for
+     them: it is reachable only with LIVE_PAYMENTS off.
+
+     Why it does NOT draw from the real sequence: it cannot. There is no
+     database here. A local counter imitating O-##### would eventually mint a
+     number the server had already given to a REAL order, and two different
+     orders sharing one number is a worse outcome than two formats.
+
+     So a simulated order says so, in its own number. SIM sorts beside the real
+     ones, can never collide with them, and a screenshot of a demo can never be
+     mistaken for a record of money. Milliseconds since local midnight keep it
+     unique within a session. */
   function orderNumber() {
     var d = new Date();
-    var y = d.getFullYear();
-    var m = String(d.getMonth() + 1);
-    if (m.length < 2) m = '0' + m;
-    /* collision-safe without a backend: milliseconds since local
-       midnight in base36, uppercase, padded to a constant six
-       characters. Unique per millisecond, resets each day. */
     var ms = ((d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds()) * 1000 + d.getMilliseconds();
-    var token = ms.toString(36).toUpperCase();
-    while (token.length < 6) token = '0' + token;
-    return 'ORV-' + y + '-' + m + '-' + token;
+    var token = String(ms);
+    while (token.length < 8) token = '0' + token;
+    return 'O-SIM-' + token;
   }
 
   document.getElementById('checkoutForm').addEventListener('submit', function (e) {
@@ -3318,6 +3325,6 @@
      script, recorded in ROADMAP.md; the vendor's own floating button stays
      hidden in the stylesheet so nothing can open itself over the cart control
      on a phone or over the card form during checkout. -->
-<script src="js/site-chrome.js?v=519868d84e3f"></script>
+<script src="js/site-chrome.js?v=ae1b08640484"></script>
 </body>
 </html>

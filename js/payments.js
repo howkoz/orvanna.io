@@ -78,7 +78,17 @@
     return fallback;
   }
 
-  var ORDER_NUMBER_RE = /^ORV-\d{4}-\d{2}-[0-9A-Z]{6}$/;
+  /* The browser's ONE definition of an order number shape. Mirrors the
+     server's in functions/_shared/refund-rules.ts and must accept the same
+     three shapes, because a customer resuming after a bank challenge may be
+     carrying an order number minted before the 2026-08-17 reformat:
+
+       O-10001              current, minted by the database for all channels
+       ORV-2026-08-158WRU   legacy shop and staff console
+       REN-1822-1-1         legacy renewal engine
+
+     Rejecting a legacy number here strands that customer mid-payment. */
+  var ORDER_NUMBER_RE = /^(?:O-\d{4,}|ORV-\d{4}-\d{2}-[0-9A-Z]{6}|REN-\d+-\d+-\d+)$/;
 
   /* ============================================================
      THE FACTORY

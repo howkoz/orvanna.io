@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=519868d84e3f">
-<link rel="stylesheet" href="css/corporate.css?v=519868d84e3f">
-<link rel="stylesheet" href="css/staff.css?v=519868d84e3f">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=ae1b08640484">
+<link rel="stylesheet" href="css/corporate.css?v=ae1b08640484">
+<link rel="stylesheet" href="css/staff.css?v=ae1b08640484">
 <style>
 /* ============================================================
    Order history, order detail, and refund controls.
@@ -280,7 +280,7 @@
               <div class="order-lookup">
                 <label class="order-label" for="staffLookupOrder">Look up an order</label>
                 <div class="lp-row">
-                  <input class="staff-field" id="staffLookupOrder" type="text" placeholder="ORV-2026-08-XXXXXX" autocomplete="off" spellcheck="false">
+                  <input class="staff-field" id="staffLookupOrder" type="text" placeholder="O-10001" autocomplete="off" spellcheck="false">
                   <button class="btn-addline" id="staffLookupBtn" type="button">Check</button>
                 </div>
                 <p class="place-hint" id="staffLookupResult" role="status" aria-live="polite"></p>
@@ -316,7 +316,7 @@
         <p class="readaloud-kicker">Read this to the caller</p>
 
         <p class="confirm-ordernum-label">Confirmation number</p>
-        <p class="confirm-ordernum" id="confOrderNum">ORV-0000-00-000000</p>
+        <p class="confirm-ordernum" id="confOrderNum">O-10001</p>
         <p class="confirm-phonetic" id="confPhonetic"></p>
 
         <div class="say-block" id="sayTotal"><span class="say-label">The total</span><span id="sayTotalText"></span></div>
@@ -405,8 +405,8 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=519868d84e3f"></script>
-<script src="js/payments.js?v=519868d84e3f"></script>
+<script src="js/catalog.js?v=ae1b08640484"></script>
+<script src="js/payments.js?v=ae1b08640484"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -1448,15 +1448,15 @@
     }).join(' ');
   }
 
+  /* SIMULATED orders only, same rule as the shop: no database here, so it
+     cannot draw the real sequence, and imitating O-##### would eventually
+     collide with a real order. A simulated order announces itself instead. */
   function orderNumber() {
     var d = new Date();
-    var y = d.getFullYear();
-    var mo = String(d.getMonth() + 1);
-    if (mo.length < 2) mo = '0' + mo;
     var ms = ((d.getHours() * 60 + d.getMinutes()) * 60 + d.getSeconds()) * 1000 + d.getMilliseconds();
-    var token = ms.toString(36).toUpperCase();
-    while (token.length < 6) token = '0' + token;
-    return { full: 'ORV-' + y + '-' + mo + '-' + token, token: token };
+    var token = String(ms);
+    while (token.length < 8) token = '0' + token;
+    return { full: 'O-SIM-' + token, token: token };
   }
 
   function placeOrder() {
