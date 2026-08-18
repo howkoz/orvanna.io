@@ -503,10 +503,32 @@
       state.publishableKey = publishableKey;
       state.hyper = window.Hyper(publishableKey);
       state.widgets = state.hyper.widgets({ clientSecret: state.clientSecret });
+      /* CARD ONLY, AND NO TAB CHROME (owner request, 2026-08-18: remove
+         the Google Pay strip and the Card panel; the screen is too busy).
+
+         The white express strip and the "Or pay using / Card" tab are
+         drawn by the provider's own form, not by this page, so they are
+         turned off through the widget's options rather than with CSS:
+         nothing on our side can reach inside that frame.
+
+           wallets.applePay / googlePay 'never'  removes the express strip
+           layout.type 'accordion'               removes the tab row
+           defaultCollapsed false                 opens the card form straight away
+           displayOneClickPaymentMethodsOnTop     stops wallets being hoisted above
+
+         Values are from the provider's own option reference. This page's
+         OWN Apple Pay, Google Pay and PayPal buttons above are unaffected;
+         they are our markup and still work. */
       state.widgets.create('payment', {
-        layout: 'tabs',
+        layout: {
+          type: 'accordion',
+          defaultCollapsed: false,
+          displayOneClickPaymentMethodsOnTop: false
+        },
         wallets: {
-          walletReturnUrl: canonicalReturnUrl(state.orderNumber)
+          walletReturnUrl: canonicalReturnUrl(state.orderNumber),
+          applePay: 'never',
+          googlePay: 'never'
         }
       }).mount('#' + opts.mountId);
       setCardSkeleton(false);

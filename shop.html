@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=fe9f79af41e6">
-<link rel="stylesheet" href="css/corporate.css?v=fe9f79af41e6">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=1e9e41a2a72c">
+<link rel="stylesheet" href="css/corporate.css?v=1e9e41a2a72c">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=fe9f79af41e6">
-<link rel="stylesheet" href="css/shop.css?v=fe9f79af41e6">
+<link rel="stylesheet" href="css/site-chrome.css?v=1e9e41a2a72c">
+<link rel="stylesheet" href="css/shop.css?v=1e9e41a2a72c">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -275,7 +275,16 @@
             <div class="checkout-panel glass" id="paymentPanel">
               <span class="accent-bar" aria-hidden="true"></span>
               <h2 class="checkout-panel-title"><span class="step-num">4</span>Payment</h2>
-              <p class="step-intro">Credit card is live for USD sandbox checkout. Google Pay and PayPal use sandbox approval previews, then place a demo order after the shopper approves. Plaid/Open Banking is staged for bank account testing when the currency rail is ready.</p>
+              <!-- COLLAPSED BY DEFAULT (owner request, 2026-08-18: the screen was
+                   too busy; expand to read.
+                   Nothing was deleted; the explanation moved behind a disclosure.
+                   Native <details>, so it needs no script and works with a
+                   keyboard and a screen reader for free. -->
+              <details class="pay-disclosure">
+                <summary>How payment works in this demo</summary>
+                <p>Credit card is live for USD sandbox checkout. Google Pay and PayPal use sandbox approval previews, then place a demo order after the shopper approves. Plaid and Open Banking are staged for bank account testing when the currency rail is ready.</p>
+                <p>Card runs through the HyperSwitch sandbox. Google Pay and PayPal show approval previews before the demo order completes.</p>
+              </details>
 
               <div class="pay-row" role="group" aria-label="Payment method">
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
@@ -299,7 +308,6 @@
                   <span class="sr-only">Bank account through Plaid</span>
                 </button>
               </div>
-              <p class="pay-note">Card runs through the HyperSwitch sandbox. Google Pay and PayPal show approval previews before the demo order completes. Plaid is staged for bank account testing after the currency and ACH/Open Banking rails are ready.</p>
 
               <form id="checkoutForm" novalidate>
                 <div id="cardFields">
@@ -324,7 +332,10 @@
                      The secure card form from the payment provider mounts into
                      hyperswitchMount; card data never touches this page's code. -->
                 <div id="livePayArea" hidden>
-                  <p class="pay-note" id="livePayNote"></p>
+                  <details class="pay-disclosure" id="livePayNoteBox" hidden>
+                    <summary>Test cards for this checkout</summary>
+                    <p class="pay-note" id="livePayNote"></p>
+                  </details>
                   <!-- Placeholder shown while the server opens the payment.
                        That call takes about two seconds, most of it the
                        payment service answering, and an empty gap where card
@@ -346,7 +357,10 @@
                 <!-- Pre-challenge notice (3-D Secure). Present from the moment
                      the payment step mounts, because surprise is the single
                      largest cause of people abandoning a bank approval. -->
-                <p class="pay-3ds-note" id="threeDsNotice">Your bank may ask you to approve this payment. This is 3-D Secure (3DS), the card networks' identity check. If it asks, a window from your bank opens right here on this page. Nothing is charged while you are in it.</p>
+                <details class="pay-disclosure pay-disclosure-3ds" id="threeDsNotice">
+                  <summary>Your bank may ask you to approve this payment</summary>
+                  <p>This is 3-D Secure (3DS), the card networks' identity check. If it asks, a window from your bank opens right here on this page. Nothing is charged while you are in it.</p>
+                </details>
 
                 <!-- The order number exists from the moment the server opens the
                      payment, so the shopper holds it BEFORE anything can go wrong. -->
@@ -747,8 +761,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=fe9f79af41e6"></script>
-<script src="js/payments.js?v=fe9f79af41e6"></script>
+<script src="js/catalog.js?v=1e9e41a2a72c"></script>
+<script src="js/payments.js?v=1e9e41a2a72c"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -2295,6 +2309,13 @@
 
   var livePayArea = document.getElementById('livePayArea');
   var livePayNote = document.getElementById('livePayNote');
+  var livePayNoteBox = document.getElementById('livePayNoteBox');
+  /* The disclosure hides itself when its note is empty, so the page never
+     shows an expander with nothing behind it. */
+  function setLivePayNote(text) {
+    livePayNote.textContent = text;
+    if (livePayNoteBox) livePayNoteBox.hidden = !text;
+  }
   var livePayStatus = document.getElementById('livePayStatus');
   var payOrderChip = document.getElementById('payOrderChip');
   var payOrderNum = document.getElementById('payOrderNum');
@@ -2436,7 +2457,7 @@
       },
       onReset: function (message) {
         if (liveOpenTimer) { window.clearTimeout(liveOpenTimer); liveOpenTimer = null; }
-        livePayNote.textContent = '';
+        setLivePayNote('');
         payOrderChip.hidden = true;
         payOrderNum.textContent = '';
         livePayArea.hidden = !message;
@@ -2511,7 +2532,7 @@
     var stagedMessage = stagedPaymentMessage();
     if (!stagedMessage) return false;
     livePayArea.hidden = false;
-    livePayNote.textContent = '';
+    setLivePayNote('');
     setCardSkeleton(false);
     document.getElementById('hyperswitchMount').innerHTML = '';
     liveStatus(stagedMessage);
@@ -2800,13 +2821,13 @@
          4000 1111 1111 1115  approval screen, then the card declines
        Expiry month 01, year = current + 3. Full matrix:
        docs/TEST-CARDS.html. See also ROADMAP.md. */
-    livePayNote.textContent = payMethod === 'paypal'
+    setLivePayNote(payMethod === 'paypal'
       ? PAY_LABELS[payMethod] + ' is enabled on the Braintree connector. Choose it inside the secure HyperSwitch form if it is available in this browser. Nothing is ever charged.'
       : 'Test mode, expiry 01/29, any three digit security code. ' +
         '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. ' +
         '4000 0000 0000 2370 opens it, and the approval fails. ' +
         '4000 0000 0000 2701 approves with no passcode at all. ' +
-        'Nothing is ever charged.';
+        'Nothing is ever charged.');
     liveStatus('');
     /* THE BUTTON QUOTES THE SERVER, NEVER THIS PAGE.
 
@@ -3325,6 +3346,6 @@
      script, recorded in ROADMAP.md; the vendor's own floating button stays
      hidden in the stylesheet so nothing can open itself over the cart control
      on a phone or over the card form during checkout. -->
-<script src="js/site-chrome.js?v=fe9f79af41e6"></script>
+<script src="js/site-chrome.js?v=1e9e41a2a72c"></script>
 </body>
 </html>

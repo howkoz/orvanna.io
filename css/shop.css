@@ -2093,6 +2093,82 @@ a.back-to-shop { text-decoration: none; }
   margin: 0 0 14px;
 }
 
+/* COLLAPSED EXPLANATION (owner request, 2026-08-18: the screen was too
+   busy; the wording expands on click).
+
+   NO FIXED HEIGHT ANYWHERE IN HERE, deliberately. A class that sets a
+   height on a box containing text is what collapsed a callout to three
+   pixels on this site once already; <details> sizes itself to its
+   content, and it must be left to. */
+.pay-disclosure {
+  margin: 0 0 16px;
+}
+
+.pay-disclosure > summary {
+  font-size: 0.76rem;
+  color: var(--shop-muted);
+  cursor: pointer;
+  padding: 6px 0;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: color 0.15s ease;
+}
+
+.pay-disclosure > summary::-webkit-details-marker { display: none; }
+
+/* The caret is drawn here rather than relying on the browser's default
+   marker, which differs between engines and cannot be coloured. */
+.pay-disclosure > summary::before {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  transform: rotate(0deg);
+  transition: transform 0.18s ease;
+  flex: 0 0 auto;
+}
+
+.pay-disclosure[open] > summary::before { transform: rotate(90deg); }
+
+.pay-disclosure > summary:hover,
+.pay-disclosure > summary:focus-visible {
+  color: var(--shop-text);
+}
+
+.pay-disclosure > p {
+  font-size: 0.74rem;
+  line-height: 1.65;
+  color: var(--shop-muted);
+  margin: 4px 0 0;
+  padding-left: 12px;
+}
+
+/* The 3-D Secure disclosure keeps its indigo identity, because the
+   SUMMARY is the warning: a shopper must see that their bank may
+   interrupt them without opening anything. Only the explanation of what
+   3-D Secure is sits behind the toggle. */
+.pay-disclosure-3ds {
+  border: 1px solid rgba(129, 140, 248, 0.28);
+  border-left: 3px solid var(--indigo-d);
+  border-radius: 8px;
+  background: rgba(79, 70, 229, 0.08);
+  padding: 6px 14px 8px;
+}
+
+.pay-disclosure-3ds > summary {
+  color: var(--shop-text);
+  font-size: 0.8rem;
+}
+
+.pay-disclosure-3ds > p {
+  color: var(--shop-text);
+  font-size: 0.78rem;
+}
+
 .pay-order-chip {
   font-size: 0.82rem;
   color: var(--shop-text);
