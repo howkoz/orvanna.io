@@ -648,6 +648,14 @@ body:has(#workingLog) .brand-mark svg { animation: none; }
   .nav-inner { padding: 12px 18px; }
   .brand-word { font-size: 17px; }
   .brand-mark { width: 24px; height: 24px; }
+  /* THE MEDIUM CUT, from assets/logo-mark-md.svg: bar 25.5 x 12.5, inset 7.5.
+     The large cut (bar 22 x 10, inset 10) is drawn inline on every page and is
+     correct at 28px; at this size its bars close up into a smudge, which is
+     what the note beside the large cut warns about. Geometry, not scale. */
+  .brand-mark .mark-accent { x: 31px; y: 7.5px; width: 25.5px; height: 12.5px; }
+  .brand-mark .mark-bar:nth-of-type(2) { x: 44px; y: 32px; width: 12.5px; height: 25.5px; }
+  .brand-mark .mark-bar:nth-of-type(3) { x: 7.5px; y: 44px; width: 25.5px; height: 12.5px; }
+  .brand-mark .mark-bar:nth-of-type(4) { x: 7.5px; y: 7.5px; width: 12.5px; height: 25.5px; }
   .footer .footer-cols { grid-template-columns: 1fr; }
   .footer .footer-contact { justify-content: flex-start; }
 }

@@ -58,8 +58,10 @@
    where every other page gets them -- without them the accent bar
    rendered black and the mark read as four identical bars. */
 .brand-mark {
-  width: 18px;
-  height: 18px;
+  /* 20px, not 18: the medium cut is drawn for 20 to 29px, and 18 sat in the
+     gap between the cuts with the large drawing inside it. */
+  width: 20px;
+  height: 20px;
   border: 0;
   border-radius: 0;
   box-shadow: none;
@@ -67,6 +69,16 @@
 .brand-mark svg { width: 100%; height: 100%; display: block; }
 .brand-mark .mark-bar { fill: #1B1917; }
 .brand-mark .mark-accent { fill: #EC3013; }
+
+/* THE MEDIUM CUT, from assets/logo-mark-md.svg: bar 25.5 x 12.5, inset 7.5.
+   The large cut (bar 22 x 10, inset 10) is drawn inline on every page and is
+   correct at 28px; at this size its bars close up into a smudge, which is
+   what the note beside the large cut warns about. Geometry, not scale. */
+.brand-mark .mark-accent { x: 31px; y: 7.5px; width: 25.5px; height: 12.5px; }
+.brand-mark .mark-bar:nth-of-type(2) { x: 44px; y: 32px; width: 12.5px; height: 25.5px; }
+.brand-mark .mark-bar:nth-of-type(3) { x: 7.5px; y: 44px; width: 25.5px; height: 12.5px; }
+.brand-mark .mark-bar:nth-of-type(4) { x: 7.5px; y: 7.5px; width: 12.5px; height: 25.5px; }
+
 
 .brand-word {
   font-size: 0.95rem;
