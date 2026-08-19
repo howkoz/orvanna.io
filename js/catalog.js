@@ -5,7 +5,18 @@
    icon. Round 4 (Phase 4C.2).
 
    Billing modes, per the house pricing rule:
-   - Subscription is the DEFAULT mode on every item.
+   - Subscription is the DEFAULT mode on every item that can
+     carry one, and it stays selected until the shopper says
+     otherwise. Nothing on the site pre-selects one-time.
+   - ONLY THE TWELVE AGENTS SUBSCRIBE. Ruled 2026-08-19: the
+     $100 domain agents and the $50 support agents are the
+     subscribable items. The Manager bundle and the three packs
+     are one-time purchases, at the one-time price already in
+     the table below -- so a pack is $2,000 rather than $200 a
+     month, and there is no monthly figure for it anywhere.
+     subscribable() is the single test; nothing reads the tier
+     to decide this, so a new tier does not silently inherit an
+     answer.
    - The one-time alternative uses the 10x rule: the one-time
      price shows what the product is WORTH without subscription.
      Domain agents: $100.00 / month becomes $1,000.00 once.
@@ -406,9 +417,40 @@ window.ORVANNA = (function () {
     return n.toLocaleString('en-US') + ' PV';
   }
 
+  /* Which items can carry a subscription. The four that cannot are named
+     rather than derived, because "bundle and pack" is today's answer to
+     the question and the SKU list is the question itself. */
+  var ONE_TIME_ONLY = { manager: true, ignition: true, momentum: true, constellation: true };
+  function subscribable(p) {
+    var sku = typeof p === 'string' ? p : (p && p.sku);
+    return !!BY_SKU[sku] && !ONE_TIME_ONLY[sku];
+  }
+
+  /* The mode an item is actually allowed to transact in. Every reader of a
+     cart key goes through this, so a stored 'sub' on a one-time-only item
+     -- an old cart, a hand-edited localStorage -- prices as one-time
+     rather than at a tenth of its price. */
+  function modeFor(p, mode) { return subscribable(p) ? (mode === 'one' ? 'one' : 'sub') : 'one'; }
+
+  /* THE HEADLINE. What an item costs when a page has to name one figure
+     and the shopper has not chosen a mode: the monthly price for the
+     twelve agents, the one-time price for the four that cannot subscribe.
+     Every page that quotes a bare price uses this, so the Library and the
+     Shop cannot show the same item at two different numbers. */
+  function headline(p) {
+    var mode = subscribable(p) ? 'sub' : 'one';
+    return {
+      mode: mode,
+      price: priceOf(p, mode),
+      pv: pvOf(p, mode),
+      per: mode === 'sub' ? '/ month' : 'one time',
+      perShort: mode === 'sub' ? '/mo' : ' once'
+    };
+  }
+
   /* price and pv for an item in a given mode */
-  function priceOf(p, mode) { return mode === 'one' ? p.once.price : p.sub.price; }
-  function pvOf(p, mode)    { return mode === 'one' ? p.once.pv    : p.sub.pv; }
+  function priceOf(p, mode) { return modeFor(p, mode) === 'one' ? p.once.price : p.sub.price; }
+  function pvOf(p, mode)    { return modeFor(p, mode) === 'one' ? p.once.pv    : p.sub.pv; }
 
   /* ---------- cart (localStorage, shared by every page) ---------- */
 
@@ -426,7 +468,7 @@ window.ORVANNA = (function () {
         /* migrate round-3 keys (bare sku) to sku|sub */
         var parts = key.indexOf('|') >= 0 ? key.split('|') : [key, 'sub'];
         var sku = parts[0];
-        var mode = parts[1] === 'one' ? 'one' : 'sub';
+        var mode = modeFor(sku, parts[1]);
         if (BY_SKU[sku]) {
           var k = sku + '|' + mode;
           clean[k] = Math.min((clean[k] || 0) + q, 99);
@@ -448,7 +490,13 @@ window.ORVANNA = (function () {
 
   function keyParts(key) {
     var parts = key.split('|');
-    return { sku: parts[0], mode: parts[1] === 'one' ? 'one' : 'sub' };
+    return { sku: parts[0], mode: modeFor(parts[0], parts[1]) };
+  }
+
+  /* The key an item must be stored under, so callers never build one by
+     hand and never store a mode the item cannot have. */
+  function cartKey(p, mode) {
+    return (typeof p === 'string' ? p : p.sku) + '|' + modeFor(p, mode);
   }
 
   /* totals across the cart:
@@ -464,6 +512,8 @@ window.ORVANNA = (function () {
       if (!p) return;
       var q = cart[key];
       if (kp.mode === 'one') { oneMoney += p.once.price * q; } else { subMoney += p.sub.price * q; }
+      /* kp.mode is already normalised by keyParts, so a one-time-only item
+         cannot reach the monthly total from here. */
       pv += pvOf(p, kp.mode) * q;
       count += q;
     });
@@ -482,6 +532,10 @@ window.ORVANNA = (function () {
     fmtPv: fmtPv,
     priceOf: priceOf,
     pvOf: pvOf,
+    subscribable: subscribable,
+    headline: headline,
+    modeFor: modeFor,
+    cartKey: cartKey,
     loadCart: loadCart,
     saveCart: saveCart,
     keyParts: keyParts,

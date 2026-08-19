@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductor Library</title>
 <meta name="description" content="The Orvanna Conductor Library: a browsable index of all sixteen catalog items -- twelve agents, the bundle and three packs -- the four tiers, and an honest guide to choosing. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/library.css?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/site-chrome.css?v=7c644f9d20d9">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=9b0635590f0b">
+<link rel="stylesheet" href="css/library.css?v=9b0635590f0b">
+<link rel="stylesheet" href="css/site-chrome.css?v=9b0635590f0b">
 
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
@@ -25,7 +25,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=7c644f9d20d9" defer></script>
+<script src="js/site-chrome.js?v=9b0635590f0b" defer></script>
 </head>
 <body>
 
@@ -180,10 +180,10 @@
             <p class="ch-pick-name" id="chPickName">&mdash;</p>
             <p class="ch-pick-price">
               <b id="chPickPrice">&mdash;</b>
-              <span class="ch-per">a month</span>
+              <span class="ch-per" id="chPickPer">a month</span>
               <span class="ch-pv" id="chPickPv"></span>
             </p>
-            <p class="ch-once">or <span id="chPickOnce"></span> once</p>
+            <p class="ch-once" id="chPickOnceLine">or <span id="chPickOnce"></span> once</p>
           </div>
           <div class="ch-head">
             <p class="ch-head-k">Does it qualify the month?</p>
@@ -459,8 +459,8 @@
 
     <div class="callout">
       <h3 class="sub-title">Say this, not the other thing</h3>
-      <p>All three packs cost exactly what their contents cost. There is no saving, and a Conductor who implies one will be caught by the first customer who adds it up. What a pack buys is curation: somebody already decided which agents belong together at this stage, and you do not have to.</p>
-      <p>The Manager Agent runs the other way. Its three agents come to <span data-parts="manager"></span> a month bought separately, and the bundle is <span data-money="manager"></span> a month. The difference is the coordination layer, which is the product. Selling it as a discount would be both false and weaker than the truth.</p>
+      <p>Packs and the bundle are one-time purchases: they are bought once, at the price shown, and nothing about them renews. Only the twelve agents carry a subscription. All three packs cost exactly what their contents cost bought outright. There is no saving, and a Conductor who implies one will be caught by the first customer who adds it up. What a pack buys is curation: somebody already decided which agents belong together at this stage, and you do not have to.</p>
+      <p>The Manager Agent runs the other way. Its three agents come to <span data-parts="manager"></span> bought separately and outright, and the bundle is <span data-once="manager"></span>. The difference is the coordination layer, which is the product. Selling it as a discount would be both false and weaker than the truth.</p>
     </div>
 
     <div class="panel-row-2 mt-lg">
@@ -563,8 +563,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=7c644f9d20d9"></script>
-<script src="js/library-icons.js?v=7c644f9d20d9"></script>
+<script src="js/catalog.js?v=9b0635590f0b"></script>
+<script src="js/library-icons.js?v=9b0635590f0b"></script>
 <script>
 /* ============================================================
    ORVANNA CONDUCTOR LIBRARY: the index.
@@ -622,29 +622,44 @@
         proses[p].hidden = Number(proses[p].getAttribute('data-prose')) !== i;
       }
 
+      /* Four of the ten situations recommend a pack, and a pack is a
+         one-time purchase: it has no monthly price to quote and no
+         alternative mode to offer. Everything below reads the headline
+         rather than reaching for .sub, so the Library quotes the same
+         figure the Shop charges. */
+      var ph = O.headline(pick), th = O.headline(then);
+
       document.getElementById('chPickName').textContent  = pick.name;
-      document.getElementById('chPickPrice').textContent = O.fmtMoney(pick.sub.price);
-      document.getElementById('chPickPv').textContent    = O.fmtPv(pick.sub.pv);
+      document.getElementById('chPickPrice').textContent = O.fmtMoney(ph.price);
+      document.getElementById('chPickPer').textContent   = ph.mode === 'sub' ? 'a month' : 'once';
+      document.getElementById('chPickPv').textContent    = O.fmtPv(ph.pv);
       document.getElementById('chPickOnce').textContent  = O.fmtMoney(pick.once.price);
+      document.getElementById('chPickOnceLine').hidden   = !O.subscribable(pick);
 
       /* The gate is 100.00 SV in a month. A single item clears it on its
          own only if its own PV reaches that line -- stated as arithmetic,
          never as a promise. */
-      var qualifies = pick.sub.pv >= 100;
+      var qualifies = ph.pv >= 100;
       document.getElementById('chQualHead').textContent = qualifies
         ? 'Yes, on its own' : 'Not on its own';
       document.getElementById('chQualNote').textContent = qualifies
-        ? O.fmtPv(pick.sub.pv) + ' clears the 100.00 line in the month it is billed. Exactly 100.00 qualifies.'
-        : 'At ' + O.fmtPv(pick.sub.pv) + ' this is enrolled, not qualified. It needs ' +
-          (100 - pick.sub.pv) + ' PV more in the same month.';
+        ? O.fmtPv(ph.pv) + ' clears the 100.00 line in the month it is billed. Exactly 100.00 qualifies.'
+        : 'At ' + O.fmtPv(ph.pv) + ' this is enrolled, not qualified. It needs ' +
+          (100 - ph.pv) + ' PV more in the same month.';
 
       document.getElementById('chThenName').textContent  = then.name;
-      document.getElementById('chThenPrice').textContent = O.fmtMoney(then.sub.price) + ' / month';
-      document.getElementById('chThenPv').textContent    = O.fmtPv(then.sub.pv);
+      document.getElementById('chThenPrice').textContent = O.fmtMoney(th.price) + ' ' + th.per;
+      document.getElementById('chThenPv').textContent    = O.fmtPv(th.pv);
 
-      var bothPrice = pick.sub.price + then.sub.price;
-      var bothPv = pick.sub.pv + then.sub.pv;
-      document.getElementById('chBothPrice').textContent = O.fmtMoney(bothPrice) + ' a month';
+      /* A one-time item and a monthly one do not add up to one figure, and
+         printing "$2,050 a month" for a pack plus an agent would be a
+         number no invoice will ever show. When the two modes differ the
+         line states both. */
+      var bothPv = ph.pv + th.pv;
+      document.getElementById('chBothPrice').textContent = ph.mode === th.mode
+        ? O.fmtMoney(ph.price + th.price) + ' ' + (ph.mode === 'sub' ? 'a month' : 'once')
+        : O.fmtMoney(ph.mode === 'one' ? ph.price : th.price) + ' once plus ' +
+          O.fmtMoney(ph.mode === 'sub' ? ph.price : th.price) + ' a month';
       document.getElementById('chBothPv').textContent =
         O.fmtPv(bothPv) + (bothPv >= 100 ? ' \u00b7 a qualified month' : '');
 
@@ -684,13 +699,17 @@
   ];
 
   function rowFor(p) {
+    var h = O.headline(p);
     return '<a class="ix-row" href="library-agent.html?sku=' + p.sku + '" data-sku="' + p.sku + '">' +
       '<span class="ico" aria-hidden="true">' + (ICONS[p.sku] || '') + '</span>' +
       '<span class="ix-name">' + p.name + '</span>' +
       '<span class="ix-blurb">' + p.blurb + '</span>' +
-      '<span class="ix-price">' + O.fmtMoney(p.sub.price) + '<span class="ix-per"> /mo</span></span>' +
-      '<span class="ix-pv">' + O.fmtPv(p.sub.pv) + '</span>' +
-      '<span class="ix-once">or ' + O.fmtMoney(p.once.price) + ' once</span>' +
+      '<span class="ix-price">' + O.fmtMoney(h.price) +
+        '<span class="ix-per"> ' + h.perShort.trim() + '</span></span>' +
+      '<span class="ix-pv">' + O.fmtPv(h.pv) + '</span>' +
+      '<span class="ix-once">' + (O.subscribable(p)
+        ? 'or ' + O.fmtMoney(p.once.price) + ' once'
+        : 'one-time only') + '</span>' +
     '</a>';
   }
 
@@ -699,14 +718,18 @@
   function groupMeta(def) {
     var inTier = O.PRODUCTS.filter(function (p) { return p.tier === def.key; });
     if (!inTier.length) { return def.meta; }
-    var vals = inTier.map(function (p) { return p.sub.price; });
+    var vals = inTier.map(function (p) { return O.headline(p).price; });
     var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
     /* "each" only when there is more than one of them: the bundle is a
        single item and "200 PV each" invites the reader to ask each what. */
     var many = inTier.length > 1;
+    /* A tier is sold one way or the other, never both, so the unit comes
+       off the first item in it. */
+    var per = O.subscribable(inTier[0]) ? ' a month' : ' once';
+    var loPv = O.headline(inTier[vals.indexOf(lo)]).pv;
     var price = lo === hi
-      ? O.fmtMoney(lo) + ' a month \u00b7 ' + O.fmtPv(lo) + (many ? ' each' : '')
-      : O.fmtMoney(lo) + ' to ' + O.fmtMoney(hi) + ' a month';
+      ? O.fmtMoney(lo) + per + ' \u00b7 ' + O.fmtPv(loPv) + (many ? ' each' : '')
+      : O.fmtMoney(lo) + ' to ' + O.fmtMoney(hi) + per;
     return price + ' \u00b7 ' + def.meta.charAt(0).toLowerCase() + def.meta.slice(1);
   }
 
@@ -746,8 +769,9 @@
       '<td>' + (TIER_LABEL[p.tier] ? TIER_LABEL[p.tier].text : p.tier) + '</td>' +
       '<td>' + names + '</td>' +
       '<td class="num">' + O.fmtMoney(parts) + '</td>' +
-      '<td class="num">' + O.fmtMoney(p.sub.price) + '</td>' +
-      '<td class="num">' + O.fmtPv(p.sub.pv) + '</td>' +
+      '<td class="num">' + O.fmtMoney(O.headline(p).price) +
+        (O.subscribable(p) ? '' : ' <span class="cell-note">once</span>') + '</td>' +
+      '<td class="num">' + O.fmtPv(O.headline(p).pv) + '</td>' +
     '</tr>';
   }).join('');
 
@@ -761,16 +785,32 @@
     });
   }
 
-  fill('data-money', function (sku) { var p = O.get(sku); return p ? O.fmtMoney(p.sub.price) : null; });
+  /* The MONTHLY column is empty for the four items that have no monthly
+     price, rather than borrowing a figure they are not sold at. The
+     one-time column beside it carries their real one. */
+  var DASH = '\u2014';
+  fill('data-money', function (sku) {
+    var p = O.get(sku);
+    if (!p) { return null; }
+    return O.subscribable(p) ? O.fmtMoney(p.sub.price) : DASH;
+  });
   fill('data-once',  function (sku) { var p = O.get(sku); return p ? O.fmtMoney(p.once.price) : null; });
-  fill('data-pv',    function (sku) { var p = O.get(sku); return p ? O.fmtPv(p.sub.pv) : null; });
+  fill('data-pv',    function (sku) {
+    var p = O.get(sku);
+    return p ? O.fmtPv(O.headline(p).pv) : null;
+  });
 
+  /* The parts of a group are compared in the mode the group is SOLD in:
+     a one-time bundle against what its agents cost bought outright, a
+     monthly one against what they cost by the month. Comparing $2,000
+     once with $150 a month would be arithmetic about nothing. */
   fill('data-parts', function (sku) {
     var p = O.get(sku);
     if (!p || !p.includes) { return null; }
+    var mode = O.headline(p).mode;
     return O.fmtMoney(p.includes.reduce(function (total, child) {
       var c = O.get(child);
-      return total + (c ? c.sub.price : 0);
+      return total + (c ? O.priceOf(c, mode) : 0);
     }, 0));
   });
 
@@ -796,9 +836,15 @@
     return low === high ? format(low) : format(low) + ' to ' + format(high);
   }
 
-  fill('data-range-money', function (tier) { return range(tier, function (p) { return p.sub.price; }, O.fmtMoney); });
+  fill('data-range-money', function (tier) {
+    var items = inTier(tier);
+    if (items.length && !O.subscribable(items[0])) { return DASH; }
+    return range(tier, function (p) { return p.sub.price; }, O.fmtMoney);
+  });
   fill('data-range-once',  function (tier) { return range(tier, function (p) { return p.once.price; }, O.fmtMoney); });
-  fill('data-range-pv',    function (tier) { return range(tier, function (p) { return p.sub.pv; }, O.fmtPv); });
+  fill('data-range-pv',    function (tier) {
+    return range(tier, function (p) { return O.headline(p).pv; }, O.fmtPv);
+  });
 
   /* ---------- tier filter ---------- */
 

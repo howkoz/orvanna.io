@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Call Console</title>
 <meta name="description" content="Orvanna staff call console: verify the caller, see their account at a glance, place a phone order for them, and read the confirmation aloud. Demonstration tool, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/corporate.css?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/staff.css?v=7c644f9d20d9">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=9b0635590f0b">
+<link rel="stylesheet" href="css/corporate.css?v=9b0635590f0b">
+<link rel="stylesheet" href="css/staff.css?v=9b0635590f0b">
 <style>
 /* ============================================================
    Order history, order detail, and refund controls.
@@ -412,8 +412,8 @@
   </div>
 </div>
 
-<script src="js/catalog.js?v=7c644f9d20d9"></script>
-<script src="js/payments.js?v=7c644f9d20d9"></script>
+<script src="js/catalog.js?v=9b0635590f0b"></script>
+<script src="js/payments.js?v=9b0635590f0b"></script>
 <script>
 /* ============================================================
    Orvanna Staff Call Console (Phase 4.5).
@@ -847,7 +847,8 @@
     productSelect.innerHTML = groups.map(function (g) {
       return '<optgroup label="' + g[0] + '">' +
         O.PRODUCTS.filter(g[1]).map(function (p) {
-          return '<option value="' + p.sku + '">' + esc(optionLabel(p, addMode)) + '</option>';
+          return '<option value="' + p.sku + '">' +
+            esc(optionLabel(p, O.modeFor(p, addMode))) + '</option>';
         }).join('') + '</optgroup>';
     }).join('');
     if (keep && O.get(keep)) productSelect.value = keep;
@@ -874,10 +875,15 @@
     var el = byId('addPreview');
     if (!p) { el.textContent = ''; return; }
     var q = currentQty();
-    var amt = O.priceOf(p, addMode) * q;
-    var pv = O.pvOf(p, addMode) * q;
+    /* The Monthly/One-time buttons above set an intent; the item decides.
+       A pack is a one-time purchase whichever button is pressed, and the
+       preview says the price the caller will actually be quoted. */
+    var mode = O.modeFor(p, addMode);
+    var amt = O.priceOf(p, mode) * q;
+    var pv = O.pvOf(p, mode) * q;
     el.innerHTML = 'Adds <b>' + esc(p.name) + ' × ' + q + '</b>: ' +
-      '<b>' + fmtMoney(amt) + (addMode === 'one' ? ' billed once' : ' per month') + '</b>, ' +
+      '<b>' + fmtMoney(amt) + (mode === 'one' ? ' billed once' : ' per month') + '</b>, ' +
+      (O.subscribable(p) ? '' : '<b> (one-time only)</b>, ') +
       '<b>' + fmtPv(pv) + '</b>' +
       (p.includes ? ' · includes ' + p.includes.map(function (s) { return O.get(s).name; }).join(', ') : '');
   }
@@ -890,7 +896,7 @@
   function addLine() {
     var p = O.get(productSelect.value);
     if (!p || !caller) return;
-    var key = p.sku + '|' + addMode;
+    var key = O.cartKey(p, addMode);
     order[key] = Math.min((order[key] || 0) + currentQty(), 99);
     qtyInput.value = '1';
     renderOrder();

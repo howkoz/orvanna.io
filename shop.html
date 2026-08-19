@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/corporate.css?v=7c644f9d20d9">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=9b0635590f0b">
+<link rel="stylesheet" href="css/corporate.css?v=9b0635590f0b">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=7c644f9d20d9">
-<link rel="stylesheet" href="css/shop.css?v=7c644f9d20d9">
+<link rel="stylesheet" href="css/site-chrome.css?v=9b0635590f0b">
+<link rel="stylesheet" href="css/shop.css?v=9b0635590f0b">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -783,8 +783,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=7c644f9d20d9"></script>
-<script src="js/payments.js?v=7c644f9d20d9"></script>
+<script src="js/catalog.js?v=9b0635590f0b"></script>
+<script src="js/payments.js?v=9b0635590f0b"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -805,6 +805,12 @@
 
   var cart = O.loadCart();
   function persist() { O.saveCart(cart); }
+
+  /* loadCart() normalises a stored key whose mode the item cannot have --
+     an old cart from before the packs stopped subscribing, or a hand-edited
+     one. It normalises what it RETURNS; this writes the corrected cart back
+     so storage stops carrying a key the site would never write. */
+  persist();
 
   /* ---------- display currency ----------
 
@@ -905,10 +911,37 @@
     return MARKS[p.sku] || p.name.charAt(0).toUpperCase();
   }
 
-  function inCart(sku) { return (cart[sku + '|sub'] || 0) > 0; }
+  /* ---------- the billing default ----------
+
+     SUBSCRIPTION IS SELECTED, ALWAYS, ON ARRIVAL. Nothing persists this
+     across visits: a shopper who switched to one-time last week still
+     lands on Monthly today, which is what "default with subscription
+     active" means. Within the visit the choice is respected everywhere
+     -- the rows, the promoted pack, what an Add puts in the cart, and
+     every subscribable line already in the cart.
+
+     Items that cannot subscribe ignore it entirely. O.subscribable() is
+     the only test; this file never reads a tier to decide. */
+  var shopMode = 'sub';
+
+  function modeOf(p) { return O.modeFor(p, shopMode); }
+
+  function inCart(sku) {
+    return (cart[sku + '|sub'] || 0) > 0 || (cart[sku + '|one'] || 0) > 0;
+  }
+
+  /* The switch, drawn the same way everywhere it appears. */
+  function switchHtml(id, on, label, attrs) {
+    return '<button class="switch" type="button" role="switch" id="' + id + '"' +
+      ' aria-checked="' + (on ? 'true' : 'false') + '"' +
+      ' aria-label="' + label + '"' + (attrs || '') + '>' +
+      '<span class="switch-knob" aria-hidden="true"></span></button>';
+  }
 
   function productRow(p) {
     var held = inCart(p.sku);
+    var mode = modeOf(p);
+    var one = mode === 'one';
     return '' +
       '<div class="row' + (held ? ' is-held' : '') + '" data-tier="' + p.tier + '">' +
         '<span class="row-mark" aria-hidden="true">' + markOf(p) + '</span>' +
@@ -916,8 +949,9 @@
           '<a class="row-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a>' +
           '<span class="row-desc">' + p.blurb + '</span>' +
         '</span>' +
-        '<span class="row-price">' + fmtRound(p.sub.price) + '<span class="per">/mo</span></span>' +
-        '<span class="row-pv">' + fmtPv(p.sub.pv) + '</span>' +
+        '<span class="row-price">' + fmtRound(O.priceOf(p, mode)) +
+          '<span class="per">' + (one ? ' once' : '/mo') + '</span></span>' +
+        '<span class="row-pv">' + fmtPv(O.pvOf(p, mode)) + '</span>' +
         (held
           ? '<button class="row-btn is-held" type="button" data-remove-sku="' + p.sku + '">Remove</button>'
           : '<button class="row-btn" type="button" data-add="' + p.sku + '" aria-label="Add ' + p.name + ' to cart">Add</button>') +
@@ -959,9 +993,16 @@
         '<div class="promo-chips">' + chips + '</div>' +
       '</div>' +
       '<div class="promo-buy">' +
-        '<span class="promo-price">' + fmtRound(p.sub.price) + '<span class="per">/mo</span></span>' +
-        '<span class="promo-pv">' + fmtPv(p.sub.pv) + '</span>' +
-        '<span class="promo-once">or ' + fmtRound(p.once.price) + ' outright</span>' +
+        /* A pack cannot subscribe, so it quotes its one price and never a
+           monthly one. The line under it used to read "or $2,000 outright"
+           beside "$200/mo", which is now two figures for a choice that no
+           longer exists. */
+        '<span class="promo-price">' + fmtRound(O.priceOf(p, 'one')) +
+          '<span class="per">' + (O.subscribable(p) ? '/mo' : ' once') + '</span></span>' +
+        '<span class="promo-pv">' + fmtPv(O.pvOf(p, 'one')) + '</span>' +
+        '<span class="promo-once">' + (O.subscribable(p)
+          ? 'or ' + fmtRound(p.once.price) + ' outright'
+          : 'One-time purchase &middot; nothing renews') + '</span>' +
         (held
           ? '<button class="promo-btn is-held" type="button" data-remove-sku="' + p.sku + '">Remove the pack</button>'
           : '<button class="promo-btn" type="button" data-add="' + p.sku + '">Add the pack</button>') +
@@ -972,6 +1013,36 @@
      Reads the same cart the drawer reads, through the same totals
      function, so the two can never disagree about a number. */
 
+  /* THE BILLING SWITCH, in the rail. One control for the whole order:
+     it sets what an Add will put in the cart and moves every subscribable
+     line already in it, so the figure above the switch answers to the
+     switch. The four one-time-only items are unaffected and the note says
+     so when the cart holds one. */
+  function billingSwitchHtml() {
+    var sub = shopMode === 'sub';
+    var fixed = Object.keys(cart).filter(function (key) {
+      var pp = O.get(O.keyParts(key).sku);
+      return pp && !O.subscribable(pp);
+    }).length;
+    return '<div class="rail-billing">' +
+      '<p class="rail-billing-head">Billing</p>' +
+      '<div class="mode-toggle rail-toggle">' +
+        switchHtml('railBilling', sub, 'Subscribe monthly', ' data-billing') +
+        '<div class="mode-copy">' +
+          '<span class="mode-title">' + (sub ? 'Monthly' : 'One-time') + '</span>' +
+          '<span class="mode-note">' + (sub
+            ? 'Renews each month. Cancel any month.'
+            : 'Pay once and own it. One-time costs more.') + '</span>' +
+        '</div>' +
+      '</div>' +
+      (fixed
+        ? '<p class="rail-billing-fixed">' + fixed +
+          (fixed === 1 ? ' item in this cart is' : ' items in this cart are') +
+          ' a one-time purchase either way.</p>'
+        : '') +
+    '</div>';
+  }
+
   function renderRail() {
     var el = document.getElementById('monthRail');
     if (!el) return;
@@ -979,11 +1050,11 @@
     var met = t.pv >= 100;
 
     var lines = Object.keys(cart).map(function (key) {
-      var kp = key.split('|'), p = O.get(kp[0]);
+      var kp = O.keyParts(key), p = O.get(kp.sku);
       if (!p) return '';
-      var q = cart[key], one = kp[1] === 'one';
-      var money = (one ? p.once.price : p.sub.price) * q;
-      var pv = (one ? p.once.pv : p.sub.pv) * q;
+      var q = cart[key], one = kp.mode === 'one';
+      var money = O.priceOf(p, kp.mode) * q;
+      var pv = O.pvOf(p, kp.mode) * q;
       return '<div class="rail-line">' +
         '<span class="rail-line-name">' + p.name + (q > 1 ? ' &times; ' + q : '') +
           '<span class="rail-line-pv">' + fmtPv(pv) + (one ? ' &middot; one time' : '') + '</span></span>' +
@@ -992,9 +1063,24 @@
       '</div>';
     }).join('');
 
+    /* THE RAIL SHOWS BOTH KINDS OF MONEY. It used to print subMoney with
+       "/mo" and nothing else, which read as $0/mo for a cart holding only
+       one-time items -- and since the packs stopped subscribing, that is
+       an ordinary cart rather than an edge case. */
+    /* An EMPTY cart keeps the monthly form. Both figures are zero there,
+       and "$0 once" under a heading that reads "Your month" states a fact
+       about a cart nobody has filled yet. */
+    var headline = (t.subMoney > 0 || t.oneMoney === 0)
+      ? fmtRound(t.subMoney) + '<span class="per">/mo</span>'
+      : fmtRound(t.oneMoney) + '<span class="per"> once</span>';
+    var second = (t.subMoney > 0 && t.oneMoney > 0)
+      ? '<p class="rail-second">' + fmtRound(t.oneMoney) + ' billed once</p>'
+      : '';
+
     el.innerHTML =
       '<p class="rail-kicker">Your month</p>' +
-      '<p class="rail-total">' + fmtRound(t.subMoney) + '<span class="per">/mo</span></p>' +
+      '<p class="rail-total">' + headline + '</p>' + second +
+      billingSwitchHtml() +
       '<div class="rail-qual">' +
         '<span>Qualified month</span>' +
         '<span class="rail-qual-state' + (met ? ' is-met' : '') + '">' +
@@ -1011,7 +1097,7 @@
         '<span>Total PV</span><span class="rail-tot-num">' + fmtPv(t.pv) + '</span>' +
       '</div>' +
       '<button class="rail-checkout" type="button" id="railCheckout"' + (t.count ? '' : ' disabled') + '>Checkout</button>' +
-      '<p class="rail-foot">Agents are digital, nothing ships. Cancel any month.</p>';
+      '<p class="rail-foot">Agents are digital, nothing ships. Subscriptions cancel any month; one-time purchases do not renew.</p>';
   }
 
   function renderGrid(id, tiers) {
@@ -1065,8 +1151,35 @@
   var cartCount = document.getElementById('cartCount');
 
   function addToCart(sku, mode) {
-    var key = sku + '|' + (mode === 'one' ? 'one' : 'sub');
+    /* O.cartKey settles the mode: the shop's default for a subscribable
+       item, one-time for the four that cannot subscribe. Nothing here
+       builds a key by hand. */
+    var key = O.cartKey(sku, mode || shopMode);
     cart[key] = Math.min((cart[key] || 0) + 1, 99);
+    persist();
+    renderAll();
+  }
+
+  /* Move one line, or every subscribable line, between the two modes.
+     The quantity travels with it, and a line that lands on a mode the
+     cart already holds merges rather than replacing. */
+  function setLineMode(key, mode) {
+    var kp = O.keyParts(key);
+    var p = O.get(kp.sku);
+    if (!p || !O.subscribable(p)) { return false; }
+    var next = O.cartKey(p, mode);
+    if (next === key) { return false; }
+    var q = cart[key] || 0;
+    if (!q) { return false; }
+    delete cart[key];
+    cart[next] = Math.min((cart[next] || 0) + q, 99);
+    return true;
+  }
+
+  function setShopMode(mode) {
+    shopMode = mode === 'one' ? 'one' : 'sub';
+    /* Keys are rewritten, so the loop reads a snapshot of them. */
+    Object.keys(cart).forEach(function (key) { setLineMode(key, shopMode); });
     persist();
     renderAll();
   }
@@ -1083,10 +1196,29 @@
     renderAll();
   });
 
+  /* The rail switch sets the order's default and carries the cart with it. */
+  document.addEventListener('click', function (e) {
+    var sw = e.target.closest ? e.target.closest('[data-billing]') : null;
+    if (!sw) return;
+    setShopMode(sw.getAttribute('aria-checked') === 'true' ? 'one' : 'sub');
+  });
+
+  /* A line switch moves that line only, and leaves the order's default alone:
+     a shopper mixing modes has said nothing about what the next Add should be. */
+  document.addEventListener('click', function (e) {
+    var sw = e.target.closest ? e.target.closest('[data-line-mode]') : null;
+    if (!sw) return;
+    var key = sw.getAttribute('data-line-mode');
+    if (setLineMode(key, sw.getAttribute('aria-checked') === 'true' ? 'one' : 'sub')) {
+      persist();
+      renderAll();
+    }
+  });
+
   document.addEventListener('click', function (e) {
     var btn = e.target.closest ? e.target.closest('[data-add]') : null;
     if (!btn) return;
-    addToCart(btn.getAttribute('data-add'), 'sub');
+    addToCart(btn.getAttribute('data-add'), shopMode);
 
     /* the drawer opens on add so the PV meter's movement is SEEN */
     openDrawer();
@@ -1146,10 +1278,33 @@
   var EMPTY_HEX = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + O.HEX +
     '<circle cx="32" cy="32" r="4" fill="#EC3013"/></svg>';
 
-  function modeBadge(mode) {
+  /* THE PER-LINE SWITCH. The badge used to state the mode and nothing
+     more, so a shopper who wanted one item monthly and another once had
+     to remove and re-add from a different default. Now the badge IS the
+     control, and a cart can hold both. An item that cannot subscribe
+     keeps a plain badge: there is nothing to switch, and a dead switch
+     is worse than none. */
+  /* The read-only badge: the checkout summary and the confirmation are
+     records of a decision already made, so they state the mode and offer
+     no control. Splitting this out is why the switch below can assume it
+     is always interactive. */
+  function modeWord(mode) {
     return mode === 'one'
       ? '<span class="mode-badge mode-one">One-time</span>'
       : '<span class="mode-badge mode-sub">Monthly</span>';
+  }
+
+  function modeBadge(key, p, mode) {
+    if (!O.subscribable(p)) {
+      return '<span class="mode-badge mode-one">One-time only</span>';
+    }
+    var sub = mode !== 'one';
+    return '<span class="line-billing">' +
+      switchHtml('lineMode-' + key.replace('|', '-'), sub,
+        'Subscribe ' + p.name + ' monthly', ' data-line-mode="' + key + '"') +
+      '<span class="mode-badge ' + (sub ? 'mode-sub' : 'mode-one') + '">' +
+        (sub ? 'Monthly' : 'One-time') + '</span>' +
+    '</span>';
   }
 
   /* bundle and pack children: indented display rows, one per
@@ -1177,13 +1332,21 @@
     var priceText = kp.mode === 'one'
       ? fmtMoney(price) + ' billed once'
       : fmtMoney(price) + ' / month';
+    /* What the other mode would cost, stated rather than discovered by
+       flipping the switch and reading the total again. */
+    var altText = O.subscribable(p)
+      ? '<span class="line-alt">' + (kp.mode === 'one'
+          ? 'Monthly instead: ' + fmtMoney(O.priceOf(p, 'sub') * q) + ' / month'
+          : 'One-time instead: ' + fmtMoney(O.priceOf(p, 'one') * q)) + '</span>'
+      : '';
     return '' +
       '<div class="cart-line' + (p.includes ? ' has-children' : '') + '" data-line="' + key + '">' +
         '<div class="line-icon" aria-hidden="true">' + p.icon + '</div>' +
         '<div class="line-info">' +
           '<div class="line-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a></div>' +
-          '<div class="line-badges">' + modeBadge(kp.mode) + '</div>' +
+          '<div class="line-badges">' + modeBadge(key, p, kp.mode) + '</div>' +
           '<div class="line-meta">' + priceText + ', <span class="line-pv">' + fmtPv(pv) + '</span></div>' +
+          altText +
         '</div>' +
         '<div class="line-controls">' +
           '<div class="qty-group" aria-label="Quantity for ' + p.name + '">' +
@@ -2237,7 +2400,7 @@
     var p = O.get(kp.sku), q = cart[key];
     var amt = O.priceOf(p, kp.mode) * q;
     var html = '<div class="summary-line">' +
-      '<span class="sl-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a> <span class="sl-qty">&times; ' + q + '</span> ' + modeBadge(kp.mode) + '</span>' +
+      '<span class="sl-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a> <span class="sl-qty">&times; ' + q + '</span> ' + modeWord(kp.mode) + '</span>' +
       '<span class="sl-amt">' + fmtMoney(amt) + (kp.mode === 'sub' ? '<span class="sl-per"> / mo</span>' : '') + '</span>' +
     '</div>';
     /* bundle and pack children, $0.00 each: the parent line above
@@ -3194,7 +3357,7 @@
         return '<div class="summary-line">' +
           '<span class="sl-name">' + name +
             ' <span class="sl-qty">&times; ' + it.quantity + '</span> ' +
-            modeBadge(it.mode) + '</span>' +
+            modeWord(it.mode) + '</span>' +
           '<span class="sl-amt">' + fmtMoney(amount) +
             (it.mode === 'sub' ? '<span class="sl-per"> / mo</span>' : '') + '</span>' +
         '</div>';
@@ -3615,6 +3778,6 @@
 })();
 </script>
 
-<script src="js/site-chrome.js?v=7c644f9d20d9"></script>
+<script src="js/site-chrome.js?v=9b0635590f0b"></script>
 </body>
 </html>
