@@ -101,55 +101,12 @@
   --maxw: 1100px;
 }
 
-/* The light theme: a deliberate choice, never a system default. */
-:root[data-theme="light"] {
-  --paper:        #FFFFFF;
-  --band-a:       #FFFFFF;
-  --band-b:       #F4F6FB;
-  --surface:      #F7F8FC;
-  --surface-2:    #EEF0FF;
-  --ink:          #1B1917;
-  --body:         #334155;
-  --muted:        #5B6472;
-  --line:         #D8DCE5;
-  --hairline:     rgba(27, 25, 23, 0.20);
-  --code-bg:      #1B1917;
-  --shadow:       none;
-  --shadow-lift:  0 8px 22px rgba(241, 237, 230, 0.14);
-
-  --indigo:       #1B1917;
-  --indigo-soft:  #1B1917;
-  --violet:       #1B1917;
-  --accent:       #A3220B;   /* the single lit accent, light-safe cyan */
-  /* Links sit on tinted note and panel backgrounds, where the accent above
-     measures 4.56 to 1 against the stop-note tint and 4.73 against the plain
-     note tint: passing, but with almost no margin. This darker cyan is 6.18
-     to 1 at its worst across every tint a link can land on. */
-  --link:         #155E75;
-  --accent-bg:    #E7F6FB;
-  --accent-line:  rgba(14, 116, 144, 0.35);
-  --good:         #065F46;
-  --good-bg:      #E3F5EE;
-  --bad:          #B91C1C;
-  --bad-bg:       #FDE8E6;
-  --amber:        #B45309;
-  --amber-bg:     #F1EDE6;
-
-  --d-line:        #9AA3B2;
-  --d-node-bg:     #F7F8FC;
-  --d-node-stroke: #9AA3B2;
-  --d-text:        #1B1917;
-  --d-muted:       #5B6472;
-  --d-lit-bg:      #E7F6FB;
-  --d-lit-stroke:  #A3220B;
-  --d-key-bg:      #EEF0FF;
-  --d-key-stroke:  #1B1917;
-  --d-bad-bg:      #FDE8E6;
-  --d-bad-stroke:  #B91C1C;
-  --d-good-bg:     #E3F5EE;
-  --d-good-stroke: #065F46;
-  --d-hatch:       #C7CDDA;
-}
+/* THE LIGHT-THEME BLOCK WAS DELETED 2026-08-19. Unreachable -- the mono
+   redesign retired the theme control and theme-boot pins dark everywhere --
+   and it carried a whole second palette in cool blue-greys: #F7F8FC surfaces,
+   #D8DCE5 rules, #334155 body, #9AA3B2 diagram lines. Anything that ever set
+   data-theme="light" again would have swapped this warm paper document for a
+   cold one, half-swept, in one attribute. One palette, one block. */
 
 /* ---------------------------------------------------------------- reset */
 
@@ -371,9 +328,19 @@ tfoot td { font-weight: 700; color: var(--ink); background: var(--surface); bord
   background: var(--paper);
 }
 .fig-scroll svg { min-width: 880px; }
-.svg-t  { font-size: 13px; }
-.svg-b  { font-size: 13px; font-weight: 700; }
-.svg-s  { font-size: 12px; }
+/* THE TYPE INSIDE THE DRAWINGS, given a scale 2026-08-19. It had two sizes,
+   12 and 13, doing four jobs: box titles, row text, captions and the small
+   caps labels that head a group. Everything therefore weighed the same, and
+   a caption argued with the title above it. Four roles now, and the caps
+   labels get the tracking that caps need to stop reading as a shout.
+
+   The whole figure is tabular: the amount columns are read DOWN, and
+   proportional digits put 8.00 and 1.60 on different rhythms. */
+.figure svg { font-variant-numeric: tabular-nums; }
+.svg-b  { font-size: 13px;   font-weight: 700; letter-spacing: -0.005em; }
+.svg-t  { font-size: 12.5px; font-weight: 500; }
+.svg-s  { font-size: 10.5px; font-weight: 400; }
+.svg-k  { font-size: 10px;   font-weight: 700; letter-spacing: 0.11em; }
 
 /* --------------------------------------------------------- contents list */
 
@@ -512,7 +479,11 @@ details.ledger[open] { padding-bottom: 18px; }
     --d-hatch: #C7CDDA;
   }
   @page { margin: 15mm 14mm; }
-  body { background: #FFFFFF; color: #F1EDE6; font-size: 11pt; line-height: 1.5; }
+  /* #F1EDE6 on #FFFFFF is 1.17:1. Every paragraph that did not set its own
+     colour printed INVISIBLE -- headings and accent lines survived, the
+     prose between them did not, so a printed copy of the plan was a set of
+     headings over blank space. Corrected 2026-08-19 to the document ink. */
+  body { background: #FFFFFF; color: #1B1917; font-size: 11pt; line-height: 1.5; }
   /* .nav is hidden by css/site-chrome.css, which owns the chrome in
      print as well as on screen. */
   .cover-actions, .no-print { display: none !important; }
@@ -536,7 +507,7 @@ details.ledger[open] { padding-bottom: 18px; }
   details.ledger { border: 1px solid #C8CEDA; }
   details.ledger > summary { list-style: none; }
   .foot { background: #FFFFFF; color: #4B453D; border-top: 2px solid #1B1917; padding: 14px 0 0; }
-  .foot a, .foot-links { color: #F1EDE6; }
+  .foot a, .foot-links { color: #1B1917; }   /* was #F1EDE6: 1.17:1 on paper */
   .foot .legal { color: #4B453D; }
   a { color: #1B1917; text-decoration: none; }
 }
@@ -725,17 +696,17 @@ details.ledger[open] { padding-bottom: 18px; }
         <title id="d0Title">The three layers, showing which one operates</title>
         <desc id="d0Desc">Layer 1, the spine, is drawn as a solid block and is the plan operating today at ten, five, five, three and two percent across five levels, with twelve live commission runs behind it. Layer 2, the Builder override, and layer 3, the second-leg bonus, are drawn above it in outline, with twenty-nine laboratory runs, no live runs, and no dollars paid.</desc>
 
-        <rect x="30" y="14" width="420" height="44" rx="9" fill="none"
+        <rect x="30" y="14" width="420" height="44" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.6" stroke-dasharray="7 5"/>
         <text class="svg-b" x="240" y="41" text-anchor="middle" fill="var(--d-text)">LAYER 3, the second-leg bonus, modelled</text>
 
-        <rect x="30" y="68" width="420" height="44" rx="9" fill="none"
+        <rect x="30" y="68" width="420" height="44" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.6" stroke-dasharray="7 5"/>
         <text class="svg-b" x="240" y="95" text-anchor="middle" fill="var(--d-text)">LAYER 2, the Builder override, modelled</text>
 
         <text class="svg-s" x="240" y="132" text-anchor="middle" fill="var(--d-muted)">29 laboratory runs, 0 live runs, 0 dollars paid</text>
 
-        <rect x="30" y="146" width="420" height="68" rx="9"
+        <rect x="30" y="146" width="420" height="68"
               fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
         <text class="svg-b" x="240" y="171" text-anchor="middle" fill="var(--d-text)">LAYER 1, THE SPINE, operating today</text>
         <text class="svg-s" x="240" y="189" text-anchor="middle" fill="var(--d-muted)">10 / 5 / 5 / 3 / 2 percent, five levels</text>
@@ -776,70 +747,70 @@ details.ledger[open] { padding-bottom: 18px; }
           <path d="M180 188 l-4 -8 h8 z"/><path d="M180 256 l-4 -8 h8 z"/>
         </g>
 
-        <rect x="6" y="10" width="348" height="42" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
+        <rect x="6" y="10" width="348" height="42" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
         <text class="svg-b" x="180" y="28" text-anchor="middle" fill="var(--d-text)">One order: Payment Agent, $100.00</text>
         <text class="svg-s" x="180" y="44" text-anchor="middle" fill="var(--d-muted)">a monthly agent subscription</text>
 
-        <rect x="6" y="68" width="348" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="6" y="68" width="348" height="42" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="180" y="86" text-anchor="middle" fill="var(--d-text)">Personal Volume 100</text>
         <text class="svg-s" x="180" y="102" text-anchor="middle" fill="var(--d-muted)">volume always equals dollars</text>
 
-        <rect x="6" y="126" width="348" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="6" y="126" width="348" height="42" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="180" y="144" text-anchor="middle" fill="var(--d-text)">Sales Volume 100.00</text>
         <text class="svg-s" x="180" y="160" text-anchor="middle" fill="var(--d-muted)">every order on the account this month</text>
 
-        <rect x="6" y="184" width="348" height="52" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <rect x="6" y="184" width="348" height="52" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="180" y="204" text-anchor="middle" fill="var(--d-text)">Commissionable Volume 80.00</text>
-        <text class="svg-s" x="180" y="220" text-anchor="middle" fill="var(--d-muted)">0.80 x 100.00. Every percentage below</text>
-        <text class="svg-s" x="180" y="232" text-anchor="middle" fill="var(--d-muted)">applies to this number, not to the price</text>
+        <text class="svg-s" x="180" y="218" text-anchor="middle" fill="var(--d-muted)">0.80 x 100.00. Every percentage below</text>
+        <text class="svg-s" x="180" y="229" text-anchor="middle" fill="var(--d-muted)">applies to this number, not to the price</text>
 
-        <text class="svg-s" x="6" y="272" fill="var(--d-muted)">WHAT THE FIVE LEVELS ABOVE THE BUYER SHARE</text>
+        <text class="svg-k" x="6" y="272" fill="var(--d-muted)">WHAT THE FIVE LEVELS ABOVE THE BUYER SHARE</text>
 
         <g>
-          <rect x="6" y="280" width="348" height="26" rx="6" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.4"/>
+          <rect x="6" y="280" width="348" height="26" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.4"/>
           <text class="svg-t" x="16" y="298" fill="var(--d-text)">Level 1, the sponsor</text>
           <text class="svg-t" x="228" y="298" fill="var(--d-muted)">10%</text>
           <text class="svg-b" x="346" y="298" text-anchor="end" fill="var(--d-text)">8.00</text>
 
-          <rect x="6" y="310" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <rect x="6" y="310" width="348" height="26" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
           <text class="svg-t" x="16" y="328" fill="var(--d-text)">Level 2</text>
           <text class="svg-t" x="228" y="328" fill="var(--d-muted)">5%</text>
           <text class="svg-b" x="346" y="328" text-anchor="end" fill="var(--d-text)">4.00</text>
 
-          <rect x="6" y="340" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <rect x="6" y="340" width="348" height="26" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
           <text class="svg-t" x="16" y="358" fill="var(--d-text)">Level 3</text>
           <text class="svg-t" x="228" y="358" fill="var(--d-muted)">5%</text>
           <text class="svg-b" x="346" y="358" text-anchor="end" fill="var(--d-text)">4.00</text>
 
-          <rect x="6" y="370" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <rect x="6" y="370" width="348" height="26" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
           <text class="svg-t" x="16" y="388" fill="var(--d-text)">Level 4</text>
           <text class="svg-t" x="228" y="388" fill="var(--d-muted)">3%</text>
           <text class="svg-b" x="346" y="388" text-anchor="end" fill="var(--d-text)">2.40</text>
 
-          <rect x="6" y="400" width="348" height="26" rx="6" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
+          <rect x="6" y="400" width="348" height="26" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.2"/>
           <text class="svg-t" x="16" y="418" fill="var(--d-text)">Level 5</text>
           <text class="svg-t" x="228" y="418" fill="var(--d-muted)">2%</text>
           <text class="svg-b" x="346" y="418" text-anchor="end" fill="var(--d-text)">1.60</text>
         </g>
 
-        <rect x="6" y="436" width="348" height="42" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <rect x="6" y="436" width="348" height="42" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
         <text class="svg-b" x="16" y="454" fill="var(--d-text)">Most this order can ever pay</text>
         <text class="svg-b" x="346" y="454" text-anchor="end" fill="var(--d-text)">20.00</text>
         <text class="svg-s" x="16" y="470" fill="var(--d-muted)">25 percent of the volume, 20 percent of the price</text>
 
-        <text class="svg-s" x="6" y="500" fill="var(--d-muted)">AND THEN TWO GATES DECIDE WHO ACTUALLY RECEIVES IT</text>
+        <text class="svg-k" x="6" y="500" fill="var(--d-muted)">THEN TWO GATES DECIDE WHO RECEIVES IT</text>
 
-        <rect x="6" y="508" width="348" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <rect x="6" y="508" width="348" height="38" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="16" y="526" fill="var(--d-text)">Gate A: the earner is qualified</text>
         <text class="svg-s" x="16" y="540" fill="var(--d-muted)">their own Sales Volume was 100.00 or more</text>
 
-        <rect x="6" y="552" width="348" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <rect x="6" y="552" width="348" height="38" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="16" y="570" fill="var(--d-text)">Gate B: the level is inside their paid depth</text>
         <text class="svg-s" x="16" y="584" fill="var(--d-muted)">how deep they reach is set by their rank</text>
 
-        <rect x="6" y="596" width="348" height="34" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <rect x="6" y="596" width="348" height="34" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="180" y="613" text-anchor="middle" fill="var(--d-text)">Anything that fails a gate is paid to nobody</text>
-        <text class="svg-s" x="180" y="625" text-anchor="middle" fill="var(--d-muted)">the plan calls that breakage</text>
+        <text class="svg-s" x="180" y="623" text-anchor="middle" fill="var(--d-muted)">the plan calls that breakage</text>
       </svg>
       <figcaption>One order through the monthly commission run, followed the whole way. Check the arithmetic yourself: 10 + 5 + 5 + 3 + 2 is 25 percent of Commissionable Volume, and Commissionable Volume is 0.80 of the price, so 0.25 x 0.80 is 0.20, which is $20.00 on a $100.00 order. That is 8.00 + 4.00 + 4.00 + 2.40 + 1.60 exactly.</figcaption>
     </figure>
@@ -874,7 +845,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <desc id="twoDesc">Above, a Conductor's ensemble of agents drives Personal Volume, Sales Volume and qualification. Below, a Conductor's team of sponsored people drives Team Volume, rank and every commission received.</desc>
 
         <!-- panel one: the ensemble -->
-        <rect x="4" y="4" width="352" height="236" rx="12" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="4" y="4" width="352" height="236" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-s" x="18" y="26" fill="var(--d-muted)">YOUR ENSEMBLE: THE AGENTS</text>
 
         <circle cx="46" cy="80" r="18" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
@@ -883,26 +854,26 @@ details.ledger[open] { padding-bottom: 18px; }
           <path d="M64 80 L96 54"/><path d="M64 80 L96 88"/><path d="M64 80 L96 122"/>
         </g>
 
-        <rect x="96" y="40" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <rect x="96" y="40" width="244" height="28" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
         <text class="svg-t" x="108" y="59" fill="var(--d-text)">Payment Agent</text>
         <text class="svg-s" x="330" y="59" text-anchor="end" fill="var(--d-muted)">100 PV</text>
 
-        <rect x="96" y="74" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <rect x="96" y="74" width="244" height="28" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
         <text class="svg-t" x="108" y="93" fill="var(--d-text)">Pricing Agent</text>
         <text class="svg-s" x="330" y="93" text-anchor="end" fill="var(--d-muted)">100 PV</text>
 
-        <rect x="96" y="108" width="244" height="28" rx="7" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
+        <rect x="96" y="108" width="244" height="28" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.3"/>
         <text class="svg-t" x="108" y="127" fill="var(--d-text)">Accounting Agent</text>
         <text class="svg-s" x="330" y="127" text-anchor="end" fill="var(--d-muted)">50 PV</text>
 
-        <rect x="18" y="146" width="324" height="80" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+        <rect x="18" y="146" width="324" height="80" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="32" y="166" fill="var(--d-muted)">DRIVES</text>
         <text class="svg-t" x="32" y="186" fill="var(--d-text)">Personal Volume, Sales Volume,</text>
         <text class="svg-t" x="32" y="204" fill="var(--d-text)">and your qualified month</text>
         <text class="svg-s" x="32" y="220" fill="var(--d-muted)">buying agents never pays you directly</text>
 
         <!-- panel two: the team -->
-        <rect x="4" y="256" width="352" height="240" rx="12" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="4" y="256" width="352" height="240" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-s" x="18" y="278" fill="var(--d-muted)">YOUR TEAM: THE PEOPLE</text>
 
         <circle cx="46" cy="330" r="18" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
@@ -919,7 +890,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="196" y="304" fill="var(--d-muted)">the ones you sponsored</text>
         <text class="svg-s" x="196" y="360" fill="var(--d-muted)">and everyone below them</text>
 
-        <rect x="18" y="396" width="324" height="86" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+        <rect x="18" y="396" width="324" height="86" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="32" y="416" fill="var(--d-muted)">DRIVES</text>
         <text class="svg-t" x="32" y="436" fill="var(--d-text)">Team Volume, your rank,</text>
         <text class="svg-t" x="32" y="454" fill="var(--d-text)">and every commission you receive</text>
@@ -1075,50 +1046,56 @@ details.ledger[open] { padding-bottom: 18px; }
         <desc id="treeDesc">M1 sponsors M2, M3 and M4. M2 sponsors M5 and M6. M3 sponsors M7 and M8. M5 sponsors M9. M8 sponsors M10. M1 holds Leader, M3 holds Builder, and M5 and M10 are not qualified.</desc>
         <g stroke="var(--d-line)" stroke-width="1.6" fill="none">
           <path d="M440 92 L200 140"/><path d="M440 92 L468 140"/><path d="M440 92 L716 140"/>
-          <path d="M200 196 L112 244"/><path d="M200 196 L288 244"/>
+          <!-- Each junction now hangs from its parent's edge. The branch
+               points sat ten units below the boxes with nothing joining
+               them, so a sponsor and the fork under it read as two
+               unconnected drawings. -->
+          <path d="M200 186 L200 196"/>
+          <path d="M200 196 L112 244"/><path d="M200 196 L292 244"/>
+          <path d="M468 186 L468 196"/>
           <path d="M468 196 L480 244"/><path d="M468 196 L668 244"/>
-          <path d="M112 300 L112 348"/>
-          <path d="M668 300 L668 348"/>
+          <path d="M112 290 L112 348"/>
+          <path d="M668 290 L668 348"/>
         </g>
 
         <g>
-          <rect x="350" y="46" width="180" height="46" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
+          <rect x="350" y="46" width="180" height="46" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
           <text class="svg-b" x="440" y="66" text-anchor="middle" fill="var(--d-text)">M1, LEADER</text>
           <text class="svg-s" x="440" y="82" text-anchor="middle" fill="var(--d-muted)">SV 200.00, reaches 3 levels</text>
 
-          <rect x="110" y="140" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="110" y="140" width="180" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="200" y="160" text-anchor="middle" fill="var(--d-text)">M2, Member</text>
           <text class="svg-s" x="200" y="176" text-anchor="middle" fill="var(--d-muted)">SV 150.00, reaches 1 level</text>
 
-          <rect x="378" y="140" width="180" height="46" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.4"/>
+          <rect x="378" y="140" width="180" height="46" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.4"/>
           <text class="svg-b" x="468" y="160" text-anchor="middle" fill="var(--d-text)">M3, BUILDER</text>
           <text class="svg-s" x="468" y="176" text-anchor="middle" fill="var(--d-muted)">SV 100.00, reaches 2 levels</text>
 
-          <rect x="626" y="140" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="626" y="140" width="180" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="716" y="160" text-anchor="middle" fill="var(--d-text)">M4, Member</text>
           <text class="svg-s" x="716" y="176" text-anchor="middle" fill="var(--d-muted)">SV 100.00, all from customers</text>
 
-          <rect x="22" y="244" width="180" height="46" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
+          <rect x="22" y="244" width="180" height="46" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
           <text class="svg-b" x="112" y="264" text-anchor="middle" fill="var(--d-text)">M5, NOT QUALIFIED</text>
           <text class="svg-s" x="112" y="280" text-anchor="middle" fill="var(--d-muted)">SV 50.00, earns nothing</text>
 
-          <rect x="198" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
-          <text class="svg-b" x="288" y="264" text-anchor="middle" fill="var(--d-text)">M6, Member</text>
-          <text class="svg-s" x="288" y="280" text-anchor="middle" fill="var(--d-muted)">SV 150.00</text>
+          <rect x="206" y="244" width="172" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <text class="svg-b" x="292" y="264" text-anchor="middle" fill="var(--d-text)">M6, Member</text>
+          <text class="svg-s" x="292" y="280" text-anchor="middle" fill="var(--d-muted)">SV 150.00</text>
 
-          <rect x="390" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="390" y="244" width="180" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="480" y="264" text-anchor="middle" fill="var(--d-text)">M7, Member</text>
           <text class="svg-s" x="480" y="280" text-anchor="middle" fill="var(--d-muted)">SV 1,500.00, the big ensemble</text>
 
-          <rect x="578" y="244" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="578" y="244" width="180" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="668" y="264" text-anchor="middle" fill="var(--d-text)">M8, Member</text>
           <text class="svg-s" x="668" y="280" text-anchor="middle" fill="var(--d-muted)">SV 100.00</text>
 
-          <rect x="22" y="348" width="180" height="46" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="22" y="348" width="180" height="46" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="112" y="368" text-anchor="middle" fill="var(--d-text)">M9, Member</text>
           <text class="svg-s" x="112" y="384" text-anchor="middle" fill="var(--d-muted)">SV 300.00</text>
 
-          <rect x="578" y="348" width="180" height="46" rx="9" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
+          <rect x="578" y="348" width="180" height="46" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.4"/>
           <text class="svg-b" x="668" y="368" text-anchor="middle" fill="var(--d-text)">M10, NOT QUALIFIED</text>
           <text class="svg-s" x="668" y="384" text-anchor="middle" fill="var(--d-muted)">SV 50.00, still pays upline</text>
         </g>
@@ -1152,7 +1129,7 @@ details.ledger[open] { padding-bottom: 18px; }
       <svg viewBox="0 0 360 192" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="m1Title m1Desc">
         <title id="m1Title">Level one pay, worked</title>
         <desc id="m1Desc">M6 has Sales Volume of 150, Commissionable Volume of 120. M2, the sponsor above, is paid ten percent of 120, which is twelve dollars.</desc>
-        <rect x="70" y="8" width="220" height="46" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
+        <rect x="70" y="8" width="220" height="46" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2"/>
         <text class="svg-b" x="180" y="28" text-anchor="middle" fill="var(--d-text)">M2, qualified, the sponsor</text>
         <text class="svg-s" x="180" y="44" text-anchor="middle" fill="var(--d-muted)">is paid 12.00 on this line</text>
 
@@ -1161,7 +1138,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-t" x="192" y="84" fill="var(--d-text)">level 1, 10 percent</text>
         <text class="svg-s" x="192" y="100" fill="var(--d-muted)">0.10 x 120.00 = 12.00</text>
 
-        <rect x="70" y="116" width="220" height="68" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <rect x="70" y="116" width="220" height="68" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="180" y="136" text-anchor="middle" fill="var(--d-text)">M6, sponsored by M2</text>
         <text class="svg-s" x="180" y="152" text-anchor="middle" fill="var(--d-muted)">Marketing 100 PV + Customer Care 50 PV</text>
         <text class="svg-s" x="180" y="166" text-anchor="middle" fill="var(--d-muted)">Sales Volume 150.00</text>
@@ -1219,20 +1196,20 @@ details.ledger[open] { padding-bottom: 18px; }
         <title id="m2Title">Depth pay, worked for a Builder</title>
         <desc id="m2Desc">M3, a Builder with paid depth two, earns one hundred and twenty dollars from M7 and eight dollars from M8 at level one, and two dollars from M10 at level two, totalling one hundred and thirty dollars. A Member would stop before level two and lose the two dollars.</desc>
 
-        <rect x="80" y="6" width="200" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.2"/>
+        <rect x="80" y="6" width="200" height="44" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="180" y="26" text-anchor="middle" fill="var(--d-text)">M3, BUILDER</text>
         <text class="svg-s" x="180" y="42" text-anchor="middle" fill="var(--d-muted)">qualified, paid depth 2</text>
 
         <path d="M180 50 L180 76" stroke="var(--d-line)" stroke-width="1.6" fill="none"/>
         <path d="M180 80 l-4.5 -9 h9 z" fill="var(--d-line)"/>
 
-        <text class="svg-s" x="8" y="74" fill="var(--d-muted)">LEVEL 1, 10 PERCENT</text>
-        <rect x="8" y="80" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-k" x="8" y="74" fill="var(--d-muted)">LEVEL 1, 10 PERCENT</text>
+        <rect x="8" y="80" width="344" height="42" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="22" y="100" fill="var(--d-text)">M7, your frontline</text>
         <text class="svg-s" x="22" y="116" fill="var(--d-muted)">CV 1,200.00, at 10 percent</text>
         <text class="svg-b" x="338" y="108" text-anchor="end" fill="var(--d-text)">120.00</text>
 
-        <rect x="8" y="130" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <rect x="8" y="130" width="344" height="42" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="22" y="150" fill="var(--d-text)">M8, your frontline</text>
         <text class="svg-s" x="22" y="166" fill="var(--d-muted)">CV 80.00, at 10 percent</text>
         <text class="svg-b" x="338" y="158" text-anchor="end" fill="var(--d-text)">8.00</text>
@@ -1240,13 +1217,13 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="8" y="194" fill="var(--d-bad-stroke)">A MEMBER'S REACH STOPS HERE, AT DEPTH 1</text>
         <path d="M8 202 L352 202" stroke="var(--d-bad-stroke)" stroke-width="1.6" stroke-dasharray="7 5"/>
 
-        <text class="svg-s" x="8" y="220" fill="var(--d-muted)">LEVEL 2, 5 PERCENT</text>
-        <rect x="8" y="226" width="344" height="42" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-k" x="8" y="220" fill="var(--d-muted)">LEVEL 2, 5 PERCENT</text>
+        <rect x="8" y="226" width="344" height="42" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="22" y="246" fill="var(--d-text)">M10, sponsored by M8</text>
         <text class="svg-s" x="22" y="262" fill="var(--d-muted)">CV 40.00, at 5 percent</text>
         <text class="svg-b" x="338" y="254" text-anchor="end" fill="var(--d-text)">2.00</text>
 
-        <rect x="8" y="276" width="344" height="36" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
+        <rect x="8" y="276" width="344" height="36" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
         <text class="svg-b" x="22" y="299" fill="var(--d-text)">M3's total for the month</text>
         <text class="svg-b" x="338" y="299" text-anchor="end" fill="var(--d-text)">130.00</text>
       </svg>
@@ -1291,11 +1268,11 @@ details.ledger[open] { padding-bottom: 18px; }
         <title id="m3Title">Customer volume rolling up</title>
         <desc id="m3Desc">Two customers each buy a fifty volume agent. Both orders book to M4's account, giving M4 one hundred Sales Volume, which qualifies M4. M4's eighty Commissionable Volume pays M1 eight dollars at level one, while M4 earns nothing directly.</desc>
 
-        <rect x="8" y="6" width="166" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <rect x="8" y="6" width="166" height="44" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
         <text class="svg-b" x="91" y="26" text-anchor="middle" fill="var(--d-text)">Customer C1</text>
         <text class="svg-s" x="91" y="42" text-anchor="middle" fill="var(--d-muted)">QA agent, 50 PV</text>
 
-        <rect x="186" y="6" width="166" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <rect x="186" y="6" width="166" height="44" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 4"/>
         <text class="svg-b" x="269" y="26" text-anchor="middle" fill="var(--d-text)">Customer C2</text>
         <text class="svg-s" x="269" y="42" text-anchor="middle" fill="var(--d-muted)">Secretary, 50 PV</text>
 
@@ -1303,7 +1280,7 @@ details.ledger[open] { padding-bottom: 18px; }
           <path d="M91 50 L150 72"/><path d="M269 50 L210 72"/>
         </g>
 
-        <rect x="8" y="74" width="344" height="62" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <rect x="8" y="74" width="344" height="62" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="180" y="94" text-anchor="middle" fill="var(--d-text)">M4, the referring Conductor</text>
         <text class="svg-s" x="180" y="111" text-anchor="middle" fill="var(--d-muted)">Sales Volume 50 + 50 = 100.00, so QUALIFIED</text>
         <text class="svg-s" x="180" y="127" text-anchor="middle" fill="var(--d-text)">Commissionable Volume 80.00, earns 0.00</text>
@@ -1312,7 +1289,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <path d="M180 138 l-4.5 9 h9 z" fill="var(--d-line)"/>
         <text class="svg-s" x="190" y="164" fill="var(--d-muted)">level 1: 0.10 x 80.00 = 8.00</text>
 
-        <rect x="8" y="176" width="344" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+        <rect x="8" y="176" width="344" height="44" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
         <text class="svg-b" x="180" y="196" text-anchor="middle" fill="var(--d-text)">M1, M4's sponsor</text>
         <text class="svg-s" x="180" y="212" text-anchor="middle" fill="var(--d-muted)">is paid 8.00 on this line</text>
 
@@ -1378,7 +1355,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <title id="ipTitle">Instant Payout on a first order</title>
         <desc id="ipDesc">A sponsored Conductor enrols, then places a first order of one hundred and fifty dollars within thirty days. The sponsor is paid twenty percent of that price, thirty dollars, the same day, and still receives the ordinary level one commission of twelve dollars at month end, for forty two dollars in total. The thirty dollar Instant Payout stops at the sponsor and pays nobody above them.</desc>
 
-        <rect x="8" y="6" width="344" height="44" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <rect x="8" y="6" width="344" height="44" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="22" y="26" fill="var(--d-text)">Day 0: they enrol</text>
         <text class="svg-s" x="22" y="42" fill="var(--d-muted)">you are their sponsor</text>
 
@@ -1386,30 +1363,30 @@ details.ledger[open] { padding-bottom: 18px; }
         <path d="M180 72 l-4.5 -9 h9 z" fill="var(--d-line)"/>
         <text class="svg-s" x="192" y="66" fill="var(--d-muted)">day 19</text>
 
-        <rect x="8" y="76" width="344" height="44" rx="9" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+        <rect x="8" y="76" width="344" height="44" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
         <text class="svg-b" x="22" y="96" fill="var(--d-text)">Their first order: $150.00</text>
         <text class="svg-s" x="22" y="112" fill="var(--d-muted)">placed inside the 30 day window</text>
 
         <path d="M180 120 L180 138" stroke="var(--d-line)" stroke-width="1.8" fill="none"/>
         <path d="M180 142 l-4.5 -9 h9 z" fill="var(--d-line)"/>
 
-        <rect x="8" y="146" width="344" height="60" rx="9" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
-        <text class="svg-s" x="22" y="165" fill="var(--d-muted)">SAME DAY, PAID TO YOU</text>
+        <rect x="8" y="146" width="344" height="60" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+        <text class="svg-k" x="22" y="165" fill="var(--d-muted)">SAME DAY, PAID TO YOU</text>
         <text class="svg-b" x="22" y="184" fill="var(--d-text)">Instant Payout: 0.20 x 150.00</text>
         <text class="svg-s" x="22" y="200" fill="var(--d-muted)">20 percent of the price, not of volume</text>
         <text class="svg-b" x="338" y="184" text-anchor="end" fill="var(--d-text)">30.00</text>
 
-        <rect x="8" y="216" width="344" height="42" rx="9" fill="var(--d-warn-bg, var(--d-node-bg))" stroke="var(--d-lit-stroke)" stroke-width="2" stroke-dasharray="5 4"/>
+        <rect x="8" y="216" width="344" height="42" fill="var(--d-warn-bg, var(--d-node-bg))" stroke="var(--d-lit-stroke)" stroke-width="2" stroke-dasharray="5 4"/>
         <text class="svg-b" x="22" y="235" fill="var(--d-text)">AND THE 30.00 STOPS HERE</text>
         <text class="svg-s" x="22" y="251" fill="var(--d-muted)">nobody above you is paid a cent of it</text>
 
-        <rect x="8" y="268" width="344" height="60" rx="9" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
-        <text class="svg-s" x="22" y="287" fill="var(--d-muted)">AT MONTH END, STILL PAID TO YOU</text>
+        <rect x="8" y="268" width="344" height="60" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <text class="svg-k" x="22" y="287" fill="var(--d-muted)">AT MONTH END, STILL PAID TO YOU</text>
         <text class="svg-b" x="22" y="306" fill="var(--d-text)">Level 1: 0.10 x 120.00</text>
         <text class="svg-s" x="22" y="322" fill="var(--d-muted)">their CV is 0.80 x 150.00 = 120.00</text>
         <text class="svg-b" x="338" y="306" text-anchor="end" fill="var(--d-text)">12.00</text>
 
-        <rect x="8" y="340" width="344" height="38" rx="9" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="2"/>
+        <rect x="8" y="340" width="344" height="38" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="2"/>
         <text class="svg-b" x="22" y="364" fill="var(--d-text)">You receive, on that first order</text>
         <text class="svg-b" x="338" y="364" text-anchor="end" fill="var(--d-text)">42.00</text>
       </svg>
@@ -1447,31 +1424,31 @@ details.ledger[open] { padding-bottom: 18px; }
           <desc id="ladderDesc">Member reaches one level, Builder two, Leader three, Director four, Executive five. Each rung is wider than the one below it, and the filled dots show the reach.</desc>
 
           <!-- Executive -->
-          <rect x="14" y="10" width="332" height="52" rx="10" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
+          <rect x="14" y="10" width="332" height="52" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
           <text class="svg-b" x="28" y="32" fill="var(--d-text)">EXECUTIVE</text>
           <text class="svg-s" x="28" y="49" fill="var(--d-muted)">Team Volume 40,000.00 or more</text>
           <g><circle cx="252" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="272" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="292" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="312" cy="36" r="6" fill="var(--d-lit-stroke)"/><circle cx="332" cy="36" r="6" fill="var(--d-lit-stroke)"/></g>
 
           <!-- Director -->
-          <rect x="14" y="76" width="286" height="52" rx="10" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
+          <rect x="14" y="76" width="286" height="52" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
           <text class="svg-b" x="28" y="98" fill="var(--d-text)">DIRECTOR</text>
           <text class="svg-s" x="28" y="115" fill="var(--d-muted)">Team Volume 10,000.00 or more</text>
           <g><circle cx="206" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="226" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="246" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="266" cy="102" r="6" fill="var(--d-key-stroke)"/><circle cx="286" cy="102" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
 
           <!-- Leader -->
-          <rect x="14" y="142" width="240" height="52" rx="10" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
+          <rect x="14" y="142" width="240" height="52" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
           <text class="svg-b" x="28" y="164" fill="var(--d-text)">LEADER</text>
           <text class="svg-s" x="28" y="181" fill="var(--d-muted)">Team Volume 2,500.00 or more</text>
           <g><circle cx="180" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="200" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="220" cy="168" r="6" fill="var(--d-key-stroke)"/><circle cx="240" cy="168" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
 
           <!-- Builder -->
-          <rect x="14" y="208" width="194" height="52" rx="10" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="14" y="208" width="194" height="52" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="28" y="230" fill="var(--d-text)">BUILDER</text>
           <text class="svg-s" x="28" y="247" fill="var(--d-muted)">2 or more active legs</text>
           <g><circle cx="154" cy="234" r="6" fill="var(--d-key-stroke)"/><circle cx="174" cy="234" r="6" fill="var(--d-key-stroke)"/><circle cx="194" cy="234" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
 
           <!-- Member -->
-          <rect x="14" y="274" width="148" height="52" rx="10" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="14" y="274" width="148" height="52" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-b" x="28" y="296" fill="var(--d-text)">MEMBER</text>
           <text class="svg-s" x="28" y="313" fill="var(--d-muted)">enrolled</text>
           <g><circle cx="128" cy="300" r="6" fill="var(--d-key-stroke)"/><circle cx="148" cy="300" r="6" fill="none" stroke="var(--d-hatch)" stroke-width="1.6"/></g>
@@ -1606,22 +1583,22 @@ details.ledger[open] { padding-bottom: 18px; }
         <desc id="reconDesc">Of the five hundred and forty dollars the percentages could describe, two hundred and sixty four was paid, thirty six was breakage at the two gates, and two hundred and forty never existed because this tree has no upline above the top people.</desc>
         <text class="svg-s" x="8" y="22" fill="var(--d-muted)">THE STRUCTURAL CEILING: 540.00</text>
 
-        <rect x="8" y="32" width="344" height="30" rx="7" fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
-        <rect x="8" y="32" width="168" height="30" rx="7" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
+        <rect x="8" y="32" width="344" height="30" fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
+        <rect x="8" y="32" width="168" height="30" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
         <rect x="176" y="32" width="23" height="30" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
         <rect x="199" y="32" width="153" height="30" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
 
         <g>
-          <rect x="8" y="78" width="13" height="13" rx="3" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
+          <rect x="8" y="78" width="13" height="13" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="30" y="89" fill="var(--d-text)">264.00 paid to Conductors</text>
           <text class="svg-s" x="30" y="104" fill="var(--d-muted)">four of the ten, every line listed above</text>
 
-          <rect x="8" y="118" width="13" height="13" rx="3" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+          <rect x="8" y="118" width="13" height="13" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="30" y="129" fill="var(--d-text)">36.00 breakage at the two gates</text>
           <text class="svg-s" x="30" y="144" fill="var(--d-muted)">24.00 because M5 is not qualified,</text>
           <text class="svg-s" x="30" y="159" fill="var(--d-muted)">12.00 out of M2's reach at depth 1</text>
 
-          <rect x="8" y="173" width="13" height="13" rx="3" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+          <rect x="8" y="173" width="13" height="13" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="30" y="184" fill="var(--d-text)">240.00 never existed</text>
           <text class="svg-s" x="30" y="199" fill="var(--d-muted)">most people have fewer than five</text>
           <text class="svg-s" x="30" y="212" fill="var(--d-muted)">levels of upline above them</text>
@@ -1742,22 +1719,22 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="240" y="14" text-anchor="middle" fill="var(--d-text)">THE CEILING: 20 PERCENT OF THE PRICE. NO ORDER CROSSES IT.</text>
         <line x1="20" y1="24" x2="460" y2="24" stroke="var(--d-lit-stroke)" stroke-width="3"/>
 
-        <rect x="20" y="48" width="440" height="272" rx="10" fill="none"
+        <rect x="20" y="48" width="440" height="272" fill="none"
               stroke="var(--d-key-stroke)" stroke-width="1.6"/>
 
-        <rect x="40" y="62" width="340" height="62" rx="8"
+        <rect x="40" y="62" width="340" height="62"
               fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="210" y="84" text-anchor="middle" fill="var(--d-text)">LAYER 3, THE SECOND-LEG BONUS</text>
         <text class="svg-s" x="210" y="101" text-anchor="middle" fill="var(--d-muted)">2.0 to 2.5 percent, paid from what</text>
         <text class="svg-s" x="210" y="115" text-anchor="middle" fill="var(--d-muted)">layers 1 and 2 did not claim</text>
 
-        <rect x="40" y="134" width="340" height="62" rx="8"
+        <rect x="40" y="134" width="340" height="62"
               fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="210" y="156" text-anchor="middle" fill="var(--d-text)">LAYER 2, THE BUILDER OVERRIDE</text>
         <text class="svg-s" x="210" y="173" text-anchor="middle" fill="var(--d-muted)">generation 1 at 1.5, generation 2 at 1.0 percent</text>
         <text class="svg-s" x="210" y="187" text-anchor="middle" fill="var(--d-muted)">paid from what the spine did not claim</text>
 
-        <rect x="40" y="206" width="340" height="76" rx="8"
+        <rect x="40" y="206" width="340" height="76"
               fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
         <text class="svg-b" x="210" y="231" text-anchor="middle" fill="var(--d-text)">LAYER 1, THE SPINE</text>
         <text class="svg-s" x="210" y="248" text-anchor="middle" fill="var(--d-muted)">up to 25 percent of volume</text>
@@ -1846,20 +1823,20 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="44" y="286" text-anchor="middle" fill="var(--d-muted)">volume is</text>
         <text class="svg-s" x="44" y="300" text-anchor="middle" fill="var(--d-muted)">the basis</text>
 
-        <rect x="110" y="24" width="300" height="52" rx="9"
+        <rect x="110" y="24" width="300" height="52"
               fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="260" y="46" text-anchor="middle" fill="var(--d-text)">The walk stops here</text>
         <text class="svg-s" x="260" y="64" text-anchor="middle" fill="var(--d-muted)">counter is 2. Nobody higher is paid on B.</text>
 
         <text class="svg-s" x="260" y="104" text-anchor="middle" fill="var(--d-muted)">a second Builder boundary: counter becomes 2</text>
 
-        <rect x="110" y="124" width="300" height="60" rx="9"
+        <rect x="110" y="124" width="300" height="60"
               fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="260" y="146" text-anchor="middle" fill="var(--d-text)">GENERATION TWO, 1.0 percent</text>
         <text class="svg-s" x="260" y="163" text-anchor="middle" fill="var(--d-muted)">qualified, counter is 1</text>
         <text class="svg-s" x="260" y="177" text-anchor="middle" fill="var(--d-muted)">1.0 percent of B's group volume</text>
 
-        <rect x="110" y="208" width="300" height="56" rx="9"
+        <rect x="110" y="208" width="300" height="56"
               fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 5"/>
         <text class="svg-b" x="260" y="230" text-anchor="middle" fill="var(--d-text)">Not qualified this month</text>
         <text class="svg-s" x="260" y="250" text-anchor="middle" fill="var(--d-muted)">passed over: earns nothing, counts nothing</text>
@@ -1867,13 +1844,13 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="260" y="284" text-anchor="middle" fill="var(--d-muted)">this Conductor also holds Builder:</text>
         <text class="svg-s" x="260" y="300" text-anchor="middle" fill="var(--d-muted)">a boundary is crossed, counter becomes 1</text>
 
-        <rect x="110" y="312" width="300" height="60" rx="9"
+        <rect x="110" y="312" width="300" height="60"
               fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="260" y="334" text-anchor="middle" fill="var(--d-text)">GENERATION ONE, 1.5 percent</text>
         <text class="svg-s" x="260" y="351" text-anchor="middle" fill="var(--d-muted)">the sponsor. Qualified, counter is 0</text>
         <text class="svg-s" x="260" y="365" text-anchor="middle" fill="var(--d-muted)">1.5 percent of B's group volume</text>
 
-        <rect x="110" y="396" width="300" height="64" rx="9"
+        <rect x="110" y="396" width="300" height="64"
               fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2.4"/>
         <text class="svg-b" x="260" y="418" text-anchor="middle" fill="var(--d-text)">B, holds BUILDER this month</text>
         <text class="svg-s" x="260" y="435" text-anchor="middle" fill="var(--d-muted)">group volume = B plus everybody under B</text>
@@ -1914,49 +1891,49 @@ details.ledger[open] { padding-bottom: 18px; }
 
         <text class="svg-s" x="20" y="18" fill="var(--d-muted)">ILLUSTRATION: shapes chosen to show the mechanism, not a measured result. The measured figures are in the later sections of part two.</text>
 
-        <rect x="20" y="30" width="410" height="220" rx="12" fill="none"
+        <rect x="20" y="30" width="410" height="220" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="225" y="54" text-anchor="middle" fill="var(--d-text)">One big leg</text>
 
-        <rect x="50" y="72" width="340" height="44" rx="7"
+        <rect x="50" y="72" width="340" height="44"
               fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-t" x="66" y="99" fill="var(--d-text)">Leg A, 1,000 volume</text>
 
-        <rect x="50" y="128" width="340" height="44" rx="7" fill="none"
+        <rect x="50" y="128" width="340" height="44" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 5"/>
         <text class="svg-t" x="66" y="155" fill="var(--d-muted)">no second leg exists</text>
 
-        <rect x="50" y="188" width="340" height="44" rx="7"
+        <rect x="50" y="188" width="340" height="44"
               fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="66" y="207" fill="var(--d-text)">Second-strongest leg: none</text>
         <text class="svg-s" x="66" y="223" fill="var(--d-muted)">Bonus: 0.00</text>
 
-        <rect x="450" y="30" width="410" height="220" rx="12" fill="none"
+        <rect x="450" y="30" width="410" height="220" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="655" y="54" text-anchor="middle" fill="var(--d-text)">Two real teams</text>
 
-        <rect x="480" y="72" width="204" height="44" rx="7"
+        <rect x="480" y="72" width="204" height="44"
               fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-t" x="496" y="99" fill="var(--d-text)">Leg A, 600 volume</text>
 
-        <rect x="480" y="128" width="136" height="44" rx="7"
+        <rect x="480" y="128" width="136" height="44"
               fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="2.4"/>
         <text class="svg-t" x="496" y="155" fill="var(--d-text)">Leg B, 400</text>
         <text class="svg-s" x="628" y="155" fill="var(--d-muted)">second-strongest, this is the basis</text>
 
-        <rect x="480" y="188" width="340" height="44" rx="7"
+        <rect x="480" y="188" width="340" height="44"
               fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="2.2"/>
         <text class="svg-b" x="496" y="207" fill="var(--d-text)">2 active legs, rate 2.0 percent</text>
         <text class="svg-s" x="496" y="223" fill="var(--d-muted)">bonus = 0.020 x 400 = 8.00</text>
 
         <g>
-          <rect x="20" y="270" width="273" height="40" rx="7"
+          <rect x="20" y="270" width="273" height="40"
                 fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
           <text class="svg-t" x="156" y="295" text-anchor="middle" fill="var(--d-text)">2 active legs: 2.0 percent</text>
-          <rect x="303" y="270" width="274" height="40" rx="7"
+          <rect x="303" y="270" width="274" height="40"
                 fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
           <text class="svg-t" x="440" y="295" text-anchor="middle" fill="var(--d-text)">3 active legs: 2.3 percent</text>
-          <rect x="587" y="270" width="273" height="40" rx="7"
+          <rect x="587" y="270" width="273" height="40"
                 fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.4"/>
           <text class="svg-t" x="723" y="295" text-anchor="middle" fill="var(--d-text)">4 or more: 2.5 percent</text>
         </g>
@@ -2022,7 +1999,7 @@ details.ledger[open] { padding-bottom: 18px; }
           </pattern>
         </defs>
 
-        <rect x="20" y="26" width="410" height="330" rx="12" fill="none"
+        <rect x="20" y="26" width="410" height="330" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="225" y="50" text-anchor="middle" fill="var(--d-text)">The tidy version</text>
 
@@ -2049,9 +2026,9 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="308" y="318" text-anchor="middle" fill="var(--d-muted)">B, month 1</text>
         <text class="svg-s" x="380" y="318" text-anchor="middle" fill="var(--d-muted)">B, month 2</text>
         <text class="svg-s" x="40" y="340" fill="var(--d-muted)">acceptance fixture, restated at the rates of record</text>
-        <text class="svg-s" x="40" y="352" fill="var(--d-muted)">A: 8.00 level pay + 3.60 override. B: 16.00 level pay + 1.60 bonus.</text>
+        <text class="svg-s" x="40" y="350" fill="var(--d-muted)">A: 8.00 level pay + 3.60 override. B: 16.00 level pay + 1.60 bonus.</text>
 
-        <rect x="450" y="26" width="410" height="330" rx="12" fill="none"
+        <rect x="450" y="26" width="410" height="330" fill="none"
               stroke="var(--d-node-stroke)" stroke-width="1.4"/>
         <text class="svg-b" x="655" y="50" text-anchor="middle" fill="var(--d-text)">The real version</text>
 
@@ -2069,7 +2046,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="548" y="318" text-anchor="middle" fill="var(--d-muted)">before the lapse</text>
         <text class="svg-s" x="668" y="318" text-anchor="middle" fill="var(--d-muted)">after the lapse</text>
         <text class="svg-s" x="470" y="340" fill="var(--d-muted)">modelled census member, rates of record</text>
-        <text class="svg-s" x="470" y="352" fill="var(--d-muted)">the whole check was one Builder override: 1.5 percent of 520.00</text>
+        <text class="svg-s" x="470" y="350" fill="var(--d-muted)">the whole check was one Builder override: 1.5 percent of 520.00</text>
 
         <text class="svg-b" x="440" y="380" text-anchor="middle" fill="var(--d-text)">Same law. One is a teaching example. The other is what it feels like.</text>
       </svg>
@@ -2119,62 +2096,62 @@ details.ledger[open] { padding-bottom: 18px; }
         <desc id="d5Desc">In the reviewer's nineteen-Conductor fixture, B7 lapses to zero Sales Volume. Six checks rise: E by seven dollars forty-four, B1, B2 and B3 by three dollars four each, B4 by eighty-five cents, and B8 by forty cents. Three fall: B5 by eleven dollars twenty-nine, B6 by seventeen dollars, and B7, the Conductor who lapsed, by twenty-five dollars eighty-nine. The company payout falls from four hundred and eighty-one dollars fourteen to four hundred and forty-four dollars seventy-seven, so every gain is redistribution and never new money.</desc>
 
         <text class="svg-s" x="60" y="24" fill="var(--d-muted)">Nineteen Conductors, eight nested Builders, one order binding at a proration factor of 0.526315. B7 lapses to zero Sales Volume.</text>
-        <text class="svg-s" x="60" y="56" fill="var(--d-muted)">CONDUCTOR</text>
+        <text class="svg-k" x="60" y="56" fill="var(--d-muted)">CONDUCTOR</text>
         <text class="svg-s" x="390" y="56" text-anchor="end" fill="var(--d-muted)">BEFORE</text>
         <text class="svg-s" x="500" y="56" text-anchor="end" fill="var(--d-muted)">AFTER</text>
         <text class="svg-s" x="606" y="56" text-anchor="end" fill="var(--d-muted)">CHANGE</text>
 
         <g>
-          <rect x="60" y="66" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="66" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="88" fill="var(--d-text)">E, four Builder generations above</text>
           <text class="svg-t" x="390" y="88" text-anchor="end" fill="var(--d-muted)">212.91</text>
           <text class="svg-t" x="500" y="88" text-anchor="end" fill="var(--d-muted)">220.35</text>
           <text class="svg-b" x="606" y="88" text-anchor="end" fill="var(--d-text)">+7.44</text>
 
-          <rect x="60" y="108" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="108" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="130" fill="var(--d-text)">B1</text>
           <text class="svg-t" x="390" y="130" text-anchor="end" fill="var(--d-muted)">47.91</text>
           <text class="svg-t" x="500" y="130" text-anchor="end" fill="var(--d-muted)">50.95</text>
           <text class="svg-b" x="606" y="130" text-anchor="end" fill="var(--d-text)">+3.04</text>
 
-          <rect x="60" y="150" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="150" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="172" fill="var(--d-text)">B2</text>
           <text class="svg-t" x="390" y="172" text-anchor="end" fill="var(--d-muted)">43.91</text>
           <text class="svg-t" x="500" y="172" text-anchor="end" fill="var(--d-muted)">46.95</text>
           <text class="svg-b" x="606" y="172" text-anchor="end" fill="var(--d-text)">+3.04</text>
 
-          <rect x="60" y="192" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="192" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="214" fill="var(--d-text)">B3</text>
           <text class="svg-t" x="390" y="214" text-anchor="end" fill="var(--d-muted)">39.71</text>
           <text class="svg-t" x="500" y="214" text-anchor="end" fill="var(--d-muted)">42.75</text>
           <text class="svg-b" x="606" y="214" text-anchor="end" fill="var(--d-text)">+3.04</text>
 
-          <rect x="60" y="234" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="234" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="256" fill="var(--d-text)">B4</text>
           <text class="svg-t" x="390" y="256" text-anchor="end" fill="var(--d-muted)">34.92</text>
           <text class="svg-t" x="500" y="256" text-anchor="end" fill="var(--d-muted)">35.77</text>
           <text class="svg-b" x="606" y="256" text-anchor="end" fill="var(--d-text)">+0.85</text>
 
-          <rect x="60" y="276" width="560" height="34" rx="7" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="276" width="560" height="34" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="298" fill="var(--d-text)">B5, two above the lapse</text>
           <text class="svg-t" x="390" y="298" text-anchor="end" fill="var(--d-muted)">31.29</text>
           <text class="svg-t" x="500" y="298" text-anchor="end" fill="var(--d-muted)">20.00</text>
           <text class="svg-b" x="606" y="298" text-anchor="end" fill="var(--d-text)">-11.29</text>
 
-          <rect x="60" y="318" width="560" height="34" rx="7" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="318" width="560" height="34" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="340" fill="var(--d-text)">B6, directly above the lapse</text>
           <text class="svg-t" x="390" y="340" text-anchor="end" fill="var(--d-muted)">28.60</text>
           <text class="svg-t" x="500" y="340" text-anchor="end" fill="var(--d-muted)">11.60</text>
           <text class="svg-b" x="606" y="340" text-anchor="end" fill="var(--d-text)">-17.00</text>
 
-          <rect x="60" y="360" width="560" height="34" rx="7" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="3"/>
+          <rect x="60" y="360" width="560" height="34" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="3"/>
           <text class="svg-t" x="74" y="382" fill="var(--d-text)">B7, the Conductor who lapsed</text>
           <text class="svg-t" x="390" y="382" text-anchor="end" fill="var(--d-muted)">25.89</text>
           <text class="svg-t" x="500" y="382" text-anchor="end" fill="var(--d-muted)">0.00</text>
           <text class="svg-b" x="606" y="382" text-anchor="end" fill="var(--d-text)">-25.89</text>
           <line x1="64" y1="392" x2="616" y2="362" stroke="var(--d-bad-stroke)" stroke-width="2"/>
 
-          <rect x="60" y="402" width="560" height="34" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+          <rect x="60" y="402" width="560" height="34" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
           <text class="svg-t" x="74" y="424" fill="var(--d-text)">B8, below the lapse</text>
           <text class="svg-t" x="390" y="424" text-anchor="end" fill="var(--d-muted)">16.00</text>
           <text class="svg-t" x="500" y="424" text-anchor="end" fill="var(--d-muted)">16.40</text>
@@ -2194,7 +2171,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="652" y="328" fill="var(--d-muted)">are the ones who could have</text>
         <text class="svg-s" x="652" y="342" fill="var(--d-muted)">helped</text>
 
-        <rect x="60" y="462" width="560" height="42" rx="7"
+        <rect x="60" y="462" width="560" height="42"
               fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="2"/>
         <text class="svg-b" x="74" y="481" fill="var(--d-text)">Company payout: 481.14 down to 444.77</text>
         <text class="svg-s" x="74" y="497" fill="var(--d-muted)">The gains are redistribution, never new money.</text>
@@ -2403,7 +2380,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-s" x="465" y="378" text-anchor="middle" fill="var(--d-muted)">Sales Volume 150.00 to 299.99</text>
         <text class="svg-s" x="690" y="378" text-anchor="middle" fill="var(--d-muted)">Sales Volume 300.00 and above</text>
 
-        <rect x="20" y="400" width="840" height="48" rx="8"
+        <rect x="20" y="400" width="840" height="48"
               fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.8"/>
         <text class="svg-t" x="440" y="421" text-anchor="middle" fill="var(--d-text)">8 Conductors per band   |   24 qualified, of 34 who sponsored a Builder   |   44 earn any structure money</text>
         <text class="svg-t" x="440" y="439" text-anchor="middle" fill="var(--d-text)">the top 5 take 90.2 percent of it   |   structure is 22.9 percent of total payout</text>
@@ -2595,25 +2572,25 @@ details.ledger[open] { padding-bottom: 18px; }
 
         <text class="svg-t" x="20" y="74" fill="var(--d-text)">Fund a fake Builder</text>
         <text class="svg-s" x="20" y="90" fill="var(--d-muted)">300.00 a month of real subscription</text>
-        <rect x="280" y="58" width="460" height="22" rx="4" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <rect x="280" y="58" width="460" height="22" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="290" y="74" fill="var(--d-text)">300.00 spent</text>
-        <rect x="280" y="86" width="33" height="22" rx="4" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <rect x="280" y="86" width="33" height="22" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="322" y="102" fill="var(--d-text)">21.20 returned</text>
         <text class="svg-s" x="750" y="82" fill="var(--d-muted)">7 cents on the dollar</text>
 
         <text class="svg-t" x="20" y="146" fill="var(--d-text)">Fund an artificial second leg</text>
         <text class="svg-s" x="20" y="162" fill="var(--d-muted)">100.00 a month of real subscription</text>
-        <rect x="280" y="130" width="460" height="22" rx="4" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <rect x="280" y="130" width="460" height="22" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="290" y="146" fill="var(--d-text)">100.00 spent</text>
-        <rect x="280" y="158" width="9" height="22" rx="3" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
+        <rect x="280" y="158" width="9" height="22" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="298" y="174" fill="var(--d-text)">2.00 returned</text>
         <text class="svg-s" x="750" y="154" fill="var(--d-muted)">2 cents on the dollar</text>
 
         <text class="svg-t" x="20" y="218" fill="var(--d-text)">Buy rank with your own money</text>
         <text class="svg-s" x="20" y="234" fill="var(--d-muted)">10,000.00 of Sales Volume, no downline</text>
-        <rect x="280" y="202" width="460" height="22" rx="4" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
+        <rect x="280" y="202" width="460" height="22" fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="1.6"/>
         <text class="svg-s" x="290" y="218" fill="var(--d-text)">10,000.00 spent</text>
-        <rect x="280" y="230" width="460" height="22" rx="4" fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 5"/>
+        <rect x="280" y="230" width="460" height="22" fill="none" stroke="var(--d-node-stroke)" stroke-width="1.4" stroke-dasharray="6 5"/>
         <text class="svg-s" x="290" y="246" fill="var(--d-text)">0.00 returned. Rank: Member.</text>
         <text class="svg-s" x="750" y="226" fill="var(--d-muted)">nothing at all</text>
 
@@ -2636,7 +2613,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-b" x="765" y="22" text-anchor="middle" fill="var(--d-text)">All six flat</text>
         <text class="svg-s" x="765" y="40" text-anchor="middle" fill="var(--d-muted)">on the frontline</text>
 
-        <text class="svg-s" x="20" y="118" fill="var(--d-text)">THE RATE STEP</text>
+        <text class="svg-k" x="20" y="118" fill="var(--d-text)">THE RATE STEP</text>
         <text class="svg-s" x="20" y="132" fill="var(--d-muted)">climbs</text>
         <text class="svg-s" x="300" y="114" text-anchor="middle" fill="var(--d-muted)">2 active legs, 2.0 percent</text>
         <rect x="210" y="120" width="180" height="20" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.6"/>
@@ -2646,7 +2623,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <rect x="675" y="80" width="180" height="60" fill="var(--d-key-bg)" stroke="var(--d-key-stroke)" stroke-width="1.6"/>
         <line x1="190" y1="140" x2="860" y2="140" stroke="var(--d-line)" stroke-width="1.6"/>
 
-        <text class="svg-s" x="20" y="215" fill="var(--d-text)">THE BONUS PAID</text>
+        <text class="svg-k" x="20" y="215" fill="var(--d-text)">THE BONUS PAID</text>
         <text class="svg-s" x="20" y="229" fill="var(--d-muted)">falls</text>
         <text class="svg-b" x="300" y="168" text-anchor="middle" fill="var(--d-text)">4.80</text>
         <rect x="240" y="174" width="120" height="96" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
@@ -2656,7 +2633,7 @@ details.ledger[open] { padding-bottom: 18px; }
         <rect x="705" y="230" width="120" height="40" fill="var(--d-lit-bg)" stroke="var(--d-lit-stroke)" stroke-width="1.8"/>
         <line x1="190" y1="270" x2="860" y2="270" stroke="var(--d-line)" stroke-width="1.6"/>
 
-        <text class="svg-s" x="20" y="311" fill="var(--d-text)">OVERRIDES</text>
+        <text class="svg-k" x="20" y="311" fill="var(--d-text)">OVERRIDES</text>
         <text class="svg-s" x="20" y="325" fill="var(--d-muted)">collapse</text>
         <text class="svg-b" x="300" y="294" text-anchor="middle" fill="var(--d-text)">7.20</text>
         <rect x="240" y="300" width="120" height="60" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
@@ -2666,16 +2643,16 @@ details.ledger[open] { padding-bottom: 18px; }
         <text class="svg-b" x="765" y="336" text-anchor="middle" fill="var(--d-text)">0.00</text>
         <line x1="190" y1="360" x2="860" y2="360" stroke="var(--d-line)" stroke-width="1.6"/>
 
-        <text class="svg-s" x="20" y="392" fill="var(--d-text)">STRUCTURE</text>
+        <text class="svg-k" x="20" y="392" fill="var(--d-text)">STRUCTURE</text>
         <text class="svg-s" x="20" y="406" fill="var(--d-muted)">INCOME</text>
-        <rect x="190" y="376" width="220" height="38" rx="7" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.8"/>
+        <rect x="190" y="376" width="220" height="38" fill="var(--d-good-bg)" stroke="var(--d-good-stroke)" stroke-width="1.8"/>
         <text class="svg-b" x="300" y="400" text-anchor="middle" fill="var(--d-text)">12.00</text>
-        <rect x="425" y="376" width="220" height="38" rx="7" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <rect x="425" y="376" width="220" height="38" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="535" y="400" text-anchor="middle" fill="var(--d-text)">3.68</text>
-        <rect x="655" y="376" width="220" height="38" rx="7" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
+        <rect x="655" y="376" width="220" height="38" fill="var(--d-node-bg)" stroke="var(--d-node-stroke)" stroke-width="1.6"/>
         <text class="svg-b" x="765" y="400" text-anchor="middle" fill="var(--d-text)">2.00</text>
 
-        <rect x="20" y="424" width="840" height="104" rx="8"
+        <rect x="20" y="424" width="840" height="104"
               fill="var(--d-bad-bg)" stroke="var(--d-bad-stroke)" stroke-width="2"/>
         <text class="svg-b" x="32" y="452" fill="var(--d-text)">The attacker's own total:</text>
         <text class="svg-b" x="300" y="452" text-anchor="middle" fill="var(--d-text)">44.00</text>
