@@ -16,7 +16,7 @@
   display: flex;
   gap: 8px;
   margin: 14px 0 18px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.35);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.30);
 }
 
 .ops-tab {
@@ -109,13 +109,13 @@
   font-weight: 600;
   color: #8A8278;
   padding: 6px 8px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.35);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.30);
   white-space: nowrap;
 }
 
 .ops-table td {
   padding: 7px 8px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.18);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
   vertical-align: middle;
   color: #4B453D;
 }
@@ -133,7 +133,7 @@
 
 .ops-row-click { cursor: pointer; }
 .ops-row-click:hover, .ops-row-click:focus-visible {
-  background: rgba(124, 138, 160, 0.12);
+  background: rgba(27, 25, 23, 0.22);
   outline: none;
 }
 
@@ -195,7 +195,7 @@
 }
 
 .ops-stat {
-  border: 1px solid rgba(124, 138, 160, 0.3);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   padding: 10px 12px;
 }
@@ -233,9 +233,13 @@
   padding: 7px 9px;
   font: inherit;
   font-size: 14px;
-  border: 1px solid rgba(124, 138, 160, 0.5);
+  border: 1px solid rgba(27, 25, 23, 0.35);
   border-radius: 0;
-  background: rgba(27, 25, 23, 0.7);
+  /* Was rgba(27,25,23,0.7): a dark inset from the dark site, remapped to
+     ink and left dark while the text on it stayed ink. An operator could
+     not read the member number they were typing. */
+  background: #F1EDE6;
+  color: #1B1917;
   color: #1B1917;
   min-width: 110px;
 }
@@ -255,7 +259,7 @@
 .ops-btn-quiet {
   appearance: none;
   background: transparent;
-  border: 1px solid rgba(124, 138, 160, 0.5);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   color: #4B453D;
   font: inherit;
@@ -287,7 +291,7 @@
    greying a button gates nothing, and the page never pretends
    otherwise). */
 .ops-sub-card {
-  border: 1px solid rgba(124, 138, 160, 0.3);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   padding: 12px;
   margin: 10px 0;
@@ -526,3 +530,74 @@
   .queue-table th.q-when, .queue-table th.q-ref { width: auto; }
   .q-ref { white-space: normal; }
 }
+
+
+/* ============================================================
+   THE CONSOLE AS ONE COLUMN OF EVIDENCE
+   Handoff 8a, second pass, 2026-08-19.
+
+   The panels were bordered boxes laid out in two-up grids that
+   paired unrelated blocks by height: the schedule beside Run
+   now, the retry queue beside the attention queue. On a console
+   whose whole argument is an ORDER -- act on this, then this,
+   and everything below is evidence -- a grid shuffles the
+   argument. One column, and a rule between blocks.
+   ============================================================ */
+
+.console-panel {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid #1B1917;
+  border-radius: 0;
+  padding: 22px 0 26px;
+  overflow: visible;
+}
+.console-panel + .console-panel { margin-top: 0; }
+
+/* The queue is the page, so it does not need a rule to announce it:
+   the headline above it already does. */
+.console-queue { border-top: 0; padding-top: 8px; }
+
+.panel-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-transform: none;
+  color: #1B1917;
+  margin-bottom: 14px;
+  align-items: baseline;
+  gap: 12px;
+}
+
+/* The chip after a title is a caption, not a heading: it says how to read
+   the block, so it keeps the small tracked treatment the title just lost. */
+.title-chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: #8A8278;
+}
+
+.ops-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.ops-table th {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A8278;
+  border-bottom: 2px solid #1B1917;
+  padding: 0 12px 10px 0;
+}
+.ops-table td {
+  font-size: 13.5px;
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.ops-table td.ops-num { font-weight: 700; color: #1B1917; }

@@ -2338,11 +2338,15 @@ body.payment-in-flight .checkout-summary {
   padding: 14px 16px;
   border: 1px solid rgba(236, 48, 19, 0.24);
   border-radius: 0;
-  background: rgba(27, 25, 23, 0.7);
+  /* Was rgba(27,25,23,0.7). The same dark-inset-remapped-to-ink fault as
+     the console's fields, and this one is the bank approval screen: the
+     copy under each heading is --shop-text, which is dark, so the
+     shopper was reading dark on dark in the middle of paying. */
+  background: #F1EDE6;
 }
 .plaid-grid strong {
   display: block;
-  color: var(--shop-paper);
+  color: #1B1917;
   font-size: 1rem;
 }
 .plaid-copy,

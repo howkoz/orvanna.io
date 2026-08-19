@@ -32,7 +32,22 @@
 
   /* ---- ink and rules ---- */
   --ink:     #10192B;
-  --body:    #F1EDE6;
+  /* CORRECTED 2026-08-19. This read #F1EDE6 -- paper -- as the body text
+     colour of a document whose ground is #FFFFFF. Every paragraph, list
+     item and table cell in all 35 pages measured about 1.09:1 and was
+     effectively invisible, and it was live.
+
+     The cause is worth keeping. One hex value meant "body text" in two
+     documents at once: light-on-dark on the site, dark-on-light in this
+     brochure. The palette pass remapped it globally and could not tell
+     the two apart, because a colour does not carry which side of the
+     contrast it was on.
+
+     Only this line changed. Nothing here touches type size, weight,
+     tracking or case, so the pagination and widow control stay exactly
+     as they were tuned -- this is a readability fix, not the type pass
+     that was deliberately held back for this document. */
+  --body:    #2E3646;
   --muted:   #4B453D;
   --line:    #C7CEDB;
   --hair:    #DDE2EB;
@@ -135,6 +150,10 @@ svg { display: block; }
   background: var(--ink);
   border-bottom: 4px solid var(--ind);
   padding: var(--s5) 0 var(--s6);
+  /* The cover is the one ink ground in this document, so it states its own
+     text colour instead of inheriting --body and relying on every child to
+     override it. Anything added here later is readable by default. */
+  color: #E8ECF9;
 }
 .cover-mark {
   display: flex; align-items: center; gap: 14px;

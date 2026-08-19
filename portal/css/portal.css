@@ -14,7 +14,7 @@
   --bad: #B91C1C;
   --amber: #FBBF24;
   --violet: #C084FC;
-  --shadow: 0 6px 18px rgba(2, 6, 23, 0.45);
+  --shadow: 0 6px 18px rgba(27, 25, 23, 0.45);
 
   /* Drawing tokens. Every fill inside a chart resolves through one of these
      so the light theme can restate it; cyan at #EC3013 measures about 1.8:1
@@ -25,7 +25,7 @@
   --c-earn: #1B1917;                       /* commission series */
   --c-earn-fill: rgba(27, 25, 23, 0.22);
   --c-rule: #6B645A;                       /* the qualification line */
-  --c-hatch: rgba(148, 163, 184, 0.5);     /* an open, unfilled gap */
+  --c-hatch: rgba(27, 25, 23, 0.35);     /* an open, unfilled gap */
   --mark: #1B1917;                         /* hexagon marks */
   --mark-lit: #EC3013;                     /* the one lit mark on a board */
   --lvl-1: #1B1917;
@@ -924,7 +924,7 @@ body {
   gap: 22px;
   padding: 24px 18px;
   background: rgba(234, 228, 217, 0.82);
-  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  border-right: 1px solid rgba(27, 25, 23, 0.22);
   box-shadow: none;
 }
 
@@ -957,7 +957,7 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   background: rgba(27, 25, 23, 0.72);
   color: var(--muted);
@@ -988,7 +988,7 @@ body {
   top: 0;
   z-index: 35;
   background: rgba(27, 25, 23, 0.86);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
   backdrop-filter: none;
 }
 html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
@@ -1036,15 +1036,15 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
 .period-select,
 .theme-btn {
   min-height: 40px;
-  background: rgba(2, 6, 23, 0.30);
-  border-color: rgba(148, 163, 184, 0.26);
+  background: rgba(27, 25, 23, 0.06);
+  border-color: rgba(27, 25, 23, 0.22);
   border-radius: 0;
 }
 .picker-input { min-width: 0; width: 100%; }
 .period-select { min-width: 0; width: 100%; }
 .picker-list {
   background: var(--bg-soft);
-  border-color: rgba(148, 163, 184, 0.28);
+  border-color: rgba(27, 25, 23, 0.22);
   box-shadow: none;
 }
 
@@ -1092,7 +1092,7 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   height: 32px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(148, 163, 184, 0.22);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   font-size: 0.72rem;
   font-weight: 800;
@@ -1101,7 +1101,7 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
 }
 .tab:hover {
   color: var(--text);
-  background: rgba(148, 163, 184, 0.07);
+  background: rgba(27, 25, 23, 0.05);
 }
 .tab.active,
 .tab[aria-current="page"] {
@@ -1136,7 +1136,7 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid rgba(148, 163, 184, 0.20);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
   background: rgba(27, 25, 23, 0.44);
 }
@@ -1159,7 +1159,7 @@ main {
   padding: 24px;
   border-radius: 0;
   background: rgba(241, 237, 230, 0.68);
-  border-color: rgba(148, 163, 184, 0.20);
+  border-color: rgba(27, 25, 23, 0.22);
   box-shadow: none;
 }
 html[data-theme="light"] .panel-body {
@@ -1178,26 +1178,26 @@ html[data-theme="light"] .panel-body {
 .fig {
   min-width: 150px;
   padding: 10px 14px;
-  border: 1px solid rgba(148, 163, 184, 0.20);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
-  background: rgba(2, 6, 23, 0.22);
+  background: rgba(27, 25, 23, 0.04);
 }
 .fig-val { font-size: 1.38rem; }
 
 .stat-card {
   border-radius: 0;
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(2, 6, 23, 0.22);
+  border-color: rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.04);
 }
 .stat-value { font-size: 1.55rem; }
 .board {
   padding: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
+  border: 1px solid rgba(27, 25, 23, 0.22);
   border-radius: 0;
-  background: rgba(2, 6, 23, 0.16);
+  background: rgba(27, 25, 23, 0.03);
 }
 .board-head {
-  border-bottom-color: rgba(148, 163, 184, 0.18);
+  border-bottom-color: rgba(27, 25, 23, 0.22);
   margin-bottom: 14px;
 }
 .board-title {
@@ -1222,8 +1222,8 @@ html[data-theme="light"] .panel-body {
 
 .chart-box {
   border-radius: 0;
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(2, 6, 23, 0.16);
+  border-color: rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.03);
 }
 .chart-title {
   font-size: 0.9rem;
@@ -1286,7 +1286,7 @@ html[data-theme="light"] .panel-body {
 }
 .dist-row { gap: 14px; }
 .table-scroll {
-  border-color: rgba(148, 163, 184, 0.20);
+  border-color: rgba(27, 25, 23, 0.22);
   border-radius: 0;
 }
 
@@ -1309,7 +1309,7 @@ html[data-theme="light"] .panel-body {
     height: auto;
     padding: 16px;
     border-right: 0;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    border-bottom: 1px solid rgba(27, 25, 23, 0.22);
     overflow: hidden;
   }
   .portal-brand,
@@ -1728,4 +1728,220 @@ html[data-theme="light"] .panel-body {
   .topbar-inner, .panel, .footer { padding-left: 20px; padding-right: 20px; }
   .workspace-title h1 { font-size: 30px; }
   .answer { padding: 22px 20px 26px; }
+}
+
+
+/* ============================================================
+   THE PANELS, FROM CARDS TO CELLS
+   Handoff screen 7a, second pass, 2026-08-19.
+
+   The first pass rebuilt the SHELL: one page, the ink sidebar,
+   the answer band. The insides stayed as they were -- bordered
+   stat-cards on an inset ground, which is the treatment the
+   redesign exists to remove. Same content, less chrome: a row of
+   cells divided by one hairline and nothing else.
+
+   These rules come after everything above and deliberately
+   override it, rather than editing five render functions to emit
+   different markup. The renderers already compute every number
+   7a asks for; what was wrong was the box around it.
+   ============================================================ */
+
+/* A row of stat-cards becomes a row of ruled cells. */
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  border-top: 2px solid #1B1917;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 18px 22px 20px 0;
+  min-width: 0;
+}
+.stat-card + .stat-card {
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+  padding-left: 22px;
+}
+
+.stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8A8278;
+}
+
+/* 34px, per the token table's display stat. The cards had it at 22px,
+   which is a figure that has to be looked for rather than seen. */
+.stat-value {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #1B1917;
+  margin-top: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-note {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6B645A;
+  margin-top: 10px;
+}
+
+/* Boards and panels lose their boxes too: a heading, a rule, content. */
+.board {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid #1B1917;
+  border-radius: 0;
+  padding: 18px 0 0;
+  margin-bottom: 26px;
+}
+.board-head {
+  border-bottom: 0;
+  padding-bottom: 12px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #1B1917;
+  text-transform: none;
+  margin: 0 0 8px;
+}
+.section-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6B645A;
+  max-width: 68ch;
+  margin: 0 0 18px;
+}
+
+/* Tables: rules between rows, nothing around them, numbers tabular
+   and right-aligned. */
+.table-scroll {
+  border: 0;
+  border-radius: 0;
+  overflow-x: auto;
+}
+table.data { width: 100%; border-collapse: collapse; }
+table.data th {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A8278;
+  text-align: left;
+  padding: 0 12px 10px 0;
+  border-bottom: 2px solid #1B1917;
+}
+table.data td {
+  font-size: 13.5px;
+  line-height: 1.2;
+  color: #1B1917;
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+table.data td.num, table.data th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* Progress meters cap at 100 percent and read accent while short,
+   ink once met -- the colour is the answer, not decoration. */
+.req-bar, .micro-track, .gate-track, .mom-row-track, .dist-track {
+  height: 7px;
+  background: #DCD4C6;
+  border-radius: 0;
+}
+.req-bar-fill, .micro-fill, .gate-fill, .dist-fill {
+  height: 100%;
+  max-width: 100%;
+  border-radius: 0;
+  transition: width 0.35s ease;
+}
+
+/* Badges and pills: square, and only the one that means "act" is filled. */
+.badge, .pill, .tag {
+  border-radius: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+}
+
+/* The last three boxes. The panel already has a heading and a rule from
+   .panel::before, so the body inside it needs no container of its own;
+   a chart needs a caption and a baseline, not a frame; and a requirement
+   is a row in a list, which is what a rule is for. */
+.panel-body {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+}
+
+.chart-box {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+  border-radius: 0;
+  padding: 16px 0 0;
+  margin-bottom: 22px;
+  overflow-x: auto;
+}
+.chart-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8A8278;
+  margin: 0 0 14px;
+}
+
+.req-item {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  padding: 14px 0;
+  margin-bottom: 0;
+}
+
+/* A met requirement reads ink; a short one reads accent. The tick and the
+   cross were carrying that alone, and a tick is a small thing to hang an
+   answer on. */
+.req-item.req-met .req-bar-fill { background: #1B1917; }
+.req-item.req-unmet .req-bar-fill { background: #EC3013; }
+
+/* ONE HEADING PER SECTION. The panel prints its own number and title from
+   the markup (.panel::before), and each renderer independently emits an
+   h2 of its own -- so every block read "01 The month in volume" followed
+   immediately by "My Volume". Two names for one thing, and the second one
+   is the older, vaguer of the pair.
+
+   Hidden rather than deleted from five renderers: the h2 is what those
+   functions were written around, it still labels the section for a screen
+   reader reading the panel out of context, and removing it is five edits
+   in JavaScript for no visual gain. The sub-heading underneath it stays,
+   because it explains rather than repeats. */
+.panel-body > .section-title:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=0d500c098786">
-<link rel="stylesheet" href="css/corporate.css?v=0d500c098786">
-<link rel="stylesheet" href="css/staff.css?v=0d500c098786">
-<link rel="stylesheet" href="css/staff-ops.css?v=0d500c098786">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=3e39edd75d38">
+<link rel="stylesheet" href="css/corporate.css?v=3e39edd75d38">
+<link rel="stylesheet" href="css/staff.css?v=3e39edd75d38">
+<link rel="stylesheet" href="css/staff-ops.css?v=3e39edd75d38">
 </head>
 <body class="console-body">
 
@@ -104,42 +104,35 @@
           their absence as nothing being owed.</p>
       </section>
 
+      <!-- ============ THE EVIDENCE, BELOW THE QUEUE ============
+           Handoff 8a: "everything that is merely true drops below it as
+           evidence." Ordered by whether it demands an action rather than
+           by when it was built. Retry queue first, because it is the only
+           block down here still describing money in motion. The schedule
+           last, because it is a setting, and a setting is the least
+           urgent true thing on a console.
 
-      <div class="ops-stats" id="billingStats"></div>
+           These were spread across two-up grids that paired unrelated
+           panels by height. They are one column now: the order IS the
+           argument, and a grid shuffles it. -->
 
-      <div class="ops-grid-2">
-
-        <!-- Schedule control -->
-        <section class="console-panel" aria-label="Daily run schedule">
-          <h2 class="panel-title">Daily run schedule <span class="title-chip">Stored server side</span></h2>
-          <p class="ops-status-line">The renewal engine runs automatically each day at this time, when enabled and once the scheduler is installed. When disabled or no time is set, the engine runs manually only.</p>
-          <div class="ops-form-row">
-            <label class="ops-check"><input type="checkbox" id="schedEnabled"> Enabled</label>
-            <div class="ops-field">
-              <label class="order-label" for="schedTime">Run at (24 hour)</label>
-              <input id="schedTime" type="time" step="60">
-            </div>
-            <div class="ops-field">
-              <label class="order-label" for="schedTz">Timezone</label>
-              <input id="schedTz" type="text" list="tzList" placeholder="America/New_York" spellcheck="false">
-              <datalist id="tzList">
-                <option value="America/New_York"></option>
-                <option value="America/Chicago"></option>
-                <option value="UTC"></option>
-                <option value="America/Denver"></option>
-                <option value="America/Los_Angeles"></option>
-                <option value="Europe/Berlin"></option>
-                <option value="Asia/Seoul"></option>
-              </datalist>
-            </div>
-            <button class="btn-addline" id="schedSaveBtn" type="button">Save schedule</button>
-          </div>
-          <p class="ops-status-line" id="schedStatus"></p>
+        <section class="console-panel" aria-label="Retry queue">
+          <h2 class="panel-title"><span class="panel-num">02</span>Retry queue <span class="title-chip">By decline class</span></h2>
+          <p class="ops-status-line" id="retryStatus"></p>
+          <div class="ops-table-wrap"><table class="ops-table" id="retryTable" hidden>
+            <thead><tr><th>Member</th><th>Sub</th><th>Class</th><th>Code</th><th>Next retry</th><th class="ops-num">Step</th><th class="ops-num">Amount</th></tr></thead>
+            <tbody id="retryBody"></tbody>
+          </table></div>
         </section>
 
-        <!-- Run now -->
+      <section class="console-panel" aria-label="Seven day forecast">
+        <h2 class="panel-title"><span class="panel-num">03</span>Next seven days <span class="title-chip">Derived from the same schedule arithmetic the engine runs</span></h2>
+        <p class="ops-status-line" id="forecastStatus"></p>
+        <div id="forecastBody"></div>
+      </section>
+
         <section class="console-panel" aria-label="Run now">
-          <h2 class="panel-title">Run now <span class="title-chip">Preview first, always</span></h2>
+          <h2 class="panel-title"><span class="panel-num">04</span>Run now <span class="title-chip">Preview first, always</span></h2>
           <p class="ops-status-line">The preview is the same gather and price read the real run performs, and it creates nothing. Execution is a separate confirm step.</p>
           <div class="ops-form-row">
             <div class="ops-field">
@@ -177,18 +170,9 @@
           <div id="previewBody"></div>
           <div id="executeBody"></div>
         </section>
-      </div>
 
-      <!-- Seven day forecast -->
-      <section class="console-panel" aria-label="Seven day forecast">
-        <h2 class="panel-title">Next seven days <span class="title-chip">Derived from the same schedule arithmetic the engine runs</span></h2>
-        <p class="ops-status-line" id="forecastStatus"></p>
-        <div id="forecastBody"></div>
-      </section>
-
-      <!-- Run history -->
       <section class="console-panel" aria-label="Run history">
-        <h2 class="panel-title">Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
+        <h2 class="panel-title"><span class="panel-num">05</span>Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
         <p class="ops-status-line" id="runHistStatus"></p>
         <div class="ops-table-wrap"><table class="ops-table" id="runHistTable" hidden>
           <thead><tr><th>Run</th><th>Tick date</th><th>Status</th><th>Clock</th><th class="ops-num">Due</th><th class="ops-num">Attempts</th><th class="ops-num">Succeeded</th><th class="ops-num">Declined</th><th class="ops-num">Member fault</th><th class="ops-num">System fault</th><th>Limit</th><th>Finished</th></tr></thead>
@@ -197,19 +181,35 @@
         <div id="runDetailBody"></div>
       </section>
 
-      <div class="ops-grid-2">
-        <!-- Retry queue -->
-        <section class="console-panel" aria-label="Retry queue">
-          <h2 class="panel-title">Retry queue <span class="title-chip">By decline class</span></h2>
-          <p class="ops-status-line" id="retryStatus"></p>
-          <div class="ops-table-wrap"><table class="ops-table" id="retryTable" hidden>
-            <thead><tr><th>Member</th><th>Sub</th><th>Class</th><th>Code</th><th>Next retry</th><th class="ops-num">Step</th><th class="ops-num">Amount</th></tr></thead>
-            <tbody id="retryBody"></tbody>
-          </table></div>
+        <section class="console-panel" aria-label="Daily run schedule">
+          <h2 class="panel-title"><span class="panel-num">06</span>Daily run schedule <span class="title-chip">Stored server side</span></h2>
+          <p class="ops-status-line">The renewal engine runs automatically each day at this time, when enabled and once the scheduler is installed. When disabled or no time is set, the engine runs manually only.</p>
+          <div class="ops-form-row">
+            <label class="ops-check"><input type="checkbox" id="schedEnabled"> Enabled</label>
+            <div class="ops-field">
+              <label class="order-label" for="schedTime">Run at (24 hour)</label>
+              <input id="schedTime" type="time" step="60">
+            </div>
+            <div class="ops-field">
+              <label class="order-label" for="schedTz">Timezone</label>
+              <input id="schedTz" type="text" list="tzList" placeholder="America/New_York" spellcheck="false">
+              <datalist id="tzList">
+                <option value="America/New_York"></option>
+                <option value="America/Chicago"></option>
+                <option value="UTC"></option>
+                <option value="America/Denver"></option>
+                <option value="America/Los_Angeles"></option>
+                <option value="Europe/Berlin"></option>
+                <option value="Asia/Seoul"></option>
+              </datalist>
+            </div>
+            <button class="btn-addline" id="schedSaveBtn" type="button">Save schedule</button>
+          </div>
+          <p class="ops-status-line" id="schedStatus"></p>
         </section>
 
-        <!-- Attention queue -->
-      </div>
+
+      <div class="ops-stats" id="billingStats"></div>
 
       <!-- Subscription management -->
       <section class="console-panel" aria-label="Subscription management">
@@ -304,7 +304,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=0d500c098786"></script>
+<script src="js/catalog.js?v=3e39edd75d38"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
