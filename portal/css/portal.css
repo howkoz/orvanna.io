@@ -998,9 +998,13 @@ body { background: var(--bg); }
   gap: 20px;
   flex-wrap: wrap;
 }
+/* --cyan is the bright accent, which this sheet's own comment already
+   flags as unreadable on ink. It is also unreadable as an 11px kicker on
+   paper: 3.32:1. The deep form of the same accent, 5.95:1. This rule wins
+   over .top-kicker below it, which is why fixing that one did nothing. */
 .workspace-title p {
   margin: 0 0 3px;
-  color: var(--cyan);
+  color: #A3220B;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.16em;

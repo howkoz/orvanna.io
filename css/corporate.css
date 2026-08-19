@@ -45,7 +45,15 @@
   --indigo-d:   #1B1917;   /* indigo on dark */
   --indigo-l:   #6B645A;   /* lighter indigo for small text on dark */
   --violet:     #1B1917;
-  --cyan:       #EC3013;
+/* THE ACCENT IS A FILL, NOT A TEXT COLOUR ON PAPER. The handoff's own
+   token table says so: "--accent is used for fills, large numerals and
+   interface chrome, never for paragraph text on paper -- use
+   --accent-deep there." Measured on the built pages, accent text on the
+   paper grounds lands between 2.91:1 and 3.60:1 -- above gate one's 3:1
+   floor on most of them, and under AA on all of them. The deep form is
+   5.95:1 on paper and 6.36:1 on the raised panel. Swept 2026-08-19 after
+   the owner reported text "blending too close to the page". */
+  --cyan:       #A3220B;
   --paper:      #1B1917;
   --text-d:     #4B453D;   /* body on dark */
   --muted-d:    #6B645A;   /* muted on dark */
@@ -1118,7 +1126,9 @@ section { scroll-margin-top: 84px; }
 .h-kicker-quiet { color: #6B645A; }
 .h-kicker-faint { color: #8F8981; }
 .h-kicker-ink   { color: #FF6A4A; }   /* accent-on-ink */
-.h-kicker-on-accent { color: rgba(255, 255, 255, 0.82); }
+/* 82% white on the accent fill is 3.22:1. Solid white is 4.20:1, which
+   is the ceiling on this ground -- see the accent-button note. */
+.h-kicker-on-accent { color: #FFFFFF; }
 
 .h-h1 {
   font-size: clamp(2.6rem, 5.4vw, 4.125rem);   /* 66px at the canvas width */

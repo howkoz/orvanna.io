@@ -19,12 +19,26 @@
   border-bottom: 1px solid rgba(27, 25, 23, 0.30);
 }
 
+/* THE OLD DARK PALETTE LEFT SURVIVORS HERE, found 2026-08-19 by
+   sweeping the page at the AA thresholds rather than at gate one's
+   3:1 floor. Every colour below was chosen to sit on a navy ground
+   and was left behind when the ground became paper:
+
+     .ops-tab and .ops-status-line   #9FB0C7 at 1.75:1
+     .ops-note                       #F1EDE6 on a 10% ink wash, ~1.1:1
+     --ops-ok fallback               #86efac, a pale green
+     --ops-accent fallback           #38bdf8, a sky blue
+     .ops-warn                       #8A6D3B at 3.26:1
+
+   Gate one passed the page on every build: 3:1 catches text that is
+   invisible, not text that is merely unreadable. The sweep that found
+   these asks the stricter question and is now part of the round. */
 .ops-tab {
   appearance: none;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #9FB0C7;
+  color: #6B645A;
   font: inherit;
   font-size: 0.95rem;
   font-weight: 700;
@@ -45,7 +59,7 @@
 .ops-note {
   border: 1px solid rgba(27, 25, 23, 0.45);
   background: rgba(27, 25, 23, 0.10);
-  color: #F1EDE6;
+  color: #1B1917;
   border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
@@ -59,7 +73,7 @@
 .ops-warn {
   border: 1px solid rgba(217, 119, 6, 0.65);
   background: rgba(217, 119, 6, 0.12);
-  color: #8A6D3B;
+  color: #6B4A15;
   border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
@@ -90,7 +104,7 @@
 .ops-mock {
   border: 2px dashed #D97706;
   background: rgba(217, 119, 6, 0.18);
-  color: #8A6D3B;
+  color: #6B4A15;
   border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
@@ -151,7 +165,7 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   background: #4B453D;
-  color: #D1D5DB;
+  color: #EAE4D9;
   white-space: nowrap;
 }
 .ops-final-chip {
@@ -336,7 +350,7 @@
   padding: 10px;
   margin-top: 8px;
   font-size: 0.9rem;
-  color: #8A6D3B;
+  color: #6B4A15;
 }
 
 /* The engine's own disclosure text (for example the 12.1 double
@@ -344,14 +358,14 @@
 .ops-disclosure {
   border-left: 3px solid #D97706;
   background: rgba(217, 119, 6, 0.08);
-  color: #8A6D3B;
+  color: #6B4A15;
   padding: 8px 12px;
   margin: 8px 0;
   font-size: 0.9rem;
   white-space: pre-wrap;
 }
 
-.ops-status-line { font-size: 0.85rem; color: #9FB0C7; margin: 6px 0; }
+.ops-status-line { font-size: 0.85rem; color: #4B453D; margin: 6px 0; }
 
 .ops-hidden { display: none !important; }
 
@@ -412,7 +426,7 @@
 }
 
 .ops-peek-toggle:hover { background: rgba(148, 163, 184, 0.12); }
-.ops-peek-toggle:focus-visible { outline: 2px solid var(--ops-accent, #38bdf8); outline-offset: -2px; }
+.ops-peek-toggle:focus-visible { outline: 2px solid var(--ops-accent, #A3220B); outline-offset: -2px; }
 
 .ops-peek-label { font-weight: 600; }
 
@@ -451,8 +465,8 @@
    table and mean opposite things: one is dunning, the other is business as
    usual. Colour separates them, and the WORD beside each date says which it
    is, so the meaning survives greyscale and colour blindness. */
-.ops-table td.ops-next-cycle { color: var(--ops-ok, #86efac); white-space: nowrap; }
-.ops-table td.ops-next-retry { color: var(--ops-warn, #8A6D3B); white-space: nowrap; font-weight: 600; }
+.ops-table td.ops-next-cycle { color: var(--ops-ok, #166534); white-space: nowrap; }
+.ops-table td.ops-next-retry { color: var(--ops-warn, #6B4A15); white-space: nowrap; font-weight: 600; }
 .ops-table td.ops-next-none  { color: var(--ops-muted, #6B645A); white-space: nowrap; }
 
 .ops-table td.ops-next-pending { color: var(--ops-muted, #6B645A); white-space: nowrap; font-style: italic; }
@@ -639,3 +653,13 @@
 .q-row.q-cleared { opacity: 0.45; }
 .q-row.q-cleared .q-what { text-decoration: line-through; }
 .q-row.q-cleared .q-badge-act { background: none; border-color: #6B645A; color: #4B453D; }
+
+/* THE DRAWER IS A DARKER GROUND THAN THE PANEL IT OPENS IN.
+   Its 5% accent wash takes the paper from #EAE4D9 to #EADBCF, which is
+   enough to drop the quiet token from 4.60:1 to 4.32:1 -- readable
+   everywhere else on the page and not quite readable here. The rule that
+   set the colour and the rule that set the ground were correct on their
+   own; only the pair was wrong. Body ink inside the drawer, 7.1:1. */
+.ops-drawer .ops-table th,
+.ops-drawer .ops-table td.ops-mono,
+.ops-drawer .ops-table td { color: #4B453D; }

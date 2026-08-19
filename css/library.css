@@ -72,7 +72,16 @@
   --quiet:         #6B645A;
   --line:          rgba(27, 25, 23, 0.18);
   --line-lit:      rgba(236, 48, 19, 0.38);
-  --accent:        #EC3013;
+/* THE ACCENT IS A FILL, NOT A TEXT COLOUR ON PAPER. The handoff's own
+   token table says so: "--accent is used for fills, large numerals and
+   interface chrome, never for paragraph text on paper -- use
+   --accent-deep there." Measured on the built pages, accent text on the
+   paper grounds lands between 2.91:1 and 3.60:1 -- above gate one's 3:1
+   floor on most of them, and under AA on all of them. The deep form is
+   5.95:1 on paper and 6.36:1 on the raised panel. Swept 2026-08-19 after
+   the owner reported text "blending too close to the page". */
+  --accent:        #EC3013;   /* fills, chrome, large numerals */
+  --accent-deep:   #A3220B;   /* the same accent AS TEXT on paper */
   --accent-ink:    #FFFFFF;
   --accent-soft:   rgba(236, 48, 19, 0.08);
   --indigo-t:      #6B645A;
@@ -181,7 +190,7 @@ img, svg { max-width: 100%; display: block; }
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.34em;
-  color: var(--accent);
+  color: var(--accent-deep);
   margin-bottom: 18px;
 }
 
@@ -340,7 +349,7 @@ section { scroll-margin-top: 150px; }
   white-space: nowrap;
 }
 
-.badge-domain { border-color: var(--accent); color: var(--accent); }
+.badge-domain { border-color: var(--accent); color: var(--accent-deep); }
 .badge-group  { border-color: var(--violet-t); color: var(--violet-t); }
 
 .tag-soon {
@@ -382,7 +391,7 @@ section { scroll-margin-top: 150px; }
   cursor: pointer;
   transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
 }
-.filter-pill:hover { border-color: var(--line-lit); color: var(--accent); }
+.filter-pill:hover { border-color: var(--line-lit); color: var(--accent-deep); }
 .filter-pill[aria-pressed="true"] {
   color: var(--accent-ink);
   background: var(--accent);
@@ -464,7 +473,7 @@ section { scroll-margin-top: 150px; }
   margin-bottom: 4px;
 }
 
-.lib-card:hover .lib-card-name { color: var(--accent); }
+.lib-card:hover .lib-card-name { color: var(--accent-deep); }
 
 .lib-card-blurb {
   font-size: 0.82rem;
@@ -506,7 +515,7 @@ section { scroll-margin-top: 150px; }
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-deep);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -524,7 +533,7 @@ section { scroll-margin-top: 150px; }
   font-weight: 700;
   letter-spacing: 0.13em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-deep);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -600,7 +609,7 @@ tbody th {
    themes. Same treatment as .situation-a a below. */
 table a,
 table a:visited {
-  color: var(--accent);
+  color: var(--accent-deep);
   font-weight: 700;
   text-decoration: none;
   border-bottom: 1px solid currentColor;
@@ -633,7 +642,7 @@ table a:focus-visible {
 }
 
 .situation-a { font-size: 0.94rem; color: var(--text); }
-.situation-a strong { color: var(--accent); font-weight: 700; }
+.situation-a strong { color: var(--accent-deep); font-weight: 700; }
 .situation-a p + p { margin-top: 10px; }
 .situation-a a { color: var(--accent); font-weight: 700; text-decoration: none; border-bottom: 1px solid currentColor; }
 
@@ -699,7 +708,7 @@ table a:focus-visible {
   gap: 7px;
   transition: color 0.15s ease;
 }
-.crumb a:hover { color: var(--accent); }
+.crumb a:hover { color: var(--accent-deep); }
 .crumb a svg { width: 11px; height: 11px; }
 .crumb .sep { color: var(--quiet); }
 .crumb .here { color: var(--heading); }
@@ -781,7 +790,7 @@ table a:focus-visible {
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--accent-deep);
   font-variant-numeric: tabular-nums;
 }
 
@@ -895,7 +904,7 @@ table a:focus-visible {
 }
 
 .buy-line a {
-  color: var(--accent);
+  color: var(--accent-deep);
   font-weight: 700;
   text-decoration: none;
   border-bottom: 1px solid currentColor;
@@ -949,7 +958,7 @@ table a:focus-visible {
   color: var(--heading);
 }
 
-.walk-link:hover .walk-name { color: var(--accent); }
+.walk-link:hover .walk-name { color: var(--accent-deep); }
 
 /* ---------- the unknown agent view ---------- */
 

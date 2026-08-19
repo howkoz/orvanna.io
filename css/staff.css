@@ -51,13 +51,22 @@
   min-width: 0;
 }
 
+/* The mark is the mark: three ink bars and one accent bar, no frame.
+   The 1px accent box around it was the old console's chrome, and this
+   page is the only surface that still drew it. The fills are stated
+   here because staff-operations.html does not load site-chrome.css,
+   where every other page gets them -- without them the accent bar
+   rendered black and the mark read as four identical bars. */
 .brand-mark {
   width: 18px;
   height: 18px;
-  border: 1px solid rgba(236, 48, 19, 0.75);
+  border: 0;
   border-radius: 0;
   box-shadow: none;
 }
+.brand-mark svg { width: 100%; height: 100%; display: block; }
+.brand-mark .mark-bar { fill: #1B1917; }
+.brand-mark .mark-accent { fill: #EC3013; }
 
 .brand-word {
   font-size: 0.95rem;
@@ -119,8 +128,8 @@
   font: inherit;
   font-size: 0.85rem;
   font-weight: 700;
-  color: #F1EDE6;
-  background: #EC3013;                  /* dark text on cyan: 10.7:1 */
+  color: #FFFFFF;
+  background: #EC3013;                  /* 4.19:1; see the accent-button note in the journal */
   border: 0;
   border-radius: 0;
   padding: 8px 16px;
@@ -376,8 +385,11 @@
   background: #6B645A;
 }
 .rank-chip.rank-leader    { background: #A3220B; }
-.rank-chip.rank-director  { background: #8A6D3B; }
-.rank-chip.rank-executive { background: #D8B4FE; }
+.rank-chip.rank-director  { background: #6B4A15; }
+/* The top rank sits on ink. It was a pale violet carrying paper-white
+   text -- light on light, and the one chip on the page nobody could
+   read. */
+.rank-chip.rank-executive { background: #1B1917; }
 
 .qual-chip {
   font-size: 0.7rem;
@@ -387,8 +399,8 @@
   border-radius: 0;
   padding: 3px 10px;
 }
-.qual-chip.qual-yes { color: #F1EDE6; background: #15803D; }
-.qual-chip.qual-no  { color: #FECACA; border: 1px solid rgba(248, 113, 113, 0.55); }
+.qual-chip.qual-yes { color: #FFFFFF; background: #15803D; }
+.qual-chip.qual-no  { color: #991B1B; border: 1px solid rgba(153, 27, 27, 0.55); }
 
 /* verification block (synthesized) */
 .snap-verify {
@@ -632,7 +644,7 @@
   white-space: nowrap;
 }
 .mode-tag.tag-sub { color: #A3220B; border: 1px solid rgba(236, 48, 19, 0.45); }
-.mode-tag.tag-one { color: #C4B5FD; border: 1px solid rgba(27, 25, 23, 0.5); }
+.mode-tag.tag-one { color: #4B453D; border: 1px solid rgba(27, 25, 23, 0.5); }
 
 .qty-cell { display: inline-flex; align-items: center; gap: 6px; }
 .qty-step {
@@ -663,7 +675,7 @@
   padding: 3px 6px;
   border-radius: 0;
 }
-.line-remove-btn:hover { background: rgba(248, 113, 113, 0.14); color: #FECACA; }
+.line-remove-btn:hover { background: rgba(248, 113, 113, 0.14); color: #991B1B; }
 
 .order-empty {
   font-size: 0.84rem;
@@ -1054,7 +1066,7 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8A6D3B;
+  color: #6B4A15;
   margin-bottom: 6px;
 }
 .ar-list { margin: 0; padding-left: 18px; }
@@ -1065,14 +1077,18 @@
   margin-bottom: 4px;
 }
 .ar-list li:last-child { margin-bottom: 0; }
-.ar-list b { color: #8A6D3B; }
+.ar-list b { color: #6B4A15; }
 
 .rec-chip {
   font-size: 0.62rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #F1EDE6;
+  /* Nothing reaches AA on the accent fill: its luminance sits mid-range,
+     so white measures 4.20:1 and near-ink 4.17:1. White, then, matching
+     every other accent chip on the site. Raising the whole family needs
+     --accent-deep and is a call for the owner, not a slip to patch. */
+  color: #FFFFFF;
   background: #EC3013;
   border-radius: 0;
   padding: 1px 7px;
@@ -1102,7 +1118,7 @@
 .aa-head {
   font-size: 0.82rem;
   font-weight: 700;
-  color: #8A6D3B;
+  color: #6B4A15;
   line-height: 1.45;
   margin-bottom: 6px;
 }
@@ -1202,7 +1218,7 @@
   flex: 1 1 240px;
   min-width: 0;
 }
-.cc-line b { color: #8A6D3B; }
+.cc-line b { color: #6B4A15; }
 .cc-order {
   flex: 0 1 auto;
   font-family: Consolas, "Cascadia Mono", monospace;

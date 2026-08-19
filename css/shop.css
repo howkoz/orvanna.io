@@ -68,7 +68,15 @@
   --shop-pill-ink-hover: #1B1917;   /* filter pill, hover */
   /* accents */
   --shop-accent-fill:    #EC3013;
-  --shop-accent-ink:     #EC3013;
+/* THE ACCENT IS A FILL, NOT A TEXT COLOUR ON PAPER. The handoff's own
+   token table says so: "--accent is used for fills, large numerals and
+   interface chrome, never for paragraph text on paper -- use
+   --accent-deep there." Measured on the built pages, accent text on the
+   paper grounds lands between 2.91:1 and 3.60:1 -- above gate one's 3:1
+   floor on most of them, and under AA on all of them. The deep form is
+   5.95:1 on paper and 6.36:1 on the raised panel. Swept 2026-08-19 after
+   the owner reported text "blending too close to the page". */
+  --shop-accent-ink:     #A3220B;
   --shop-on-accent:      #FFFFFF;   /* ink on any cyan fill */
   --shop-indigo-ink:     #6B645A;
   --shop-violet-ink:     #1B1917;
