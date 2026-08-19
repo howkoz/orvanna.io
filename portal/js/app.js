@@ -288,6 +288,44 @@ function makeCustomerLeaf(cust) {
   return li;
 }
 
+/* Split the frontline into the legs that recorded the qualifying volume this
+   month and the ones that did not. Same test the leg counter uses, so the
+   two never disagree on the same screen. */
+function splitFrontline(kids, periodMap) {
+  const live = [], quiet = [];
+  kids.forEach(function (c) {
+    const row = periodMap.get(c);
+    (row && Number(row.sv) >= QUAL_SV ? live : quiet).push(c);
+  });
+  /* Nothing was active: fold nothing away, or the reader opens the tree
+     onto an empty list and has to guess that a control holds the answer. */
+  if (live.length === 0) { return { live: quiet, quiet: [] }; }
+  return { live: live, quiet: quiet };
+}
+
+/* The control that ends a folded frontline. A real button, so it is
+   reachable by keyboard and announces the state it is in. */
+function addQuietControl(ul, nodes) {
+  const holder = document.createElement("li");
+  holder.className = "tnode tnode-more";
+  const btn = document.createElement("button");
+  btn.type = "button";
+  btn.className = "quiet-more";
+  let open = false;
+  const paint = function () {
+    nodes.forEach(function (n) { n.hidden = !open; });
+    btn.textContent = open
+      ? "Hide the " + fmt0(nodes.length) + " quiet leg" + (nodes.length === 1 ? "" : "s")
+      : fmt0(nodes.length) + " quiet leg" + (nodes.length === 1 ? "" : "s") +
+        " under 100.00 SV this month";
+    btn.setAttribute("aria-expanded", open ? "true" : "false");
+  };
+  btn.addEventListener("click", function () { open = !open; paint(); });
+  paint();
+  holder.appendChild(btn);
+  ul.appendChild(holder);
+}
+
 function makeNode(code, depth, periodMap) {
   const m = db.byCode.get(code);
   const row = periodMap.get(code);
@@ -325,8 +363,22 @@ function makeNode(code, depth, periodMap) {
     const expand = function () {
       if (!built) {
         ul = document.createElement("ul");
-        kids.forEach(function (c) { ul.appendChild(makeNode(c, depth + 1, periodMap)); });
+        /* At the top of the tree the frontline is sorted before it is drawn:
+           legs that reached the 100.00 Sales Volume line stand on their own,
+           and the quiet ones fold behind a single control. A quiet leg is
+           still there, still counted, still one click away; it simply does
+           not push an active leg off the first screen. Below depth 0 the
+           order is left alone, because a deep branch is read as a shape
+           and resorting it would misdescribe the shape. */
+        const ordered = depth === 0 ? splitFrontline(kids, periodMap) : { live: kids, quiet: [] };
+        ordered.live.forEach(function (c) { ul.appendChild(makeNode(c, depth + 1, periodMap)); });
+        const quietNodes = ordered.quiet.map(function (c) {
+          const node = makeNode(c, depth + 1, periodMap);
+          ul.appendChild(node);
+          return node;
+        });
         custs.forEach(function (c) { ul.appendChild(makeCustomerLeaf(c)); });
+        if (quietNodes.length > 0) { addQuietControl(ul, quietNodes); }
         li.appendChild(ul);
         built = true;
       }

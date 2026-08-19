@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=80b4b20d0906">
-<link rel="stylesheet" href="css/corporate.css?v=80b4b20d0906">
-<link rel="stylesheet" href="css/staff.css?v=80b4b20d0906">
-<link rel="stylesheet" href="css/staff-ops.css?v=80b4b20d0906">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=946bdfeb4622">
+<link rel="stylesheet" href="css/corporate.css?v=946bdfeb4622">
+<link rel="stylesheet" href="css/staff.css?v=946bdfeb4622">
+<link rel="stylesheet" href="css/staff-ops.css?v=946bdfeb4622">
 </head>
 <body class="console-body">
 
@@ -316,7 +316,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=80b4b20d0906"></script>
+<script src="js/catalog.js?v=946bdfeb4622"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -1521,6 +1521,57 @@
   }
 
   /* ---------- current month + projection ---------- */
+  /* ============================================================
+     ONE COLLAPSE, FOUR PLACES.
+
+     These panels answer a question at the top and then keep going.
+     The member list runs to every member with volume this month, the
+     runs board and the trail to every period ever finalised, the house
+     ledger a year past the point anyone is reading for. None of that is
+     wrong to hold; it is wrong to make somebody scroll it to reach the
+     next panel.
+
+     So each list keeps the rows that answer its question and puts the
+     rest behind one control that says exactly how many it is hiding. It
+     never says "more": a count is the difference between a reader
+     deciding to open it and a reader wondering whether it is worth it.
+
+     Nothing is removed. Everything is one click away, and the control
+     is a real button, so it is reachable by keyboard and announces its
+     state. ============================================================ */
+  function collapseList(container, rows, keepFn, noun) {
+    if (!container) { return; }
+    /* A panel can be loaded more than once in a session, and clearing the
+       table body does not clear the control that sits beside it. Drop the
+       old one before deciding whether a new one is warranted. */
+    var stale = container.querySelector(':scope > .ops-more');
+    if (stale) { stale.remove(); }
+    if (rows.length === 0) { return; }
+    var extra = rows.filter(function (row, i) { return !keepFn(row, i); });
+    /* One hidden row is not worth a control: the button costs more room
+       than the row it hides. */
+    if (extra.length < 2) { return; }
+
+    var open = false;
+    var btn = el('button', 'ops-more');
+    btn.type = 'button';
+
+    function paint() {
+      extra.forEach(function (row) { row.hidden = !open; });
+      btn.textContent = open
+        ? 'Show fewer'
+        : 'Show all ' + rows.length + ' ' + noun + ' (' + extra.length + ' hidden)';
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function () { open = !open; paint(); });
+    paint();
+    container.appendChild(btn);
+  }
+
+  function rowsOf(tbody) {
+    return Array.prototype.slice.call(tbody.querySelectorAll(':scope > tr'));
+  }
+
   function loadCurrentMonth() {
     var status = byId('cmStatus');
     status.textContent = 'Loading...';
@@ -1555,6 +1606,10 @@
         cell(tr, m.sv >= 100 ? 'yes (at or above 100.00)' : 'not yet');
         tbody.appendChild(tr);
       });
+      /* The list is ordered by volume, so the top five ARE the answer to
+         "who is carrying this month". The tail is reference. */
+      collapseList(tbody.closest('.ops-table-wrap'), rowsOf(tbody),
+        function (row, i) { return i < 5; }, 'members');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1646,6 +1701,12 @@
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillRun(r.run_id); } });
         tbody.appendChild(tr);
       });
+      /* Runs are listed oldest first, so the two that matter are the LAST
+         two: the month that just closed and the one before it, which is
+         what anybody comparing against reaches for. */
+      var runRows = rowsOf(tbody);
+      collapseList(tbody.closest('.ops-table-wrap'), runRows,
+        function (row, i) { return i >= runRows.length - 2; }, 'runs');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1830,8 +1891,17 @@
         cell(tr, fmtPv(m.retained_pv), 'ops-num');
         cell(tr, fmtPv(m.cumulative_pv), 'ops-num');
         cell(tr, m.direction === 'first' ? 'first month' : m.direction);
+        tr.setAttribute('data-year', String(m.period).slice(0, 4));
         tbody.appendChild(tr);
       });
+      /* The ledger runs a year past the point anyone reads to. The first
+         year stays open and everything after it collapses -- keyed on the
+         earliest year present rather than on a hard-coded 2026, so the
+         panel does not quietly start hiding everything next January. */
+      var ledgerRows = rowsOf(tbody);
+      var firstYear = ledgerRows.length ? ledgerRows[0].getAttribute('data-year') : null;
+      collapseList(tbody.closest('.ops-table-wrap'), ledgerRows,
+        function (row) { return row.getAttribute('data-year') === firstYear; }, 'months');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1874,6 +1944,11 @@
         drawer.appendChild(wrap);
         body.appendChild(drawer);
       });
+      /* Periods arrive oldest first. Show the two most recent, the same
+         window the runs board keeps, and fold the older history away. */
+      var drawers = Array.prototype.slice.call(body.querySelectorAll('.ops-drawer'));
+      collapseList(body, drawers,
+        function (row, i) { return i >= drawers.length - 2; }, 'periods');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 

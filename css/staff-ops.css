@@ -274,6 +274,31 @@
 .ops-btn-quiet:hover { border-color: #A3220B; color: #A3220B; }
 .ops-btn-quiet:disabled { opacity: 0.5; cursor: not-allowed; }
 
+/* The disclosure that ends a folded list. Full width so it reads as the
+   bottom edge of the list it belongs to rather than a stray control, and
+   it states the count it is hiding so nobody has to click to find out
+   whether anything is there. */
+.ops-more {
+  appearance: none;
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.16);
+  border-radius: 0;
+  color: #4B453D;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 9px 2px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+.ops-more:hover { color: #A3220B; border-top-color: rgba(163, 34, 11, 0.45); }
+.ops-more:focus-visible { outline: 2px solid #A3220B; outline-offset: 2px; }
+
 /* Danger button for cancel confirmations. */
 .ops-btn-danger {
   appearance: none;

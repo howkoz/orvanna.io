@@ -319,6 +319,30 @@ ul.tree > .tnode { padding-left: 0; }
 .tnode:last-child::after { height: 21px; bottom: auto; }
 ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
 
+/* The folded-frontline control. It is not a member, so it carries none of
+   the tree's connector drawing: the vertical rule ends at the last real
+   node above it and the button sits clear of the branch. */
+.tnode-more { padding-left: 20px; }
+.tnode-more::before { display: none; }
+.tnode-more::after { height: 0; border-left: 0; }
+.quiet-more {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 6px 2px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+.quiet-more:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+.quiet-more:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
 .node-row {
   display: inline-flex;
   align-items: center;
