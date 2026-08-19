@@ -162,7 +162,10 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #15803D;
+  /* Was #15803D text on a #15803D fill: green on green, 1:1. The tinted
+     chip and dark label below match .ops-state-active, which is the same
+     signal drawn correctly. */
+  background: #ECFDF5;
   color: #15803D;
   white-space: nowrap;
 }

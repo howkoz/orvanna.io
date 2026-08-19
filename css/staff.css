@@ -546,9 +546,14 @@
   cursor: pointer;
   white-space: nowrap;
 }
+/* PAPER ON INK. The correction note below was written for this rule and
+   then applied to .btn-addline instead, leaving the rule it describes
+   sitting directly above it, still at 1:1. Corrected here 2026-08-19
+   (second pass): the SELECTED half of the billing control -- Monthly or
+   One-time -- was a solid black rectangle with a black word inside it. */
 .mode-seg button[aria-pressed="true"] {
   background: var(--indigo);
-  color: #1B1917;
+  color: #EAE4D9;
 }
 
 /* PAPER ON INK, corrected 2026-08-19.
@@ -867,7 +872,10 @@
   font: inherit;
   font-size: 1rem;
   font-weight: 700;
-  color: #1B1917;
+  /* Was #1B1917 on var(--indigo), which the palette pass had also mapped to
+     ink: the PLACE ORDER button, the last control in a phone call, was a
+     solid black bar with an invisible label. */
+  color: #EAE4D9;
   background: var(--indigo);
   border: 0;
   border-radius: 0;
@@ -877,7 +885,7 @@
   transition: filter 0.15s ease;
 }
 .btn-place:hover { filter: brightness(1.15); }
-.btn-place:disabled { background: #6B645A; border-color: #6B645A; color: #1B1917; opacity: 1; cursor: not-allowed; }
+.btn-place:disabled { background: #B6AE9F; border-color: #B6AE9F; color: #1B1917; opacity: 1; cursor: not-allowed; }   /* was #6B645A: 3.00:1 */
 .place-hint { font-size: 0.74rem; color: #6B645A; text-align: center; margin-top: 6px; }
 
 /* A failure ending on the payment status line reads as a failure
