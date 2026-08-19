@@ -401,7 +401,14 @@ tfoot td {
 @media print {
   @page { margin: 15mm 13mm; }
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-  body { font-size: 10.5pt; line-height: 1.45; color: #F1EDE6; background: #FFFFFF; }
+  /* #F1EDE6 on #FFFFFF is 1.17:1: 410 of this document's 528 text elements
+     printed INVISIBLE, which is the whole document, in the one medium a
+     brochure is most likely to be used in. The screen readability fix on
+     2026-08-18 corrected the --body token; this print rule states its own
+     colour and was not reached by it. Corrected 2026-08-19.
+     The page is otherwise SHELVED by instruction: this is a defect fix, not
+     a design change, and nothing here restyles or restructures anything. */
+  body { font-size: 10.5pt; line-height: 1.45; color: #1B1917; background: #FFFFFF; }
   .masthead, .no-print { display: none !important; }
   .wrap { max-width: none; padding: 0; }
   /* On paper the column is the page, so the screen reading measure is dropped
@@ -419,7 +426,7 @@ tfoot td {
   .cover h1 { color: #10192B; }
   .cover .kicker { color: #0F5F6E; }
   .cover .kicker::before { border-top-color: #0F5F6E; }
-  .cover-sub { color: #F1EDE6; margin-top: 10px; }
+  .cover-sub { color: #4B453D; margin-top: 10px; }   /* was #F1EDE6: 1.17:1 on the white print cover */
   .stamps { margin-top: 12px; }
   .stamp { color: #2A3E9E; background: #E8ECF9; border-color: #C7CEDB; }
   .cover-note {
