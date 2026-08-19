@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductor Library</title>
 <meta name="description" content="The Orvanna Conductor Library: a browsable index of all sixteen agents, the four tiers, the packs and the bundle, and an honest guide to choosing. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=852bbccd069e">
-<link rel="stylesheet" href="css/library.css?v=852bbccd069e">
-<link rel="stylesheet" href="css/site-chrome.css?v=852bbccd069e">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=80b4b20d0906">
+<link rel="stylesheet" href="css/library.css?v=80b4b20d0906">
+<link rel="stylesheet" href="css/site-chrome.css?v=80b4b20d0906">
 
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
@@ -25,7 +25,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=852bbccd069e" defer></script>
+<script src="js/site-chrome.js?v=80b4b20d0906" defer></script>
 </head>
 <body>
 
@@ -71,11 +71,26 @@
 <main id="main">
 
 <!-- ============ HERO ============ -->
+<!-- The two words sit IN the hero, 2026-08-19. Ensemble and team are the
+     pair a Conductor is most likely to swap in front of a customer, and a
+     definition met after the first mistake is met too late. -->
 <section class="hero" aria-labelledby="libTitle">
-  <div class="wrap">
-    <p class="kicker">Conductor library</p>
-    <h1 class="page-title" id="libTitle">Know the product before you talk about it</h1>
-    <p class="hero-sub">The shop is built to sell. This library is built to teach. Every agent has its own page here, written for Conductors who need to explain it accurately: what it does on an ordinary Tuesday, who it suits, what it costs, and where its authority stops. Read one before you talk about it and you will not have to guess in front of a customer.</p>
+  <div class="wrap hero-split">
+    <div>
+      <p class="kicker">Conductor library</p>
+      <h1 class="page-title" id="libTitle">Know the product before you talk about it</h1>
+      <p class="hero-sub">The shop is built to sell. This library is built to teach. Start from the sentence your customer actually said &mdash; the recommendation, the price and the volume follow from it.</p>
+    </div>
+    <div class="two-words">
+      <p class="kicker">Two words, never swapped</p>
+      <dl class="tw-list">
+        <div><dt>Ensemble</dt><dd>Your agents &mdash; the products you run.</dd></div>
+        <div><dt>Team</dt><dd>The people you have sponsored.</dd></div>
+        <div><dt>PV</dt><dd>Personal Volume. Equals dollars, both billing modes.</dd></div>
+        <div><dt>SV</dt><dd>Sales Volume. 100.00 in a month is qualified.</dd></div>
+      </dl>
+      <p class="tw-note">Agents are never a team; people are never an ensemble. A reader who confuses them once stays confused.</p>
+    </div>
   </div>
 </section>
 
@@ -306,9 +321,10 @@
       <button class="filter-pill" type="button" data-filter="support" aria-pressed="false">Support agents</button>
       <button class="filter-pill" type="button" data-filter="bundle" aria-pressed="false">Bundle</button>
       <button class="filter-pill" type="button" data-filter="pack" aria-pressed="false">Packs</button>
+      <span class="ix-count" id="ixCount">16 items</span>
     </div>
 
-    <div class="card-grid" id="cardGrid"></div>
+    <div class="ix-index" id="cardGrid"></div>
     <p class="filter-empty" id="filterEmpty" hidden>No items match that filter.</p>
     <noscript>
       <p class="filter-empty">This index is built from the shop's catalog file, so it needs scripting switched on. The <a href="shop.html">shop</a> lists the same sixteen items.</p>
@@ -317,6 +333,11 @@
 </section>
 
 <!-- ============ THE FOUR TIERS ============ -->
+<!-- 03 and 04 sit SIDE BY SIDE, 2026-08-19. They answer two halves of
+     one question -- which of four words a customer is asking for, and
+     what is actually inside the two words that contain other items --
+     and reading them as one spread is the point of the pair. -->
+<div class="pair-band">
 <section class="band" id="tiers" aria-labelledby="tiersTitle">
   <div class="wrap">
     <h2 class="section-title" id="tiersTitle">The four tiers, and why each one exists</h2>
@@ -458,6 +479,7 @@
     </div>
   </div>
 </section>
+</div>
 
 <!-- ============ COMING NEXT ============ -->
 <section class="band band-alt" id="coming" aria-labelledby="comingTitle">
@@ -541,8 +563,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=852bbccd069e"></script>
-<script src="js/library-icons.js?v=852bbccd069e"></script>
+<script src="js/catalog.js?v=80b4b20d0906"></script>
+<script src="js/library-icons.js?v=80b4b20d0906"></script>
 <script>
 /* ============================================================
    ORVANNA CONDUCTOR LIBRARY: the index.
@@ -650,30 +672,54 @@
 
   /* ---------- the card grid ---------- */
 
-  function cardFor(p) {
-    var tier = TIER_LABEL[p.tier] || TIER_LABEL.support;
-    return '<a class="lib-card panel" href="library-agent.html?sku=' + p.sku + '" data-tier=' +
-      '"' + p.tier + '" data-sku="' + p.sku + '">' +
-      '<span class="accent-bar" aria-hidden="true"></span>' +
-      '<span class="lib-card-top">' +
-        '<span class="ico" aria-hidden="true">' + (ICONS[p.sku] || '') + '</span>' +
-        '<span class="' + tier.cls + '">' + tier.text + '</span>' +
-      '</span>' +
-      '<h3 class="lib-card-name">' + p.name + '</h3>' +
-      '<span class="lib-card-blurb">' + p.blurb + '</span>' +
-      '<span class="lib-card-prices">' +
-        '<span class="lib-card-price">' +
-          '<span class="lib-card-amt">' + O.fmtMoney(p.sub.price) + ' <span class="per">/ month</span></span>' +
-          '<span class="lib-card-pv">' + O.fmtPv(p.sub.pv) + '</span>' +
-        '</span>' +
-        '<span class="lib-card-once">Or ' + O.fmtMoney(p.once.price) + ' once, at ' + O.fmtPv(p.once.pv) + '</span>' +
-      '</span>' +
-      '<span class="lib-card-go">Read the full entry ' + ARROW + '</span>' +
+  /* THE SIXTEEN AS AN INDEX, 2026-08-19. Three-up cards became one dense
+     list grouped by tier. Sixteen cards is a wall to be waded through; a
+     list with a shape to it is something a Conductor can scan, and the
+     tier headings answer the question the cards made you infer. */
+  var GROUP_DEFS = [
+    { key: 'domain',  title: 'Domain agents',  meta: 'A whole business function' },
+    { key: 'support', title: 'Support agents', meta: 'A staff role' },
+    { key: 'bundle',  title: 'Bundle',         meta: 'A managed trio with one point of contact' },
+    { key: 'pack',    title: 'Packs',          meta: 'Curated formations, priced at the sum of their parts' }
+  ];
+
+  function rowFor(p) {
+    return '<a class="ix-row" href="library-agent.html?sku=' + p.sku + '" data-sku="' + p.sku + '">' +
+      '<span class="ico" aria-hidden="true">' + (ICONS[p.sku] || '') + '</span>' +
+      '<span class="ix-name">' + p.name + '</span>' +
+      '<span class="ix-blurb">' + p.blurb + '</span>' +
+      '<span class="ix-price">' + O.fmtMoney(p.sub.price) + '<span class="ix-per"> /mo</span></span>' +
+      '<span class="ix-pv">' + O.fmtPv(p.sub.pv) + '</span>' +
+      '<span class="ix-once">or ' + O.fmtMoney(p.once.price) + ' once</span>' +
     '</a>';
   }
 
+  /* The tier meta line states the price ONCE per group rather than on every
+     row, and it is computed, so a price change in the catalog moves it. */
+  function groupMeta(def) {
+    var inTier = O.PRODUCTS.filter(function (p) { return p.tier === def.key; });
+    if (!inTier.length) { return def.meta; }
+    var vals = inTier.map(function (p) { return p.sub.price; });
+    var lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+    /* "each" only when there is more than one of them: the bundle is a
+       single item and "200 PV each" invites the reader to ask each what. */
+    var many = inTier.length > 1;
+    var price = lo === hi
+      ? O.fmtMoney(lo) + ' a month \u00b7 ' + O.fmtPv(lo) + (many ? ' each' : '')
+      : O.fmtMoney(lo) + ' to ' + O.fmtMoney(hi) + ' a month';
+    return price + ' \u00b7 ' + def.meta.charAt(0).toLowerCase() + def.meta.slice(1);
+  }
+
   var grid = document.getElementById('cardGrid');
-  grid.innerHTML = O.PRODUCTS.map(cardFor).join('');
+  grid.innerHTML = GROUP_DEFS.map(function (def) {
+    var rows = O.PRODUCTS.filter(function (p) { return p.tier === def.key; });
+    if (!rows.length) { return ''; }
+    return '<section class="ix-group" data-tier="' + def.key + '">' +
+      '<h3 class="ix-group-head">' + def.title +
+        '<span class="ix-group-meta">' + groupMeta(def) + '</span></h3>' +
+      '<div class="ix-rows">' + rows.map(rowFor).join('') + '</div>' +
+    '</section>';
+  }).join('');
 
   /* A mark is decoration, but a missing one would be a silent hole,
      so say so in the console rather than drawing an empty card. */
@@ -756,25 +802,37 @@
 
   /* ---------- tier filter ---------- */
 
+  /* The filter hides whole tier GROUPS now, not individual cards, and the
+     count beside it says how many items are showing: a filter that changes
+     what you see without saying how much it removed leaves the reader
+     wondering whether the list is short or broken. */
   var pills = Array.prototype.slice.call(document.querySelectorAll('[data-filter]'));
-  var cards = Array.prototype.slice.call(grid.querySelectorAll('.lib-card'));
+  var groups = Array.prototype.slice.call(grid.querySelectorAll('.ix-group'));
   var emptyNote = document.getElementById('filterEmpty');
+  var shownLabel = document.getElementById('ixCount');
+
+  function applyFilter(tier) {
+    var shown = 0;
+    groups.forEach(function (g) {
+      var match = (tier === 'all') || (g.getAttribute('data-tier') === tier);
+      g.hidden = !match;
+      if (match) { shown += g.querySelectorAll('.ix-row').length; }
+    });
+    emptyNote.hidden = shown > 0;
+    if (shownLabel) {
+      shownLabel.textContent = shown + (shown === 1 ? ' item' : ' items');
+    }
+    pills.forEach(function (other) {
+      other.setAttribute('aria-pressed', String(other.getAttribute('data-filter') === tier));
+    });
+  }
 
   pills.forEach(function (pill) {
     pill.addEventListener('click', function () {
-      var tier = pill.getAttribute('data-filter');
-      var shown = 0;
-      cards.forEach(function (card) {
-        var match = (tier === 'all') || (card.getAttribute('data-tier') === tier);
-        card.hidden = !match;
-        if (match) { shown += 1; }
-      });
-      emptyNote.hidden = shown > 0;
-      pills.forEach(function (other) {
-        other.setAttribute('aria-pressed', String(other.getAttribute('data-filter') === tier));
-      });
+      applyFilter(pill.getAttribute('data-filter'));
     });
   });
+  applyFilter('all');
 
   initChooser();
 
