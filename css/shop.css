@@ -513,7 +513,7 @@
 /* Same change as the library's .ico, same reason: the marks lost their
    shared hexagon on 2026-08-19 so the sixteen could be told apart by
    shape, and the cell gives back the containment the frame provided. The
-   two surfaces show the same sixteen agents and a customer moves straight
+   two surfaces show the same sixteen catalog items and a customer moves straight
    between them, so they get the same treatment. */
 .line-icon {
   width: 40px;

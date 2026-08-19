@@ -33,7 +33,7 @@ window.ORVANNA = (function () {
 
      Dropped in BOTH copies. This project had two: this one, and
      mark() in js/library-icons.js. Removing one would have left the same
-     sixteen agents framed on one page and unframed on the next, which a
+     sixteen marks framed on one page and unframed on the next, which a
      customer moving from the Library to the Shop sees immediately.
 
      THE CONSTANT SURVIVES for one caller that is not one of the sixteen:

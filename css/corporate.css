@@ -198,9 +198,7 @@
 :root[data-theme="light"] .origin-art [stroke="#1B1917"],
 :root[data-theme="light"] .teaser-marks [stroke="#1B1917"],
 :root[data-theme="light"] .member-mark [stroke="#1B1917"],
-:root[data-theme="light"] .profile-mark [stroke="#1B1917"],
 :root[data-theme="light"] .avatar [stroke="#1B1917"],
-:root[data-theme="light"] .gate-figure [stroke="#1B1917"],
 :root[data-theme="light"] .login-badge [stroke="#1B1917"] { stroke: #1B1917; }
 
 :root[data-theme="light"] .card-icon [fill="#1B1917"],
@@ -208,9 +206,7 @@
 :root[data-theme="light"] .origin-art [fill="#1B1917"],
 :root[data-theme="light"] .teaser-marks [fill="#1B1917"],
 :root[data-theme="light"] .member-mark [fill="#1B1917"],
-:root[data-theme="light"] .profile-mark [fill="#1B1917"],
 :root[data-theme="light"] .avatar [fill="#1B1917"],
-:root[data-theme="light"] .gate-figure [fill="#1B1917"],
 :root[data-theme="light"] .login-badge [fill="#1B1917"] { fill: #1B1917; }
 
 :root[data-theme="light"] .card-icon [fill="#EC3013"],
@@ -218,9 +214,7 @@
 :root[data-theme="light"] .origin-art [fill="#EC3013"],
 :root[data-theme="light"] .teaser-marks [fill="#EC3013"],
 :root[data-theme="light"] .member-mark [fill="#EC3013"],
-:root[data-theme="light"] .profile-mark [fill="#EC3013"],
 :root[data-theme="light"] .avatar [fill="#EC3013"],
-:root[data-theme="light"] .gate-figure [fill="#EC3013"],
 :root[data-theme="light"] .login-badge [fill="#EC3013"] { fill: #A3220B; }
 
 :root[data-theme="light"] .card-icon [stroke="#EC3013"],
@@ -228,9 +222,7 @@
 :root[data-theme="light"] .origin-art [stroke="#EC3013"],
 :root[data-theme="light"] .teaser-marks [stroke="#EC3013"],
 :root[data-theme="light"] .member-mark [stroke="#EC3013"],
-:root[data-theme="light"] .profile-mark [stroke="#EC3013"],
 :root[data-theme="light"] .avatar [stroke="#EC3013"],
-:root[data-theme="light"] .gate-figure [stroke="#EC3013"],
 :root[data-theme="light"] .login-badge [stroke="#EC3013"] { stroke: #A3220B; }
 
 /* the hexagon body: night navy becomes a pale panel */
@@ -239,9 +231,7 @@
 :root[data-theme="light"] .origin-art [fill="#F1EDE6"],
 :root[data-theme="light"] .teaser-marks [fill="#F1EDE6"],
 :root[data-theme="light"] .member-mark [fill="#F1EDE6"],
-:root[data-theme="light"] .profile-mark [fill="#F1EDE6"],
 :root[data-theme="light"] .avatar [fill="#F1EDE6"],
-:root[data-theme="light"] .gate-figure [fill="#F1EDE6"],
 :root[data-theme="light"] .login-badge [fill="#F1EDE6"] { fill: #EAE4D9; }
 
 /* the glow haloes around those drawings are tuned for a night
@@ -250,9 +240,7 @@
 :root[data-theme="light"] .feature-mark,
 :root[data-theme="light"] .origin-art,
 :root[data-theme="light"] .member-mark,
-:root[data-theme="light"] .profile-mark,
 :root[data-theme="light"] .avatar,
-:root[data-theme="light"] .gate-figure,
 :root[data-theme="light"] .teaser-marks svg { filter: none; }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -596,20 +584,6 @@ section { scroll-margin-top: 84px; }
   opacity: 0;
   transform: translateY(22px);
 }
-
-/* staggered children: tiles arrive one after another. The delays
-   sit on the visible state, because that is the direction that
-   gets watched; the hide happens off screen. */
-.js .stagger > * {
-  transition: opacity 0.65s ease, transform 0.65s ease;
-}
-.js .stagger.is-out > * {
-  opacity: 0;
-  transform: translateY(22px);
-}
-.js .stagger > *:nth-child(2) { transition-delay: 0.12s; }
-.js .stagger > *:nth-child(3) { transition-delay: 0.24s; }
-.js .stagger > *:nth-child(4) { transition-delay: 0.36s; }
 
 /* ============================================================
    OVERVIEW METRICS: glass tiles, numbers count up
@@ -989,87 +963,6 @@ section { scroll-margin-top: 84px; }
    the one circle, every agent is a hexagon.
    ============================================================ */
 
-/* small chips that say what each member is */
-.role-tag {
-  display: inline-block;
-  padding: 3px 12px 4px;
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.22em;
-  border-radius: 0;
-  border: 1px solid rgba(27, 25, 23, 0.45);
-  color: var(--indigo-l);
-}
-
-.role-tag.tag-human {
-  border-color: rgba(236, 48, 19, 0.55);
-  color: var(--cyan);
-  text-shadow: none;
-}
-
-/* wide leadership cards: founder first, manager second */
-.profile-card {
-  display: grid;
-  grid-template-columns: 156px minmax(0, 1fr);
-  gap: 40px;
-  align-items: center;
-  padding: 42px 40px;
-}
-
-.profile-card + .profile-card { margin-top: 28px; }
-
-.profile-mark {
-  width: 132px;
-  height: 132px;
-  margin: 0 auto;
-  filter: none;
-}
-
-.profile-card.is-manager .profile-mark {
-  width: 112px;
-  height: 112px;
-  filter: none;
-}
-
-.profile-name {
-  font-size: 1.3rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--heading);
-  margin: 10px 0 2px;
-}
-
-.profile-role {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.16em;
-  color: var(--indigo-l);
-  margin-bottom: 14px;
-}
-
-.profile-bio { font-size: 0.95rem; color: var(--muted-d); max-width: 56em; }
-
-/* the eight specialists */
-.member-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 28px;
-}
-
-.member {
-  padding: 30px 22px 26px;
-  text-align: center;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.member:hover {
-  transform: translateY(-6px);
-  border-color: rgba(27, 25, 23, 0.55);
-  box-shadow: none;
-}
-
 .member-mark {
   width: 82px;
   height: 82px;
@@ -1097,62 +990,7 @@ section { scroll-margin-top: 84px; }
 
 .member-bio { font-size: 0.85rem; color: var(--muted-d); }
 
-.member .role-tag { margin-top: 14px; }
-
-/* build story: the two-gate figure and the phase rail */
-.gate-figure {
-  max-width: 720px;
-  margin: 0 auto 60px;
-  filter: none;
-}
-
-.gate-caption {
-  text-align: center;
-  font-size: 0.82rem;
-  color: var(--muted-d);
-  letter-spacing: 0.04em;
-  margin: -34px auto 56px;
-  max-width: 44em;
-}
-
-.phase-rail {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 26px;
-}
-
 .phase { padding: 28px 24px 24px; }
-
-.phase-num {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
-  font-size: 0.7rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
-  color: var(--cyan);
-  margin-bottom: 12px;
-}
-
-.phase-num::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 0;
-  background: var(--cyan);
-  box-shadow: none;
-  flex-shrink: 0;
-}
-
-.phase-name {
-  font-size: 0.9rem;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: var(--heading);
-  margin-bottom: 8px;
-}
 
 .phase-body { font-size: 0.85rem; color: var(--muted-d); }
 
@@ -1183,12 +1021,10 @@ section { scroll-margin-top: 84px; }
   margin: 0 auto 28px;
 }
 
-
 /* Printing never scrolls, so it must never inherit a scroll
    trigger's hidden state. */
 @media print {
   .js .reveal.is-out,
-  .js .stagger.is-out > * { opacity: 1 !important; transform: none !important; }
 }
 
 /* ============================================================
@@ -1199,7 +1035,6 @@ section { scroll-margin-top: 84px; }
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
   .js .reveal.is-out,
-  .js .stagger.is-out > * { opacity: 1 !important; transform: none !important; }
 }
 
 /* ============================================================
@@ -1210,8 +1045,6 @@ section { scroll-margin-top: 84px; }
   .origin-grid { grid-template-columns: 1fr; gap: 44px; }
   .origin-art { order: -1; max-width: 240px; margin: 0; }
   .leaders { grid-template-columns: repeat(2, 1fr); }
-  .member-grid { grid-template-columns: repeat(2, 1fr); }
-  .phase-rail { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 760px) {
@@ -1227,13 +1060,7 @@ section { scroll-margin-top: 84px; }
   .hero-inner { padding: 0 20px; }
   .leaders { grid-template-columns: 1fr; }
   .login-card { padding: 36px 24px 30px; }
-  .member-grid { grid-template-columns: 1fr; }
-  .phase-rail { grid-template-columns: 1fr; }
-  .profile-card { grid-template-columns: 1fr; gap: 24px; text-align: center; padding: 34px 24px 30px; }
-  .profile-bio { margin: 0 auto; }
-  .gate-caption { margin-top: -14px; }
 }
-
 
 /* .bpFab and .nav-support moved to css/site-chrome.css.
    .console-support is not corporate chrome: it is the support
@@ -1246,7 +1073,6 @@ section { scroll-margin-top: 84px; }
   padding: 6px 10px;
   cursor: pointer;
 }
-
 
 /* ============================================================
    THE HOME PAGE, REDESIGNED

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductors</title>
 <meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=946bdfeb4622">
-<link rel="stylesheet" href="css/site-chrome.css?v=946bdfeb4622">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=49e9963cb492">
+<link rel="stylesheet" href="css/site-chrome.css?v=49e9963cb492">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -23,7 +23,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=946bdfeb4622" defer></script>
+<script src="js/site-chrome.js?v=49e9963cb492" defer></script>
 <style>
 /* ============================================================
    Orvanna: what is a Conductor.
@@ -82,9 +82,6 @@
   --btn-ghost-bg: #F1EDE6;
   --btn-ghost-fg: #1B1917;
   --btn-ghost-bd: rgba(27, 25, 23, 0.55);
-  --glow-a:       rgba(27, 25, 23, 0.17);
-  --glow-b:       rgba(27, 25, 23, 0.13);
-  --glow-c:       rgba(236, 48, 19, 0.12);
   --mark:         #1B1917;
   --mark-lit:     #EC3013;
   --mark-line:    rgba(27, 25, 23, 0.40);
@@ -93,7 +90,7 @@
   /* The --chrome-* tokens are declared once in css/site-chrome.css
      and read from there. Rules in this file may still read them. */
 
-  --maxw:         1100px;
+  --maxw:         1180px;
 }
 
 /* ---------- 2. the light restatement, a deliberate choice ---------- */
@@ -123,9 +120,6 @@
   --btn-ghost-bg: #FFFFFF;
   --btn-ghost-fg: #1B1917;
   --btn-ghost-bd: rgba(27, 25, 23, 0.45);
-  --glow-a:       rgba(27, 25, 23, 0.06);
-  --glow-b:       rgba(27, 25, 23, 0.06);
-  --glow-c:       rgba(14, 116, 144, 0.06);
   --mark:         #1B1917;
   --mark-lit:     #A3220B;
   --mark-line:    rgba(241, 237, 230, 0.22);
@@ -151,223 +145,352 @@ img, svg { max-width: 100%; display: block; }
 
 .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 28px; }
 
-.band { padding: 88px 0; position: relative; overflow: hidden; }
-.band + .band { border-top: 1px solid var(--hairline); }
-.band-2 { background: var(--field-2); }
+/* ============================================================
+   THE PAGE, REBUILT 2026-08-19 from Conductor.dc.html.
 
-/* THE GLOWS ARE GONE, 2026-08-19. Three 680px radial washes bleeding
-   behind the bands -- the starfield aesthetic this redesign replaces.
-   Deleted rather than squared off: the border-radius was only a problem
-   because the circle should not have been there at all. The .glow-a/b/c
-   classes stay on the markup and now do nothing, which is deliberate:
-   removing them is a markup change across two files for no visual
-   difference, and the next content round can drop them. */
+   Nine prose bands became an operable page. Three pieces of state
+   replace three passages that could only be read:
 
-.band > .wrap { position: relative; z-index: 1; }
+     1. ONE FRAME, OPPOSITE CONTENT. Ensemble and team are the two
+        words a Conductor confuses first, and a side-by-side
+        diagram teaches the wrong thing: it shows them as
+        neighbours. The same frame holding one and then the other
+        shows them as alternatives, which is what they are.
+     2. THE NINETY DAYS AS A CHECKLIST. Ticking a step moves a
+        phase headline from "Not started" to "Conducting". The
+        plan stops being a list to read and becomes a position to
+        stand in.
+     3. THE HOURS SLIDER. Five activities against a minute budget.
+        Drag it down and the activities that no longer fit dim, in
+        order, which is the honest answer to "how many hours does
+        this take" -- it takes as many as you have, and here is
+        what stops fitting.
 
-/* ---------- 5. type ---------- */
+   EVERY ONE OF THOSE SHIPS RENDERED. The markup carries the
+   ensemble panel, all seven steps unticked, the phase at "Not
+   started", and the week at five hours with all five activities
+   fitting. The script REPLACES that state, it never creates it,
+   so the page is complete and correct with scripting off. Same
+   rule as comp-plan.html; see docs/CORPORATE-CHROME-CONTRACT.md.
 
-.kicker {
-  font-size: 0.78rem; font-weight: 600; text-transform: uppercase;
-  letter-spacing: 0.34em; color: var(--accent); margin-bottom: 18px;
+   The minute cost of each week row lives in one place -- the
+   data-min attribute on the row -- so the slider reads the page
+   rather than carrying a second copy of the numbers.
+   ============================================================ */
+
+.cd-frame {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  border-left: 2px solid #1B1917;
+  border-right: 2px solid #1B1917;
 }
+.cd-band { border-bottom: 2px solid #1B1917; }
 
-h1.page-title {
-  font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 800; letter-spacing: -0.035em;
-  line-height: 1.02; color: var(--heading); margin-bottom: 26px;
+/* THE DESIGN'S --faint (#8A8278) IS NOT USED ON PAPER HERE.
+   It measures 2.99:1 against the paper ground, which fails the build's
+   own floor and fails WCAG AA badly at the 10-11px these labels are set
+   at. Every one of them is --quiet (#6B645A) instead: 4.60:1 on paper,
+   4.99:1 on the raised panel. The same substitution was made on
+   comp-plan.html, so the two pages agree. --faint survives on the ink
+   ground, where its lighter value is the correct one. */
+
+.cd-eyebrow {
+  margin: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #A3220B;
 }
+.cd-eyebrow-q { color: #8F8981; }
+.cd-eyebrow-l { color: #FF6A4A; }
 
-h2.section-title {
-  font-size: clamp(1.45rem, 3vw, 2.05rem);
-  font-weight: 800; letter-spacing: -0.03em;
-  line-height: 1.05; color: var(--heading); margin-bottom: 22px;
+/* ---------- the opening ---------- */
+
+.cd-hero { display: grid; grid-template-columns: 1.3fr 0.7fr; }
+.cd-hero-a { padding: 52px 34px 44px; }
+.cd-hero-b {
+  padding: 52px 30px 44px;
+  background: #F1EDE6;
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
 }
-
-h3.card-title {
-  font-size: 1.15rem; font-weight: 800;
-  letter-spacing: -0.02em; line-height: 1.15;
-  color: var(--heading); margin-bottom: 10px;
+.cd-hero-a h1 {
+  margin: 20px 0 0;
+  font-size: 58px; font-weight: 800; line-height: 0.98;
+  letter-spacing: -0.035em; color: #1B1917; max-width: 15ch;
+  text-wrap: balance;
 }
+.cd-lede { margin: 22px 0 0; max-width: 56ch; font-size: 17px; line-height: 1.55; color: #4B453D; }
+.cd-fine { margin: 22px 0 0; max-width: 60ch; font-size: 13px; line-height: 1.5; color: #6B645A; }
 
-h4.mini-title {
-  font-size: 0.84rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.16em; color: var(--heading); margin-bottom: 8px;
+.cd-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+.cd-btn {
+  display: inline-block; padding: 15px 22px;
+  font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none; border-radius: 0;
+  border: 2px solid transparent; cursor: pointer;
 }
+.cd-btn-solid { background: #EC3013; color: #FFFFFF; }
+.cd-btn-solid:hover { background: #A3220B; color: #FFFFFF; }
+.cd-btn-ghost { border-color: #1B1917; color: #1B1917; background: transparent; }
+.cd-btn-ghost:hover { border-color: #A3220B; color: #A3220B; }
 
-.lead { max-width: 46em; color: var(--muted); font-size: 1.06rem; }
-.copy { max-width: 46em; }
-.copy p + p { margin-top: 16px; }
-.copy p { color: var(--body); }
-.spaced { margin-bottom: 40px; }
-.tight { margin-bottom: 22px; }
-strong { color: var(--heading); font-weight: 650; }
-em.q { font-style: normal; color: var(--accent); font-weight: 600; }
-
-.note {
-  font-size: 0.84rem; color: var(--legal); letter-spacing: 0.02em;
-  max-width: 46em;
+/* the five parts of the job */
+.cd-parts { margin: 16px 0 0; padding: 0; list-style: none; border-top: 2px solid #1B1917; }
+.cd-parts li {
+  display: grid; grid-template-columns: 24px 1fr; gap: 12px;
+  padding: 11px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
 }
+.cd-parts b { font-size: 12px; font-weight: 700; line-height: 1.4; color: #A3220B; }
+.cd-parts span { font-size: 13.5px; font-weight: 600; line-height: 1.4; color: #1B1917; }
+.cd-parts-note { margin: 16px 0 0; font-size: 12.5px; line-height: 1.5; color: #6B645A; }
 
-/* ---------- 6. buttons ---------- */
+.cd-claim { margin-top: 20px; padding: 14px; border: 2px solid #B52309; }
+.cd-claim p { margin: 8px 0 0; font-size: 12.5px; line-height: 1.5; color: #4B453D; }
+.cd-claim .cd-eyebrow { font-size: 10px; letter-spacing: 0.16em; color: #B52309; }
 
-.btn {
-  font: inherit; display: inline-block; padding: 12px 26px;
-  font-size: 0.86rem; font-weight: 650; text-transform: uppercase;
-  letter-spacing: 0.14em; text-decoration: none; border-radius: 0;
-  border: 1.5px solid transparent; background: transparent; color: inherit;
+/* ---------- numbered section heads ---------- */
+
+.cd-head { padding: 34px 34px 12px; }
+.cd-head-row { display: flex; align-items: baseline; gap: 16px; }
+.cd-num { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: #6B645A; }
+.cd-head h2 { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #1B1917; }
+.cd-head-lede { margin: 12px 0 0; max-width: 74ch; font-size: 15.5px; line-height: 1.55; color: #4B453D; }
+.cd-head-lede em { font-style: italic; }
+.cd-split { border-top: 1px solid rgba(27, 25, 23, 0.25); margin-top: 20px; }
+
+/* ---------- 01, the two words ---------- */
+
+.cd-vocab { display: grid; grid-template-columns: 252px minmax(0, 1fr); }
+.cd-vrail {
+  padding: 26px 24px 30px;
+  background: #F1EDE6;
+  border-right: 1px solid rgba(27, 25, 23, 0.25);
+}
+.cd-switch { display: grid; gap: 1px; background: rgba(27, 25, 23, 0.25); border: 2px solid #1B1917; }
+.cd-vopt {
+  display: block; width: 100%; text-align: left;
+  padding: 15px 14px; border: 0; border-radius: 0;
+  font: inherit; cursor: pointer;
+  background: #F1EDE6; color: #4B453D;
+}
+.cd-vopt:hover { background: #E6E0D6; }
+.cd-vopt.is-on { background: #1B1917; color: #EAE4D9; }
+.cd-vopt.is-on:hover { background: #1B1917; }
+.cd-vopt b { display: block; font-size: 14px; font-weight: 700; letter-spacing: 0.02em; }
+.cd-vopt span { display: block; margin-top: 5px; font-size: 12.5px; line-height: 1.3; }
+.cd-vsay { margin: 22px 0 0; font-size: 15px; font-weight: 700; line-height: 1.4; letter-spacing: -0.01em; color: #1B1917; }
+.cd-vnote { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: #6B645A; }
+
+.cd-vhead { display: grid; grid-template-columns: 1.1fr 1fr; background: #1B1917; color: #EAE4D9; }
+.cd-vhead-a { padding: 26px 30px 28px; }
+.cd-vhead-b { padding: 26px 30px 28px; background: #232019; border-left: 1px solid #4A453F; }
+.cd-vtitle { margin: 12px 0 0; font-size: 34px; font-weight: 800; line-height: 1.02; letter-spacing: -0.03em; color: #F8F7F5; }
+.cd-vbody { margin: 12px 0 0; max-width: 44ch; font-size: 14.5px; line-height: 1.55; color: #C9C6C1; }
+.cd-vmade { margin: 12px 0 0; font-size: 34px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; color: #F8F7F5; }
+.cd-vmade-note { margin: 10px 0 0; font-size: 13px; line-height: 1.45; color: #C9C6C1; }
+
+.cd-vnodes-wrap { padding: 24px 30px 10px; }
+.cd-vnodes { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin: 0; padding: 0; list-style: none; }
+.cd-node { padding: 14px 12px 16px; border: 2px solid #1B1917; background: #F1EDE6; }
+.cd-node.is-quiet { border-color: rgba(27, 25, 23, 0.35); background: transparent; }
+.cd-node b { display: block; font-size: 11px; font-weight: 700; line-height: 1.2; letter-spacing: 0.1em; color: #6B645A; }
+.cd-node span { display: block; margin-top: 8px; font-size: 14px; font-weight: 700; line-height: 1.25; color: #1B1917; }
+.cd-vfoot { margin: 16px 0 24px; max-width: 76ch; font-size: 12.5px; line-height: 1.55; color: #6B645A; }
+
+/* ---------- 02, what is actually being sold ---------- */
+
+.cd-sell { display: grid; grid-template-columns: 1.15fr 1fr; }
+.cd-story { padding: 26px 30px 32px; border-right: 1px solid rgba(27, 25, 23, 0.25); }
+.cd-tag {
+  display: inline-block; padding: 5px 9px;
+  border: 1px solid rgba(27, 25, 23, 0.35);
+  font-size: 10px; font-weight: 600; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #4B453D;
+}
+.cd-story h3 { margin: 14px 0 0; font-size: 22px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #1B1917; }
+.cd-story p { margin: 12px 0 0; max-width: 56ch; font-size: 15px; line-height: 1.55; color: #4B453D; }
+.cd-compare { margin-top: 20px; border-top: 2px solid #1B1917; }
+.cd-compare > div {
+  display: grid; grid-template-columns: 88px 1fr; gap: 14px;
+  padding: 14px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.cd-compare .cd-good { border-bottom: 2px solid #EC3013; background: rgba(236, 48, 19, 0.06); }
+.cd-compare dt, .cd-compare .cd-k {
+  font-size: 10.5px; font-weight: 700; line-height: 1.3;
+  letter-spacing: 0.12em; text-transform: uppercase; color: #6B645A;
+}
+.cd-compare .cd-good .cd-k { color: #B52309; }
+.cd-compare .cd-v { font-size: 14px; line-height: 1.5; color: #4B453D; }
+.cd-story-close { margin: 14px 0 0; max-width: 60ch; font-size: 14px; line-height: 1.55; color: #4B453D; }
+
+.cd-rules { padding: 26px 30px 32px; background: #F1EDE6; }
+.cd-rules-list { margin: 16px 0 0; padding: 0; list-style: none; border-top: 2px solid #1B1917; }
+.cd-rules-list li { padding: 15px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22); }
+.cd-rules-list b { font-size: 13.5px; font-weight: 700; line-height: 1.3; letter-spacing: 0.02em; color: #1B1917; }
+.cd-rules-list p { margin: 7px 0 0; font-size: 13.5px; line-height: 1.5; color: #4B453D; }
+
+/* ---------- 03, the ninety days ---------- */
+
+.cd-plan { display: grid; grid-template-columns: minmax(0, 1fr) 300px; }
+.cd-phase {
+  display: grid; grid-template-columns: 1fr auto; gap: 20px; align-items: center;
+  padding: 22px 30px 24px; background: #1B1917; color: #EAE4D9;
+}
+.cd-phase-title { margin: 11px 0 0; font-size: 30px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #F8F7F5; }
+.cd-phase-note { margin: 9px 0 0; max-width: 52ch; font-size: 13.5px; line-height: 1.5; color: #C9C6C1; }
+.cd-phase-count { text-align: right; }
+.cd-phase-n { font-size: 44px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; color: #F8F7F5; font-variant-numeric: tabular-nums; }
+.cd-phase-of { margin: 6px 0 0; font-size: 10px; font-weight: 600; line-height: 1.3; letter-spacing: 0.14em; text-transform: uppercase; color: #8F8981; }
+.cd-progress { height: 8px; background: #3A352F; }
+.cd-progress > span { display: block; height: 8px; width: 0; background: #EC3013; transition: width 0.35s ease; }
+.cd-progress.is-full > span { background: #EAE4D9; }
+
+.cd-steps { margin: 0; padding: 0; list-style: none; }
+.cd-step {
+  display: grid; grid-template-columns: 38px minmax(0, 1fr); gap: 18px;
+  padding: 20px 30px 22px; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.cd-step.is-next { background: rgba(236, 48, 19, 0.06); }
+.cd-step.is-done { opacity: 0.5; }
+.cd-tick {
+  width: 38px; height: 38px; display: grid; place-items: center;
+  border: 2px solid #1B1917; border-radius: 0; background: transparent;
+  font: inherit; font-size: 15px; font-weight: 700; color: #1B1917;
   cursor: pointer;
-  transition: transform 0.16s ease, background-color 0.16s ease,
-              border-color 0.16s ease, color 0.16s ease, box-shadow 0.16s ease;
 }
-.btn-solid { background: var(--btn-solid-bg); color: var(--btn-solid-fg); }
-.btn-solid:hover { background: var(--btn-solid-hv); transform: translateY(-2px); }
-.btn-ghost { background: var(--btn-ghost-bg); color: var(--btn-ghost-fg); border-color: var(--btn-ghost-bd); }
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
-.btn-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
+.cd-tick:hover { background: rgba(27, 25, 23, 0.08); }
+.cd-step.is-done .cd-tick { background: #1B1917; color: #EAE4D9; }
+.cd-when { font-size: 10px; font-weight: 600; line-height: 1; letter-spacing: 0.16em; text-transform: uppercase; color: #6B645A; }
+.cd-step h3 { margin: 9px 0 0; font-size: 20px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #1B1917; }
+.cd-step.is-done h3 { text-decoration: line-through; }
+.cd-step p { margin: 8px 0 0; max-width: 66ch; font-size: 14px; line-height: 1.55; color: #4B453D; }
+.cd-donewhen {
+  margin-top: 10px; padding-top: 9px; border-top: 1px solid rgba(27, 25, 23, 0.22);
+  display: grid; grid-template-columns: 82px 1fr; gap: 12px;
+}
+.cd-donewhen b { font-size: 9.5px; font-weight: 700; line-height: 1.4; letter-spacing: 0.12em; text-transform: uppercase; color: #B52309; }
+.cd-donewhen span { font-size: 13px; line-height: 1.45; color: #4B453D; }
 
-/* ---------- 7. navigation ----------
-   Styled by css/site-chrome.css, linked in the head. It used to be
-   declared here in full, and separately in corporate.css,
-   library.css and comp-plan.html: four hand-maintained copies of
-   one component. This page happened to match the others by hand,
-   which is the more worrying half, because nothing enforced it.
-   Do not reintroduce a chrome rule here; deploy/build_dist.py
-   fails the build on it. */
+.cd-hours {
+  padding: 26px 26px 32px; background: #F1EDE6;
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+}
+.cd-hours .cd-eyebrow { font-size: 10.5px; letter-spacing: 0.18em; }
+.cd-hours-fig { margin-top: 14px; display: flex; align-items: baseline; gap: 8px; }
+.cd-hours-n { font-size: 40px; font-weight: 800; line-height: 1; letter-spacing: -0.035em; color: #1B1917; font-variant-numeric: tabular-nums; }
+.cd-hours-u { font-size: 12px; font-weight: 600; line-height: 1; letter-spacing: 0.1em; text-transform: uppercase; color: #6B645A; }
+.cd-slider { width: 100%; margin-top: 14px; accent-color: #EC3013; }
+.cd-verdict { margin: 12px 0 0; font-size: 13px; line-height: 1.5; color: #4B453D; }
+.cd-week { margin: 20px 0 0; padding: 0; list-style: none; border-top: 2px solid #1B1917; }
+.cd-week li {
+  display: grid; grid-template-columns: 1fr auto; gap: 12px; align-items: baseline;
+  padding: 12px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.cd-week li.is-out { opacity: 0.4; }
+.cd-week b { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.3; color: #1B1917; }
+.cd-week i { display: block; margin-top: 3px; font-style: normal; font-size: 11.5px; line-height: 1.35; color: #6B645A; }
+.cd-week .cd-cost { font-size: 12.5px; font-weight: 700; line-height: 1; color: #1B1917; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cd-week li.is-out .cd-cost { color: #6B645A; }
+.cd-hours-note { margin: 14px 0 0; font-size: 12px; line-height: 1.5; color: #6B645A; }
 
-/* ---------- 8. panels, cards, rails ---------- */
+/* ---------- 04, the mechanisms and the month ---------- */
 
-.panel {
-  position: relative; background: var(--panel);
-  border: 1px solid var(--panel-border); border-radius: 0;
-  box-shadow: var(--panel-shadow);
-  padding: 30px 32px;
+.cd-mechs { display: grid; grid-template-columns: repeat(4, 1fr); }
+.cd-mech { padding: 26px 26px 30px; }
+.cd-mech + .cd-mech { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.cd-mech.is-coming { background: #F1EDE6; }
+.cd-chip {
+  display: inline-block; padding: 5px 9px;
+  border: 1px solid rgba(27, 25, 23, 0.35);
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #4B453D;
 }
-.panel-lit { border-color: var(--panel-lit); }
-.accent-bar {
-  position: absolute; top: 0; left: 22px; right: 22px; height: 2px;
-  border-radius: 0;
-  /* was a two-stop gradient; the handoff replaces gradient bars with 2px
-     of ink. One accent event per screen, and on this page it is not here. */
-  background: #1B1917;
-}
+.cd-mech.is-coming .cd-chip { border-color: #B52309; color: #B52309; }
+.cd-mech h3 { margin: 14px 0 0; font-size: 19px; font-weight: 800; line-height: 1.15; letter-spacing: -0.02em; color: #1B1917; }
+.cd-mech p { margin: 11px 0 0; font-size: 14px; line-height: 1.55; color: #4B453D; }
 
-.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
-.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.cd-month-head { padding: 28px 34px 10px; }
+.cd-month-head h3 { margin: 0; font-size: 18px; font-weight: 800; line-height: 1.2; letter-spacing: -0.015em; color: #1B1917; }
+.cd-month-head p { margin: 10px 0 0; max-width: 74ch; font-size: 14px; line-height: 1.55; color: #4B453D; }
+.cd-month {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  margin: 16px 34px 34px;
+  border-top: 2px solid #1B1917; border-bottom: 2px solid #1B1917;
+}
+.cd-stop { padding: 22px 22px 26px; }
+.cd-stop + .cd-stop { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.cd-stop-dot { display: block; width: 14px; height: 14px; border: 2px solid #1B1917; }
+.cd-stop.is-lit .cd-stop-dot { background: #EC3013; border-color: #EC3013; }
+.cd-stop b { display: block; margin-top: 14px; font-size: 14px; font-weight: 700; line-height: 1.2; letter-spacing: 0.01em; color: #1B1917; }
+.cd-stop p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: #4B453D; }
 
-.chip {
-  display: inline-block; padding: 3px 12px 4px; border-radius: 0;
-  background: var(--chip-bg); border: 1px solid var(--panel-border);
-  font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.18em; color: var(--indigo-soft);
-  margin-bottom: 14px; white-space: nowrap;
-}
-.chip-lit { color: var(--accent); border-color: var(--panel-lit); background: var(--accent-soft); }
+/* ---------- the closing band, on ink ---------- */
 
-/* the numbered step rail */
-.steps { list-style: none; counter-reset: step; display: grid; gap: 18px; }
-.step {
-  counter-increment: step;
-  display: grid; grid-template-columns: 54px 1fr; gap: 20px;
-  padding: 22px 26px; border-radius: 0;
-  background: var(--panel); border: 1px solid var(--panel-border);
-  box-shadow: var(--panel-shadow);
+.cd-close { display: grid; grid-template-columns: 1fr 0.85fr; background: #1B1917; color: #C9C6C1; }
+.cd-close-a { padding: 38px 34px 40px; }
+.cd-close-b { padding: 38px 34px 40px; background: #232019; border-left: 1px solid #4A453F; }
+.cd-close-a h2 { margin: 16px 0 0; font-size: 34px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #F8F7F5; max-width: 20ch; }
+.cd-close-a > p { margin: 14px 0 0; max-width: 52ch; font-size: 14.5px; line-height: 1.6; color: #C9C6C1; }
+.cd-limits { margin: 24px 0 0; padding: 0; list-style: none; border-top: 2px solid #4A453F; }
+.cd-limits li {
+  display: grid; grid-template-columns: 16px 1fr; gap: 14px;
+  padding: 13px 0; border-bottom: 1px solid #4A453F;
 }
-.step::before {
-  content: counter(step);
-  display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; border-radius: 0;
-  border: 1.5px solid var(--panel-lit); color: var(--accent);
-  font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums;
-}
-.step-when {
-  font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.2em; color: var(--muted); margin-bottom: 6px;
-}
-.step h3 { margin-bottom: 8px; }
-.done {
-  margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--hairline);
-  font-size: 0.92rem; color: var(--muted);
-}
-.done b { color: var(--accent); font-weight: 700; text-transform: uppercase;
-          letter-spacing: 0.14em; font-size: 0.72rem; margin-right: 8px; }
+.cd-limits li::before { content: ""; width: 11px; height: 11px; background: #FF6A4A; margin-top: 5px; }
+.cd-limits b { font-size: 14px; font-weight: 700; line-height: 1.4; color: #F8F7F5; }
+.cd-limits span { display: block; margin-top: 4px; font-size: 13.5px; line-height: 1.55; color: #C9C6C1; }
+.cd-close-b > p { margin: 16px 0 0; font-size: 14.5px; line-height: 1.6; color: #C9C6C1; }
+.cd-why { margin: 22px 0 0; padding: 0; list-style: none; display: grid; gap: 12px; }
+.cd-why li { padding-bottom: 12px; border-bottom: 1px solid #4A453F; }
+.cd-why li:last-child { padding-bottom: 0; border-bottom: 0; }
+.cd-why b { font-size: 13.5px; font-weight: 700; line-height: 1.3; color: #F8F7F5; }
+.cd-why span { display: block; margin-top: 5px; font-size: 13px; line-height: 1.5; color: #C9C6C1; }
+.cd-govern { display: block; margin-top: 26px; padding: 14px 18px; background: #EC3013; color: #FFFFFF; text-decoration: none; }
+.cd-govern:hover { background: #A3220B; }
+/* The design sets this label at 85% white on the accent fill, which is
+   2.24:1 and fails the build's floor. Solid white is 4.19:1 -- the same
+   pairing every other accent button on the site already uses. */
+.cd-govern b { display: block; font-size: 10px; font-weight: 700; line-height: 1; letter-spacing: 0.16em; text-transform: uppercase; color: #FFFFFF; }
+.cd-govern span { display: block; margin-top: 7px; font-size: 15px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; color: #FFFFFF; }
 
-/* plain lists */
-ul.plain { list-style: none; display: grid; gap: 12px; }
-ul.plain li { position: relative; padding-left: 26px; color: var(--body); }
-ul.plain li::before {
-  content: ""; position: absolute; left: 0; top: 11px;
-  width: 9px; height: 9px; border-radius: 0;
-  background: var(--accent); transform: rotate(45deg);
+.cd-strip {
+  padding: 20px 34px 24px; background: #1B1917; color: #8F8981;
+  border-top: 1px solid #4A453F;
+  font-size: 12px; line-height: 1.5;
+  display: flex; gap: 18px; flex-wrap: wrap;
 }
-ul.plain.quiet li::before { background: var(--indigo); }
+.cd-strip span:last-child { margin-left: auto; }
 
-/* the week table */
-.table-scroll { overflow-x: auto; border-radius: 0; }
-table.week {
-  width: 100%; border-collapse: collapse; min-width: 560px;
-  background: var(--panel); border: 1px solid var(--panel-border);
-  border-radius: 0; box-shadow: var(--panel-shadow);
-}
-table.week th, table.week td {
-  text-align: left; padding: 14px 20px;
-  border-bottom: 1px solid var(--hairline); vertical-align: top;
-}
-table.week th {
-  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.14em; color: var(--muted);
-}
-table.week td:nth-child(2) {
-  font-variant-numeric: tabular-nums; white-space: nowrap; color: var(--accent);
-  font-weight: 600;
-}
-table.week tr:last-child td { border-bottom: 0; }
+/* ---------- responsive ---------- */
 
-/* the drawing frames */
-.figure { margin: 0 0 12px; }
-.figure-frame {
-  overflow-x: auto; border-radius: 0;
-  border: 1px solid var(--panel-border); background: var(--panel);
-  box-shadow: var(--panel-shadow); padding: 18px 20px;
+@media (max-width: 1000px) {
+  .cd-mechs { grid-template-columns: 1fr 1fr; }
+  .cd-mech:nth-child(3) { border-left: 0; }
+  .cd-mech:nth-child(n+3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .cd-month { grid-template-columns: 1fr 1fr; }
+  .cd-stop:nth-child(3) { border-left: 0; }
+  .cd-stop:nth-child(n+3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
 }
-.figure-frame svg { min-width: 640px; height: auto; }
-figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
-
-/* drawing text */
-.d-title { font: 700 15px "Segoe UI", system-ui, sans-serif; letter-spacing: 0.16em; fill: var(--heading); text-transform: uppercase; }
-.d-sub   { font: 400 13px "Segoe UI", system-ui, sans-serif; fill: var(--muted); }
-.d-lab   { font: 600 13px "Segoe UI", system-ui, sans-serif; fill: var(--body); }
-.d-small { font: 400 12px "Segoe UI", system-ui, sans-serif; fill: var(--muted); }
-
-/* the two word callout */
-.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
-.vs .panel h3 { color: var(--heading); }
-.vs .word {
-  font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.22em; color: var(--accent); margin-bottom: 6px;
+@media (max-width: 900px) {
+  .cd-hero, .cd-vocab, .cd-sell, .cd-plan, .cd-close { grid-template-columns: 1fr; }
+  .cd-hero-b, .cd-vrail, .cd-hours, .cd-close-b { border-left: 0; border-right: 0; border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .cd-close-b { border-top-color: #4A453F; }
+  .cd-story { border-right: 0; }
+  .cd-hero-a h1 { font-size: 42px; }
+  .cd-vnodes { grid-template-columns: repeat(2, 1fr); }
 }
-.oneliner {
-  margin-top: 30px; padding: 20px 26px; border-radius: 0;
-  border: 1px solid var(--panel-lit); background: var(--accent-soft);
-  color: var(--heading); font-size: 1.06rem;
-}
-
-/* ---------- 9. footer ----------
-   Also styled by css/site-chrome.css. See the note above. */
-
-/* ---------- 10. responsive ---------- */
-
-@media (max-width: 920px) {
-  .grid-3 { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 760px) {
-  .band { padding: 64px 0; }
-  .grid-2, .grid-3, .vs { grid-template-columns: 1fr; }
-  .step { grid-template-columns: 1fr; gap: 12px; }
-}
-@media (max-width: 480px) {
-  .wrap { padding: 0 20px; }
-  .panel { padding: 24px 22px; }
+@media (max-width: 620px) {
+  .cd-frame { border-left: 0; border-right: 0; }
+  .cd-hero-a, .cd-hero-b, .cd-head, .cd-vrail, .cd-story, .cd-rules,
+  .cd-mech, .cd-month-head, .cd-close-a, .cd-close-b, .cd-strip { padding-left: 20px; padding-right: 20px; }
+  .cd-phase, .cd-step { padding-left: 20px; padding-right: 20px; }
+  .cd-month { margin-left: 20px; margin-right: 20px; }
+  .cd-vhead, .cd-mechs, .cd-month { grid-template-columns: 1fr; }
+  .cd-vhead-b { border-left: 0; border-top: 1px solid #4A453F; }
+  .cd-mech + .cd-mech, .cd-stop + .cd-stop { border-left: 0; border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .cd-vnodes-wrap { padding-left: 20px; padding-right: 20px; }
+  .cd-hero-a h1 { font-size: 34px; }
+  .cd-phase { grid-template-columns: 1fr; }
+  .cd-phase-count { text-align: left; }
+  .cd-strip span:last-child { margin-left: 0; }
 }
 
 /* ---------- 11. reduced motion ---------- */
@@ -391,16 +514,33 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
     --accent: #A3220B; --accent-soft: #FFFFFF;
     --indigo: #1B1917; --indigo-soft: #1B1917; --violet: #5B21B6;
     --hairline: #C7CBD6; --chip-bg: #FFFFFF;
-    --glow-a: transparent; --glow-b: transparent; --glow-c: transparent;
     --mark: #1B1917; --mark-lit: #A3220B;
     --mark-line: #6B7280; --mark-fill: #FFFFFF;
 
   }
-  .band { padding: 26px 0; break-inside: auto; }
-  .band + .band { border-top: 1px solid #C7CBD6; }
-  .panel, .step, table.week, .figure-frame { break-inside: avoid; }
-  .figure-frame svg { min-width: 0; }
-  .table-scroll, .figure-frame { overflow: visible; }
+  /* The page is one ruled frame on screen and a stack of blocks on paper:
+     the ink bands would flood a sheet with toner, so they print as ruled
+     white like everything else, and the three controls print in the state
+     the reader left them in. */
+  .cd-frame { border: 0; max-width: none; }
+  .cd-band { border-bottom: 1px solid #C7CBD6; }
+  .cd-hero, .cd-vocab, .cd-sell, .cd-plan, .cd-close,
+  .cd-vhead, .cd-mechs, .cd-month { break-inside: avoid; }
+  .cd-step, .cd-mech, .cd-stop, .cd-claim { break-inside: avoid; }
+  .cd-hero-b, .cd-vrail, .cd-rules, .cd-hours, .cd-mech.is-coming { background: #FFFFFF; }
+  .cd-vhead, .cd-vhead-b, .cd-phase, .cd-close, .cd-close-b, .cd-strip {
+    background: #FFFFFF; color: #1A1A1A; border-color: #C7CBD6;
+  }
+  .cd-vtitle, .cd-vmade, .cd-phase-title, .cd-phase-n, .cd-close-a h2,
+  .cd-limits b, .cd-why b { color: #000000; }
+  .cd-vbody, .cd-vmade-note, .cd-phase-note, .cd-limits span, .cd-why span,
+  .cd-close-a > p, .cd-close-b > p { color: #1A1A1A; }
+  .cd-limits, .cd-limits li, .cd-why li { border-color: #C7CBD6; }
+  .cd-limits li::before { background: #A3220B; }
+  .cd-govern { background: #FFFFFF; border: 1px solid #A3220B; }
+  .cd-govern b, .cd-govern span { color: #000000; }
+  .cd-progress { background: #E5E5E5; }
+  .cd-slider { display: none; }
   a { color: #000000; }
   body { font-size: 11.5pt; line-height: 1.5; }
   @page { margin: 16mm; }
@@ -446,497 +586,287 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
   </div>
 </header>
 
-<main>
+<main id="main">
+<div class="cd-frame">
 
-<!-- ============ HERO ============ -->
-<section class="band glow-a">
-  <div class="wrap">
-    <p class="kicker">The opportunity</p>
-    <h1 class="page-title">What is a Conductor</h1>
-    <div class="copy">
-      <p class="lead">A Conductor is what Orvanna calls the people who sell its artificial intelligence (AI) agents. You find the businesses around you that are drowning in work nobody enjoys, you work out which agents would take that work off them, and you stay on as the human who knows their setup.</p>
-      <p>The name is not decoration. A conductor does not play the instruments. A conductor decides which instruments the piece needs, gets them started together, and keeps them in time when the tempo changes. That is the job, almost exactly.</p>
+  <!-- ============ THE OPPORTUNITY ============ -->
+  <section class="cd-band cd-hero" aria-labelledby="heroTitle">
+    <div class="cd-hero-a">
+      <p class="cd-eyebrow">The opportunity</p>
+      <h1 id="heroTitle">A conductor does not play the instruments</h1>
+      <p class="cd-lede">You find the businesses around you drowning in work nobody enjoys, work out which agents take that work off them, and stay on as the human who knows their setup. You decide which instruments the piece needs, get them started together, and keep them in time when the tempo changes.</p>
+      <div class="cd-actions">
+        <a class="cd-btn cd-btn-solid" href="shop.html">See what a Conductor sells</a>
+        <a class="cd-btn cd-btn-ghost" href="comp-plan.html">Read the compensation plan</a>
+      </div>
+      <p class="cd-fine">Enrollment opens soon. This page describes how the program works, so you can decide before it does.</p>
     </div>
-    <div class="btn-row">
-      <a class="btn btn-solid" href="shop.html">See what a Conductor sells</a>
-      <a class="btn btn-ghost" href="comp-plan-full.html">Read the compensation brochure</a>
+    <aside class="cd-hero-b" aria-label="The job in five parts">
+      <p class="cd-eyebrow">The job in five parts</p>
+      <ol class="cd-parts">
+        <li><b>01</b><span>Listen for the bottleneck</span></li>
+        <li><b>02</b><span>Fit the ensemble</span></li>
+        <li><b>03</b><span>Set it up and stay a week</span></li>
+        <li><b>04</b><span>Check in when things change</span></li>
+        <li><b>05</b><span>Sponsor people who want the same</span></li>
+      </ol>
+      <p class="cd-parts-note">There is no sixth. Everything a working Conductor does in a week is one of these five.</p>
+      <div class="cd-claim">
+        <p class="cd-eyebrow">No income claim</p>
+        <p>Demonstration company, synthetic data. No earnings figures appear anywhere on this page, and the compensation plan governs.</p>
+      </div>
+    </aside>
+  </section>
+
+  <!-- ============ 01 ENSEMBLE AND TEAM ============ -->
+  <section class="cd-band" aria-labelledby="vocabTitle">
+    <div class="cd-head">
+      <div class="cd-head-row"><span class="cd-num">01</span><h2 id="vocabTitle">Two words that must never be confused</h2></div>
+      <p class="cd-head-lede">Conductors use both constantly and they mean completely different things. Mixing them up in front of a business owner is the fastest way to sound like you do not understand what you are selling. Switch between them &mdash; the two panels are the same shape holding opposite content.</p>
     </div>
-    <p class="note" style="margin-top:22px;">Enrollment opens soon. This page describes how the program works, so you can decide before it does.</p>
-  </div>
-</section>
-
-<!-- ============ THE NAME ============ -->
-<section class="band band-2 glow-b">
-  <div class="wrap">
-    <p class="kicker">The name</p>
-    <h2 class="section-title">Why Conductor and not distributor</h2>
-    <div class="copy spaced">
-      <p>Most direct selling companies borrow their word from a warehouse: distributor, dealer, representative. Those words fit when the thing being moved is a box. Orvanna does not ship boxes. Its products are agents that go to work inside somebody else's business, and the person who sold them is still needed on the day after the sale.</p>
-    </div>
-    <div class="grid-3">
-      <div class="panel">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <h3 class="card-title">You do not play</h3>
-        <p>You do not do the bookkeeping, chase the declined cards, or file the returns. The agents do that. Your hands stay off the instruments, which is what makes the work scale past your own hours.</p>
-      </div>
-      <div class="panel">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <h3 class="card-title">You choose the score</h3>
-        <p>A florist and a freight broker do not need the same agents. Picking the right two or three for a specific business, in the right order, is the part that takes judgment, and it is the part software cannot do for itself.</p>
-      </div>
-      <div class="panel">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <h3 class="card-title">You keep time</h3>
-        <p>Businesses change. The ensemble that fit a shop in March is short a player by September, when it starts selling into a second country and suddenly has filings it has never done before.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ THE TWO WORDS ============ -->
-<section class="band glow-c">
-  <div class="wrap">
-    <p class="kicker">Vocabulary</p>
-    <h2 class="section-title">Two words that must never be confused</h2>
-    <div class="copy spaced">
-      <p>Conductors use these two words constantly and they mean completely different things. Getting them mixed up in front of a business owner is the fastest way to sound like you do not understand what you are selling.</p>
-    </div>
-
-    <figure class="figure">
-      <div class="figure-frame">
-        <svg viewBox="0 0 920 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Two drawings side by side. On the left, one person surrounded by five connected hexagons labelled with agent names, titled Your ensemble. On the right, one person at the top of a branching tree of five other people, titled Your team.">
-          <defs>
-            <polygon id="hexmark" points="0,-21 18.2,-10.5 18.2,10.5 0,21 -18.2,10.5 -18.2,-10.5"/>
-            <g id="person">
-              <circle cx="0" cy="-9" r="8.4"/>
-              <path d="M -14 12 a 14 14 0 0 1 28 0 z"/>
-            </g>
-          </defs>
-
-          <!-- left: the ensemble -->
-          <text class="d-title" x="30" y="40">Your ensemble</text>
-          <text class="d-sub"   x="30" y="62">the agents you run</text>
-
-          <!-- Connectors stop at the EDGE of what they connect, both ends.
-               Drawn centre to centre they ran straight through the hub and
-               out through each hexagon, which is what made the drawing read
-               as sloppy: a line that crosses a node says the two are on top
-               of each other, not joined. 33 clears the hub (r30), 24 clears
-               the hexagon (21 tall, 18.2 wide), each leaving a small gap. -->
-          <g stroke="var(--mark-line)" stroke-width="1.6" stroke-linecap="round">
-            <line x1="197.5" y1="193.7" x2="125.0" y2="145.3"/>
-            <line x1="225.0" y1="179.0" x2="225.0" y2="136.0"/>
-            <line x1="252.5" y1="193.7" x2="325.0" y2="145.3"/>
-            <line x1="200.6" y1="234.3" x2="137.7" y2="291.8"/>
-            <line x1="249.4" y1="234.3" x2="312.3" y2="291.8"/>
-          </g>
-
-          <circle cx="225" cy="212" r="30" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
-          <use href="#person" x="225" y="214" fill="var(--mark-lit)"/>
-          <text class="d-lab" x="225" y="268" text-anchor="middle">You</text>
-
-          <g fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.2">
-            <use href="#hexmark" x="105" y="132"/>
-            <use href="#hexmark" x="225" y="112"/>
-            <use href="#hexmark" x="345" y="132"/>
-            <use href="#hexmark" x="120" y="308"/>
-            <use href="#hexmark" x="330" y="308"/>
-          </g>
-          <g fill="var(--mark-lit)">
-            <circle cx="105" cy="132" r="4.4"/>
-            <circle cx="225" cy="112" r="4.4"/>
-            <circle cx="345" cy="132" r="4.4"/>
-            <circle cx="120" cy="308" r="4.4"/>
-            <circle cx="330" cy="308" r="4.4"/>
-          </g>
-          <g class="d-small" text-anchor="middle">
-            <text x="105" y="172">Payment</text>
-            <text x="225" y="84">Customer Care</text>
-            <text x="345" y="172">Secretary</text>
-            <text x="120" y="348">Accounting</text>
-            <text x="330" y="348">Tax</text>
-          </g>
-          <text class="d-small" x="30" y="386">Software. Priced in dollars. Carries Personal Volume.</text>
-
-          <!-- divider -->
-          <line x1="460" y1="30" x2="460" y2="370" stroke="var(--mark-line)" stroke-width="1.4" stroke-dasharray="5 7"/>
-
-          <!-- right: the team -->
-          <text class="d-title" x="510" y="40">Your team</text>
-          <text class="d-sub"   x="510" y="62">the people you sponsored</text>
-
-          <!-- Same rule on this side. The old paths began at y132, six
-               pixels INSIDE the top circle (bottom edge y138), and landed at
-               y200, six inside the children (top edge y194) -- so every
-               branch was drawn over a face. Now: a stem from the parent's
-               edge, one horizontal bus, and a drop to each child's edge. -->
-          <g stroke="var(--mark-line)" stroke-width="1.6" fill="none" stroke-linecap="round">
-            <path d="M 700 141 V 168"/>
-            <path d="M 590 168 H 810"/>
-            <path d="M 590 168 V 191"/>
-            <path d="M 700 168 V 191"/>
-            <path d="M 810 168 V 191"/>
-            <path d="M 590 241 V 268"/>
-            <path d="M 545 268 H 640"/>
-            <path d="M 545 268 V 287"/>
-            <path d="M 640 268 V 287"/>
-          </g>
-
-          <circle cx="700" cy="112" r="26" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
-          <use href="#person" x="700" y="114" fill="var(--mark-lit)"/>
-
-          <g>
-            <circle cx="590" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
-            <use href="#person" x="590" y="218" fill="var(--mark)"/>
-            <circle cx="700" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
-            <use href="#person" x="700" y="218" fill="var(--mark)"/>
-            <circle cx="810" cy="216" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
-            <use href="#person" x="810" y="218" fill="var(--mark)"/>
-            <circle cx="545" cy="312" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
-            <use href="#person" x="545" y="314" fill="var(--mark)"/>
-            <circle cx="640" cy="312" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
-            <use href="#person" x="640" y="314" fill="var(--mark)"/>
-          </g>
-          <text class="d-small" x="734" y="117">You</text>
-          <text class="d-small" x="700" y="256" text-anchor="middle">the Conductors you sponsored</text>
-          <text class="d-small" x="592" y="352" text-anchor="middle">the Conductors they sponsored</text>
-          <text class="d-small" x="510" y="386">People. Nobody is bought. Nobody carries Personal Volume.</text>
-        </svg>
-      </div>
-      <figcaption>Left, an ensemble: agents around one person. Right, a team: people under one person. Both drawings show one Conductor, and they are showing completely different things.</figcaption>
-    </figure>
-
-    <div class="vs" style="margin-top:32px;">
-      <div class="panel panel-lit">
-        <p class="word">Ensemble</p>
-        <h3 class="card-title">The agents</h3>
-        <p>Your ensemble is the set of Orvanna agents running on an account, yours or a customer's. An ensemble is software. It is bought, it is priced in dollars, and every item carries Personal Volume (PV), the number that decides whether a month counts as qualified.</p>
-      </div>
-      <div class="panel">
-        <p class="word">Team</p>
-        <h3 class="card-title">The people</h3>
-        <p>Your team, also called your organization, is the people you sponsored, the people they sponsored, and so on down. A team is people. Nobody in it is bought, nobody in it carries Personal Volume, and nothing is ever paid for adding a name to it.</p>
-      </div>
-    </div>
-
-    <p class="oneliner">Say it once and it stays straight: <em class="q">an ensemble plays, a team sells.</em></p>
-  </div>
-</section>
-
-<!-- ============ WHAT YOU ARE SELLING ============ -->
-<section class="band band-2 glow-a">
-  <div class="wrap">
-    <p class="kicker">The actual product</p>
-    <h2 class="section-title">You are not selling software</h2>
-    <div class="copy spaced">
-      <p>Nobody wakes up wanting to buy software. What people want is for a specific, hated, recurring job to stop being theirs. That is what is actually being sold here, and a Conductor who understands that outsells one who has memorized the catalog.</p>
-    </div>
-
-    <div class="panel spaced">
-      <span class="accent-bar" aria-hidden="true"></span>
-      <span class="chip">An illustration, not a customer story</span>
-      <h3 class="card-title">A plumbing company with two vans</h3>
-      <div class="copy">
-        <p>The owner quotes all day and invoices at night. Three invoices a month go unpaid and nobody chases them until the bank balance makes it urgent. Every quarter the tax return happens in a panic across a weekend, from a shoebox of receipts.</p>
-        <p>A weak Conductor opens the catalog and starts at Payment Agent. A good one asks which of those three things they would pay to never think about again, and listens. If the answer is the quarterly weekend, the answer is the Tax Agent, on its own, and nothing else this month. One agent. Set up in an afternoon. The next quarter ends with a prepared return waiting for their accountant instead of a shoebox.</p>
-        <p>That is the whole sale. The second and third agents come later, after the owner has watched the first one work and starts naming the next thing they hate.</p>
-      </div>
-    </div>
-
-    <div class="grid-3">
-      <div class="panel">
-        <h4 class="mini-title">Lead with their week</h4>
-        <p>The opening question is what ate the most time last week, not which tier they want. If you cannot name the hour you are giving back, you do not have a sale yet.</p>
-      </div>
-      <div class="panel">
-        <h4 class="mini-title">Sell one thing first</h4>
-        <p>A business with one loud problem does not need twelve agents. Overselling the first order is the most common way a Conductor loses the second one.</p>
-      </div>
-      <div class="panel">
-        <h4 class="mini-title">Be honest about the boundary</h4>
-        <p>Orvanna agents propose and the owner approves. Nothing is filed, paid, published, or ordered without a human yes. Cautious owners buy because of that line, so never blur it to sound impressive.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ THE WORK ============ -->
-<section class="band glow-b">
-  <div class="wrap">
-    <p class="kicker">The work</p>
-    <h2 class="section-title">What a Conductor actually does</h2>
-    <div class="copy spaced">
-      <p>Five activities, and there is not a sixth. Everything a working Conductor does in a week is one of these.</p>
-    </div>
-
-    <div class="grid-2 spaced">
-      <div class="panel">
-        <h3 class="card-title">1. Listen for the bottleneck</h3>
-        <p>Conversations with owners you already have a reason to talk to, about their week rather than about Orvanna. You are looking for the recurring job that costs them evenings. Most of these conversations end without a sale, and that is the normal result, not a failure.</p>
-      </div>
-      <div class="panel">
-        <h3 class="card-title">2. Fit the ensemble</h3>
-        <p>Match the bottleneck to the smallest set of agents that fixes it. Read the product page for what an agent does day to day and check that it matches what you heard. If nothing fits, say so. Some problems are hiring problems, not agent problems.</p>
-      </div>
-      <div class="panel">
-        <h3 class="card-title">3. Set it up and stay a week</h3>
-        <p>Connect the agent to the tools it needs, agree the approval boundaries with the owner, and read the first outputs together. The first week is where an ensemble either becomes part of how they work or quietly gets ignored.</p>
-      </div>
-      <div class="panel">
-        <h3 class="card-title">4. Check in when things change</h3>
-        <p>A quarterly note, not a monthly pitch. New country, new season, new staff member, first employee: each of those changes which agents make sense. You are the person who already knows their setup, which is why the second sale is easier than the first.</p>
-      </div>
-      <div class="panel panel-lit" style="grid-column: 1 / -1;">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <h3 class="card-title">5. Sponsor people who want to do the same</h3>
-        <p>Sponsoring means somebody joins Orvanna underneath you and starts conducting their own ensembles and their own customers. You teach them the only way that works: you do one setup alongside them, then you watch them do the next one and say nothing. People you sponsor become your team, and their work is what opens the deeper levels of the compensation plan.</p>
-      </div>
-    </div>
-
-    <h3 class="card-title" style="margin-top:44px;">A week that is actually typical</h3>
-    <p class="copy tight">Honest hours, not aspirational ones.</p>
-    <div class="table-scroll">
-      <table class="week">
-        <thead>
-          <tr><th scope="col">When</th><th scope="col">Roughly</th><th scope="col">What happens</th></tr>
-        </thead>
-        <tbody>
-          <tr><td>Monday morning</td><td>20 minutes</td><td>Read what your own agents filed over the weekend. You run what you sell, so this doubles as product knowledge.</td></tr>
-          <tr><td>Two or three times a week</td><td>30 minutes each</td><td>A conversation with a business owner about their week. Some weeks none of them go anywhere.</td></tr>
-          <tr><td>When a setup lands</td><td>About 2 hours, spread over the first week</td><td>Sitting with a new owner while their first agent runs, adjusting the approval boundaries.</td></tr>
-          <tr><td>Weekly, per person on your team</td><td>10 minutes</td><td>A short check in with someone you sponsored. Usually one question they are stuck on.</td></tr>
-          <tr><td>Month end</td><td>15 minutes</td><td>Check your own Personal Volume (PV) for the month, then read the statements when the monthly run closes.</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note" style="margin-top:16px;">A few hours a week keeps a Conductor's business alive. Building one faster takes more, and no amount of hours is a promise of anything.</p>
-  </div>
-</section>
-
-<!-- ============ THE FIRST NINETY DAYS ============ -->
-<section class="band band-2 glow-c">
-  <div class="wrap">
-    <p class="kicker">Getting started</p>
-    <h2 class="section-title">The first ninety days</h2>
-    <div class="copy spaced">
-      <p>In order. Skipping ahead is the most common mistake, and the most expensive one is skipping the first step, because you cannot fit an ensemble you have never run.</p>
-    </div>
-
-    <ol class="steps">
-      <li class="step">
-        <div>
-          <p class="step-when">Week 1</p>
-          <h3 class="card-title">Run one agent yourself</h3>
-          <p>Pick the agent that fixes your own worst recurring hour, subscribe to it, and use it properly. Not a demonstration account. The real thing, on your own work, with your own approval boundaries set.</p>
-          <p class="done"><b>Done when</b> you have read one of its outputs and changed something you actually do because of it.</p>
+    <div class="cd-vocab cd-split">
+      <div class="cd-vrail">
+        <div class="cd-switch" role="group" aria-label="Which word">
+          <button class="cd-vopt is-on" type="button" data-vocab="ensemble" aria-pressed="true">
+            <b>Ensemble</b><span>the agents you run</span>
+          </button>
+          <button class="cd-vopt" type="button" data-vocab="team" aria-pressed="false">
+            <b>Team</b><span>the people you sponsored</span>
+          </button>
         </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Weeks 1 to 2</p>
-          <h3 class="card-title">Learn three agents properly</h3>
-          <p>Three, not twelve. Read each one's product page end to end, including the day to day section and where its authority stops. Being able to describe three agents precisely beats being able to list all of them.</p>
-          <p class="done"><b>Done when</b> you can explain each of the three, out loud, without the page in front of you.</p>
-        </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Week 2</p>
-          <h3 class="card-title">Write your list of twenty</h3>
-          <p>Twenty businesses you already have a reason to speak to: people you buy from, people you have worked with, people you know socially who run something. Next to each name, write the one job you suspect eats their week.</p>
-          <p class="done"><b>Done when</b> the list exists in writing and every name carries a guess.</p>
-        </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Weeks 2 to 6</p>
-          <h3 class="card-title">Have ten conversations</h3>
-          <p>Work the list. The conversation is about their week, and your job is to find out whether your guess was right. Do not present the catalog. Expect most of the ten to go nowhere, and keep notes on all of them, because a no this quarter is often a yes after their next busy season.</p>
-          <p class="done"><b>Done when</b> ten conversations have happened and at least one person has asked what it costs.</p>
-        </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Weeks 4 to 8</p>
-          <h3 class="card-title">Do your first setup, and stay through the first week</h3>
-          <p>One agent for one business. Get it connected, agree what it may do alone and what it must bring to the owner, and check in on days two, four and seven. This week is the entire difference between a customer who renews and one who forgets they subscribed.</p>
-          <p class="done"><b>Done when</b> the owner has approved something the agent proposed, without you in the room.</p>
-        </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Every calendar month</p>
-          <h3 class="card-title">Reach a qualified month</h3>
-          <p>One hundred Personal Volume (PV) booked to your account inside one calendar month makes that month qualified, and qualification is what makes you eligible to be paid at all. Volume comes from your own subscriptions or from customers who buy through you, in any combination. It resets on the first of every month.</p>
-          <p class="done"><b>Done when</b> your account shows 100 PV or more before the month ends.</p>
-        </div>
-      </li>
-      <li class="step">
-        <div>
-          <p class="step-when">Weeks 8 to 12</p>
-          <h3 class="card-title">Sponsor your first Conductor</h3>
-          <p>Usually somebody who watched you do steps 4 and 5 and wanted the same thing. Teach by repetition, not by talking: do one setup beside them, then attend their next one silently. Then send them back to step 1, because the sequence works for them for the same reason it worked for you.</p>
-          <p class="done"><b>Done when</b> they have run a setup you did not speak during.</p>
-        </div>
-      </li>
-    </ol>
-  </div>
-</section>
-
-<!-- ============ HOW A CONDUCTOR IS PAID ============ -->
-<section class="band glow-a">
-  <div class="wrap">
-    <p class="kicker">Earning</p>
-    <h2 class="section-title">How a Conductor is paid</h2>
-    <div class="copy spaced">
-      <p>The mechanisms, in plain English. Every rate, every threshold and a full worked example live in the compensation brochure, which is the only document that governs. Nothing on this page is a promise of income, and no figures are quoted here on purpose: the brochure is the source of truth and a second copy of a number is just a chance for the two to disagree.</p>
-    </div>
-
-    <div class="grid-2 spaced">
-      <div class="panel">
-        <span class="chip">Mechanism one</span>
-        <h3 class="card-title">Volume pays, not signatures</h3>
-        <p>Nothing is ever paid for enrolling a person. What pays is what people buy: your own customers, the Conductors you sponsored, and the people they sponsored. Every product carries Personal Volume, a share of that volume is commissionable, and the commissionable part is what percentages are applied to.</p>
+        <p class="cd-vsay">An ensemble plays, a team sells.</p>
+        <p class="cd-vnote">Say it once and it stays straight.</p>
       </div>
-      <div class="panel">
-        <span class="chip">Mechanism two</span>
-        <h3 class="card-title">Rank buys reach, not rate</h3>
-        <p>Advancing in rank does not increase what you earn on the people you sponsored directly. It opens levels further down your organization that you were not paid on before. This is worth understanding early, because it means rank is about helping the people under you stay active, never about buying your way up.</p>
-      </div>
-      <div class="panel">
-        <span class="chip">Mechanism three</span>
-        <h3 class="card-title">Customers count toward your month</h3>
-        <p>Someone can buy agents through you without joining Orvanna at all. That order books to your account, so its volume counts toward your qualified month. A Conductor's qualification can therefore rest on what they sold, not only on what they bought.</p>
-      </div>
-      <div class="panel panel-lit">
-        <span class="chip chip-lit">Coming</span>
-        <h3 class="card-title">Instant Payout</h3>
-        <p>Orvanna has adopted Instant Payout, an immediate payment on a first order rather than waiting for the month to close. The terms are not finalized and no rate has been set. Until they are published in the compensation brochure, no Conductor should describe it as available or attach a number to it.</p>
+      <div>
+        <div class="cd-vhead">
+          <div class="cd-vhead-a">
+            <p class="cd-eyebrow cd-eyebrow-q" id="vKicker">ENSEMBLE · THE AGENTS</p>
+            <p class="cd-vtitle" id="vTitle">The agents you run</p>
+            <p class="cd-vbody" id="vBody">The set of Orvanna agents running on an account, yours or a customer’s. An ensemble is software: it is bought, it is priced in dollars, and every item carries Personal Volume — the number that decides whether a month counts as qualified.</p>
+          </div>
+          <div class="cd-vhead-b">
+            <p class="cd-eyebrow cd-eyebrow-l">Made of</p>
+            <p class="cd-vmade" id="vMade">Software</p>
+            <p class="cd-vmade-note" id="vMadeNote">Priced in dollars. Carries Personal Volume. Bought.</p>
+          </div>
+        </div>
+        <div class="cd-vnodes-wrap">
+          <ul class="cd-vnodes" id="vNodes">
+            <li class="cd-node"><b>RUNS FOR YOU</b><span>Payment</span></li>
+            <li class="cd-node"><b>RUNS FOR YOU</b><span>Customer Care</span></li>
+            <li class="cd-node"><b>RUNS FOR YOU</b><span>Secretary</span></li>
+            <li class="cd-node is-quiet"><b>RUNS FOR YOU</b><span>Accounting</span></li>
+            <li class="cd-node is-quiet"><b>RUNS FOR YOU</b><span>Tax</span></li>
+          </ul>
+          <p class="cd-vfoot" id="vFoot">Agents around one person. Add one and your own volume rises; nothing about your team changes.</p>
+        </div>
       </div>
     </div>
+  </section>
 
-    <figure class="figure">
-      <div class="figure-frame">
-        <svg viewBox="0 0 960 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="A four stop timeline: volume books through the month, the month ends, one commission run is calculated, then statements lock.">
-          <line x1="70" y1="96" x2="890" y2="96" stroke="var(--mark-line)" stroke-width="2"/>
-
-          <circle cx="120" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
-          <circle cx="390" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
-          <circle cx="650" cy="96" r="13" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2.4"/>
-          <circle cx="840" cy="96" r="13" fill="var(--mark-lit)" stroke="var(--mark-lit)" stroke-width="2.4"/>
-
-          <text class="d-lab" x="120" y="148" text-anchor="middle">Through the month</text>
-          <text class="d-small" x="120" y="172" text-anchor="middle">Subscriptions bill.</text>
-          <text class="d-small" x="120" y="192" text-anchor="middle">Customers buy.</text>
-          <text class="d-small" x="120" y="212" text-anchor="middle">Volume books to accounts.</text>
-
-          <text class="d-lab" x="390" y="148" text-anchor="middle">The month ends</text>
-          <text class="d-small" x="390" y="172" text-anchor="middle">The calendar closes it.</text>
-          <text class="d-small" x="390" y="192" text-anchor="middle">Nothing enters it</text>
-          <text class="d-small" x="390" y="212" text-anchor="middle">afterward.</text>
-
-          <text class="d-lab" x="650" y="148" text-anchor="middle">One run</text>
-          <text class="d-small" x="650" y="172" text-anchor="middle">Commissions are</text>
-          <text class="d-small" x="650" y="192" text-anchor="middle">calculated once, from</text>
-          <text class="d-small" x="650" y="212" text-anchor="middle">that month's volume.</text>
-
-          <text class="d-lab" x="840" y="148" text-anchor="middle">Statements lock</text>
-          <text class="d-small" x="840" y="172" text-anchor="middle">Your statement is</text>
-          <text class="d-small" x="840" y="192" text-anchor="middle">fixed, and traceable</text>
-          <text class="d-small" x="840" y="212" text-anchor="middle">to the run behind it.</text>
-
-          <text class="d-title" x="70" y="44">The month</text>
-          <text class="d-sub"   x="70" y="66">commissions run once, at the end of each calendar month</text>
-        </svg>
+  <!-- ============ 02 WHAT IS ACTUALLY BEING SOLD ============ -->
+  <section class="cd-band" aria-labelledby="sellTitle">
+    <div class="cd-head">
+      <div class="cd-head-row"><span class="cd-num">02</span><h2 id="sellTitle">You are not selling software</h2></div>
+      <p class="cd-head-lede">Nobody wakes up wanting to buy software. What people want is for a specific, hated, recurring job to stop being theirs. A Conductor who understands that outsells one who has memorised the catalog.</p>
+    </div>
+    <div class="cd-sell cd-split">
+      <div class="cd-story">
+        <span class="cd-tag">An illustration, not a customer story</span>
+        <h3>A plumbing company with two vans</h3>
+        <p>The owner quotes all day and invoices at night. Three invoices a month go unpaid until the bank balance makes it urgent. Every quarter the tax return happens in a panic across a weekend, from a shoebox of receipts.</p>
+        <div class="cd-compare">
+          <div><span class="cd-k">Weak</span><span class="cd-v">Opens the catalog and starts at Payment Agent.</span></div>
+          <div class="cd-good"><span class="cd-k">Good</span><span class="cd-v">Asks which of those three things they would pay to never think about again &mdash; and listens. If the answer is the quarterly weekend, the answer is the Tax Agent, on its own, and nothing else this month.</span></div>
+        </div>
+        <p class="cd-story-close">One agent. Set up in an afternoon. That is the whole sale &mdash; the second and third come later, after the owner has watched the first one work and starts naming the next thing they hate.</p>
       </div>
-      <figcaption>There is no running balance to refresh during the month. Volume accumulates, the month closes, one run computes every statement, and those statements are then fixed.</figcaption>
-    </figure>
-
-    <div class="btn-row">
-      <a class="btn btn-solid" href="comp-plan-full.html">Read the compensation brochure</a>
+      <div class="cd-rules">
+        <p class="cd-eyebrow">Three rules that do the work</p>
+        <ul class="cd-rules-list">
+          <li><b>Lead with their week</b><p>The opening question is what ate the most time last week, not which tier they want. If you cannot name the hour you are giving back, you do not have a sale yet.</p></li>
+          <li><b>Sell one thing first</b><p>A business with one loud problem does not need twelve agents. Overselling the first order is the most common way a Conductor loses the second one.</p></li>
+          <li><b>Be honest about the boundary</b><p>Agents propose and the owner approves. Nothing is filed, paid, published or ordered without a human yes. Cautious owners buy because of that line — never blur it to sound impressive.</p></li>
+        </ul>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ============ HONEST LIMITS ============ -->
-<section class="band band-2 glow-b">
-  <div class="wrap">
-    <p class="kicker">Before you decide</p>
-    <h2 class="section-title">What this is not</h2>
-    <div class="copy spaced">
-      <p>Anyone who has sat through a direct selling presentation before is waiting for this section, and most decks do not have one. Here is ours.</p>
+  <!-- ============ 03 THE FIRST NINETY DAYS ============ -->
+  <section class="cd-band" aria-labelledby="planTitle">
+    <div class="cd-head">
+      <div class="cd-head-row"><span class="cd-num">03</span><h2 id="planTitle">The first ninety days, as a plan you operate</h2></div>
+      <p class="cd-head-lede">In order. Skipping ahead is the most common mistake, and the most expensive one is skipping the first step &mdash; you cannot fit an ensemble you have never run. Tick a step when its <em>done when</em> line is true; the bar and the phase above it move with you.</p>
     </div>
-    <div class="panel">
-      <span class="accent-bar" aria-hidden="true"></span>
-      <ul class="plain">
-        <li><strong>No income is promised, implied, or described as typical.</strong> This page explains mechanisms. It contains no earnings figures, and you should be suspicious of any Conductor who quotes you one.</li>
-        <li><strong>Buying more agents than you use is not a strategy.</strong> Your own purchases make your month qualified and they pay the people above you. They do not pay you. If an ensemble is not doing work you would otherwise pay a person to do, do not buy it.</li>
-        <li><strong>Rank does not carry over.</strong> Every rank is recomputed from scratch each month. There is no highest ever title and no grace period.</li>
-        <li><strong>An unqualified month pays nothing.</strong> Not reduced, not deferred, and no catch up payment later. However large your organization is, missing your own qualification in a month means no commission for that month.</li>
-        <li><strong>Some problems are not agent problems.</strong> Part of the job is telling a business owner that what they need is a bookkeeper, a second van, or a hard conversation with a supplier. Say it. It is the reason they will call you next year.</li>
-        <li><strong>The compensation brochure governs.</strong> If any sentence on this page disagrees with it, this page is the one that is wrong.</li>
+    <div class="cd-plan cd-split">
+      <div>
+        <div class="cd-phase">
+          <div>
+            <p class="cd-eyebrow cd-eyebrow-q">Where you are</p>
+            <p class="cd-phase-title" id="phaseTitle">Not started</p>
+            <p class="cd-phase-note" id="phaseNote">Step one is the one nobody should skip. You cannot fit an ensemble you have never run.</p>
+          </div>
+          <div class="cd-phase-count">
+            <span class="cd-phase-n" id="doneCount">0</span>
+            <p class="cd-phase-of">of seven done</p>
+          </div>
+        </div>
+        <div class="cd-progress" id="progressTrack" role="progressbar"
+             aria-valuemin="0" aria-valuemax="7" aria-valuenow="0"
+             aria-label="Steps completed"><span id="progressFill"></span></div>
+        <ol class="cd-steps" id="steps">
+        <li class="cd-step is-next" data-step="0">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 1 done: Run one agent yourself">1</button>
+          <div>
+            <p class="cd-when">Week 1</p>
+            <h3>Run one agent yourself</h3>
+            <p>Pick the agent that fixes your own worst recurring hour, subscribe to it, and use it properly. Not a demonstration account — the real thing, on your own work, with your own approval boundaries set.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>you have read one of its outputs and changed something you actually do because of it.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="1">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 2 done: Learn three agents properly">2</button>
+          <div>
+            <p class="cd-when">Weeks 1 to 2</p>
+            <h3>Learn three agents properly</h3>
+            <p>Three, not twelve. Read each product page end to end, including the day-to-day section and where its authority stops. Describing three agents precisely beats listing all twelve.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>you can explain each of the three, out loud, without the page in front of you.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="2">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 3 done: Write your list of twenty">3</button>
+          <div>
+            <p class="cd-when">Week 2</p>
+            <h3>Write your list of twenty</h3>
+            <p>Twenty businesses you already have a reason to speak to: people you buy from, people you have worked with, people you know socially who run something. Next to each name, write the one job you suspect eats their week.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>the list exists in writing and every name carries a guess.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="3">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 4 done: Have ten conversations">4</button>
+          <div>
+            <p class="cd-when">Weeks 2 to 6</p>
+            <h3>Have ten conversations</h3>
+            <p>Work the list. The conversation is about their week, and your job is to find out whether your guess was right. Do not present the catalog. Expect most of the ten to go nowhere, and keep notes on all of them — a no this quarter is often a yes after their next busy season.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>ten conversations have happened and at least one person has asked what it costs.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="4">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 5 done: Do your first setup, and stay through the first week">5</button>
+          <div>
+            <p class="cd-when">Weeks 4 to 8</p>
+            <h3>Do your first setup, and stay through the first week</h3>
+            <p>One agent for one business. Get it connected, agree what it may do alone and what it must bring to the owner, and check in on days two, four and seven. This week is the entire difference between a customer who renews and one who forgets they subscribed.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>the owner has approved something the agent proposed, without you in the room.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="5">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 6 done: Reach a qualified month">6</button>
+          <div>
+            <p class="cd-when">Every calendar month</p>
+            <h3>Reach a qualified month</h3>
+            <p>One hundred Personal Volume booked to your account inside one calendar month makes that month qualified, and qualification is what makes you eligible to be paid at all. Volume comes from your own subscriptions or from customers who buy through you, in any combination. It resets on the first.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>your account shows 100 PV or more before the month ends.</span></div>
+          </div>
+        </li>
+        <li class="cd-step" data-step="6">
+          <button class="cd-tick" type="button" aria-pressed="false"
+                  aria-label="Mark step 7 done: Sponsor your first Conductor">7</button>
+          <div>
+            <p class="cd-when">Weeks 8 to 12</p>
+            <h3>Sponsor your first Conductor</h3>
+            <p>Usually somebody who watched you do the setup and wanted the same thing. Teach by repetition, not by talking: do one setup beside them, then attend their next one silently. Then send them back to step one, because the sequence works for them for the same reason it worked for you.</p>
+            <div class="cd-donewhen"><b>Done when</b><span>they have run a setup you did not speak during.</span></div>
+          </div>
+        </li>
+        </ol>
+      </div>
+      <aside class="cd-hours" aria-label="How many hours a week">
+        <p class="cd-eyebrow">How many hours a week</p>
+        <p class="cd-hours-fig"><span class="cd-hours-n" id="hoursN">5</span><span class="cd-hours-u" id="hoursU">hours</span></p>
+        <input class="cd-slider" id="hours" type="range" min="1" max="14" step="1" value="5"
+               aria-label="Hours a week" aria-describedby="hoursVerdict">
+        <p class="cd-verdict" id="hoursVerdict">Everything in the honest week fits, including a live setup and check-ins with people you sponsored. 5 of 5 activities below fit in 5 hours.</p>
+        <ul class="cd-week" id="week">
+          <li data-min="20"><div><b>Read what your own agents filed</b><i>Monday morning</i></div><span class="cd-cost">20 min</span></li>
+          <li data-min="90"><div><b>A conversation about their week</b><i>Two or three times a week</i></div><span class="cd-cost">1.5 hr</span></li>
+          <li data-min="120"><div><b>Sitting with a new owner</b><i>When a setup lands, over the first week</i></div><span class="cd-cost">2 hr</span></li>
+          <li data-min="10"><div><b>A check-in with someone you sponsored</b><i>Weekly, per person</i></div><span class="cd-cost">10 min</span></li>
+          <li data-min="15"><div><b>Check your PV, then read the statements</b><i>Month end</i></div><span class="cd-cost">15 min</span></li>
+        </ul>
+        <p class="cd-hours-note">Honest hours, not aspirational ones. A few a week keeps a Conductor&rsquo;s business alive; building one faster takes more, and no amount of hours is a promise of anything.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 04 HOW A CONDUCTOR IS PAID ============ -->
+  <section class="cd-band" aria-labelledby="paidTitle">
+    <div class="cd-head">
+      <div class="cd-head-row"><span class="cd-num">04</span><h2 id="paidTitle">How a Conductor is paid</h2></div>
+      <p class="cd-head-lede">The mechanisms, in plain English. No figures appear here on purpose &mdash; the compensation plan is the source of truth, and a second copy of a number is just a chance for the two to disagree.</p>
+    </div>
+    <div class="cd-split">
+      <div class="cd-mechs">
+        <div class="cd-mech"><span class="cd-chip">MECHANISM ONE</span><h3>Volume pays, not signatures</h3><p>Nothing is ever paid for enrolling a person. What pays is what people buy: your own customers, the Conductors you sponsored, and the people they sponsored. Every product carries volume, a share of it is commissionable, and that share is what percentages apply to.</p></div>
+        <div class="cd-mech"><span class="cd-chip">MECHANISM TWO</span><h3>Rank buys reach, not rate</h3><p>Advancing does not increase what you earn on the people you sponsored directly. It opens levels further down that you were not paid on before. Worth understanding early: rank is about helping the people under you stay active, never about buying your way up.</p></div>
+        <div class="cd-mech"><span class="cd-chip">MECHANISM THREE</span><h3>Customers count toward your month</h3><p>Someone can buy agents through you without joining Orvanna at all. That order books to your account, so its volume counts toward your qualified month. Your qualification can rest on what you sold, not only on what you bought.</p></div>
+        <div class="cd-mech is-coming"><span class="cd-chip">COMING · NOT BUILT</span><h3>Instant Payout</h3><p>An immediate payment on a first order rather than waiting for the month to close. The terms are not finalised and no rate has been set. Until they are published in the compensation plan, no Conductor should describe it as available or attach a number to it.</p></div>
+      </div>
+    </div>
+    <div class="cd-month-head">
+      <h3>The month, in four stops</h3>
+      <p>There is no running balance to refresh during the month. Volume accumulates, the month closes, one run computes every statement, and those statements are then fixed.</p>
+    </div>
+    <div class="cd-month">
+        <div class="cd-stop"><span class="cd-stop-dot" aria-hidden="true"></span><b>Through the month</b><p>Subscriptions bill, customers buy, and volume books to accounts as it happens.</p></div>
+        <div class="cd-stop"><span class="cd-stop-dot" aria-hidden="true"></span><b>The month ends</b><p>The calendar closes it. Nothing enters a closed month afterward.</p></div>
+        <div class="cd-stop"><span class="cd-stop-dot" aria-hidden="true"></span><b>One run</b><p>Commissions are calculated once, from that month’s volume and that month’s ranks.</p></div>
+        <div class="cd-stop is-lit"><span class="cd-stop-dot" aria-hidden="true"></span><b>Statements lock</b><p>Your statement is fixed, and traceable to the run number behind it.</p></div>
+    </div>
+  </section>
+
+  <!-- ============ BEFORE YOU DECIDE ============ -->
+  <section class="cd-close" aria-labelledby="notTitle">
+    <div class="cd-close-a">
+      <p class="cd-eyebrow cd-eyebrow-l">Before you decide</p>
+      <h2 id="notTitle">What this is not</h2>
+      <p>Anyone who has sat through a direct-selling presentation before is waiting for this section, and most decks do not have one. Here is ours.</p>
+      <ul class="cd-limits">
+          <li><div><b>No income is promised, implied, or described as typical.</b><span>This page explains mechanisms. It contains no earnings figures, and you should be suspicious of any Conductor who quotes you one.</span></div></li>
+          <li><div><b>Buying more agents than you use is not a strategy.</b><span>Your own purchases make your month qualified and they pay the people above you. They do not pay you. If an ensemble is not doing work you would otherwise pay a person to do, do not buy it.</span></div></li>
+          <li><div><b>Rank does not carry over.</b><span>Every rank is recomputed from scratch each month. There is no highest-ever title and no grace period.</span></div></li>
+          <li><div><b>An unqualified month pays nothing.</b><span>Not reduced, not deferred, and no catch-up payment later. However large your organization is, missing your own qualification means no commission for that month.</span></div></li>
+          <li><div><b>Some problems are not agent problems.</b><span>Part of the job is telling an owner that what they need is a bookkeeper, a second van, or a hard conversation with a supplier. Say it. It is the reason they will call you next year.</span></div></li>
+          <li><div><b>The compensation plan governs.</b><span>If any sentence on this page disagrees with it, this page is the one that is wrong.</span></div></li>
       </ul>
     </div>
-  </div>
-</section>
-
-<!-- ============ IS THIS YOU ============ -->
-<section class="band glow-c">
-  <div class="wrap">
-    <p class="kicker">Fit</p>
-    <h2 class="section-title">Is this you</h2>
-    <div class="grid-2">
-      <div class="panel panel-lit">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <h3 class="card-title">It tends to suit people who</h3>
-        <ul class="plain">
-          <li>Already spend time around small business owners, in any trade.</li>
-          <li>Would rather explain one thing properly than pitch twelve.</li>
-          <li>Are patient enough to sit through somebody else's first week.</li>
-          <li>Are comfortable being the person who is called when something breaks.</li>
-        </ul>
-      </div>
-      <div class="panel">
-        <h3 class="card-title">It tends not to suit people who</h3>
-        <ul class="plain quiet">
-          <li>Are looking for income that arrives without contact with customers.</li>
-          <li>Find it hard to say that something is not right for somebody.</li>
-          <li>Want to sell a product they have not personally used.</li>
-          <li>Need a predictable amount by a particular date.</li>
-        </ul>
-      </div>
+    <div class="cd-close-b">
+      <p class="cd-eyebrow cd-eyebrow-q">Why Conductor, not distributor</p>
+      <p>Most direct-selling companies borrow their word from a warehouse: distributor, dealer, representative. Those words fit when the thing being moved is a box. Orvanna does not ship boxes &mdash; its products go to work inside somebody else&rsquo;s business, and the person who sold them is still needed the day after the sale.</p>
+      <ul class="cd-why">
+        <li><b>You do not play</b><span>The agents do the bookkeeping and chase the declined cards. Your hands stay off the instruments, which is what makes the work scale past your own hours.</span></li>
+        <li><b>You choose the score</b><span>A florist and a freight broker do not need the same agents. Picking the right two or three, in the right order, is the part software cannot do for itself.</span></li>
+        <li><b>You keep time</b><span>The ensemble that fit a shop in March is short a player by September, when it starts selling into a second country and has filings it has never done before.</span></li>
+      </ul>
+      <a class="cd-govern" href="comp-plan.html">
+        <b>The only document that governs</b>
+        <span>Read the compensation plan</span>
+      </a>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ============ NEXT ============ -->
-<section class="band band-2 glow-a">
-  <div class="wrap">
-    <p class="kicker">Next</p>
-    <h2 class="section-title">Three things worth doing now</h2>
-    <div class="copy spaced">
-      <p>Enrollment is not open yet. Everything else is, and the first step of the ninety days does not need an enrollment to begin.</p>
-    </div>
-    <div class="grid-3">
-      <div class="panel">
-        <h4 class="mini-title">Read the catalog properly</h4>
-        <p>Pick three agents and read what each does day to day, including where its authority stops.</p>
-        <p style="margin-top:14px;"><a class="btn btn-ghost" href="shop.html">Open the catalog</a></p>
-      </div>
-      <div class="panel">
-        <h4 class="mini-title">Read the compensation brochure</h4>
-        <p>Every rate, threshold, rank requirement and worked example, in one document that governs.</p>
-        <p style="margin-top:14px;"><a class="btn btn-ghost" href="comp-plan-full.html">Open the brochure</a></p>
-      </div>
-      <div class="panel">
-        <h4 class="mini-title">Meet who you would be working with</h4>
-        <p>Orvanna's own staff are agents. The team page introduces every one of them by name.</p>
-        <p style="margin-top:14px;"><a class="btn btn-ghost" href="team.html">See the team</a></p>
-      </div>
-    </div>
-  </div>
-</section>
+  <p class="cd-strip">
+    <span>Orvanna is a demonstration company &middot; all data synthetic &middot; nothing here is an income claim</span>
+    <span>If any sentence here disagrees with the compensation plan, the plan wins.</span>
+  </p>
 
+</div>
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -1020,5 +950,235 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
      js/site-chrome.js, loaded from the head. The inline copy of the chat
      wiring that used to sit here was one of five; see
      docs/CORPORATE-CHROME-CONTRACT.md. -->
+<script>
+/* ============================================================
+   THE THREE INTERACTIONS.
+
+   Each one REPLACES state the markup already carries. Switch
+   scripting off and the page still reads: the ensemble panel, all
+   seven steps at "Not started", and the honest week at five hours
+   with every activity fitting. Nothing below creates content that
+   was not already there in one of its states.
+   ============================================================ */
+(function () {
+  'use strict';
+
+  /* ---------- 01: one frame, opposite content ---------- */
+
+  var VOCAB = {
+    "ensemble": {
+      "kicker": "ENSEMBLE · THE AGENTS",
+      "title": "The agents you run",
+      "body": "The set of Orvanna agents running on an account, yours or a customer’s. An ensemble is software: it is bought, it is priced in dollars, and every item carries Personal Volume — the number that decides whether a month counts as qualified.",
+      "madeOf": "Software",
+      "note": "Priced in dollars. Carries Personal Volume. Bought.",
+      "foot": "Agents around one person. Add one and your own volume rises; nothing about your team changes.",
+      "nodes": [
+        [
+          "RUNS FOR YOU",
+          "Payment"
+        ],
+        [
+          "RUNS FOR YOU",
+          "Customer Care"
+        ],
+        [
+          "RUNS FOR YOU",
+          "Secretary"
+        ],
+        [
+          "RUNS FOR YOU",
+          "Accounting"
+        ],
+        [
+          "RUNS FOR YOU",
+          "Tax"
+        ]
+      ]
+    },
+    "team": {
+      "kicker": "TEAM · THE PEOPLE",
+      "title": "The people you sponsored",
+      "body": "Also called your organization: the people you sponsored, the people they sponsored, and so on down. A team is people. Nobody in it is bought, nobody in it carries Personal Volume, and nothing is ever paid for adding a name to it.",
+      "madeOf": "People",
+      "note": "Nobody is bought. Nobody carries Personal Volume.",
+      "foot": "People under one person. Their buying is what the compensation plan pays you on — never their signatures.",
+      "nodes": [
+        [
+          "YOU SPONSORED",
+          "Frontline"
+        ],
+        [
+          "YOU SPONSORED",
+          "Frontline"
+        ],
+        [
+          "YOU SPONSORED",
+          "Frontline"
+        ],
+        [
+          "THEY SPONSORED",
+          "Level 2"
+        ],
+        [
+          "THEY SPONSORED",
+          "Level 2"
+        ]
+      ]
+    }
+  };
+
+  var vNodes = document.getElementById('vNodes');
+  function paintVocab(key) {
+    var v = VOCAB[key];
+    if (!v) { return; }
+    document.getElementById('vKicker').textContent = v.kicker;
+    document.getElementById('vTitle').textContent = v.title;
+    document.getElementById('vBody').textContent = v.body;
+    document.getElementById('vMade').textContent = v.madeOf;
+    document.getElementById('vMadeNote').textContent = v.note;
+    document.getElementById('vFoot').textContent = v.foot;
+    /* The five cells are rewritten in place rather than rebuilt, so the
+       list keeps its identity for anything reading the page. */
+    var cells = vNodes.querySelectorAll('li');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].querySelector('b').textContent = v.nodes[i][0];
+      cells[i].querySelector('span').textContent = v.nodes[i][1];
+    }
+    var opts = document.querySelectorAll('.cd-vopt');
+    for (var j = 0; j < opts.length; j++) {
+      var on = opts[j].getAttribute('data-vocab') === key;
+      opts[j].classList.toggle('is-on', on);
+      opts[j].setAttribute('aria-pressed', on ? 'true' : 'false');
+    }
+  }
+  Array.prototype.forEach.call(document.querySelectorAll('.cd-vopt'), function (btn) {
+    btn.addEventListener('click', function () { paintVocab(btn.getAttribute('data-vocab')); });
+  });
+
+  /* ---------- 03a: the ninety days as a position ---------- */
+
+  var PHASES = [
+    [
+      "Not started",
+      "Step one is the one nobody should skip. You cannot fit an ensemble you have never run."
+    ],
+    [
+      "Learning the product",
+      "You are running an agent on your own work. That is the only product knowledge that survives a real conversation."
+    ],
+    [
+      "Learning the product",
+      "Three agents described precisely. Next comes the part most people avoid: writing names down."
+    ],
+    [
+      "Building the list",
+      "Twenty names, each with a guess about their week. The guesses are the point — they are what you go and test."
+    ],
+    [
+      "In the conversations",
+      "Most of these go nowhere and that is the normal result, not a failure. Keep notes on all of them."
+    ],
+    [
+      "First customer live",
+      "A setup is running and the owner has approved something without you there. This is the hard part, done."
+    ],
+    [
+      "Qualified and selling",
+      "A qualified month is the gate. Everything the compensation plan pays runs through it."
+    ],
+    [
+      "Conducting",
+      "Seven of seven. You are running your own ensemble, you have a live customer, and somebody you sponsored has run a setup unaided."
+    ]
+  ];
+
+  var stepList = document.getElementById('steps');
+  var steps = stepList ? Array.prototype.slice.call(stepList.querySelectorAll('.cd-step')) : [];
+  var done = [];
+
+  function paintPlan() {
+    var count = 0, i;
+    for (i = 0; i < steps.length; i++) { if (done[i]) { count++; } }
+    var firstOpen = -1;
+    for (i = 0; i < steps.length; i++) { if (!done[i]) { firstOpen = i; break; } }
+
+    for (i = 0; i < steps.length; i++) {
+      var row = steps[i];
+      var tick = row.querySelector('.cd-tick');
+      row.classList.toggle('is-done', !!done[i]);
+      row.classList.toggle('is-next', i === firstOpen);
+      tick.textContent = done[i] ? '\u2713' : String(i + 1);
+      tick.setAttribute('aria-pressed', done[i] ? 'true' : 'false');
+    }
+
+    var phase = PHASES[count];
+    document.getElementById('phaseTitle').textContent = phase[0];
+    document.getElementById('phaseNote').textContent = phase[1];
+    document.getElementById('doneCount').textContent = String(count);
+
+    var track = document.getElementById('progressTrack');
+    track.setAttribute('aria-valuenow', String(count));
+    track.classList.toggle('is-full', count === steps.length);
+    document.getElementById('progressFill').style.width =
+      Math.round(count / steps.length * 100) + '%';
+  }
+
+  steps.forEach(function (row, i) {
+    row.querySelector('.cd-tick').addEventListener('click', function () {
+      done[i] = !done[i];
+      paintPlan();
+    });
+  });
+
+  /* ---------- 03b: the honest week against a budget ---------- */
+
+  var weekRows = Array.prototype.slice.call(
+    document.querySelectorAll('#week li'));
+  var slider = document.getElementById('hours');
+
+  function verdictFor(hours) {
+    if (hours <= 2) {
+      return 'Enough to run your own agent and read its output. Not enough to hold '
+        + 'conversations, so nothing new arrives.';
+    }
+    if (hours <= 4) {
+      return 'Enough for your own ensemble and a couple of real conversations a week. '
+        + 'A business that grows slowly, on purpose.';
+    }
+    if (hours <= 8) {
+      return 'Everything in the honest week fits, including a live setup and check-ins '
+        + 'with people you sponsored.';
+    }
+    return 'More than the honest week needs. The extra goes into conversations '
+      + '\u2014 which is the only input that reliably changes the outcome.';
+  }
+
+  function paintWeek() {
+    var hours = Number(slider.value);
+    var budget = hours * 60;
+    var spent = 0, fitting = 0;
+    /* In order, greedily: the activities at the top of the list are the ones
+       a Conductor gives up last, so the ones that stop fitting are the ones
+       at the bottom. */
+    weekRows.forEach(function (row) {
+      var cost = Number(row.getAttribute('data-min'));
+      var fits = spent + cost <= budget;
+      if (fits) { spent += cost; fitting++; }
+      row.classList.toggle('is-out', !fits);
+    });
+    document.getElementById('hoursN').textContent = String(hours);
+    document.getElementById('hoursU').textContent = hours === 1 ? 'hour' : 'hours';
+    document.getElementById('hoursVerdict').textContent = verdictFor(hours)
+      + ' ' + fitting + ' of ' + weekRows.length + ' activities below fit in '
+      + hours + (hours === 1 ? ' hour.' : ' hours.');
+  }
+
+  if (slider) {
+    slider.addEventListener('input', paintWeek);
+    slider.addEventListener('change', paintWeek);
+  }
+}());
+</script>
 </body>
 </html>

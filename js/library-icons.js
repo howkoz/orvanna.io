@@ -32,7 +32,7 @@ window.ORVANNA_LIBRARY_ICONS = (function () {
 
      Dropped in BOTH copies. This project had two: this one, and
      hexIcon() in the other file. Removing one would have left the same
-     sixteen agents framed on one page and unframed on the next, which a
+     sixteen marks framed on one page and unframed on the next, which a
      customer moving from the Library to the Shop sees immediately. */
 
   function mark(glyph) {
