@@ -22,10 +22,21 @@
 window.ORVANNA_LIBRARY_ICONS = (function () {
   'use strict';
 
-  var HEX = '<polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>';
+  /* THE SHARED HEXAGON FRAME WAS DROPPED 2026-08-19.
+
+     Sixteen marks each wrapped in the same polygon is sixteen identical
+     hexagons: the frame was the loudest shape in every cell, so the set
+     could not be told apart at a glance, which is the one job an index
+     of sixteen has. The glyphs are untouched -- they do the telling
+     apart now.
+
+     Dropped in BOTH copies. This project had two: this one, and
+     hexIcon() in the other file. Removing one would have left the same
+     sixteen agents framed on one page and unframed on the next, which a
+     customer moving from the Library to the Shop sees immediately. */
 
   function mark(glyph) {
-    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' + HEX + glyph + '</svg>';
+    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">' + glyph + '</svg>';
   }
 
   return {

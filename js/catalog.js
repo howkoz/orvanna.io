@@ -23,10 +23,29 @@ window.ORVANNA = (function () {
 
   /* ---------- icon builders (brand hexagon, inline SVG) ---------- */
 
+  /* THE SHARED HEXAGON FRAME WAS DROPPED 2026-08-19.
+
+     Sixteen marks each wrapped in the same polygon is sixteen identical
+     hexagons: the frame was the loudest shape in every cell, so the set
+     could not be told apart at a glance, which is the one job an index
+     of sixteen has. The glyphs are untouched -- they do the telling
+     apart now.
+
+     Dropped in BOTH copies. This project had two: this one, and
+     mark() in js/library-icons.js. Removing one would have left the same
+     sixteen agents framed on one page and unframed on the next, which a
+     customer moving from the Library to the Shop sees immediately.
+
+     THE CONSTANT SURVIVES for one caller that is not one of the sixteen:
+     shop.html builds its empty-cart placeholder from it, an empty vessel
+     with a single dot inside. There the hexagon IS the symbol rather than
+     a frame around one, so it stays. */
   var HEX = '<polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="#1B1917" stroke-width="3.5" stroke-linejoin="round"/>';
 
+  /* The name is kept: it is exported, and renaming an exported identifier
+     to describe its new internals is how call sites get missed. */
   function hexIcon(inner) {
-    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + HEX + inner + '</svg>';
+    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
   }
 
   /* ---------- the catalog ---------- */

@@ -419,12 +419,24 @@ section { scroll-margin-top: 150px; }
   margin-bottom: 10px;
 }
 
+/* THE CELL REPLACES THE FRAME, 2026-08-19. The marks lost their shared
+   hexagon so the sixteen could be told apart by shape; a ruled cell gives
+   each glyph the same containment the polygon used to, without being the
+   loudest shape in it. Rules and alignment, which is the system. */
 .ico {
   width: 56px;
   height: 56px;
   flex-shrink: 0;
   color: var(--icon);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border: 1px solid rgba(27, 25, 23, 0.25);
+  border-radius: 0;
+  background: var(--bg-2);
 }
+.ico svg { width: 100%; height: 100%; display: block; }
 
 /* THE CARD'S OWN ICON AND BADGE ARE SMALLER THAN THE PAGE'S.
    .ico and .badge are shared with the agent pages, where they sit
@@ -1012,4 +1024,140 @@ table a:focus-visible {
   .panel { padding: 24px 20px 22px; }
   .situation { padding: 20px; }
   .detail-head { grid-template-columns: 1fr; }
+}
+
+/* ============================================================
+   THE CHOOSER, 2026-08-19.
+
+   The ten situations used to be flat quote boxes at the FOOT of
+   this page: a Conductor had to scroll past the whole catalog to
+   reach the one part organised around what a customer actually
+   said. They are the first thing now, and picking one drives a
+   single answer rather than ten static paragraphs.
+
+   NOT ONE PRICE IS TYPED HERE EITHER. The recommendation, both
+   prices, both Personal Volume figures, the combined total and
+   the qualification line are all read from js/catalog.js at load,
+   exactly as the rest of this page already works. That is a
+   deliberate difference from comp-plan.html, which ships its
+   interactive state rendered: THIS page's whole contract is that
+   no figure is duplicated anywhere in the file, and typing ten
+   situations' worth of prices into the markup to survive a
+   script-off load would break the one rule that keeps this page
+   from drifting out of step with the shop.
+
+   What IS in the markup is every word: the ten questions, the
+   reasoning, the pairing note and the three cautions. A reader
+   with no script gets all of the prose and none of the figures,
+   which is the same bargain the rest of the page already makes.
+   ============================================================ */
+.chooser {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr);
+  border: 2px solid var(--heading);
+  margin-top: 22px;
+}
+.ch-list { border-right: 1px solid var(--line, rgba(27, 25, 23, 0.25)); background: var(--panel); }
+.ch-sit {
+  display: block;
+  width: 100%;
+  padding: 15px 20px;
+  border: 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  font: inherit;
+  text-align: left;
+  background: var(--panel);
+  color: var(--text);
+  cursor: pointer;
+}
+.ch-list .ch-sit:last-child { border-bottom: 0; }
+.ch-sit:hover { background: #E6E0D6; }
+.ch-sit.is-on { background: var(--heading); color: #F8F7F5; }
+.ch-sit-tag {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ch-sit.is-on .ch-sit-tag { color: #FF6A4A; }
+.ch-sit-q { display: block; margin-top: 6px; font-size: 13.5px; line-height: 1.4; }
+
+.ch-heads { display: grid; grid-template-columns: 1fr 1fr; }
+.ch-head { padding: 22px 24px; background: var(--heading); color: #EAE4D9; }
+.ch-head + .ch-head { border-left: 1px solid rgba(234, 228, 217, 0.28); }
+.ch-head-k {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #FF6A4A;
+}
+.ch-pick-name, .ch-qual {
+  margin: 12px 0 0;
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: #FFFFFF;
+}
+.ch-pick-price { margin: 10px 0 0; font-size: 22px; font-weight: 800; letter-spacing: -0.02em; color: #FFFFFF; }
+.ch-per { margin-left: 8px; font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #B6AE9F; }
+.ch-pv { margin-left: 10px; font-size: 12.5px; font-weight: 700; letter-spacing: 0.06em; color: #FF6A4A; }
+.ch-once { margin: 8px 0 0; font-size: 12.5px; color: #B6AE9F; }
+.ch-qual-note { margin: 10px 0 0; font-size: 12.5px; line-height: 1.5; color: #D6CFC3; }
+
+.ch-body { padding: 22px 24px 24px; }
+.ch-why { margin: 0; font-size: 15px; line-height: 1.55; color: var(--text); }
+.ch-then { margin-top: 20px; padding-top: 18px; border-top: 1px solid rgba(27, 25, 23, 0.25); }
+.ch-then-k, .ch-both-k, .ch-caution-k {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.ch-then-line { margin: 8px 0 0; font-size: 15px; font-weight: 700; color: var(--heading); }
+.ch-then-line span:not(.ch-pv) { margin-left: 10px; font-weight: 400; color: var(--text); }
+.ch-then-line .ch-pv, .ch-both .ch-pv { color: #A3220B; }
+.ch-then-why { margin: 10px 0 0; font-size: 13.5px; line-height: 1.55; color: var(--text); }
+.ch-both {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 18px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+}
+.ch-both b { font-size: 15px; font-weight: 700; color: var(--heading); }
+.ch-caution { margin-top: 18px; padding: 14px 18px; border-left: 5px solid #B52309; background: rgba(236, 48, 19, 0.07); }
+.ch-caution-k { color: #B52309; }
+.ch-caution p:last-child { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--text); }
+.ch-actions { display: flex; gap: 12px; flex-wrap: wrap; margin: 22px 0 0; }
+.ch-go, .ch-cart {
+  display: inline-block;
+  padding: 13px 18px;
+  border: 2px solid var(--heading);
+  border-radius: 0;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.ch-go { background: var(--heading); color: #EAE4D9; }
+.ch-go:hover { background: #2E2A26; color: #FFFFFF; }
+.ch-cart { background: none; color: var(--heading); }
+.ch-cart:hover { background: var(--heading); color: #EAE4D9; }
+
+@media (max-width: 900px) {
+  .chooser, .ch-heads { grid-template-columns: 1fr; }
+  .ch-list { border-right: 0; border-bottom: 2px solid var(--heading); }
+  .ch-head + .ch-head { border-left: 0; border-top: 1px solid rgba(234, 228, 217, 0.28); }
 }

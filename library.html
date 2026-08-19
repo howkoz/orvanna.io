@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductor Library</title>
 <meta name="description" content="The Orvanna Conductor Library: a browsable index of all sixteen agents, the four tiers, the packs and the bundle, and an honest guide to choosing. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=6bd05df58a2a">
-<link rel="stylesheet" href="css/library.css?v=6bd05df58a2a">
-<link rel="stylesheet" href="css/site-chrome.css?v=6bd05df58a2a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=852bbccd069e">
+<link rel="stylesheet" href="css/library.css?v=852bbccd069e">
+<link rel="stylesheet" href="css/site-chrome.css?v=852bbccd069e">
 
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
@@ -25,7 +25,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=6bd05df58a2a" defer></script>
+<script src="js/site-chrome.js?v=852bbccd069e" defer></script>
 </head>
 <body>
 
@@ -82,16 +82,177 @@
 <!-- ============ CONTENTS RAIL ============ -->
 <nav class="rail" aria-label="Library contents">
   <div class="rail-inner">
+    <!-- The rail follows the page. "How to choose" led it from 2026-08-19,
+         when that section moved from the foot to the top: a contents list
+         that disagrees with the order of the thing it lists is worse than
+         no contents list, because a reader trusts it. -->
+    <a class="rail-link" href="#choose">What did they say?</a>
     <a class="rail-link" href="#about">About this library</a>
     <a class="rail-link" href="#catalog">The sixteen agents</a>
     <a class="rail-link" href="#tiers">The four tiers</a>
     <a class="rail-link" href="#groups">Packs and the bundle</a>
-    <a class="rail-link" href="#choose">How to choose</a>
     <a class="rail-link" href="#coming">Coming next</a>
   </div>
 </nav>
 
 <!-- ============ ABOUT ============ -->
+<!-- ============ 01 THE CHOOSER ============ -->
+<section class="band" id="choose" aria-labelledby="chooseTitle">
+  <div class="wrap">
+    <p class="kicker">01</p>
+    <h2 class="section-title" id="chooseTitle">What did the customer just say?</h2>
+    <hr class="rule">
+    <p class="lead">Ten situations, organised by the position the buyer is in rather than by the shape of the catalog. Pick the one that sounds like them.</p>
+
+    <div class="chooser">
+      <div class="ch-list" role="group" aria-label="The situation your customer is in">
+        <button class="ch-sit is-on" type="button" data-sit="0" aria-pressed="true"
+                data-pick="ignition" data-then="payment">
+          <span class="ch-sit-tag">OPENING UP</span>
+          <span class="ch-sit-q">&ldquo;I am opening a storefront this month and I have never automated anything.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="1" aria-pressed="false"
+                data-pick="shipping" data-then="care">
+          <span class="ch-sit-tag">SHIPPING GOODS</span>
+          <span class="ch-sit-q">&ldquo;I ship physical goods and I find out about late parcels from angry customers.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="2" aria-pressed="false"
+                data-pick="pricing" data-then="accounting">
+          <span class="ch-sit-tag">MARGINS MOVED</span>
+          <span class="ch-sit-q">&ldquo;My supplier costs moved and I honestly do not know which items still make money.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="3" aria-pressed="false"
+                data-pick="inventory" data-then="pricing">
+          <span class="ch-sit-tag">STOCK</span>
+          <span class="ch-sit-q">&ldquo;Cash is tied up in stock and I keep running out of the wrong things.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="4" aria-pressed="false"
+                data-pick="momentum" data-then="executive">
+          <span class="ch-sit-tag">GROWING FAST</span>
+          <span class="ch-sit-q">&ldquo;We are growing and things are starting to break: promotions, prices, the site.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="5" aria-pressed="false"
+                data-pick="care" data-then="secretary">
+          <span class="ch-sit-tag">INBOX</span>
+          <span class="ch-sit-q">&ldquo;My inbox is the bottleneck. I answer the same questions all week.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="6" aria-pressed="false"
+                data-pick="tax" data-then="accounting">
+          <span class="ch-sit-tag">FILING DATES</span>
+          <span class="ch-sit-q">&ldquo;Filing dates keep arriving before I am ready for them.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="7" aria-pressed="false"
+                data-pick="manager" data-then="executive">
+          <span class="ch-sit-tag">TOO MANY AGENTS</span>
+          <span class="ch-sit-q">&ldquo;I already run several agents and now I spend my time telling them what to do.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="8" aria-pressed="false"
+                data-pick="constellation" data-then="executive">
+          <span class="ch-sit-tag">HIRING ACROSS</span>
+          <span class="ch-sit-q">&ldquo;I would be hiring across several functions at once if I could afford it.&rdquo;</span>
+        </button>
+        <button class="ch-sit" type="button" data-sit="9" aria-pressed="false"
+                data-pick="payment" data-then="engineer">
+          <span class="ch-sit-tag">JUST THE MATHS</span>
+          <span class="ch-sit-q">&ldquo;I just want to understand the smallest purchase that makes a month qualified.&rdquo;</span>
+        </button>
+      </div>
+
+      <div class="ch-answer">
+        <div class="ch-heads">
+          <div class="ch-head">
+            <p class="ch-head-k">Start with</p>
+            <p class="ch-pick-name" id="chPickName">&mdash;</p>
+            <p class="ch-pick-price">
+              <b id="chPickPrice">&mdash;</b>
+              <span class="ch-per">a month</span>
+              <span class="ch-pv" id="chPickPv"></span>
+            </p>
+            <p class="ch-once">or <span id="chPickOnce"></span> once</p>
+          </div>
+          <div class="ch-head">
+            <p class="ch-head-k">Does it qualify the month?</p>
+            <p class="ch-qual" id="chQualHead">&mdash;</p>
+            <p class="ch-qual-note" id="chQualNote"></p>
+          </div>
+        </div>
+
+        <div class="ch-body">
+          
+      <div class="ch-prose" data-prose="0">
+        <p class="ch-why">Money in and accounted for, questions answered, commitments kept &mdash; and nothing else to learn yet. The shortlist is the product here.</p>
+        <p class="ch-then-why">If the budget is the constraint, the Payment Agent alone is the single item that most often pays for itself, because worked declines are recovered revenue rather than saved effort.</p>
+      </div>
+      <div class="ch-prose" data-prose="1" hidden>
+        <p class="ch-why">It is the one that changes who discovers the problem. Nothing else on this list moves that.</p>
+        <p class="ch-then-why">The two together close the loop: shipping catches the delay and care tells the customer before they ask.</p>
+      </div>
+      <div class="ch-prose" data-prose="2" hidden>
+        <p class="ch-why">It recomputes margin per item and gives you a weekly review to approve line by line.</p>
+        <p class="ch-then-why">Pair it with Accounting if your books are behind &mdash; a margin calculation is only as good as the cost data underneath it.</p>
+      </div>
+      <div class="ch-prose" data-prose="3" hidden>
+        <p class="ch-why">Nightly counts, velocity per item, reorder points that move with the numbers, and purchase orders drafted at the line.</p>
+        <p class="ch-then-why">It reports into Pricing and Accounting on its own, so those two get better the day you add it.</p>
+      </div>
+      <div class="ch-prose" data-prose="4" hidden>
+        <p class="ch-why">It staffs both sides of the seam growth tears open, so campaigns cannot outrun margin and changes cannot outrun testing.</p>
+        <p class="ch-then-why">Buy it when the growth is already visible. Bought in anticipation it is capacity waiting for work.</p>
+        <div class="ch-caution">
+          <p class="ch-caution-k">Say this carefully</p>
+          <p>Bought too early this is the most expensive idle capacity in the catalog. Ask what broke last month before you recommend it.</p>
+        </div>
+      </div>
+      <div class="ch-prose" data-prose="5" hidden>
+        <p class="ch-why">It answers what it can prove from your records, around the clock, and escalates the rest with a recommendation attached.</p>
+        <p class="ch-then-why">Add the Secretary if the follow-ups you promise in those conversations are the thing that slips.</p>
+      </div>
+      <div class="ch-prose" data-prose="6" hidden>
+        <p class="ch-why">The Tax Agent prepares and never files, so your accountant stays the authority and simply signs earlier.</p>
+        <p class="ch-then-why">Put Accounting underneath it. A return is only as good as the books it was prepared from.</p>
+        <div class="ch-caution">
+          <p class="ch-caution-k">Say this carefully</p>
+          <p>Be explicit that it prepares and does not file. It is a feature, and hiding it invites a complaint later.</p>
+        </div>
+      </div>
+      <div class="ch-prose" data-prose="7" hidden>
+        <p class="ch-why">One task list, one point of contact, one daily summary instead of three. This is the one item that costs more than its parts, and that difference is exactly what the customer is asking to buy.</p>
+        <p class="ch-then-why">Add the Chief Executive if what you actually want is the whole picture read back to you rather than a shorter task list.</p>
+      </div>
+      <div class="ch-prose" data-prose="8" hidden>
+        <p class="ch-why">Seven agents covering payments, shipping, pricing, inventory, marketing and tax, with the Manager Agent already inside it.</p>
+        <p class="ch-then-why">The Chief Executive sits above the whole formation and reads it back to you once a day.</p>
+        <div class="ch-caution">
+          <p class="ch-caution-k">Say this carefully</p>
+          <p>This is the largest single purchase in the catalog. Make sure the functions are real before you recommend all seven.</p>
+        </div>
+      </div>
+      <div class="ch-prose" data-prose="9" hidden>
+        <p class="ch-why">One domain agent carries 100 PV, which is exactly the qualification line. Exactly 100.00 qualifies &mdash; the line is met, not merely approached.</p>
+        <p class="ch-then-why">Two support agents reach the same 100 PV for the same money, so the choice between them is about what the business needs, never about the gate.</p>
+      </div>
+          <div class="ch-then">
+            <p class="ch-then-k">Then add</p>
+            <p class="ch-then-line">
+              <b id="chThenName">&mdash;</b>
+              <span id="chThenPrice"></span>
+              <span class="ch-pv" id="chThenPv"></span>
+            </p>
+          </div>
+          <p class="ch-both">
+            <span class="ch-both-k">Both together</span>
+            <span><b id="chBothPrice">&mdash;</b><span class="ch-pv" id="chBothPv"></span></span>
+          </p>
+          <p class="ch-actions">
+            <a class="ch-go" id="chEntry" href="library-agent.html?sku=ignition">Read the full entry</a>
+            <a class="ch-cart" id="chCart" href="shop.html#catalog">Add to cart</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section class="band" id="about" aria-labelledby="aboutTitle">
   <div class="wrap">
     <h2 class="section-title" id="aboutTitle">What this library is for</h2>
@@ -298,100 +459,6 @@
   </div>
 </section>
 
-<!-- ============ HOW TO CHOOSE ============ -->
-<section class="band" id="choose" aria-labelledby="chooseTitle">
-  <div class="wrap">
-    <h2 class="section-title" id="chooseTitle">How to choose</h2>
-    <hr class="rule">
-
-    <p class="lead">Organized by the situation the buyer is actually in, not by the shape of the catalog. Find the sentence that sounds like them, then open the entry it points at.</p>
-
-    <div class="situations">
-
-      <div class="situation panel">
-        <p class="situation-q">"I am opening a storefront this month and I have never automated anything."</p>
-        <div class="situation-a">
-          <p>Start with the <a href="library-agent.html?sku=ignition"><strong>Ignition Pack</strong></a> at <span data-money="ignition"></span> a month. Money in and accounted for, questions answered, commitments kept, and nothing else to learn yet.</p>
-          <p>If the budget is the constraint, the <a href="library-agent.html?sku=payment"><strong>Payment Agent</strong></a> alone at <span data-money="payment"></span> a month is the single item that most often pays for itself, because worked declines are recovered revenue rather than saved effort.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"I ship physical goods and I find out about late parcels from angry customers."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=shipping"><strong>Shipping Agent</strong></a> first, at <span data-money="shipping"></span> a month. It is the one that changes who discovers the problem.</p>
-          <p>Add <a href="library-agent.html?sku=care"><strong>Customer Care</strong></a> at <span data-money="care"></span> a month next, because the two together close the loop: shipping catches the delay and care tells the customer before they ask.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"My supplier costs moved and I honestly do not know which items still make money."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=pricing"><strong>Pricing Agent</strong></a>, at <span data-money="pricing"></span> a month. It recomputes margin per item and gives you a weekly review to approve line by line.</p>
-          <p>Pair it with <a href="library-agent.html?sku=accounting"><strong>Accounting</strong></a> at <span data-money="accounting"></span> a month if your books are behind, because a margin calculation is only as good as the cost data underneath it.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"Cash is tied up in stock and I keep running out of the wrong things."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=inventory"><strong>Inventory Agent</strong></a>, at <span data-money="inventory"></span> a month. Nightly counts, velocity per item, reorder points that move with the numbers, and purchase orders drafted at the line.</p>
-          <p>It reports into Pricing and Accounting on its own, so those two get better the day you add it.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"We are growing and things are starting to break: promotions, prices, the site."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=momentum"><strong>Momentum Pack</strong></a>, at <span data-money="momentum"></span> a month. It staffs both sides of the seam growth tears open, so campaigns cannot outrun margin and changes cannot outrun testing.</p>
-          <p>Buy it when the growth is already visible. Bought in anticipation it is capacity waiting for work.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"My inbox is the bottleneck. I answer the same questions all week."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=care"><strong>Customer Care</strong></a>, at <span data-money="care"></span> a month. It answers what it can prove from your records, around the clock, and escalates the rest with a recommendation attached.</p>
-          <p>Add the <a href="library-agent.html?sku=secretary"><strong>Secretary</strong></a> at <span data-money="secretary"></span> a month if the follow-ups you promise in those conversations are the thing that slips. Together they are <span data-pv-sum="care,secretary"></span>, which is a qualified month.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"Filing dates keep arriving before I am ready for them."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=tax"><strong>Tax Agent</strong></a>, at <span data-money="tax"></span> a month, with <a href="library-agent.html?sku=accounting"><strong>Accounting</strong></a> at <span data-money="accounting"></span> a month underneath it. The Tax Agent prepares and never files, so your accountant stays the authority and simply signs earlier.</p>
-          <p>Be clear about that boundary in the conversation. It is a feature, and hiding it invites a complaint later.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"I already run several agents and now I spend my time telling them what to do."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=manager"><strong>Manager Agent</strong></a>, at <span data-money="manager"></span> a month. One task list, one point of contact, one daily summary instead of three.</p>
-          <p>This is the one item that costs more than its parts, and that difference is exactly what the customer is asking to buy.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"I would be hiring across several functions at once if I could afford it."</p>
-        <div class="situation-a">
-          <p><a href="library-agent.html?sku=constellation"><strong>Constellation Pack</strong></a>, at <span data-money="constellation"></span> a month. All six domain agents plus the Manager Agent, which is ten agents once the Manager's own trio is counted.</p>
-          <p>The value here is the handoffs. Settlements reach the books, stock levels reach reorders, and costs reach prices without anyone carrying a spreadsheet between them.</p>
-        </div>
-      </div>
-
-      <div class="situation panel">
-        <p class="situation-q">"I just want to understand the smallest purchase that makes a month qualified."</p>
-        <div class="situation-a">
-          <p>A qualified month means Sales Volume (SV) of 100.00 or more, and exactly 100.00 qualifies. So it is one domain agent at <span data-pv="payment"></span>, or any two support agents at <span data-pv="engineer"></span> each. A single support agent is <span data-pv="engineer"></span>: enrolled, not qualified.</p>
-          <p>Two things to say carefully. Qualification is a gate in the compensation plan, not a promise of any amount, and the plan booklet is the only place that describes what follows from it. And volume booked from what a customer buys through you counts the same as volume you buy yourself, so the smallest qualifying purchase is not necessarily a purchase you make.</p>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
 <!-- ============ COMING NEXT ============ -->
 <section class="band band-alt" id="coming" aria-labelledby="comingTitle">
   <div class="wrap">
@@ -474,8 +541,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=6bd05df58a2a"></script>
-<script src="js/library-icons.js?v=6bd05df58a2a"></script>
+<script src="js/catalog.js?v=852bbccd069e"></script>
+<script src="js/library-icons.js?v=852bbccd069e"></script>
 <script>
 /* ============================================================
    ORVANNA CONDUCTOR LIBRARY: the index.
@@ -506,6 +573,70 @@
 
   var O = window.ORVANNA;
   var ICONS = window.ORVANNA_LIBRARY_ICONS || {};
+
+  /* ---------- the chooser ----------
+     Every figure below comes from O.get(sku). The situations, their
+     reasoning and their cautions are in the markup; only the numbers
+     and the two links are computed. */
+  function initChooser() {
+    var list = document.querySelector('.ch-list');
+    if (!list || !O) { return; }
+    var btns = list.querySelectorAll('.ch-sit');
+
+    function show(i) {
+      var b = btns[i];
+      if (!b) { return; }
+      var pick = O.get(b.getAttribute('data-pick'));
+      var then = O.get(b.getAttribute('data-then'));
+      if (!pick || !then) { return; }
+
+      for (var n = 0; n < btns.length; n++) {
+        var on = n === i;
+        btns[n].className = 'ch-sit' + (on ? ' is-on' : '');
+        btns[n].setAttribute('aria-pressed', on ? 'true' : 'false');
+      }
+      var proses = document.querySelectorAll('.ch-prose');
+      for (var p = 0; p < proses.length; p++) {
+        proses[p].hidden = Number(proses[p].getAttribute('data-prose')) !== i;
+      }
+
+      document.getElementById('chPickName').textContent  = pick.name;
+      document.getElementById('chPickPrice').textContent = O.fmtMoney(pick.sub.price);
+      document.getElementById('chPickPv').textContent    = O.fmtPv(pick.sub.pv);
+      document.getElementById('chPickOnce').textContent  = O.fmtMoney(pick.once.price);
+
+      /* The gate is 100.00 SV in a month. A single item clears it on its
+         own only if its own PV reaches that line -- stated as arithmetic,
+         never as a promise. */
+      var qualifies = pick.sub.pv >= 100;
+      document.getElementById('chQualHead').textContent = qualifies
+        ? 'Yes, on its own' : 'Not on its own';
+      document.getElementById('chQualNote').textContent = qualifies
+        ? O.fmtPv(pick.sub.pv) + ' clears the 100.00 line in the month it is billed. Exactly 100.00 qualifies.'
+        : 'At ' + O.fmtPv(pick.sub.pv) + ' this is enrolled, not qualified. It needs ' +
+          (100 - pick.sub.pv) + ' PV more in the same month.';
+
+      document.getElementById('chThenName').textContent  = then.name;
+      document.getElementById('chThenPrice').textContent = O.fmtMoney(then.sub.price) + ' / month';
+      document.getElementById('chThenPv').textContent    = O.fmtPv(then.sub.pv);
+
+      var bothPrice = pick.sub.price + then.sub.price;
+      var bothPv = pick.sub.pv + then.sub.pv;
+      document.getElementById('chBothPrice').textContent = O.fmtMoney(bothPrice) + ' a month';
+      document.getElementById('chBothPv').textContent =
+        O.fmtPv(bothPv) + (bothPv >= 100 ? ' \u00b7 a qualified month' : '');
+
+      document.getElementById('chEntry').href = 'library-agent.html?sku=' + pick.sku;
+      document.getElementById('chCart').href  = 'shop.html?add=' + pick.sku + '#catalog';
+    }
+
+    for (var k = 0; k < btns.length; k++) {
+      (function (idx) {
+        btns[idx].addEventListener('click', function () { show(idx); });
+      })(k);
+    }
+    show(0);
+  }
 
   var TIER_LABEL = {
     domain: { text: 'Domain agent', cls: 'badge badge-domain' },
@@ -644,6 +775,8 @@
       });
     });
   });
+
+  initChooser();
 
   /* ---------- contents rail: highlight the section in view ---------- */
 
