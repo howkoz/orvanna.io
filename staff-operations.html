@@ -1026,18 +1026,27 @@
     { key: 'before', label: 'Before close', rank: 2 }
   ];
 
+  /* THE FOUR REASONS THE VIEW ACTUALLY EMITS.
+
+     Corrected 2026-08-19 against app.v_staff_attention_queue in migration
+     026, which is the source of truth. The first version of this map was
+     written from the design's illustrative rows and got one key wrong and
+     four keys that do not exist: it said 'orphan_attempt' where the view
+     says 'orphaned_attempt', so every real orphaned attempt -- a payment
+     dispatched with no recorded answer, which is the most urgent class
+     here -- fell through to DECIDE instead of ACT NOW. A default that is
+     merely reasonable hides a typo perfectly.
+
+     Unknown reasons still land in DECIDE on purpose: the view will grow,
+     and a class nobody has classified yet is one to look at rather than
+     bury. But the four that exist today are named exactly. */
   var REASON_SEVERITY = {
-    /* money already moved, or a clock is running on somebody else's terms */
+    /* money moved, or moved and we do not know what happened to it */
+    'orphaned_attempt':    'act',
     'system_fault':        'act',
     'unrecognized_code':   'act',
-    'orphan_attempt':      'act',
-    /* a judgement call that nothing else can make */
-    'cycle_gap':           'decide',
-    'duplicate_attempt':   'decide',
-    'hard_decline':        'decide',
-    /* true, worth recording, and not urgent */
-    'superseded_trail':    'before',
-    'classification_gap':  'before'
+    /* an integrity violation to judge, not a payment in flight */
+    'cycle_gap':           'decide'
   };
 
   function severityFor(reason) {
