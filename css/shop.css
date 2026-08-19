@@ -3050,7 +3050,7 @@ body.payment-in-flight .checkout-summary {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -3187,7 +3187,7 @@ body.payment-in-flight .checkout-summary {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin-bottom: 8px;
 }
 
@@ -3265,7 +3265,7 @@ body.payment-in-flight .checkout-summary {
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   background: none;
   border: 0;
   padding: 0;
@@ -3317,7 +3317,7 @@ body.payment-in-flight .checkout-summary {
 .rail-checkout:hover { background: #A3220B; }
 .rail-checkout[disabled] {
   background: transparent;
-  color: #8A8278;
+  color: #6B645A;
   border: 1px solid rgba(27, 25, 23, 0.25);
   cursor: not-allowed;
 }
@@ -3325,7 +3325,7 @@ body.payment-in-flight .checkout-summary {
 .rail-foot {
   font-size: 0.72rem;
   line-height: 1.5;
-  color: #8A8278;
+  color: #6B645A;
   margin-top: 10px;
 }
 

@@ -877,7 +877,7 @@
   transition: filter 0.15s ease;
 }
 .btn-place:hover { filter: brightness(1.15); }
-.btn-place:disabled { background: #8A8278; border-color: #8A8278; color: #1B1917; opacity: 1; cursor: not-allowed; }
+.btn-place:disabled { background: #6B645A; border-color: #6B645A; color: #1B1917; opacity: 1; cursor: not-allowed; }
 .place-hint { font-size: 0.74rem; color: #6B645A; text-align: center; margin-top: 6px; }
 
 /* A failure ending on the payment status line reads as a failure

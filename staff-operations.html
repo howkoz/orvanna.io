@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=3e39edd75d38">
-<link rel="stylesheet" href="css/corporate.css?v=3e39edd75d38">
-<link rel="stylesheet" href="css/staff.css?v=3e39edd75d38">
-<link rel="stylesheet" href="css/staff-ops.css?v=3e39edd75d38">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a48860bd798">
+<link rel="stylesheet" href="css/corporate.css?v=8a48860bd798">
+<link rel="stylesheet" href="css/staff.css?v=8a48860bd798">
+<link rel="stylesheet" href="css/staff-ops.css?v=8a48860bd798">
 </head>
 <body class="console-body">
 
@@ -83,11 +83,18 @@
         <p class="queue-count" id="attentionCount">Loading the queue&hellip;</p>
         <p class="ops-status-line" id="attentionStatus"></p>
         <div class="ops-table-wrap"><table class="ops-table queue-table" id="attentionTable" hidden>
-          <thead><tr><th class="q-when">When</th><th>What happened</th><th class="q-ref">Reference</th></tr></thead>
+          <thead><tr>
+            <th class="q-when">When</th>
+            <th>What happened</th>
+            <th class="q-stake ops-num">At stake</th>
+            <th class="q-ref">Reference</th>
+          </tr></thead>
           <tbody id="attentionBody"></tbody>
         </table></div>
         <p class="queue-note">Every action on this page is server enforced and
-          written to the audit log against the operator&#39;s member number.</p>
+          written to the audit log against the operator&#39;s member number.
+          Clearing a row records that a human looked; it does not move money
+          and does not resolve the fault.</p>
         <!-- WHAT IS NOT HERE, AND WHY. The design gives each row a money
              figure and one action button. Neither is built, because neither
              exists yet: app.v_staff_attention_queue returns reason,
@@ -98,10 +105,15 @@
              first, and a Clear button with no audit endpoint behind it would
              record nothing while looking like it had. Both are specified in
              docs/OPERATIONS-QUEUE-SERVER-SPEC.md. -->
-        <p class="queue-gap">Money at stake and the one-click actions are not
-          shown: the queue view does not expose an amount, a deadline or a
-          decline class yet. See the server specification rather than reading
-          their absence as nothing being owed.</p>
+        <!-- Shown ONLY while the server is still returning the old seven
+             columns. The migration that adds them is applied; the Edge
+             Function that returns them may not be deployed yet, and the page
+             must be truthful in both states without a second release. -->
+        <p class="queue-gap" id="queueGap" hidden>Money at stake is not being
+          returned by the billing console service yet, so every amount reads as
+          a dash. The queue view exposes it; the service has not been
+          redeployed. Read the dashes as "not reported", never as "nothing
+          owed".</p>
       </section>
 
       <!-- ============ THE EVIDENCE, BELOW THE QUEUE ============
@@ -304,7 +316,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=3e39edd75d38"></script>
+<script src="js/catalog.js?v=8a48860bd798"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -434,6 +446,16 @@
     return td;
   }
   function clearNode(node) { while (node.firstChild) { node.removeChild(node.firstChild); } }
+
+  /* Money, whole dollars and cents, tabular. There was no formatter on this
+     page because nothing on it printed an amount until the attention queue
+     started reporting one. */
+  function fmtMoney(n) {
+    return '$' + Number(n).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
 
   function fmtDate(v) {
     if (!v) { return 'none'; }
@@ -1080,13 +1102,38 @@
          runs of the same queue read the same way */
       rows.sort(function (a, b) { return severityRank(a.reason) - severityRank(b.reason); });
 
+      /* DOES THE SERVICE REPORT MONEY YET?
+
+         The migration that adds amount_at_stake is applied, but the Edge
+         Function that returns it is a separate deploy. Rather than assume
+         either state, ask the payload: if not one row carries the property
+         at all, the service is still on the old shape and the page says so.
+
+         The test is `'amount_at_stake' in row`, NOT a truthiness check. A
+         cycle gap legitimately carries null -- there is no renewal period to
+         price and nothing was going to be charged -- and null must read as
+         "none", not as "the service is behind". */
+      var reportsMoney = rows.some(function (r) {
+        return r && Object.prototype.hasOwnProperty.call(r, 'amount_at_stake');
+      });
+      byId('queueGap').hidden = reportsMoney || rows.length === 0;
+
       var tbody = byId('attentionBody');
       clearNode(tbody);
       byId('attentionTable').hidden = rows.length === 0;
       status.textContent = '';
-      count.textContent = rows.length === 0
-        ? 'Nothing needs a human today.'
-        : rows.length + (rows.length === 1 ? ' thing needs' : ' things need') + ' a human today.';
+
+      var open = rows.filter(function (r) { return !r.cleared_at; });
+      var owed = 0, owedKnown = false;
+      open.forEach(function (r) {
+        if (typeof r.amount_at_stake === 'number') { owed += r.amount_at_stake; owedKnown = true; }
+      });
+
+      count.textContent = open.length === 0
+        ? (rows.length === 0 ? 'Nothing needs a human today.'
+                             : 'Everything here has been looked at.')
+        : open.length + (open.length === 1 ? ' thing needs' : ' things need') + ' a human today'
+          + (owedKnown ? ', holding ' + fmtMoney(owed) : '') + '.';
 
       rows.forEach(function (r) {
         var tr = el('tr');
@@ -1111,7 +1158,26 @@
         what.appendChild(detail);
         tr.appendChild(what);
 
+        /* AT STAKE. An em dash means "no amount reported for this row", and
+           that is a different statement from 0.00 -- which would say money
+           was on it and the money was nothing. The dash is used for both the
+           service being behind and a row that genuinely has none; the note
+           under the table distinguishes them. */
+        var stake = el('td');
+        stake.className = 'q-stake ops-num';
+        stake.textContent = typeof r.amount_at_stake === 'number'
+          ? fmtMoney(r.amount_at_stake)
+          : '\u2014';
+        tr.appendChild(stake);
+
         cell(tr, r.member_code + ' \u00b7 ' + subCode(r.subscription_id), 'q-ref ops-mono');
+
+        /* Cleared rows stay visible and drop back, per 8a: the queue is a
+           record of what was looked at, not a list that empties itself. */
+        if (r.cleared_at) {
+          tr.classList.add('q-cleared');
+          title.title = 'Looked at by ' + (r.cleared_by || 'an operator');
+        }
         tbody.appendChild(tr);
       });
     }).catch(function () {

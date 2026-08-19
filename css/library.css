@@ -49,7 +49,27 @@
   --heading:       #1B1917;
   --text:          #4B453D;
   --muted:         #6B645A;
-  --quiet:         #8A8278;
+/* --quiet DARKENED 2026-08-19, from #8A8278 to #6B645A.
+
+   #8A8278 on the paper ground measures 2.99:1. It is the handoff's --faint,
+   the register for kickers, column headings and metadata, and at 10.5px it
+   is normal-size text, so it wants 4.5:1 and was nowhere near it.
+
+   The arithmetic says the step cannot be saved: 4.5:1 on #EAE4D9 needs a
+   luminance at or below 0.1344, and --quiet at #6B645A is already 0.1298.
+   The entire headroom between "passes" and "is --quiet" is 0.0046 of
+   luminance, which nobody can see. So the three-step ink scale becomes two,
+   deliberately.
+
+   Nothing is lost that was doing work. A kicker was never distinguished from
+   a caption by its colour alone: it is 10.5px, weight 700, tracked 0.2em and
+   uppercase, against a caption at 12.5px, weight 400, untracked. The colour
+   step was redundant differentiation bought at the price of readability.
+
+   NOT changed: --shop-disabled-bg, which is the same hex used as a
+   BACKGROUND with #1B1917 on it at 5.10:1. Darkening a disabled button's
+   fill would push its own label the wrong way. */
+  --quiet:         #6B645A;
   --line:          rgba(27, 25, 23, 0.18);
   --line-lit:      rgba(236, 48, 19, 0.38);
   --accent:        #EC3013;

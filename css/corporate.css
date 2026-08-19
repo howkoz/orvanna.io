@@ -56,7 +56,27 @@
   /* ---- tokens lifted out of hardcoded hex values, dark form ---- */
   --heading:      #1B1917;   /* section, card, feature and profile headings */
   --heading-hi:   #1B1917;   /* the loudest headings and the pull quote */
-  --quiet:        #8A8278;   /* the "not yet" register and legal small print */
+/* --quiet DARKENED 2026-08-19, from #8A8278 to #6B645A.
+
+   #8A8278 on the paper ground measures 2.99:1. It is the handoff's --faint,
+   the register for kickers, column headings and metadata, and at 10.5px it
+   is normal-size text, so it wants 4.5:1 and was nowhere near it.
+
+   The arithmetic says the step cannot be saved: 4.5:1 on #EAE4D9 needs a
+   luminance at or below 0.1344, and --quiet at #6B645A is already 0.1298.
+   The entire headroom between "passes" and "is --quiet" is 0.0046 of
+   luminance, which nobody can see. So the three-step ink scale becomes two,
+   deliberately.
+
+   Nothing is lost that was doing work. A kicker was never distinguished from
+   a caption by its colour alone: it is 10.5px, weight 700, tracked 0.2em and
+   uppercase, against a caption at 12.5px, weight 400, untracked. The colour
+   step was redundant differentiation bought at the price of readability.
+
+   NOT changed: --shop-disabled-bg, which is the same hex used as a
+   BACKGROUND with #1B1917 on it at 5.10:1. Darkening a disabled button's
+   fill would push its own label the wrong way. */
+  --quiet:        #6B645A;   /* the "not yet" register and legal small print */
   --band-line:    rgba(27, 25, 23, 0.08);
   --panel-bd:     rgba(27, 25, 23, 0.26);
   --panel-shadow: none;
@@ -970,7 +990,7 @@ section { scroll-margin-top: 84px; }
   position: relative;
   z-index: 1;
   font-size: 0.74rem;
-  color: #8A8278;
+  color: #6B645A;
   text-align: center;
   max-width: 42em;
 }
@@ -1282,7 +1302,7 @@ section { scroll-margin-top: 84px; }
   color: #A3220B;          /* accent-deep: the accent never sets paragraph-size text on paper */
   margin: 0 0 14px;
 }
-.h-kicker-quiet { color: #8A8278; }
+.h-kicker-quiet { color: #6B645A; }
 .h-kicker-faint { color: #8F8981; }
 .h-kicker-ink   { color: #FF6A4A; }   /* accent-on-ink */
 .h-kicker-on-accent { color: rgba(255, 255, 255, 0.82); }
@@ -1422,7 +1442,7 @@ section { scroll-margin-top: 84px; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin: 0;
 }
 
@@ -1446,7 +1466,7 @@ section { scroll-margin-top: 84px; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin: 0;
 }
 .h-live-dot { width: 8px; height: 8px; background: #EC3013; }
@@ -1473,7 +1493,7 @@ section { scroll-margin-top: 84px; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   white-space: nowrap;
-  color: #8A8278;
+  color: #6B645A;
   font-variant-numeric: tabular-nums;
   margin: 0;
 }
@@ -1627,7 +1647,7 @@ section { scroll-margin-top: 84px; }
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin: 0;
   text-align: right;
   white-space: nowrap;

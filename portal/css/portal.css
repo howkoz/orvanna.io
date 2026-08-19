@@ -1560,7 +1560,7 @@ html[data-theme="light"] .panel-body {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin: 0 0 10px;
 }
 .workspace-title h1 {
@@ -1773,7 +1773,7 @@ html[data-theme="light"] .panel-body {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
 }
 
 /* 34px, per the token table's display stat. The cards had it at 22px,
@@ -1839,7 +1839,7 @@ table.data th {
   font-weight: 600;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   text-align: left;
   padding: 0 12px 10px 0;
   border-bottom: 2px solid #1B1917;
@@ -1907,7 +1907,7 @@ table.data td.num, table.data th.num {
   font-weight: 700;
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: #8A8278;
+  color: #6B645A;
   margin: 0 0 14px;
 }
 
