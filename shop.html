@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/shop.css?v=cef144c6cb42">
+<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/shop.css?v=b3f2bf0935f8">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -41,47 +41,42 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link" href="index.html">Learn</a>
-      <a class="nav-link is-active" href="shop.html" aria-current="page">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <!-- The cart is the one permitted addition to the canonical navigation
-           (contract section 2, rule 3) and it sits immediately after the theme
-           button. Markup, identifiers and behaviour are unchanged. -->
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link" href="index.html">Learn</a>
+    <a class="nav-link is-active" href="shop.html" aria-current="page">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+    </span>
+      <!-- The cart, permitted on shop.html and product.html only
+           (contract section 2, rule 3). Identifiers and behaviour are
+           unchanged; only its presentation is now a set word. -->
       <button class="nav-cart" id="cartButton" type="button" aria-label="Open cart">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 4 6 h 2.4 l 2 10.2 h 9.4 l 2.2 -7.6 h -12.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-          <circle cx="9.6" cy="19.4" r="1.4" fill="currentColor"/>
-          <circle cx="16.6" cy="19.4" r="1.4" fill="currentColor"/>
-        </svg>
+        <span>Cart</span>
         <span class="cart-count" id="cartCount">0</span>
       </button>
-    </nav>
+  </div>
+</nav>
   </div>
 </header>
 
@@ -92,52 +87,56 @@
      ================================================== -->
 <div class="view is-active" id="viewCatalog">
 
-  <section class="shop-hero">
-    <div class="wrap">
+  <div class="catalog-shell">
+
+    <div class="catalog-main">
       <p class="kicker">The catalog</p>
-      <h1 class="section-title">Agents, bundles, and packs</h1>
-      <p class="shop-hero-sub">Every item is a monthly subscription by default and carries Personal Volume (PV), the number that counts toward your qualified month. Prefer to own an agent outright? Every product page offers a one-time purchase at its full value.</p>
-      <div class="filter-row" role="group" aria-label="Filter by tier">
-        <button class="filter-pill" type="button" data-filter="all" aria-pressed="true">All</button>
-        <button class="filter-pill" type="button" data-filter="domain" aria-pressed="false">Domain</button>
-        <button class="filter-pill" type="button" data-filter="support" aria-pressed="false">Support</button>
-        <button class="filter-pill" type="button" data-filter="bundles" aria-pressed="false">Bundles</button>
-      </div>
-    </div>
-  </section>
+      <h1 class="catalog-title">Staff your back office in an afternoon</h1>
+      <p class="catalog-lead">Every item is a monthly subscription carrying Personal Volume (PV). Twelve agents at $100 or $50 a month, or take a pack and pay once for the ensemble.</p>
 
-  <section class="tier-band glow-indigo" id="tierDomain">
-    <div class="wrap">
-      <div class="tier-head">
-        <h2 class="tier-title">Domain agents</h2>
-        <span class="tier-meta">$100.00 per month, 100 PV each</span>
-      </div>
-      <hr class="tier-rule">
-      <div class="product-grid" id="gridDomain"></div>
-    </div>
-  </section>
+      <!-- ONE ITEM IS PROMOTED, because a visitor landing on sixteen equal
+           rows has nowhere to start. Chosen from the catalog, not hard-coded. -->
+      <div class="promo" id="promoBlock"></div>
 
-  <section class="tier-band glow-violet" id="tierSupport">
-    <div class="wrap">
-      <div class="tier-head">
-        <h2 class="tier-title">Support agents</h2>
-        <span class="tier-meta">$50.00 per month, 50 PV each</span>
+      <div class="filter-bar">
+        <div class="filter-row" role="group" aria-label="Filter by tier">
+          <button class="filter-pill" type="button" data-filter="all" aria-pressed="true">All</button>
+          <button class="filter-pill" type="button" data-filter="domain" aria-pressed="false">Domain</button>
+          <button class="filter-pill" type="button" data-filter="support" aria-pressed="false">Support</button>
+          <button class="filter-pill" type="button" data-filter="bundles" aria-pressed="false">Bundles</button>
+        </div>
+        <span class="filter-count" id="filterCount">16 items</span>
       </div>
-      <hr class="tier-rule">
-      <div class="product-grid" id="gridSupport"></div>
-    </div>
-  </section>
 
-  <section class="tier-band glow-cyan" id="tierBundles">
-    <div class="wrap">
-      <div class="tier-head">
-        <h2 class="tier-title">Bundles and packs</h2>
-        <span class="tier-meta">Curated ensembles, one subscription</span>
-      </div>
-      <hr class="tier-rule">
-      <div class="product-grid" id="gridBundles"></div>
+      <section class="group" id="tierDomain">
+        <div class="group-head">
+          <h2 class="group-title">Domain agents</h2>
+          <span class="group-meta">$100 per month &middot; 100 PV each</span>
+        </div>
+        <div class="rows" id="gridDomain"></div>
+      </section>
+
+      <section class="group" id="tierSupport">
+        <div class="group-head">
+          <h2 class="group-title">Support agents</h2>
+          <span class="group-meta">$50 per month &middot; 50 PV each</span>
+        </div>
+        <div class="rows" id="gridSupport"></div>
+      </section>
+
+      <section class="group" id="tierBundles">
+        <div class="group-head">
+          <h2 class="group-title">Bundles and packs</h2>
+          <span class="group-meta">Curated ensembles, one subscription</span>
+        </div>
+        <div class="rows" id="gridBundles"></div>
+      </section>
     </div>
-  </section>
+
+    <!-- THE RAIL IS THE PAGE SPINE and is never hidden, even when empty. -->
+    <aside class="rail" id="monthRail" aria-label="Your month"></aside>
+
+  </div>
 
 </div>
 
@@ -448,8 +447,8 @@
         <div class="confirm-badge" aria-hidden="true">
           <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
             <polygon points="32,4 56.2,18 56.2,46 32,60 7.8,46 7.8,18"
-                     fill="none" stroke="#818CF8" stroke-width="4" stroke-linejoin="round"/>
-            <path d="M 22 33 L 29 40 L 43 25" fill="none" stroke="#22D3EE" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                     fill="none" stroke="#1B1917" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M 22 33 L 29 40 L 43 25" fill="none" stroke="#EC3013" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </div>
         <h1 class="confirm-title">Order placed</h1>
@@ -703,7 +702,7 @@
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h4 class="footer-head">Learn</h4>
         <a class="flink" href="team.html">The team</a>
@@ -725,6 +724,18 @@
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 
@@ -761,8 +772,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=cef144c6cb42"></script>
-<script src="js/payments.js?v=cef144c6cb42"></script>
+<script src="js/catalog.js?v=b3f2bf0935f8"></script>
+<script src="js/payments.js?v=b3f2bf0935f8"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -860,42 +871,162 @@
       '</div>';
   }
 
-  function productCard(p) {
-    var cyan = (p.tier === 'domain' || p.tier === 'bundle' || p.tier === 'pack');
+  /* A LETTER, NOT AN ICON SET. Every mark on this page is a rule, a
+     square or a character, so the list carries no icon dependency. */
+  var MARKS = {
+    payment: 'P',  shipping: 'S',  pricing: '%',  inventory: 'I',
+    marketing: 'M', tax: 'T',      engineer: '<>', qa: 'Q',
+    secretary: 'C', executive: 'E', accounting: '$', care: 'H',
+    manager: 'A',   ignition: '1',  momentum: '5',   constellation: '*'
+  };
+
+  /* Catalog money is whole: every price here is a round figure and the
+     design shows it that way. Checkout keeps fmtMoney and its cents. */
+  function fmtRound(n) {
+    return '$' + Math.round(n).toLocaleString('en-US');
+  }
+
+  function markOf(p) {
+    /* Packs count what they contain; agents carry a distinct character.
+       The first letter alone collided three ways: Payment and Pricing
+       were both P, and Shipping, Software Engineer and Secretary were
+       all S. */
+    return MARKS[p.sku] || p.name.charAt(0).toUpperCase();
+  }
+
+  function inCart(sku) { return (cart[sku + '|sub'] || 0) > 0; }
+
+  function productRow(p) {
+    var held = inCart(p.sku);
     return '' +
-      '<article class="product glass' + (cyan ? ' glass-cyan' : '') + '" data-tier="' + p.tier + '">' +
-        '<span class="accent-bar' + (cyan ? ' bar-cyan' : '') + '" aria-hidden="true"></span>' +
-        '<div class="product-top">' +
-          '<a class="product-icon" href="product.html?sku=' + p.sku + '" aria-hidden="true" tabindex="-1">' + p.icon + '</a>' +
-          badgeFor(p) +
-        '</div>' +
-        '<h3 class="product-name"><a class="product-name-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a></h3>' +
-        '<p class="product-desc">' + p.blurb + '</p>' +
-        includesList(p) +
-        '<div class="product-price-row">' +
-          '<span class="product-price">' + fmtMoney(p.sub.price) + ' <span class="per">/ month</span></span>' +
-          '<span class="product-pv">' + fmtPv(p.sub.pv) + '</span>' +
-        '</div>' +
-        '<div class="product-once-hint">Own it outright: ' + fmtMoney(p.once.price) + '</div>' +
-        '<button class="btn-add" type="button" data-add="' + p.sku + '" aria-label="Add ' + p.name + ' monthly subscription to cart">' +
-          '<span class="add-label-default">Add to cart</span>' +
-          '<svg class="add-check" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' +
-            '<path d="M 2.5 8.5 L 6.5 12.5 L 13.5 4" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>' +
-          '</svg>' +
-          '<span class="add-label-added" hidden>Added</span>' +
-        '</button>' +
-      '</article>';
+      '<div class="row' + (held ? ' is-held' : '') + '" data-tier="' + p.tier + '">' +
+        '<span class="row-mark" aria-hidden="true">' + markOf(p) + '</span>' +
+        '<span class="row-name">' +
+          '<a class="row-link" href="product.html?sku=' + p.sku + '">' + p.name + '</a>' +
+          '<span class="row-desc">' + p.blurb + '</span>' +
+        '</span>' +
+        '<span class="row-price">' + fmtRound(p.sub.price) + '<span class="per">/mo</span></span>' +
+        '<span class="row-pv">' + fmtPv(p.sub.pv) + '</span>' +
+        (held
+          ? '<button class="row-btn is-held" type="button" data-remove-sku="' + p.sku + '">Remove</button>'
+          : '<button class="row-btn" type="button" data-add="' + p.sku + '" aria-label="Add ' + p.name + ' to cart">Add</button>') +
+      '</div>';
+  }
+
+  /* ---------- the promoted pack ---------- */
+
+  var PROMOTED_SKU = 'ignition';
+
+  function promoted() {
+    /* The pack a newcomer should start with is a judgement, not an
+       arithmetic result. Picking the cheapest tied at $200 and put the
+       Manager Agent here, which is a single agent and the wrong first
+       purchase to show. Named, with the cheapest pack as a fallback so
+       the block never empties if the catalog changes. */
+    var named = O.get(PROMOTED_SKU);
+    if (named) return named;
+    var packs = O.PRODUCTS.filter(function (p) { return p.tier === 'bundle' || p.tier === 'pack'; });
+    if (!packs.length) return null;
+    return packs.reduce(function (a, b) { return b.sub.price < a.sub.price ? b : a; });
+  }
+
+  function renderPromo() {
+    var el = document.getElementById('promoBlock');
+    if (!el) return;
+    var p = promoted();
+    if (!p) { el.hidden = true; return; }
+    var held = inCart(p.sku);
+    var chips = (p.includes || []).map(function (sku) {
+      var c = O.get(sku);
+      return '<span class="promo-chip">' + (c ? c.name : sku) + '</span>';
+    }).join('');
+    el.innerHTML =
+      '<div class="promo-copy">' +
+        '<p class="promo-kicker">Start here &middot; most subscribed</p>' +
+        '<h2 class="promo-name">' + p.name + '</h2>' +
+        '<p class="promo-desc">' + p.blurb + '</p>' +
+        '<div class="promo-chips">' + chips + '</div>' +
+      '</div>' +
+      '<div class="promo-buy">' +
+        '<span class="promo-price">' + fmtRound(p.sub.price) + '<span class="per">/mo</span></span>' +
+        '<span class="promo-pv">' + fmtPv(p.sub.pv) + '</span>' +
+        '<span class="promo-once">or ' + fmtRound(p.once.price) + ' outright</span>' +
+        (held
+          ? '<button class="promo-btn is-held" type="button" data-remove-sku="' + p.sku + '">Remove the pack</button>'
+          : '<button class="promo-btn" type="button" data-add="' + p.sku + '">Add the pack</button>') +
+      '</div>';
+  }
+
+  /* ---------- the rail ----------
+     Reads the same cart the drawer reads, through the same totals
+     function, so the two can never disagree about a number. */
+
+  function renderRail() {
+    var el = document.getElementById('monthRail');
+    if (!el) return;
+    var t = O.cartTotals(cart);
+    var met = t.pv >= 100;
+
+    var lines = Object.keys(cart).map(function (key) {
+      var kp = key.split('|'), p = O.get(kp[0]);
+      if (!p) return '';
+      var q = cart[key], one = kp[1] === 'one';
+      var money = (one ? p.once.price : p.sub.price) * q;
+      var pv = (one ? p.once.pv : p.sub.pv) * q;
+      return '<div class="rail-line">' +
+        '<span class="rail-line-name">' + p.name + (q > 1 ? ' &times; ' + q : '') +
+          '<span class="rail-line-pv">' + fmtPv(pv) + (one ? ' &middot; one time' : '') + '</span></span>' +
+        '<span class="rail-line-money">' + fmtRound(money) + '</span>' +
+        '<button class="rail-remove" type="button" data-remove="' + key + '">Remove</button>' +
+      '</div>';
+    }).join('');
+
+    el.innerHTML =
+      '<p class="rail-kicker">Your month</p>' +
+      '<p class="rail-total">' + fmtRound(t.subMoney) + '<span class="per">/mo</span></p>' +
+      '<div class="rail-qual">' +
+        '<span>Qualified month</span>' +
+        '<span class="rail-qual-state' + (met ? ' is-met' : '') + '">' +
+          (met ? 'Met &middot; ' + fmtPv(t.pv) : fmtPv(Math.max(0, 100 - t.pv)) + ' to go') +
+        '</span>' +
+      '</div>' +
+      '<p class="rail-note">' + (met
+        ? 'Qualified month met. Everything above 100 PV counts toward rank.'
+        : 'A qualified month needs 100 PV. Every item here carries PV.') + '</p>' +
+      (lines
+        ? '<div class="rail-lines">' + lines + '</div>'
+        : '<p class="rail-empty">Nothing added yet.</p>') +
+      '<div class="rail-tot">' +
+        '<span>Total PV</span><span class="rail-tot-num">' + fmtPv(t.pv) + '</span>' +
+      '</div>' +
+      '<button class="rail-checkout" type="button" id="railCheckout"' + (t.count ? '' : ' disabled') + '>Checkout</button>' +
+      '<p class="rail-foot">Agents are digital, nothing ships. Cancel any month.</p>';
   }
 
   function renderGrid(id, tiers) {
     document.getElementById(id).innerHTML = O.PRODUCTS
       .filter(function (p) { return tiers.indexOf(p.tier) >= 0; })
-      .map(productCard).join('');
+      .map(productRow).join('');
   }
 
-  renderGrid('gridDomain', ['domain']);
-  renderGrid('gridSupport', ['support']);
-  renderGrid('gridBundles', ['bundle', 'pack']);
+  function renderCatalog() {
+    renderGrid('gridDomain', ['domain']);
+    renderGrid('gridSupport', ['support']);
+    renderGrid('gridBundles', ['bundle', 'pack']);
+    renderPromo();
+    renderRail();
+    renderCount();
+  }
+
+  /* The count states what the ACTIVE filter shows, not the catalog size. */
+  function renderCount() {
+    var el = document.getElementById('filterCount');
+    if (!el) return;
+    var n = document.querySelectorAll('.group:not([hidden]) .row').length;
+    el.textContent = n + (n === 1 ? ' item' : ' items');
+  }
+
+  renderCatalog();
 
   /* ---------- tier filter ---------- */
 
@@ -911,8 +1042,9 @@
       var f = pill.getAttribute('data-filter');
       pills.forEach(function (x) { x.setAttribute('aria-pressed', String(x === pill)); });
       Object.keys(bands).forEach(function (k) {
-        bands[k].style.display = (f === 'all' || f === k) ? '' : 'none';
+        bands[k].hidden = !(f === 'all' || f === k);
       });
+      renderCount();
     });
   });
 
@@ -928,6 +1060,18 @@
     renderAll();
   }
 
+  /* Remove straight from a row or the promoted block. Clears every
+     mode of that sku, because the row shows one state, not two. */
+  document.addEventListener('click', function (e) {
+    var rm = e.target.closest ? e.target.closest('[data-remove-sku]') : null;
+    if (!rm) return;
+    var sku = rm.getAttribute('data-remove-sku');
+    delete cart[sku + '|sub'];
+    delete cart[sku + '|one'];
+    persist();
+    renderAll();
+  });
+
   document.addEventListener('click', function (e) {
     var btn = e.target.closest ? e.target.closest('[data-add]') : null;
     if (!btn) return;
@@ -936,15 +1080,23 @@
     /* the drawer opens on add so the PV meter's movement is SEEN */
     openDrawer();
 
+    /* The .add-label-added span belonged to the deleted card grid. The
+       redesigned rows and the promoted pack say "added" with the
+       is-added class and, for a row, by becoming REMOVE, so there is no
+       label to toggle. Left unguarded this threw on EVERY add: the item
+       still landed in the cart because addToCart had already run, but
+       the throw killed the count's bump and anything after it, and it
+       did so on the primary action of the shop page. */
     btn.classList.add('is-added');
-    btn.querySelector('.add-label-added').hidden = false;
+    var addedLabel = btn.querySelector('.add-label-added');
+    if (addedLabel) { addedLabel.hidden = false; }
     if (!reduce.matches) {
       cartCount.classList.add('bump');
       window.setTimeout(function () { cartCount.classList.remove('bump'); }, 220);
     }
     window.setTimeout(function () {
       btn.classList.remove('is-added');
-      btn.querySelector('.add-label-added').hidden = true;
+      if (addedLabel) { addedLabel.hidden = true; }
     }, 1100);
   });
 
@@ -981,7 +1133,7 @@
   var checkoutButton = document.getElementById('checkoutButton');
 
   var EMPTY_HEX = '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + O.HEX +
-    '<circle cx="32" cy="32" r="4" fill="#22D3EE"/></svg>';
+    '<circle cx="32" cy="32" r="4" fill="#EC3013"/></svg>';
 
   function modeBadge(mode) {
     return mode === 'one'
@@ -1042,7 +1194,17 @@
     if (!fill) return;
     var pct = Math.min(100, pv);
     fill.style.width = pct + '%';
-    now.textContent = pv.toLocaleString('en-US') + ' / 100 PV';
+    /* A FRACTION ONLY MAKES SENSE WHILE YOU ARE STILL SHORT OF THE
+       LINE. Past it the same template printed "800 / 100 PV", which
+       reads as a ratio above one and invites the reader to think
+       something is broken. Below the line the fraction is exactly
+       what you want to see; at or above it, the figure alone is.
+       The bar itself was never the problem: pct is capped above and
+       .pv-track clips, measured 379px of fill in a 381px track at
+       800 PV. */
+    now.textContent = pv >= 100
+      ? fmtPv(pv)
+      : pv.toLocaleString('en-US') + ' / 100 PV';
     if (pv >= 100) {
       meter.classList.add('is-qualified');
       note.textContent = 'Qualified month reached at ' + fmtPv(pv) + '.';
@@ -2173,7 +2335,23 @@
     if (typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
   }
 
-  checkoutButton.addEventListener('click', function () {
+  /* ENTERING CHECKOUT IS ONE JOURNEY, NAMED ONCE.
+
+     There are two doors into checkout now: the drawer's button and the
+     catalog rail's, added with the 2026-08-18 rebuild. The rail's did
+     only showView('checkout'), so entering that way skipped every line
+     below: the summary was never rendered, and a cart holding the
+     $200 Ignition Pack arrived at a checkout reading "Order total
+     $0.00, Total PV 0 PV". It also skipped warming the card form,
+     discarding a stale payment, and asking for the tax quote, so the
+     three things this sequence exists to do early all happened late or
+     not at all.
+
+     The build spec's own rule for the rail was that adding and removing
+     must go through the same cart functions as the drawer, so the two
+     can never disagree. Entering checkout is the same kind of thing and
+     now goes through one function for the same reason. */
+  function enterCheckout() {
     if (Object.keys(cart).length === 0) return;
     closeDrawer();
     accountMode = null;
@@ -2201,6 +2379,14 @@
        shopper. */
     if (LIVE_PAYMENTS && serverTaxQuoteAllowed()) liveEnsureQuote();
     if (LIVE_PAYMENTS) liveEnsureCheckout();
+  }
+
+  checkoutButton.addEventListener('click', enterCheckout);
+  /* The rail's Checkout, on the redesigned catalog. Same door. */
+  document.addEventListener('click', function (e) {
+    var go = e.target.closest ? e.target.closest('#railCheckout') : null;
+    if (!go || go.disabled) return;
+    enterCheckout();
   });
 
   document.getElementById('backToShop').addEventListener('click', function () {
@@ -3299,6 +3485,8 @@
   function renderAll() {
     renderBadge();
     renderDrawer();
+    /* The rows and the rail carry cart state now, so they redraw with it. */
+    if (typeof renderCatalog === 'function') { renderCatalog(); }
     /* M1, verifier audit 2026-08-15. The cart drawer can be opened and edited
        while standing on the checkout, and this never told the checkout about
        it: the order summary kept the totals from whenever the step was first
@@ -3346,6 +3534,47 @@
      script, recorded in ROADMAP.md; the vendor's own floating button stays
      hidden in the stylesheet so nothing can open itself over the cart control
      on a phone or over the card form during checkout. -->
-<script src="js/site-chrome.js?v=cef144c6cb42"></script>
+<script>
+/* ============================================================
+   ORDER SUMMARY: STICK ONLY WHILE IT FITS
+
+   The rail no longer scrolls inside itself (see .checkout-summary
+   in css/shop.css). That leaves one hazard: position: sticky on a
+   box TALLER than the viewport pins the box's top and carries its
+   bottom off screen, where the page scroll can never reach it. So
+   stickiness is withdrawn at exactly the height where it would
+   start trapping content, and the rail becomes an ordinary column
+   that scrolls with the page.
+
+   Driven by a ResizeObserver rather than the cart's render path,
+   because the rail also changes height when a tax line appears, a
+   promotion is applied, or the window is resized, and none of
+   those go through the same function.
+   ============================================================ */
+(function () {
+  var rail = document.querySelector('.checkout-summary');
+  if (!rail) return;
+
+  var TOP_GAP = 120;            /* the 96px offset plus breathing room */
+
+  function sync() {
+    var room = (window.innerHeight || document.documentElement.clientHeight) - TOP_GAP;
+    rail.classList.toggle('is-tall', rail.scrollHeight > room);
+  }
+
+  sync();
+  window.addEventListener('resize', sync, { passive: true });
+
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(sync).observe(rail);
+  } else {
+    /* No ResizeObserver: re-check on the interactions that change
+       the rail's height. Coarser, but never leaves it trapped. */
+    document.addEventListener('click', function () { window.setTimeout(sync, 60); }, true);
+  }
+})();
+</script>
+
+<script src="js/site-chrome.js?v=b3f2bf0935f8"></script>
 </body>
 </html>

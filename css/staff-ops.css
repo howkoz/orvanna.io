@@ -32,21 +32,21 @@
   cursor: pointer;
 }
 
-.ops-tab:hover { color: #E2E8F0; }
+.ops-tab:hover { color: #1B1917; }
 
 .ops-tab[aria-selected="true"] {
-  color: #67E8F9;
-  border-bottom-color: #22D3EE;
+  color: #A3220B;
+  border-bottom-color: #A3220B;
 }
 
 /* ---------- honest status banners ---------- */
 
 /* Neutral information: engine facts, schedule facts. */
 .ops-note {
-  border: 1px solid rgba(129, 140, 248, 0.45);
-  background: rgba(129, 140, 248, 0.10);
-  color: #C7D2FE;
-  border-radius: 10px;
+  border: 1px solid rgba(27, 25, 23, 0.45);
+  background: rgba(27, 25, 23, 0.10);
+  color: #F1EDE6;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -59,8 +59,8 @@
 .ops-warn {
   border: 1px solid rgba(217, 119, 6, 0.65);
   background: rgba(217, 119, 6, 0.12);
-  color: #FCD34D;
-  border-radius: 10px;
+  color: #8A6D3B;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -69,8 +69,8 @@
 .ops-bad {
   border: 1px solid rgba(220, 38, 38, 0.6);
   background: rgba(220, 38, 38, 0.12);
-  color: #FCA5A5;
-  border-radius: 10px;
+  color: #B91C1C;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -79,8 +79,8 @@
 .ops-ok {
   border: 1px solid rgba(5, 150, 105, 0.6);
   background: rgba(5, 150, 105, 0.12);
-  color: #6EE7B7;
-  border-radius: 10px;
+  color: #15803D;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -90,8 +90,8 @@
 .ops-mock {
   border: 2px dashed #D97706;
   background: rgba(217, 119, 6, 0.18);
-  color: #FCD34D;
-  border-radius: 10px;
+  color: #8A6D3B;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -107,7 +107,7 @@
 .ops-table th {
   text-align: left;
   font-weight: 600;
-  color: #7C8AA0;
+  color: #8A8278;
   padding: 6px 8px;
   border-bottom: 1px solid rgba(124, 138, 160, 0.35);
   white-space: nowrap;
@@ -117,7 +117,7 @@
   padding: 7px 8px;
   border-bottom: 1px solid rgba(124, 138, 160, 0.18);
   vertical-align: middle;
-  color: #CBD5E1;
+  color: #4B453D;
 }
 
 .ops-table td.ops-num { font-variant-numeric: tabular-nums; text-align: right; }
@@ -141,29 +141,29 @@
 
 /* Frozen superseded rows (commission dashboard spec 3.5): visibly
    old, never mistaken for the final word. */
-.ops-superseded td { color: #7C8AA0; }
+.ops-superseded td { color: #8A8278; }
 .ops-superseded-chip {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #374151;
+  background: #4B453D;
   color: #D1D5DB;
   white-space: nowrap;
 }
 .ops-final-chip {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #064E3B;
-  color: #6EE7B7;
+  background: #15803D;
+  color: #15803D;
   white-space: nowrap;
 }
 
@@ -172,18 +172,18 @@
 .ops-state {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 }
-.ops-state-active               { background: #ECFDF5; color: #065F46; }
+.ops-state-active               { background: #ECFDF5; color: #15803D; }
 .ops-state-past_due             { background: #FFFBEB; color: #92400E; }
 .ops-state-dunning              { background: #FEF3C7; color: #B45309; }
 .ops-state-card_update_required { background: #FEE2E2; color: #991B1B; }
-.ops-state-paused               { background: #EEF2FF; color: #3730A3; }
-.ops-state-suspended            { background: #F3F4F6; color: #4B5563; }
-.ops-state-cancelled            { background: #E5E7EB; color: #374151; }
+.ops-state-paused               { background: #F1EDE6; color: #1B1917; }
+.ops-state-suspended            { background: #F3F4F6; color: #4B453D; }
+.ops-state-cancelled            { background: #E5E7EB; color: #4B453D; }
 
 /* ---------- stat strips ---------- */
 
@@ -196,7 +196,7 @@
 
 .ops-stat {
   border: 1px solid rgba(124, 138, 160, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 10px 12px;
 }
 
@@ -206,14 +206,14 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7C8AA0;
+  color: #8A8278;
   margin-bottom: 4px;
 }
 
 .ops-stat .ops-stat-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #E2E8F0;
+  color: #1B1917;
   font-variant-numeric: tabular-nums;
 }
 
@@ -234,20 +234,20 @@
   font: inherit;
   font-size: 14px;
   border: 1px solid rgba(124, 138, 160, 0.5);
-  border-radius: 6px;
-  background: rgba(15, 23, 42, 0.7);
-  color: #E2E8F0;
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.7);
+  color: #1B1917;
   min-width: 110px;
 }
 
 .ops-field input:focus, .ops-field select:focus {
   outline: none;
-  border-color: #22D3EE;
+  border-color: #A3220B;
 }
 
 /* A toggle rendered as a plain labelled checkbox: staff tools do
    not need a novelty switch. */
-.ops-check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #CBD5E1; }
+.ops-check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4B453D; }
 
 .ops-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
 
@@ -256,15 +256,15 @@
   appearance: none;
   background: transparent;
   border: 1px solid rgba(124, 138, 160, 0.5);
-  border-radius: 8px;
-  color: #CBD5E1;
+  border-radius: 0;
+  color: #4B453D;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   padding: 7px 14px;
   cursor: pointer;
 }
-.ops-btn-quiet:hover { border-color: #22D3EE; color: #67E8F9; }
+.ops-btn-quiet:hover { border-color: #A3220B; color: #A3220B; }
 .ops-btn-quiet:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Danger button for cancel confirmations. */
@@ -272,7 +272,7 @@
   appearance: none;
   background: #DC2626;
   border: 1px solid #DC2626;
-  border-radius: 8px;
+  border-radius: 0;
   color: #fff;
   font: inherit;
   font-size: 14px;
@@ -288,23 +288,23 @@
    otherwise). */
 .ops-sub-card {
   border: 1px solid rgba(124, 138, 160, 0.3);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 12px;
   margin: 10px 0;
 }
 
 .ops-sub-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
 
-.ops-sub-title { font-weight: 700; color: #E2E8F0; }
+.ops-sub-title { font-weight: 700; color: #1B1917; }
 
 .ops-confirm {
   border: 1px solid rgba(217, 119, 6, 0.55);
   background: rgba(217, 119, 6, 0.10);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px;
   margin-top: 8px;
   font-size: 0.9rem;
-  color: #FCD34D;
+  color: #8A6D3B;
 }
 
 /* The engine's own disclosure text (for example the 12.1 double
@@ -312,7 +312,7 @@
 .ops-disclosure {
   border-left: 3px solid #D97706;
   background: rgba(217, 119, 6, 0.08);
-  color: #FCD34D;
+  color: #8A6D3B;
   padding: 8px 12px;
   margin: 8px 0;
   font-size: 0.9rem;
@@ -335,11 +335,11 @@
 
 /* Detail drawers under a drilled table row. */
 .ops-drawer {
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  border-radius: 10px;
+  border: 1px solid rgba(236, 48, 19, 0.35);
+  border-radius: 0;
   padding: 12px;
   margin: 10px 0;
-  background: rgba(34, 211, 238, 0.05);
+  background: rgba(236, 48, 19, 0.05);
 }
 
 
@@ -358,7 +358,7 @@
   --peek-head: 34px;
   margin: 14px 0 6px;
   border: 1px solid var(--ops-line, rgba(148, 163, 184, 0.22));
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -411,7 +411,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--ops-panel, #0b1220);
+  background: var(--ops-panel, #F1EDE6);
 }
 
 
@@ -420,10 +420,10 @@
    usual. Colour separates them, and the WORD beside each date says which it
    is, so the meaning survives greyscale and colour blindness. */
 .ops-table td.ops-next-cycle { color: var(--ops-ok, #86efac); white-space: nowrap; }
-.ops-table td.ops-next-retry { color: var(--ops-warn, #fcd34d); white-space: nowrap; font-weight: 600; }
-.ops-table td.ops-next-none  { color: var(--ops-muted, #94a3b8); white-space: nowrap; }
+.ops-table td.ops-next-retry { color: var(--ops-warn, #8A6D3B); white-space: nowrap; font-weight: 600; }
+.ops-table td.ops-next-none  { color: var(--ops-muted, #6B645A); white-space: nowrap; }
 
-.ops-table td.ops-next-pending { color: var(--ops-muted, #94a3b8); white-space: nowrap; font-style: italic; }
+.ops-table td.ops-next-pending { color: var(--ops-muted, #6B645A); white-space: nowrap; font-style: italic; }
 
 /* The processor that actually handled the attempt. */
 .ops-table td.ops-conn { white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -434,4 +434,95 @@
    right instead and the table scrolls to it. */
 .ops-table td.ops-msg,
 .ops-table th.ops-msg { white-space: nowrap; max-width: none; }
-.ops-table td.ops-msg { color: var(--ops-muted, #94a3b8); font-size: 0.78rem; }
+.ops-table td.ops-msg { color: var(--ops-muted, #6B645A); font-size: 0.78rem; }
+
+
+/* ============================================================
+   THE ATTENTION QUEUE AS THE PAGE
+   Handoff screen 8a, built 2026-08-18.
+
+   It was panel six of twelve, sharing a row with the retry queue.
+   It is now the first thing on the console, ranked by consequence,
+   and everything that is merely true sits below it as evidence.
+   ============================================================ */
+
+.console-queue { border-top: 2px solid #1B1917; }
+
+.panel-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #8A8278;
+  margin-right: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The count is the console's headline: what a human is here to do,
+   stated as a number before anything explains itself. */
+.queue-count {
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #1B1917;
+  margin: 6px 0 18px;
+}
+
+.queue-table { width: 100%; }
+.queue-table th.q-when { width: 130px; }
+.queue-table th.q-ref  { width: 200px; }
+
+.q-row td { vertical-align: top; padding-top: 14px; padding-bottom: 14px; }
+
+/* ACT NOW rows carry a tint. Nothing else on the page does, so the
+   eye lands on them without reading a word. */
+.q-row.q-act { background: rgba(236, 48, 19, 0.06); }
+
+.q-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.q-badge-act    { background: #EC3013; color: #FFFFFF; }
+.q-badge-decide { background: #1B1917; color: #EAE4D9; }
+.q-badge-before { background: none; border-color: #6B645A; color: #4B453D; }
+
+.q-what { display: block; font-size: 14px; font-weight: 700; color: #1B1917; }
+.q-detail { display: block; font-size: 12.5px; line-height: 1.45; color: #6B645A; margin-top: 3px; }
+
+.q-ref {
+  font-size: 12.5px;
+  color: #6B645A;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.queue-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #6B645A;
+  margin: 16px 0 0;
+}
+
+/* The absence is stated on the page, not left to be discovered. A
+   console that quietly shows less than it should reads as a console
+   with nothing to report. */
+.queue-gap {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #4B453D;
+  border-left: 2px solid #EC3013;
+  padding: 2px 0 2px 14px;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 760px) {
+  .queue-table th.q-when, .queue-table th.q-ref { width: auto; }
+  .q-ref { white-space: normal; }
+}

@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Frequently Asked Questions</title>
 <meta name="description" content="Short, straight answers about the Orvanna Conductor program: the agents, the two purchase modes, how earning works, what makes a month qualified, and when commissions run. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -24,7 +24,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
 <style>
 /* ============================================================
    FREQUENTLY ASKED QUESTIONS: page styles.
@@ -52,23 +52,23 @@
 
 :root {
   /* surfaces, dark: the default */
-  --faq-bg:          #060B18;
-  --faq-bg-alt:      #0A1226;
-  --faq-card:        rgba(30, 41, 59, 0.52);
-  --faq-card-hover:  rgba(30, 41, 59, 0.72);
-  --faq-border:      rgba(129, 140, 248, 0.26);
-  --faq-border-soft: rgba(129, 140, 248, 0.16);
-  --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
+  --faq-bg:          #EAE4D9;
+  --faq-bg-alt:      #F1EDE6;
+  --faq-card:        rgba(241, 237, 230, 0.52);
+  --faq-card-hover:  rgba(241, 237, 230, 0.72);
+  --faq-border:      rgba(27, 25, 23, 0.26);
+  --faq-border-soft: rgba(27, 25, 23, 0.16);
+  --faq-shadow:      0 0 24px rgba(27, 25, 23, 0.13);
 
   /* text */
-  --faq-heading:     #F1F5F9;
-  --faq-text:        #C7D0DE;
-  --faq-muted:       #94A3B8;
+  --faq-heading:     #1B1917;
+  --faq-text:        #4B453D;
+  --faq-muted:       #6B645A;
 
   /* accents */
-  --faq-accent:      #22D3EE;   /* the readable accent: links, kickers */
-  --faq-accent-soft: rgba(34, 211, 238, 0.10);
-  --faq-focus:       #22D3EE;
+  --faq-accent:      #EC3013;   /* the readable accent: links, kickers */
+  --faq-accent-soft: rgba(236, 48, 19, 0.10);
+  --faq-focus:       #EC3013;
 }
 
 /* The light theme: a deliberate choice, never a system default. */
@@ -77,17 +77,17 @@
   --faq-bg-alt:      #F4F6FB;
   --faq-card:        #FFFFFF;
   --faq-card-hover:  #FAFBFF;
-  --faq-border:      rgba(79, 70, 229, 0.22);
+  --faq-border:      rgba(27, 25, 23, 0.22);
   --faq-border-soft: #E3E8F0;
-  --faq-shadow:      0 1px 2px rgba(15, 23, 42, 0.07);
+  --faq-shadow:      0 1px 2px rgba(241, 237, 230, 0.07);
 
-  --faq-heading:     #0F172A;
+  --faq-heading:     #1B1917;
   --faq-text:        #2B3444;
   --faq-muted:       #5B6472;
 
-  --faq-accent:      #4F46E5;
-  --faq-accent-soft: rgba(79, 70, 229, 0.09);
-  --faq-focus:       #4F46E5;
+  --faq-accent:      #1B1917;
+  --faq-accent-soft: rgba(27, 25, 23, 0.09);
+  --faq-focus:       #1B1917;
 }
 
 /* corporate.css paints the body navy for the dark-only pages.
@@ -115,13 +115,13 @@ body {
 .faq-page .nav a:focus-visible,
 .faq-page .nav button:focus-visible,
 .faq-page .footer a:focus-visible {
-  outline-color: #22D3EE;
+  outline-color: #A3220B;
 }
 
-/* The theme control is the shared .nav-theme icon button from
-   corporate.css. The text button that used to sit here, reading
-   the literal word Dark, is gone: the site carries an icon on
-   every page and no words. */
+/* The theme control is gone site-wide as of the 2026-08-18
+   redesign: the palette is mono, so the button had nothing left
+   to switch. This page carried a text button reading the literal
+   word Dark, then the shared icon button, and now neither. */
 
 /* ---------- hero ---------- */
 
@@ -449,36 +449,36 @@ body {
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </nav>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
   </div>
 </header>
 
@@ -952,7 +952,7 @@ body {
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h3 class="footer-head">Learn</h3>
         <a class="flink" href="team.html">The team</a>
@@ -972,6 +972,18 @@ body {
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 

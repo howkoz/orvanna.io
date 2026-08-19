@@ -4,44 +4,64 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Member Portal, Demo Mode</title>
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/portal.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/portal.css?v=b3f2bf0935f8">
 </head>
 <body>
 
 <div class="portal-shell">
   <aside class="portal-sidebar">
     <a class="portal-brand" href="../index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
+      <b class="portal-pill">Demo</b>
     </a>
-    <div class="portal-mode">
-      <span class="mode-dot" aria-hidden="true"></span>
-      <span>Member office</span>
-      <b>Demo</b>
+
+    <div class="side-block">
+      <p class="side-kicker">Signed in as</p>
+      <p class="side-name" id="sideName">&mdash;</p>
+      <p class="side-code" id="sideCode">&mdash;</p>
+      <p class="side-rank" id="sideRank">&mdash;</p>
+      <!-- The member picker is a DEMO control and says so. There is one
+           account behind this sign-in; being able to stand in any member's
+           shoes is what makes the office demonstrable at all. -->
+      <label class="side-kicker side-kicker-sm" for="memberSearch">Viewing as &middot; demo</label>
+      <div class="picker-wrap">
+        <input id="memberSearch" class="picker-input" type="text" autocomplete="off"
+               spellcheck="false" placeholder="Member code or name">
+        <div id="memberList" class="picker-list" hidden></div>
+      </div>
     </div>
-    <nav class="tabs side-nav" aria-label="Portal sections">
-      <button class="tab active" data-tab="team" type="button">
-        <span class="nav-icon" aria-hidden="true">01</span>
-        <span><b>Business</b><small>Command center</small></span>
-      </button>
-      <button class="tab" data-tab="volume" type="button">
-        <span class="nav-icon" aria-hidden="true">02</span>
-        <span><b>Volume</b><small>PV, SV, CV</small></span>
-      </button>
-      <button class="tab" data-tab="rank" type="button">
-        <span class="nav-icon" aria-hidden="true">03</span>
-        <span><b>Rank</b><small>Qualification runway</small></span>
-      </button>
-      <button class="tab" data-tab="statement" type="button">
-        <span class="nav-icon" aria-hidden="true">04</span>
-        <span><b>Statement</b><small>Commission detail</small></span>
-      </button>
-      <button class="tab" data-tab="company" type="button">
-        <span class="nav-icon" aria-hidden="true">05</span>
-        <span><b>Company</b><small>Run totals</small></span>
-      </button>
+
+    <div class="side-block">
+      <p class="side-kicker">Period</p>
+      <div class="side-period">
+        <select id="periodSelect" class="period-select" aria-label="Volume period"></select>
+        <span class="side-period-state" id="sidePeriodState">Open</span>
+      </div>
+      <p class="side-note" id="sidePeriodNote">Nothing is final until the run closes.</p>
+    </div>
+
+    <!-- ONE PAGE, SIX ANCHORS. These were five buttons that swapped five
+         panels. A member signs in with three questions and the answers
+         were spread across five screens, so the answer band below holds
+         all three and everything under it is one scroll. -->
+    <nav class="side-nav" aria-label="On this page">
+      <a class="side-link is-active" href="#answers">This month</a>
+      <a class="side-link" href="#panel-volume">Volume</a>
+      <a class="side-link" href="#panel-rank">Rank</a>
+      <a class="side-link" href="#panel-team">Frontline</a>
+      <a class="side-link" href="#panel-statement">Statements</a>
+      <a class="side-link" href="#panel-company">Company</a>
     </nav>
+
     <nav class="site-links" aria-label="Orvanna sites">
       <a class="site-link" href="../shop.html">Shop</a>
       <a class="site-link" href="../library.html">Library</a>
@@ -55,33 +75,48 @@
     <header class="topbar">
       <div class="topbar-inner">
         <div class="workspace-title">
-          <p>Member backoffice</p>
-          <h1>Business command center</h1>
+          <p class="top-kicker" id="topKicker">Member office</p>
+          <h1>Your month so far</h1>
         </div>
         <div class="controls">
-          <div class="control picker-wrap">
-            <label class="control-label" for="memberSearch">Viewing as</label>
-            <input id="memberSearch" class="picker-input" type="text" autocomplete="off"
-                   spellcheck="false" placeholder="Search member code or name">
-            <div id="memberList" class="picker-list" hidden></div>
-          </div>
-          <div class="control">
-            <label class="control-label" for="periodSelect">Period</label>
-            <select id="periodSelect" class="period-select" aria-label="Volume period"></select>
-          </div>
-          <button id="themeBtn" class="theme-btn" type="button" aria-label="Switch between dark and light theme">
-            <span id="themeIcon" aria-hidden="true">&#9788;</span>
-          </button>
+          <a class="pbtn pbtn-line" id="statementLink" href="#panel-statement">Your statement</a>
+          <a class="pbtn pbtn-solid" href="../shop.html">Share the catalog</a>
         </div>
       </div>
     </header>
 
     <main id="main">
-      <section id="panel-team"      class="panel active"><div class="panel-body"></div></section>
-      <section id="panel-volume"    class="panel"><div class="panel-body"></div></section>
-      <section id="panel-rank"      class="panel"><div class="panel-body"></div></section>
-      <section id="panel-statement" class="panel"><div class="panel-body"></div></section>
-      <section id="panel-company"   class="panel"><div class="panel-body"></div></section>
+      <!-- THE ANSWER BAND. The three questions a member signs in with,
+           answered in order, above everything else. Every figure is
+           derived from data app.js already computes; the third cell is
+           the one the office never stated as an instruction. -->
+      <section id="answers" class="answers" aria-label="Your month at a glance">
+        <div class="answer">
+          <p class="answer-kicker">Am I qualified?</p>
+          <div class="answer-head">
+            <p class="answer-big" id="qualYesNo">&mdash;</p>
+            <p class="answer-side" id="qualSv"></p>
+          </div>
+          <div class="answer-meter"><div class="answer-fill" id="qualFill"></div></div>
+          <p class="answer-note" id="qualNote"></p>
+        </div>
+        <div class="answer">
+          <p class="answer-kicker">What will I be paid?</p>
+          <p class="answer-big" id="payFigure">&mdash;</p>
+          <p class="answer-tag">Provisional &middot; not a statement</p>
+          <p class="answer-note" id="payNote"></p>
+        </div>
+        <div class="answer answer-raised">
+          <p class="answer-kicker answer-kicker-accent">What to do next</p>
+          <ul class="todo" id="todoList"></ul>
+        </div>
+      </section>
+
+      <section id="panel-volume"    class="panel" data-num="01" data-title="The month in volume"><div class="panel-body"></div></section>
+      <section id="panel-rank"      class="panel" data-num="02" data-title="Rank runway"><div class="panel-body"></div></section>
+      <section id="panel-team"      class="panel" data-num="03" data-title="Your frontline"><div class="panel-body"></div></section>
+      <section id="panel-statement" class="panel" data-num="04" data-title="Statement"><div class="panel-body"></div></section>
+      <section id="panel-company"   class="panel" data-num="05" data-title="Company"><div class="panel-body"></div></section>
     </main>
 
     <footer id="footer" class="footer">Synthetic demo data &middot; loading&hellip;</footer>
@@ -134,7 +169,7 @@
   document.getElementById('signOutLink').addEventListener('click', clearSession);
 
   var portal = document.createElement('script');
-  portal.src = 'js/app.js?v=cef144c6cb42';
+  portal.src = 'js/app.js?v=b3f2bf0935f8';
   document.body.appendChild(portal);
 })();
 </script>

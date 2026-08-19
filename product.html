@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Product</title>
 <meta name="description" content="Orvanna product page: one agent, bundle, or pack, as a monthly subscription or a one-time purchase. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/shop.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/shop.css?v=b3f2bf0935f8">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -25,7 +25,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
 </head>
 <body>
 
@@ -33,44 +33,42 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link" href="index.html">Learn</a>
-      <a class="nav-link is-active" href="shop.html" aria-current="page">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <a class="nav-cart" id="cartButton" href="shop.html#cart" aria-label="Open cart">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 4 6 h 2.4 l 2 10.2 h 9.4 l 2.2 -7.6 h -12.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-          <circle cx="9.6" cy="19.4" r="1.4" fill="currentColor"/>
-          <circle cx="16.6" cy="19.4" r="1.4" fill="currentColor"/>
-        </svg>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link" href="index.html">Learn</a>
+    <a class="nav-link is-active" href="shop.html" aria-current="page">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+    </span>
+      <!-- The cart, permitted on shop.html and product.html only
+           (contract section 2, rule 3). Identifiers and behaviour are
+           unchanged; only its presentation is now a set word. -->
+      <button class="nav-cart" id="cartButton" type="button" aria-label="Open cart">
+        <span>Cart</span>
         <span class="cart-count" id="cartCount">0</span>
-      </a>
-    </nav>
+      </button>
+  </div>
+</nav>
   </div>
 </header>
 
@@ -98,6 +96,23 @@
         <h1 class="pdp-name" id="prodName">Agent</h1>
         <p class="pdp-blurb" id="prodBlurb"></p>
 
+        <!-- THE LEFT COLUMN CARRIES THE FACTS THAT ARE NOT PRICES.
+             Both of these lines used to sit inside the price box, which made
+             that box 390px tall next to 120px of copy and left 270px of empty
+             column beside it. They are product facts, not payment facts, so
+             they belong with the name and the blurb; the box is left to say
+             only what it costs and how to buy it. -->
+        <ul class="pdp-facts">
+          <li class="pdp-fact">
+            <span class="pdp-fact-key">Delivery</span>
+            <span class="pdp-fact-val">Digital. This product activates on your account, nothing ships.</span>
+          </li>
+          <li class="pdp-fact">
+            <span class="pdp-fact-key">Volume</span>
+            <span class="pdp-fact-val">Every purchase carries Personal Volume (PV), the number that counts toward your qualified month, in either mode.</span>
+          </li>
+        </ul>
+
         <div class="pdp-price-box glass">
           <span class="accent-bar" aria-hidden="true"></span>
 
@@ -118,8 +133,6 @@
           </div>
 
           <p class="pdp-alt" id="prodAlt"></p>
-          <p class="pdp-pv-note">Every purchase carries Personal Volume (PV), the number that counts toward your qualified month, in either mode.</p>
-
           <button class="btn-add btn-add-pdp" type="button" id="addBtn">
             <span class="add-label-default" id="addLabel">Add to cart</span>
             <svg class="add-check" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -128,8 +141,6 @@
             <span class="add-label-added" hidden>Added</span>
           </button>
           <p class="pdp-toast" id="addedToast" hidden>Added to your cart. <a href="shop.html#cart">View cart</a></p>
-
-          <p class="pdp-digital">Digital delivery: this product activates on your account, nothing ships.</p>
         </div>
       </div>
 
@@ -191,7 +202,7 @@
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h4 class="footer-head">Learn</h4>
         <a class="flink" href="team.html">The team</a>
@@ -213,6 +224,18 @@
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 
@@ -249,7 +272,7 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=cef144c6cb42"></script>
+<script src="js/catalog.js?v=b3f2bf0935f8"></script>
 <script>
 /* ============================================================
    Orvanna product page template. One file serves every item:

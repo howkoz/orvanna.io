@@ -2,8 +2,8 @@
    Orvanna corporate site, round 2: the glow-tech direction.
    Deep space-navy field, radial glow washes, glass panels with
    one-pixel luminous borders, neon accents, layered depth.
-   Palette: navy #060B18 base (deeper than ink #0F172A),
-   indigo #4F46E5 / #818CF8, violet #A78BFA, cyan #22D3EE as the
+   Palette: navy #EAE4D9 base (deeper than ink #1B1917),
+   indigo #1B1917 / #1B1917, violet #1B1917, cyan #EC3013 as the
    primary lit accent. Indigo, cyan, and violet glows may coexist
    in this style; cyan stays the loudest.
    ============================================================ */
@@ -38,50 +38,47 @@
    ============================================================ */
 
 :root {
-  --navy:       #060B18;   /* page field, deeper than ink */
-  --navy-2:     #0A1226;   /* raised field */
-  --ink:        #0F172A;
-  --indigo:     #4F46E5;
-  --indigo-d:   #818CF8;   /* indigo on dark */
-  --indigo-l:   #A5B4FC;   /* lighter indigo for small text on dark */
-  --violet:     #A78BFA;
-  --cyan:       #22D3EE;
-  --paper:      #FFFFFF;
-  --text-d:     #C7D0DE;   /* body on dark */
-  --muted-d:    #94A3B8;   /* muted on dark */
-  --hairline:   rgba(129, 140, 248, 0.18);
-  --glass-bg:   linear-gradient(165deg, rgba(30, 41, 59, 0.62), rgba(13, 20, 38, 0.44));
-  --maxw:       1100px;
+  --navy:       #EAE4D9;   /* page field, deeper than ink */
+  --navy-2:     #F1EDE6;   /* raised field */
+  --ink:        #1B1917;
+  --indigo:     #1B1917;
+  --indigo-d:   #1B1917;   /* indigo on dark */
+  --indigo-l:   #6B645A;   /* lighter indigo for small text on dark */
+  --violet:     #1B1917;
+  --cyan:       #EC3013;
+  --paper:      #1B1917;
+  --text-d:     #4B453D;   /* body on dark */
+  --muted-d:    #6B645A;   /* muted on dark */
+  --hairline:   rgba(27, 25, 23, 0.18);
+  --glass-bg:   #F1EDE6;
+  --maxw:       1180px;   /* the design canvas, 2026-08-18 */
 
   /* ---- tokens lifted out of hardcoded hex values, dark form ---- */
-  --heading:      #F1F5F9;   /* section, card, feature and profile headings */
-  --heading-hi:   #FFFFFF;   /* the loudest headings and the pull quote */
-  --quiet:        #7C8AA0;   /* the "not yet" register and legal small print */
-  --band-line:    rgba(129, 140, 248, 0.08);
-  --panel-bd:     rgba(129, 140, 248, 0.26);
-  --panel-shadow: 0 0 26px rgba(79, 70, 229, 0.14),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --panel-bd-cyan:       rgba(34, 211, 238, 0.3);
-  --panel-shadow-cyan:   0 0 26px rgba(34, 211, 238, 0.12),
-                         inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --panel-bd-violet:     rgba(167, 139, 250, 0.3);
-  --panel-shadow-violet: 0 0 26px rgba(167, 139, 250, 0.13),
-                         inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --glow-a:       rgba(79, 70, 229, 0.17);
-  --glow-b:       rgba(167, 139, 250, 0.13);
-  --glow-c:       rgba(34, 211, 238, 0.12);
-  --solid-bg:     #22D3EE;   /* the solid accent button */
+  --heading:      #1B1917;   /* section, card, feature and profile headings */
+  --heading-hi:   #1B1917;   /* the loudest headings and the pull quote */
+  --quiet:        #8A8278;   /* the "not yet" register and legal small print */
+  --band-line:    rgba(27, 25, 23, 0.08);
+  --panel-bd:     rgba(27, 25, 23, 0.26);
+  --panel-shadow: none;
+  --panel-bd-cyan:       rgba(236, 48, 19, 0.3);
+  --panel-shadow-cyan: none;
+  --panel-bd-violet:     rgba(27, 25, 23, 0.3);
+  --panel-shadow-violet: none;
+  --glow-a: transparent;
+  --glow-b: transparent;
+  --glow-c: transparent;
+  --solid-bg:     #EC3013;   /* the solid accent button */
   --solid-hv:     #67E3F4;
-  --solid-fg:     #05121C;   /* ink on the solid accent button */
-  --ghost-fg:     #E2E8F0;
-  --ghost-bg:     linear-gradient(180deg, rgba(13, 20, 38, 0.85), rgba(6, 11, 24, 0.85));
-  --ghost-bd:     rgba(129, 140, 248, 0.55);
-  --field-bg:     rgba(6, 11, 24, 0.6);
-  --field-fg:     #E2E8F0;
-  --field-bd:     rgba(129, 140, 248, 0.3);
+  --solid-fg:     #FFFFFF;   /* ink on the solid accent button */
+  --ghost-fg:     #1B1917;
+  --ghost-bg:     linear-gradient(180deg, rgba(241, 237, 230, 0.85), rgba(234, 228, 217, 0.85));
+  --ghost-bd:     rgba(27, 25, 23, 0.55);
+  --field-bg:     rgba(234, 228, 217, 0.6);
+  --field-fg:     #1B1917;
+  --field-bd:     rgba(27, 25, 23, 0.3);
 
   /* ---- the hero: dark in both themes (see the note above) ---- */
-  --hero-bg:      #060B18;
+  --hero-bg:      #EAE4D9;
 
   /* The --chrome-* tokens moved to css/site-chrome.css, which is
      now the single source of chrome presentation for all nine
@@ -113,39 +110,39 @@
    ------------------------------------------------------------ */
 
 :root[data-theme="light"] {
-  --navy:       #FFFFFF;
-  --navy-2:     #F1F4FA;
-  --indigo-d:   #4F46E5;
-  --indigo-l:   #4338CA;   /* 7.40 to 1 on white */
-  --violet:     #6D28D9;
-  --cyan:       #0E7490;   /* the lit accent, light form. 5.36 to 1 on white */
-  --text-d:     #263244;   /* 12.63 to 1 on white */
-  --muted-d:    #5B6472;   /* 6.03 to 1 on white */
-  --hairline:   rgba(15, 23, 42, 0.14);
-  --glass-bg:   linear-gradient(165deg, #FFFFFF, #F8FAFC);
+  --navy:       #1B1917;
+  --navy-2:     #EAE4D9;
+  --indigo-d:   #1B1917;
+  --indigo-l:   #1B1917;   /* 7.40 to 1 on white */
+  --violet:     #1B1917;
+  --cyan:       #A3220B;   /* the lit accent, light form. 5.36 to 1 on white */
+  --text-d:     #4B453D;   /* 12.63 to 1 on white */
+  --muted-d:    #6B645A;   /* 6.03 to 1 on white */
+  --hairline:   rgba(27, 25, 23, 0.14);
+  --glass-bg:   #F1EDE6;
 
-  --heading:      #0F172A;
-  --heading-hi:   #0B1220;
-  --quiet:        #5B6472;
-  --band-line:    rgba(15, 23, 42, 0.10);
-  --panel-bd:     rgba(15, 23, 42, 0.13);
-  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  --heading:      #1B1917;
+  --heading-hi:   #F1EDE6;
+  --quiet:        #6B645A;
+  --band-line:    rgba(27, 25, 23, 0.10);
+  --panel-bd:     rgba(27, 25, 23, 0.13);
+  --panel-shadow: 0 4px 14px rgba(27, 25, 23, 0.10);
   --panel-bd-cyan:       rgba(14, 116, 144, 0.35);
-  --panel-shadow-cyan:   0 4px 14px rgba(15, 23, 42, 0.10);
+  --panel-shadow-cyan:   0 4px 14px rgba(27, 25, 23, 0.10);
   --panel-bd-violet:     rgba(109, 40, 217, 0.30);
-  --panel-shadow-violet: 0 4px 14px rgba(15, 23, 42, 0.10);
-  --glow-a:       rgba(79, 70, 229, 0.06);
-  --glow-b:       rgba(167, 139, 250, 0.06);
-  --glow-c:       rgba(14, 116, 144, 0.06);
-  --solid-bg:     #0E7490;
-  --solid-hv:     #0B5C72;
-  --solid-fg:     #FFFFFF;
-  --ghost-fg:     #0F172A;
-  --ghost-bg:     linear-gradient(180deg, #FFFFFF, #F8FAFC);
-  --ghost-bd:     rgba(79, 70, 229, 0.45);
-  --field-bg:     #FFFFFF;
-  --field-fg:     #0F172A;
-  --field-bd:     rgba(79, 70, 229, 0.32);
+  --panel-shadow-violet: 0 4px 14px rgba(27, 25, 23, 0.10);
+  --glow-a: transparent;
+  --glow-b: transparent;
+  --glow-c: transparent;
+  --solid-bg:     #A3220B;
+  --solid-hv:     #A3220B;
+  --solid-fg:     #1B1917;
+  --ghost-fg:     #1B1917;
+  --ghost-bg:     linear-gradient(180deg, #1B1917, #1B1917);
+  --ghost-bd:     rgba(27, 25, 23, 0.45);
+  --field-bg:     #1B1917;
+  --field-fg:     #1B1917;
+  --field-bd:     rgba(27, 25, 23, 0.32);
 }
 
 /* ------------------------------------------------------------
@@ -153,8 +150,8 @@
 
    The inline drawings on index.html and team.html carry their
    colours as Scalable Vector Graphics (SVG) presentation
-   attributes: indigo #818CF8 strokes, a cyan #22D3EE lit node,
-   and a near-black #0A1226 hexagon fill. On the night field that
+   attributes: indigo #1B1917 strokes, a cyan #EC3013 lit node,
+   and a near-black #F1EDE6 hexagon fill. On the night field that
    is correct. On white the indigo strokes wash out to roughly
    2.6 to 1 and the drawings read as smudges.
 
@@ -165,59 +162,59 @@
    line of markup. They are decoration (every one of these
    drawings is aria-hidden), so the 4.5 to 1 text floor does not
    govern them; the replacements clear 3 to 1 as non-text
-   contrast, and #4338CA on white measures 7.40 to 1.
+   contrast, and #1B1917 on white measures 7.40 to 1.
    ------------------------------------------------------------ */
 
-:root[data-theme="light"] .card-icon [stroke="#818CF8"],
-:root[data-theme="light"] .feature-mark [stroke="#818CF8"],
-:root[data-theme="light"] .origin-art [stroke="#818CF8"],
-:root[data-theme="light"] .teaser-marks [stroke="#818CF8"],
-:root[data-theme="light"] .member-mark [stroke="#818CF8"],
-:root[data-theme="light"] .profile-mark [stroke="#818CF8"],
-:root[data-theme="light"] .avatar [stroke="#818CF8"],
-:root[data-theme="light"] .gate-figure [stroke="#818CF8"],
-:root[data-theme="light"] .login-badge [stroke="#818CF8"] { stroke: #4338CA; }
+:root[data-theme="light"] .card-icon [stroke="#1B1917"],
+:root[data-theme="light"] .feature-mark [stroke="#1B1917"],
+:root[data-theme="light"] .origin-art [stroke="#1B1917"],
+:root[data-theme="light"] .teaser-marks [stroke="#1B1917"],
+:root[data-theme="light"] .member-mark [stroke="#1B1917"],
+:root[data-theme="light"] .profile-mark [stroke="#1B1917"],
+:root[data-theme="light"] .avatar [stroke="#1B1917"],
+:root[data-theme="light"] .gate-figure [stroke="#1B1917"],
+:root[data-theme="light"] .login-badge [stroke="#1B1917"] { stroke: #1B1917; }
 
-:root[data-theme="light"] .card-icon [fill="#818CF8"],
-:root[data-theme="light"] .feature-mark [fill="#818CF8"],
-:root[data-theme="light"] .origin-art [fill="#818CF8"],
-:root[data-theme="light"] .teaser-marks [fill="#818CF8"],
-:root[data-theme="light"] .member-mark [fill="#818CF8"],
-:root[data-theme="light"] .profile-mark [fill="#818CF8"],
-:root[data-theme="light"] .avatar [fill="#818CF8"],
-:root[data-theme="light"] .gate-figure [fill="#818CF8"],
-:root[data-theme="light"] .login-badge [fill="#818CF8"] { fill: #4338CA; }
+:root[data-theme="light"] .card-icon [fill="#1B1917"],
+:root[data-theme="light"] .feature-mark [fill="#1B1917"],
+:root[data-theme="light"] .origin-art [fill="#1B1917"],
+:root[data-theme="light"] .teaser-marks [fill="#1B1917"],
+:root[data-theme="light"] .member-mark [fill="#1B1917"],
+:root[data-theme="light"] .profile-mark [fill="#1B1917"],
+:root[data-theme="light"] .avatar [fill="#1B1917"],
+:root[data-theme="light"] .gate-figure [fill="#1B1917"],
+:root[data-theme="light"] .login-badge [fill="#1B1917"] { fill: #1B1917; }
 
-:root[data-theme="light"] .card-icon [fill="#22D3EE"],
-:root[data-theme="light"] .feature-mark [fill="#22D3EE"],
-:root[data-theme="light"] .origin-art [fill="#22D3EE"],
-:root[data-theme="light"] .teaser-marks [fill="#22D3EE"],
-:root[data-theme="light"] .member-mark [fill="#22D3EE"],
-:root[data-theme="light"] .profile-mark [fill="#22D3EE"],
-:root[data-theme="light"] .avatar [fill="#22D3EE"],
-:root[data-theme="light"] .gate-figure [fill="#22D3EE"],
-:root[data-theme="light"] .login-badge [fill="#22D3EE"] { fill: #0E7490; }
+:root[data-theme="light"] .card-icon [fill="#EC3013"],
+:root[data-theme="light"] .feature-mark [fill="#EC3013"],
+:root[data-theme="light"] .origin-art [fill="#EC3013"],
+:root[data-theme="light"] .teaser-marks [fill="#EC3013"],
+:root[data-theme="light"] .member-mark [fill="#EC3013"],
+:root[data-theme="light"] .profile-mark [fill="#EC3013"],
+:root[data-theme="light"] .avatar [fill="#EC3013"],
+:root[data-theme="light"] .gate-figure [fill="#EC3013"],
+:root[data-theme="light"] .login-badge [fill="#EC3013"] { fill: #A3220B; }
 
-:root[data-theme="light"] .card-icon [stroke="#22D3EE"],
-:root[data-theme="light"] .feature-mark [stroke="#22D3EE"],
-:root[data-theme="light"] .origin-art [stroke="#22D3EE"],
-:root[data-theme="light"] .teaser-marks [stroke="#22D3EE"],
-:root[data-theme="light"] .member-mark [stroke="#22D3EE"],
-:root[data-theme="light"] .profile-mark [stroke="#22D3EE"],
-:root[data-theme="light"] .avatar [stroke="#22D3EE"],
-:root[data-theme="light"] .gate-figure [stroke="#22D3EE"],
-:root[data-theme="light"] .login-badge [stroke="#22D3EE"] { stroke: #0E7490; }
+:root[data-theme="light"] .card-icon [stroke="#EC3013"],
+:root[data-theme="light"] .feature-mark [stroke="#EC3013"],
+:root[data-theme="light"] .origin-art [stroke="#EC3013"],
+:root[data-theme="light"] .teaser-marks [stroke="#EC3013"],
+:root[data-theme="light"] .member-mark [stroke="#EC3013"],
+:root[data-theme="light"] .profile-mark [stroke="#EC3013"],
+:root[data-theme="light"] .avatar [stroke="#EC3013"],
+:root[data-theme="light"] .gate-figure [stroke="#EC3013"],
+:root[data-theme="light"] .login-badge [stroke="#EC3013"] { stroke: #A3220B; }
 
 /* the hexagon body: night navy becomes a pale panel */
-:root[data-theme="light"] .card-icon [fill="#0A1226"],
-:root[data-theme="light"] .feature-mark [fill="#0A1226"],
-:root[data-theme="light"] .origin-art [fill="#0A1226"],
-:root[data-theme="light"] .teaser-marks [fill="#0A1226"],
-:root[data-theme="light"] .member-mark [fill="#0A1226"],
-:root[data-theme="light"] .profile-mark [fill="#0A1226"],
-:root[data-theme="light"] .avatar [fill="#0A1226"],
-:root[data-theme="light"] .gate-figure [fill="#0A1226"],
-:root[data-theme="light"] .login-badge [fill="#0A1226"] { fill: #EEF1F8; }
+:root[data-theme="light"] .card-icon [fill="#F1EDE6"],
+:root[data-theme="light"] .feature-mark [fill="#F1EDE6"],
+:root[data-theme="light"] .origin-art [fill="#F1EDE6"],
+:root[data-theme="light"] .teaser-marks [fill="#F1EDE6"],
+:root[data-theme="light"] .member-mark [fill="#F1EDE6"],
+:root[data-theme="light"] .profile-mark [fill="#F1EDE6"],
+:root[data-theme="light"] .avatar [fill="#F1EDE6"],
+:root[data-theme="light"] .gate-figure [fill="#F1EDE6"],
+:root[data-theme="light"] .login-badge [fill="#F1EDE6"] { fill: #EAE4D9; }
 
 /* the glow haloes around those drawings are tuned for a night
    field; on paper they read as dirt, so they are switched off */
@@ -266,7 +263,7 @@ section { scroll-margin-top: 84px; }
   pointer-events: none;
   width: 680px;
   height: 680px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .glow-indigo::before {
   left: -220px; top: -160px;
@@ -293,10 +290,10 @@ section { scroll-margin-top: 84px; }
   letter-spacing: 0.34em;
   color: var(--cyan);
   margin-bottom: 18px;
-  text-shadow: 0 0 14px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
 }
 
-.kicker-light { color: var(--indigo-l); text-shadow: 0 0 14px rgba(129, 140, 248, 0.3); }
+.kicker-light { color: var(--indigo-l); text-shadow: none; }
 
 .section-title {
   font-size: clamp(1.45rem, 3vw, 2.05rem);
@@ -338,7 +335,7 @@ section { scroll-margin-top: 84px; }
   text-transform: uppercase;
   letter-spacing: 0.14em;
   text-decoration: none;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1.5px solid transparent;
   background: transparent;
   color: inherit;
@@ -350,28 +347,26 @@ section { scroll-margin-top: 84px; }
 .btn-solid {
   background: var(--solid-bg);
   color: var(--solid-fg);
-  box-shadow: 0 0 20px rgba(34, 211, 238, 0.32);
+  box-shadow: none;
 }
 .btn-solid:hover {
   background: var(--solid-hv);
   transform: translateY(-2px);
-  box-shadow: 0 0 34px rgba(34, 211, 238, 0.55);
+  box-shadow: none;
 }
 
 .btn-ghost {
   color: var(--ghost-fg);
   background: var(--ghost-bg);
   border-color: var(--ghost-bd);
-  box-shadow: 0 0 14px rgba(79, 70, 229, 0.14),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
 .btn-ghost:hover {
   border-color: var(--cyan);
   color: var(--cyan);
   background: var(--ghost-bg);
   transform: translateY(-2px);
-  box-shadow: 0 0 22px rgba(34, 211, 238, 0.25),
-              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  box-shadow: none;
 }
 
 /* ============================================================
@@ -383,20 +378,20 @@ section { scroll-margin-top: 84px; }
   position: relative;
   background: var(--glass-bg);
   border: 1px solid var(--panel-bd);
-  border-radius: 14px;
-  box-shadow: var(--panel-shadow);
-  backdrop-filter: blur(9px);
-  -webkit-backdrop-filter: blur(9px);
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  backdrop-filter: none;
 }
 
 .glass-cyan {
   border-color: var(--panel-bd-cyan);
-  box-shadow: var(--panel-shadow-cyan);
+  box-shadow: none;
 }
 
 .glass-violet {
   border-color: var(--panel-bd-violet);
-  box-shadow: var(--panel-shadow-violet);
+  box-shadow: none;
 }
 
 /* gradient accent bar across a panel top */
@@ -406,12 +401,12 @@ section { scroll-margin-top: 84px; }
   left: 22px;
   right: 22px;
   height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--indigo), var(--cyan));
+  border-radius: 0;
+  background: #1B1917;
   opacity: 0.85;
 }
-.accent-bar.bar-cyan   { background: linear-gradient(90deg, var(--cyan), var(--indigo-d)); }
-.accent-bar.bar-violet { background: linear-gradient(90deg, var(--violet), var(--cyan)); }
+.accent-bar.bar-cyan   { background: #1B1917; }
+.accent-bar.bar-violet { background: #1B1917; }
 
 /* ============================================================
    NAV, THEME BUTTON, SUPPORT BUTTON, FOOTER: all moved to
@@ -443,11 +438,11 @@ section { scroll-margin-top: 84px; }
   padding: 150px 0 160px;
   overflow: hidden;
   background: var(--hero-bg);
-  border-bottom: 1px solid rgba(129, 140, 248, 0.08);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.08);
 }
 
 .hero .kicker { color: var(--chrome-accent); }
-.hero .btn-solid { background: var(--chrome-accent); color: #05121C; }
+.hero .btn-solid { background: var(--chrome-accent); color: #FFFFFF; }
 .hero .btn-solid:hover { background: #67E3F4; }
 
 /* layered hero glows: indigo left, cyan right */
@@ -458,15 +453,15 @@ section { scroll-margin-top: 84px; }
   pointer-events: none;
   width: 720px;
   height: 720px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .hero::before {
   left: -260px; top: -220px;
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.20), transparent 70%);
+  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.20), transparent 70%);
 }
 .hero::after {
   right: -280px; bottom: -300px;
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.10), transparent 70%);
+  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.10), transparent 70%);
 }
 
 #constellation {
@@ -498,7 +493,7 @@ section { scroll-margin-top: 84px; }
 
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
   .hero-title {
-    background: linear-gradient(180deg, #FFFFFF 55%, #A5B4FC);
+    background: linear-gradient(180deg, #1B1917 55%, #6B645A);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -519,31 +514,51 @@ section { scroll-margin-top: 84px; }
 }
 
 /* ============================================================
-   SCROLL REVEALS (JavaScript adds .is-in once per section)
-   Hidden state is gated behind html.js so content is never
-   invisible if scripts fail to run.
+   SCROLL REVEALS: FAIL VISIBLE, NEVER INVISIBLE
+
+   Until 2026-08-18 hidden was the DEFAULT and JavaScript added
+   .is-in to bring content back. Anything the observer never saw
+   therefore stayed at opacity 0 for good. That was not a
+   hypothetical: measured on the live site, a full-page capture
+   taken without scrolling rendered the whole technology section
+   and the whole team section blank, and jumping straight to the
+   bottom of the page left two sections permanently unrevealed.
+   Screenshot tools, printing, and any reader who follows an
+   anchor or scrolls faster than the observer samples all hit it.
+
+   The comment this replaces claimed html.js meant content was
+   "never invisible if scripts fail to run". That covered only
+   the case where scripting is off entirely. It did not cover the
+   far more common one: scripting on, observer alive, element
+   simply never intersected.
+
+   Visible is now the default. JavaScript adds .is-out only to
+   elements ALREADY below the fold, so the hide is never
+   witnessed, and only when there is an observer to take it off
+   again. A missed intersection now fails readable.
    ============================================================ */
 
 .js .reveal {
-  opacity: 0;
-  transform: translateY(22px);
   transition: opacity 0.7s ease, transform 0.7s ease;
 }
-.js .reveal.is-in {
-  opacity: 1;
-  transform: none;
-}
-
-/* staggered children: tiles arrive one after another */
-.js .stagger > * {
+.js .reveal.is-out {
   opacity: 0;
   transform: translateY(22px);
+}
+
+/* staggered children: tiles arrive one after another. The delays
+   sit on the visible state, because that is the direction that
+   gets watched; the hide happens off screen. */
+.js .stagger > * {
   transition: opacity 0.65s ease, transform 0.65s ease;
 }
-.js .stagger.is-in > * { opacity: 1; transform: none; }
-.js .stagger.is-in > *:nth-child(2) { transition-delay: 0.12s; }
-.js .stagger.is-in > *:nth-child(3) { transition-delay: 0.24s; }
-.js .stagger.is-in > *:nth-child(4) { transition-delay: 0.36s; }
+.js .stagger.is-out > * {
+  opacity: 0;
+  transform: translateY(22px);
+}
+.js .stagger > *:nth-child(2) { transition-delay: 0.12s; }
+.js .stagger > *:nth-child(3) { transition-delay: 0.24s; }
+.js .stagger > *:nth-child(4) { transition-delay: 0.36s; }
 
 /* ============================================================
    OVERVIEW METRICS: glass tiles, numbers count up
@@ -563,9 +578,8 @@ section { scroll-margin-top: 84px; }
 
 .metric:hover {
   transform: translateY(-5px);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 38px rgba(34, 211, 238, 0.2),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(236, 48, 19, 0.5);
+  box-shadow: none;
 }
 
 .metric-num {
@@ -574,7 +588,7 @@ section { scroll-margin-top: 84px; }
   letter-spacing: 0.02em;
   line-height: 1.1;
   color: var(--cyan);
-  text-shadow: 0 0 22px rgba(34, 211, 238, 0.45);
+  text-shadow: none;
   font-variant-numeric: tabular-nums;
 }
 
@@ -604,26 +618,23 @@ section { scroll-margin-top: 84px; }
 
 .card:hover {
   transform: translateY(-6px);
-  border-color: rgba(129, 140, 248, 0.55);
-  box-shadow: 0 0 42px rgba(79, 70, 229, 0.28),
-              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(27, 25, 23, 0.55);
+  box-shadow: none;
 }
 .card.glass-cyan:hover {
-  border-color: rgba(34, 211, 238, 0.55);
-  box-shadow: 0 0 42px rgba(34, 211, 238, 0.24),
-              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(236, 48, 19, 0.55);
+  box-shadow: none;
 }
 .card.glass-violet:hover {
-  border-color: rgba(167, 139, 250, 0.55);
-  box-shadow: 0 0 42px rgba(167, 139, 250, 0.26),
-              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(27, 25, 23, 0.55);
+  box-shadow: none;
 }
 
 .card-icon {
   width: 58px;
   height: 58px;
   margin-bottom: 22px;
-  filter: drop-shadow(0 0 9px rgba(34, 211, 238, 0.35));
+  filter: none;
 }
 
 .card-title {
@@ -665,13 +676,13 @@ section { scroll-margin-top: 84px; }
   line-height: 1.55;
   color: var(--heading-hi);
   font-weight: 350;
-  text-shadow: 0 0 26px rgba(34, 211, 238, 0.18);
+  text-shadow: none;
 }
 
 .origin-art {
   max-width: 300px;
   margin: 0 auto;
-  filter: drop-shadow(0 0 22px rgba(167, 139, 250, 0.25));
+  filter: none;
 }
 
 /* ============================================================
@@ -691,16 +702,15 @@ section { scroll-margin-top: 84px; }
 
 .feature:hover {
   transform: translateY(-5px);
-  border-color: rgba(34, 211, 238, 0.45);
-  box-shadow: 0 0 34px rgba(34, 211, 238, 0.18),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(236, 48, 19, 0.45);
+  box-shadow: none;
 }
 
 .feature-mark {
   width: 36px;
   height: 36px;
   margin-bottom: 16px;
-  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.4));
+  filter: none;
 }
 
 .feature-label {
@@ -732,16 +742,15 @@ section { scroll-margin-top: 84px; }
 
 .leader:hover {
   transform: translateY(-6px);
-  border-color: rgba(129, 140, 248, 0.55);
-  box-shadow: 0 0 38px rgba(79, 70, 229, 0.26),
-              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(27, 25, 23, 0.55);
+  box-shadow: none;
 }
 
 .avatar {
   width: 84px;
   height: 84px;
   margin: 0 auto 18px;
-  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.35));
+  filter: none;
 }
 
 .leader-name {
@@ -807,15 +816,15 @@ section { scroll-margin-top: 84px; }
   pointer-events: none;
   width: 720px;
   height: 720px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .login-body::before {
   left: -280px; top: -260px;
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.2), transparent 70%);
+  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.2), transparent 70%);
 }
 .login-body::after {
   right: -300px; bottom: -320px;
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.11), transparent 70%);
+  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.11), transparent 70%);
 }
 
 .login-logo {
@@ -824,7 +833,7 @@ section { scroll-margin-top: 84px; }
   display: inline-flex;
   align-items: center;
   gap: 9px;
-  color: #F8FAFC;
+  color: #1B1917;
   text-decoration: none;
 }
 .login-logo img { height: 34px; width: auto; }
@@ -837,9 +846,9 @@ section { scroll-margin-top: 84px; }
 .login-logo .brand-mark {
   width: 18px;
   height: 18px;
-  border: 1px solid rgba(34, 211, 238, 0.75);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
+  border: 1px solid rgba(236, 48, 19, 0.75);
+  border-radius: 0;
+  box-shadow: none;
 }
 .login-logo .brand-word {
   font-size: 0.95rem;
@@ -861,7 +870,7 @@ section { scroll-margin-top: 84px; }
   width: 64px;
   height: 64px;
   margin: 0 auto 20px;
-  filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.4));
+  filter: none;
 }
 
 .login-title {
@@ -894,15 +903,14 @@ section { scroll-margin-top: 84px; }
   color: var(--field-fg);
   background: var(--field-bg);
   border: 1px solid var(--field-bd);
-  border-radius: 8px;
+  border-radius: 0;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .field:focus {
   outline: none;
-  border-color: rgba(34, 211, 238, 0.65);
-  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.16),
-              0 0 18px rgba(34, 211, 238, 0.2);
+  border-color: rgba(236, 48, 19, 0.65);
+  box-shadow: none;
 }
 
 .btn-block { display: block; width: 100%; text-align: center; }
@@ -914,10 +922,10 @@ section { scroll-margin-top: 84px; }
   padding: 10px 12px;
   font-size: 0.82rem;
   line-height: 1.5;
-  color: #FCA5A5;
+  color: #B91C1C;
   background: rgba(248, 113, 113, 0.08);
   border: 1px solid rgba(248, 113, 113, 0.36);
-  border-radius: 8px;
+  border-radius: 0;
   text-align: left;
 }
 .login-error:empty {
@@ -944,14 +952,14 @@ section { scroll-margin-top: 84px; }
 }
 .login-back:hover {
   color: var(--cyan);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+  text-shadow: none;
 }
 
 .login-legal {
   position: relative;
   z-index: 1;
   font-size: 0.74rem;
-  color: #7C8AA0;
+  color: #8A8278;
   text-align: center;
   max-width: 42em;
 }
@@ -971,15 +979,15 @@ section { scroll-margin-top: 84px; }
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.22em;
-  border-radius: 999px;
-  border: 1px solid rgba(129, 140, 248, 0.45);
+  border-radius: 0;
+  border: 1px solid rgba(27, 25, 23, 0.45);
   color: var(--indigo-l);
 }
 
 .role-tag.tag-human {
-  border-color: rgba(34, 211, 238, 0.55);
+  border-color: rgba(236, 48, 19, 0.55);
   color: var(--cyan);
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
 }
 
 /* wide leadership cards: founder first, manager second */
@@ -997,13 +1005,13 @@ section { scroll-margin-top: 84px; }
   width: 132px;
   height: 132px;
   margin: 0 auto;
-  filter: drop-shadow(0 0 14px rgba(34, 211, 238, 0.3));
+  filter: none;
 }
 
 .profile-card.is-manager .profile-mark {
   width: 112px;
   height: 112px;
-  filter: drop-shadow(0 0 12px rgba(129, 140, 248, 0.35));
+  filter: none;
 }
 
 .profile-name {
@@ -1040,16 +1048,15 @@ section { scroll-margin-top: 84px; }
 
 .member:hover {
   transform: translateY(-6px);
-  border-color: rgba(129, 140, 248, 0.55);
-  box-shadow: 0 0 38px rgba(79, 70, 229, 0.26),
-              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(27, 25, 23, 0.55);
+  box-shadow: none;
 }
 
 .member-mark {
   width: 82px;
   height: 82px;
   margin: 0 auto 16px;
-  filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.35));
+  filter: none;
 }
 
 .member-name {
@@ -1078,7 +1085,7 @@ section { scroll-margin-top: 84px; }
 .gate-figure {
   max-width: 720px;
   margin: 0 auto 60px;
-  filter: drop-shadow(0 0 18px rgba(34, 211, 238, 0.12));
+  filter: none;
 }
 
 .gate-caption {
@@ -1115,9 +1122,9 @@ section { scroll-margin-top: 84px; }
   content: "";
   width: 8px;
   height: 8px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--cyan);
-  box-shadow: 0 0 10px rgba(34, 211, 238, 0.65);
+  box-shadow: none;
   flex-shrink: 0;
 }
 
@@ -1149,7 +1156,7 @@ section { scroll-margin-top: 84px; }
 .teaser-marks svg {
   width: 46px;
   height: 46px;
-  filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.35));
+  filter: none;
 }
 
 .teaser-note {
@@ -1160,6 +1167,13 @@ section { scroll-margin-top: 84px; }
 }
 
 
+/* Printing never scrolls, so it must never inherit a scroll
+   trigger's hidden state. */
+@media print {
+  .js .reveal.is-out,
+  .js .stagger.is-out > * { opacity: 1 !important; transform: none !important; }
+}
+
 /* ============================================================
    REDUCED MOTION: static everything, content fully visible
    ============================================================ */
@@ -1167,8 +1181,8 @@ section { scroll-margin-top: 84px; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
-  .js .reveal,
-  .js .stagger > * { opacity: 1 !important; transform: none !important; }
+  .js .reveal.is-out,
+  .js .stagger.is-out > * { opacity: 1 !important; transform: none !important; }
 }
 
 /* ============================================================
@@ -1214,4 +1228,464 @@ section { scroll-margin-top: 84px; }
   border: 0;
   padding: 6px 10px;
   cursor: pointer;
+}
+
+
+/* ============================================================
+   THE HOME PAGE, REDESIGNED
+   Handoff screen 6a, built 2026-08-18.
+
+   Everything here is prefixed h- and used by index.html only.
+   The old .hero/.band/.glow-* rules above still dress faq,
+   conductor, team and comp-plan, so this is an addition rather
+   than a rewrite of a shared base: replacing those rules in
+   place would have repainted four pages nobody asked me to
+   touch tonight.
+
+   The system: zero radius, no shadows, no gradients. Rules and
+   alignment do the organising. One accent, spent on the primary
+   action, the numbered kickers, and the closing field.
+   ============================================================ */
+
+/* GROUND AND MEASURE.
+
+   Every section is a full-bleed ground with its content held to one
+   measure inside it. The two have to be separate elements: the ink band
+   and the accent field must run to the window edge, and if the paper
+   bands do not, their rules stop at 1180px while the fields beside them
+   carry on, which reads as a mistake rather than a choice. */
+.h-sec { border-bottom: 2px solid #1B1917; }
+.h-sec-ink { background: #1B1917; }
+.h-sec-accent { background: #EC3013; border-bottom: 0; }
+
+.h-in {
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+.h-kicker {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  line-height: 1;
+  color: #A3220B;          /* accent-deep: the accent never sets paragraph-size text on paper */
+  margin: 0 0 14px;
+}
+.h-kicker-quiet { color: #8A8278; }
+.h-kicker-faint { color: #8F8981; }
+.h-kicker-ink   { color: #FF6A4A; }   /* accent-on-ink */
+.h-kicker-on-accent { color: rgba(255, 255, 255, 0.82); }
+
+.h-h1 {
+  font-size: clamp(2.6rem, 5.4vw, 4.125rem);   /* 66px at the canvas width */
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.035em;
+  max-width: 12ch;
+  text-wrap: balance;
+  color: #1B1917;
+  margin: 0 0 22px;
+}
+
+.h-h2 {
+  font-size: clamp(1.6rem, 2.9vw, 2.125rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #1B1917;
+  margin: 0;
+}
+.h-h2-ink { color: #F8F7F5; font-size: clamp(1.9rem, 3.4vw, 2.75rem); margin-bottom: 20px; }
+
+.h-h3 {
+  font-size: 1.375rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: #1B1917;
+  margin: 0 0 12px;
+}
+
+.h-lead {
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  max-width: 47ch;
+  color: #4B453D;
+  margin: 0 0 26px;
+}
+
+.h-body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #4B453D;
+  margin: 0;
+}
+.h-body-ink { color: #C9C6C1; }
+
+.h-inline-link { color: #A3220B; font-weight: 700; text-decoration: none; }
+.h-inline-link:hover { text-decoration: underline; }
+
+/* ---------- buttons ---------- */
+
+.h-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.h-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 0;
+  padding: 14px 22px;
+  cursor: pointer;
+  border: 2px solid transparent;
+}
+.h-btn-solid { background: #EC3013; border-color: #EC3013; color: #FFFFFF; }
+.h-btn-solid:hover { background: #A3220B; border-color: #A3220B; }
+.h-btn-line { background: none; border-color: #1B1917; color: #1B1917; }
+.h-btn-line:hover { background: rgba(236, 48, 19, 0.07); }
+.h-btn-white { background: #FFFFFF; border-color: #FFFFFF; color: #A3220B; }
+.h-btn-white:hover { background: #F1EDE6; border-color: #F1EDE6; }
+.h-btn-white-line { background: none; border-color: #FFFFFF; color: #FFFFFF; }
+.h-btn-white-line:hover { background: rgba(255, 255, 255, 0.14); }
+
+.h-btn:focus-visible,
+.h-inline-link:focus-visible {
+  outline: 2px solid #EC3013;
+  outline-offset: 2px;
+}
+.h-btn-white:focus-visible,
+.h-btn-white-line:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
+}
+
+/* ---------- hero ---------- */
+
+/* 1.2fr / 0.8fr with the rule drawn as a border on the right column.
+
+   The handoff writes this as `1.2fr 2px 0.8fr`, and taken literally that
+   is a three-track grid with only two children in it: the log auto-placed
+   into the 2px track and rendered 70px wide with one word per line. A
+   middle track can only be a rule if something is placed in it, or if
+   both children are placed explicitly and the track is painted some other
+   way. A border on the taller-stretching column is the same 2px line with
+   nothing to get wrong. */
+.h-hero {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+}
+.h-hero-say { padding: 46px 38px 38px; }
+.h-hero-log {
+  background: #F1EDE6;
+  padding: 46px 34px 34px;
+  border-left: 2px solid #1B1917;
+}
+
+.h-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 2px solid #1B1917;
+  margin-top: 40px;
+}
+.h-stat { padding: 20px 18px 4px 0; }
+.h-stat + .h-stat {
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+  padding-left: 22px;
+}
+.h-stat-num {
+  font-size: 2.75rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+  color: #1B1917;
+  margin: 0 0 8px;
+}
+.h-stat-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A8278;
+  margin: 0;
+}
+
+/* ---------- the working log ---------- */
+
+.h-log-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 2px solid #1B1917;
+  padding-bottom: 10px;
+}
+.h-log-head .h-kicker { margin-bottom: 0; }
+
+.h-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A8278;
+  margin: 0;
+}
+.h-live-dot { width: 8px; height: 8px; background: #EC3013; }
+
+.h-log { list-style: none; margin: 0; padding: 0; }
+.h-log-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.h-log-who {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1B1917;
+  margin: 0 0 3px;
+}
+.h-log-note { font-size: 13px; line-height: 1.4; color: #4B453D; margin: 0; }
+.h-log-when {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: #8A8278;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.h-log-foot {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6B645A;
+  margin: 16px 0 0;
+}
+
+/* ---------- a ruled band of cells ---------- */
+
+.h-band { padding: 30px 38px 34px; }
+.h-band-head {
+  display: flex;
+  align-items: baseline;
+  gap: 26px;
+  margin-bottom: 12px;
+}
+.h-band-head .h-kicker { margin-bottom: 0; flex-shrink: 0; }
+.h-band-lead {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  max-width: 62ch;
+  color: #4B453D;
+  margin: 0 0 8px;
+}
+
+/* Cells, not cards. One hairline between them and nothing else:
+   no border box, no fill, no radius, no shadow. */
+.h-cells { display: grid; margin-top: 22px; }
+.h-cells-3 { grid-template-columns: repeat(3, 1fr); }
+.h-cell { padding: 24px 26px 26px 0; }
+.h-cell + .h-cell {
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+  padding-left: 26px;
+}
+
+.h-num {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #A3220B;
+  margin: 0 0 12px;
+}
+.h-price {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #B52309;
+  margin: 16px 0 0;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The square says shipped or direction. Filled is shipped. */
+.h-tech {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #1B1917;
+  margin: 0 0 12px;
+}
+.h-sq {
+  width: 11px;
+  height: 11px;
+  flex-shrink: 0;
+  border: 1.5px solid #1B1917;
+  background: none;
+}
+.h-sq-on { background: #EC3013; border-color: #EC3013; }
+
+/* ---------- the story: the one ink band ---------- */
+
+.h-story {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+}
+.h-story-tell { padding: 40px 38px 44px; }
+.h-story-tell .h-body-ink { max-width: 52ch; }
+
+.h-quote {
+  font-size: clamp(1.4rem, 2.5vw, 1.875rem);
+  font-weight: 800;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  color: #FF6A4A;
+  border-top: 2px solid #4A453F;
+  padding-top: 22px;
+  margin: 32px 0 10px;
+  max-width: 22ch;
+}
+.h-quote-src {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8F8981;
+  margin: 0;
+}
+
+.h-gates {
+  border-left: 1px solid #4A453F;
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+}
+.h-gate { padding: 40px 38px; }
+.h-gate + .h-gate { border-top: 1px solid #4A453F; }
+.h-gate .h-body-ink { max-width: 44ch; }
+
+/* ---------- the team ---------- */
+
+.h-team {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+}
+.h-team-face { background: #1B1917; }
+.h-team-face img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.06);
+}
+.h-team-say { padding: 40px 38px 44px; }
+.h-team-say .h-body { max-width: 52ch; margin-bottom: 6px; }
+.h-team-say .h-btn { margin-top: 26px; }
+
+.h-roster {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 34px;
+  border-top: 2px solid #1B1917;
+  margin-top: 26px;
+}
+.h-roster-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.h-roster-name { font-size: 13.5px; font-weight: 700; color: #1B1917; margin: 0; }
+.h-roster-role {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #8A8278;
+  margin: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ---------- the close: the one accent field ---------- */
+
+.h-close {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+}
+.h-close-say { padding: 44px 38px; }
+.h-close-do {
+  padding: 44px 38px;
+  border-left: 1px solid rgba(255, 255, 255, 0.35);
+}
+.h-close-h2 {
+  font-size: clamp(1.9rem, 3.7vw, 2.875rem);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -0.035em;
+  color: #FFFFFF;
+  margin: 0;
+  max-width: 16ch;
+}
+.h-close-body {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #FFFFFF;
+  max-width: 40ch;
+  margin: 0 0 22px;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1020px) {
+  .h-hero { grid-template-columns: 1fr; }
+  .h-hero-log { border-left: 0; border-top: 2px solid #1B1917; }
+  .h-story { grid-template-columns: 1fr; }
+  .h-gates { border-left: 0; border-top: 1px solid #4A453F; }
+  .h-team { grid-template-columns: 1fr; }
+  .h-team-face { max-height: 420px; }
+  .h-close { grid-template-columns: 1fr; }
+  .h-close-do { border-left: 0; border-top: 1px solid rgba(255, 255, 255, 0.35); padding-top: 0; }
+}
+
+@media (max-width: 760px) {
+  .h-hero-say,
+  .h-hero-log,
+  .h-band,
+  .h-story-tell,
+  .h-gate,
+  .h-team-say,
+  .h-close-say,
+  .h-close-do { padding-left: 22px; padding-right: 22px; }
+  .h-cells-3 { grid-template-columns: 1fr; }
+  .h-cell { padding: 22px 0; }
+  .h-cell + .h-cell {
+    border-left: 0;
+    border-top: 1px solid rgba(27, 25, 23, 0.25);
+    padding-left: 0;
+  }
+  .h-stats { grid-template-columns: 1fr; }
+  .h-stat + .h-stat {
+    border-left: 0;
+    border-top: 1px solid rgba(27, 25, 23, 0.25);
+    padding-left: 0;
+    padding-top: 18px;
+  }
+  .h-roster { grid-template-columns: 1fr; }
 }

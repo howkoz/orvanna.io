@@ -42,56 +42,56 @@
 
 :root {
   /* ---------- reading surface: the COMPLETE dark palette, the default ------- */
-  --bg:            #060B18;
-  --bg-2:          #0A1226;
-  --panel:         #101A31;
-  --panel-2:       #0C1424;
-  --heading:       #F1F5F9;
-  --text:          #C7D0DE;
-  --muted:         #94A3B8;
-  --quiet:         #7C8AA0;
-  --line:          rgba(129, 140, 248, 0.18);
-  --line-lit:      rgba(34, 211, 238, 0.38);
-  --accent:        #22D3EE;
-  --accent-ink:    #05121C;
-  --accent-soft:   rgba(34, 211, 238, 0.08);
-  --indigo-t:      #A5B4FC;
-  --violet-t:      #A78BFA;
-  --icon:          #818CF8;
-  --icon-lit:      #22D3EE;
-  --panel-shadow:  0 0 26px rgba(79, 70, 229, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --panel-lift:    0 0 38px rgba(34, 211, 238, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --rule:          linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
+  --bg:            #EAE4D9;
+  --bg-2:          #F1EDE6;
+  --panel:         #F1EDE6;
+  --panel-2:       #F1EDE6;
+  --heading:       #1B1917;
+  --text:          #4B453D;
+  --muted:         #6B645A;
+  --quiet:         #8A8278;
+  --line:          rgba(27, 25, 23, 0.18);
+  --line-lit:      rgba(236, 48, 19, 0.38);
+  --accent:        #EC3013;
+  --accent-ink:    #FFFFFF;
+  --accent-soft:   rgba(236, 48, 19, 0.08);
+  --indigo-t:      #6B645A;
+  --violet-t:      #1B1917;
+  --icon:          #1B1917;
+  --icon-lit:      #EC3013;
+  --panel-shadow:  0 0 26px rgba(27, 25, 23, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-lift:    0 0 38px rgba(236, 48, 19, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --rule:          linear-gradient(90deg, rgba(236, 48, 19, 0.45), rgba(27, 25, 23, 0.2), transparent);
 
   /* The --chrome-* tokens moved to css/site-chrome.css, which is
      now the single source of chrome presentation for all nine
      corporate pages. Rules in this file may still READ them. */
 
-  --maxw:          1100px;
+  --maxw:          1180px;   /* the design canvas, 2026-08-18 */
 }
 
 /* The light theme: a deliberate choice, never a system default. */
 :root[data-theme="light"] {
-  --bg:           #FFFFFF;
-  --bg-2:         #F1F4FA;
-  --panel:        #FFFFFF;
-  --panel-2:      #F8FAFC;
-  --heading:      #0F172A;
-  --text:         #263244;   /* 12.63 to 1 on white */
-  --muted:        #5B6472;   /* 6.03 to 1 on white */
+  --bg:           #1B1917;
+  --bg-2:         #EAE4D9;
+  --panel:        #1B1917;
+  --panel-2:      #1B1917;
+  --heading:      #1B1917;
+  --text:         #4B453D;   /* 12.63 to 1 on white */
+  --muted:        #6B645A;   /* 6.03 to 1 on white */
   --quiet:        #6B7280;   /* 4.83 to 1 on white */
-  --line:         rgba(15, 23, 42, 0.13);
-  --line-lit:     rgba(79, 70, 229, 0.32);
-  --accent:       #0E7490;   /* the single lit accent, light form. 5.36 to 1 on white */
-  --accent-ink:   #FFFFFF;
+  --line:         rgba(27, 25, 23, 0.13);
+  --line-lit:     rgba(27, 25, 23, 0.32);
+  --accent:       #A3220B;   /* the single lit accent, light form. 5.36 to 1 on white */
+  --accent-ink:   #1B1917;
   --accent-soft:  rgba(14, 116, 144, 0.08);
-  --indigo-t:     #4338CA;   /* indigo as text on light. 7.40 to 1 on white */
-  --violet-t:     #6D28D9;
-  --icon:         #4F46E5;
-  --icon-lit:     #0E7490;
-  --panel-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
-  --panel-lift:   0 10px 26px rgba(15, 23, 42, 0.14);
-  --rule:         linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(79, 70, 229, 0.28), transparent);
+  --indigo-t:     #1B1917;   /* indigo as text on light. 7.40 to 1 on white */
+  --violet-t:     #1B1917;
+  --icon:         #1B1917;
+  --icon-lit:     #A3220B;
+  --panel-shadow: 0 4px 14px rgba(27, 25, 23, 0.10);
+  --panel-lift:   0 10px 26px rgba(27, 25, 23, 0.14);
+  --rule:         linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(27, 25, 23, 0.28), transparent);
 }
 
 /* ============================================================
@@ -116,7 +116,7 @@ img, svg { max-width: 100%; display: block; }
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 [hidden] { display: none !important; }
@@ -256,7 +256,7 @@ section { scroll-margin-top: 150px; }
   text-decoration: none;
   color: var(--muted);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 14px 7px;
   transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
 }
@@ -275,8 +275,8 @@ section { scroll-margin-top: 150px; }
   position: relative;
   background: var(--panel);
   border: 1px solid var(--line);
-  border-radius: 14px;
-  box-shadow: var(--panel-shadow);
+  border-radius: 0;
+  box-shadow: none;
   padding: 30px 28px 26px;
 }
 
@@ -286,8 +286,8 @@ section { scroll-margin-top: 150px; }
   left: 22px;
   right: 22px;
   height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--icon), var(--accent));
+  border-radius: 0;
+  background: #1B1917;
   opacity: 0.9;
 }
 
@@ -314,7 +314,7 @@ section { scroll-margin-top: 150px; }
   text-transform: uppercase;
   letter-spacing: 0.18em;
   padding: 4px 11px 5px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid var(--line-lit);
   color: var(--indigo-t);
   white-space: nowrap;
@@ -330,7 +330,7 @@ section { scroll-margin-top: 150px; }
   text-transform: uppercase;
   letter-spacing: 0.18em;
   padding: 4px 11px 5px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid var(--quiet);
   color: var(--quiet);
   white-space: nowrap;
@@ -357,7 +357,7 @@ section { scroll-margin-top: 150px; }
   color: var(--text);
   background: transparent;
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 8px 20px;
   cursor: pointer;
   transition: color 0.16s ease, border-color 0.16s ease, background-color 0.16s ease;
@@ -372,14 +372,14 @@ section { scroll-margin-top: 150px; }
 .card-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 26px;
+  gap: 18px;
 }
 
 /* the whole card is the link, so the target is the card, not a word in it */
 .lib-card {
   display: flex;
   flex-direction: column;
-  padding: 26px 24px 22px;
+  padding: 18px 18px 16px;
   color: inherit;            /* never fall back to the browser's link blue */
   text-decoration: none;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
@@ -388,15 +388,15 @@ section { scroll-margin-top: 150px; }
 .lib-card:hover {
   transform: translateY(-5px);
   border-color: var(--line-lit);
-  box-shadow: var(--panel-lift);
+  box-shadow: none;
 }
 
 .lib-card-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .ico {
@@ -406,26 +406,45 @@ section { scroll-margin-top: 150px; }
   color: var(--icon);
 }
 
+/* THE CARD'S OWN ICON AND BADGE ARE SMALLER THAN THE PAGE'S.
+   .ico and .badge are shared with the agent pages, where they sit
+   alone at full size and should stay that way. Scoping the smaller
+   sizes to .lib-card-top tightens the index grid without touching
+   library-agent.html, which uses the same two class names. */
+.lib-card-top .ico {
+  width: 38px;
+  height: 38px;
+}
+
+.lib-card-top .badge {
+  /* Size held at the sheet's 0.62rem, same reason as the shop's
+     .tier-badge: only the padding and the tracking come down. */
+  letter-spacing: 0.13em;
+  padding: 3px 9px 4px;
+}
+
 .lib-card-name {
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.07em;
+  line-height: 1.3;
   color: var(--heading);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .lib-card:hover .lib-card-name { color: var(--accent); }
 
 .lib-card-blurb {
-  font-size: 0.9rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
   color: var(--muted);
   flex-grow: 1;
-  margin-bottom: 18px;
+  margin-bottom: 12px;
 }
 
 .lib-card-prices {
-  padding-top: 14px;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
 }
 
@@ -437,14 +456,14 @@ section { scroll-margin-top: 150px; }
 }
 
 .lib-card-amt {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--heading);
   font-variant-numeric: tabular-nums;
 }
 
 .lib-card-amt .per {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -452,9 +471,9 @@ section { scroll-margin-top: 150px; }
 }
 
 .lib-card-pv {
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent);
   font-variant-numeric: tabular-nums;
@@ -462,17 +481,17 @@ section { scroll-margin-top: 150px; }
 }
 
 .lib-card-once {
-  margin-top: 4px;
-  font-size: 0.76rem;
+  margin-top: 3px;
+  font-size: 0.7rem;
   color: var(--muted);
   font-variant-numeric: tabular-nums;
 }
 
 .lib-card-go {
-  margin-top: 14px;
-  font-size: 0.7rem;
+  margin-top: 10px;
+  font-size: 0.66rem;
   font-weight: 700;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--accent);
   display: flex;
@@ -495,9 +514,9 @@ section { scroll-margin-top: 150px; }
 .table-scroll {
   overflow-x: auto;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   background: var(--panel);
-  box-shadow: var(--panel-shadow);
+  box-shadow: none;
 }
 
 table {
@@ -603,7 +622,7 @@ table a:focus-visible {
 
 .callout {
   border-left: 3px solid var(--accent);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0;
   background: var(--accent-soft);
   padding: 18px 22px;
   margin: 26px 0;
@@ -692,7 +711,7 @@ table a:focus-visible {
   padding: 20px 22px;
   background: var(--panel-2);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   max-width: 520px;
 }
 
@@ -782,7 +801,7 @@ table a:focus-visible {
   top: 0.72em;
   width: 7px;
   height: 7px;
-  border-radius: 50%;
+  border-radius: 0;
   background: var(--accent);
 }
 
@@ -807,7 +826,7 @@ table a:focus-visible {
 .inside-chip:hover {
   transform: translateY(-3px);
   border-color: var(--line-lit);
-  box-shadow: var(--panel-lift);
+  box-shadow: none;
 }
 
 .inside-chip .ico { width: 40px; height: 40px; }
@@ -869,7 +888,7 @@ table a:focus-visible {
 .walk-link:hover {
   transform: translateY(-3px);
   border-color: var(--line-lit);
-  box-shadow: var(--panel-lift);
+  box-shadow: none;
 }
 
 .walk-next { flex-direction: row-reverse; text-align: right; }
@@ -922,10 +941,10 @@ table a:focus-visible {
   text-decoration: none;
   color: var(--accent-ink);
   background: var(--accent);
-  border-radius: 8px;
+  border-radius: 0;
   transition: transform 0.16s ease, box-shadow 0.16s ease;
 }
-.btn-back:hover { transform: translateY(-2px); box-shadow: var(--panel-lift); }
+.btn-back:hover { transform: translateY(-2px); box-shadow: none; }
 
 /* The footer moved to css/site-chrome.css. See the note above. */
 

@@ -1,6 +1,16 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <!-- Orvanna favicon: hexagon + lit hub only, tuned for 16 px -->
-  <rect width="64" height="64" rx="14" fill="#4F46E5"/>
-  <polygon points="32,8 52.8,20 52.8,44 32,56 11.2,44 11.2,20" fill="none" stroke="#FFFFFF" stroke-width="6.5" stroke-linejoin="round"/>
-  <circle cx="32" cy="32" r="5.5" fill="#22D3EE"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <!-- Orvanna favicon. The 16px optical cut: thickest bars, deepest inset,
+       so the pinwheel survives rasterisation at tab size instead of
+       collapsing into a smudge. Four rectangles in 90 degree rotational
+       symmetry, one of them accented, turning around a central gap.
+
+       This is the ONE drawing that keeps a ground. A favicon is composited
+       onto a browser chrome we do not control and cannot inherit a page
+       colour, so ink bars alone would vanish on a dark tab strip. The
+       square is paper, not white, and carries no radius. -->
+  <rect width="64" height="64" fill="#EAE4D9"/>
+  <rect x="30.5" y="4.5" width="29" height="15.5" fill="#EC3013"/>
+  <rect x="44" y="32" width="15.5" height="29" fill="#1B1917"/>
+  <rect x="4.5" y="44" width="29" height="15.5" fill="#1B1917"/>
+  <rect x="4.5" y="4.5" width="15.5" height="29" fill="#1B1917"/>
 </svg>

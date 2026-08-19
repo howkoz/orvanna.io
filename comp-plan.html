@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Compensation Plan</title>
 <meta name="description" content="The Orvanna compensation plan, version 1.3: how a Conductor earns, every term defined, every earning mechanism with worked arithmetic, the rank ladder, and the qualification rules. Demonstration document, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -23,7 +23,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
 <style>
 /* ==========================================================================
    Orvanna compensation plan brochure.
@@ -45,58 +45,58 @@
 
 :root {
   /* --- the complete palette, DARK, which is the default --- */
-  --paper:       #060B18;
-  --band-a:      #060B18;
-  --band-b:      #080F20;
-  --surface:     #0A1226;
-  --surface-2:   rgba(30, 41, 59, 0.55);
-  --ink:         #F1F5F9;
-  --body:        #C7D0DE;
-  --muted:       #94A3B8;
-  --line:        rgba(129, 140, 248, 0.22);
-  --hairline:    rgba(129, 140, 248, 0.18);
-  --code-bg:     #0A1226;
-  --shadow:      0 0 26px rgba(79, 70, 229, 0.14);
-  --shadow-lift: 0 0 38px rgba(34, 211, 238, 0.16);
+  --paper:       #EAE4D9;
+  --band-a:      #EAE4D9;
+  --band-b:      #F1EDE6;
+  --surface:     #F1EDE6;
+  --surface-2:   rgba(241, 237, 230, 0.55);
+  --ink:         #1B1917;
+  --body:        #4B453D;
+  --muted:       #6B645A;
+  --line:        rgba(27, 25, 23, 0.22);
+  --hairline:    rgba(27, 25, 23, 0.18);
+  --code-bg:     #F1EDE6;
+  --shadow:      0 0 26px rgba(27, 25, 23, 0.14);
+  --shadow-lift: 0 0 38px rgba(236, 48, 19, 0.16);
 
-  --indigo:      #818CF8;
-  --indigo-soft: #A5B4FC;
-  --violet:      #A78BFA;
-  --accent:      #22D3EE;
-  --link:        #22D3EE;   /* link ink; see the light block for why it is a token */
-  --accent-bg:   rgba(34, 211, 238, 0.10);
-  --accent-line: rgba(34, 211, 238, 0.38);
-  --good:        #6EE7B7;
+  --indigo:      #1B1917;
+  --indigo-soft: #6B645A;
+  --violet:      #1B1917;
+  --accent:      #EC3013;
+  --link:        #EC3013;   /* link ink; see the light block for why it is a token */
+  --accent-bg:   rgba(236, 48, 19, 0.10);
+  --accent-line: rgba(236, 48, 19, 0.38);
+  --good:        #15803D;
   --good-bg:     rgba(52, 211, 153, 0.13);
-  --bad:         #FCA5A5;
+  --bad:         #B91C1C;
   --bad-bg:      rgba(248, 113, 113, 0.14);
-  --amber:       #FDE68A;
+  --amber:       #8A6D3B;
   --amber-bg:    rgba(250, 204, 21, 0.13);
 
-  --d-line:        rgba(129, 140, 248, 0.45);
-  --d-node-bg:     rgba(30, 41, 59, 0.62);
-  --d-node-stroke: rgba(129, 140, 248, 0.45);
-  --d-text:        #F1F5F9;
-  --d-muted:       #94A3B8;
-  --d-lit-bg:      rgba(34, 211, 238, 0.12);
-  --d-lit-stroke:  #22D3EE;
-  --d-key-bg:      rgba(79, 70, 229, 0.24);
-  --d-key-stroke:  #818CF8;
+  --d-line:        rgba(27, 25, 23, 0.45);
+  --d-node-bg:     rgba(241, 237, 230, 0.62);
+  --d-node-stroke: rgba(27, 25, 23, 0.45);
+  --d-text:        #1B1917;
+  --d-muted:       #6B645A;
+  --d-lit-bg:      rgba(236, 48, 19, 0.12);
+  --d-lit-stroke:  #EC3013;
+  --d-key-bg:      rgba(27, 25, 23, 0.24);
+  --d-key-stroke:  #1B1917;
   --d-bad-bg:      rgba(248, 113, 113, 0.14);
-  --d-bad-stroke:  #FCA5A5;
+  --d-bad-stroke:  #B91C1C;
   --d-good-bg:     rgba(52, 211, 153, 0.13);
-  --d-good-stroke: #6EE7B7;
-  --d-hatch:       rgba(129, 140, 248, 0.30);
+  --d-good-stroke: #15803D;
+  --d-hatch:       rgba(27, 25, 23, 0.30);
 
   /* --- the cover's own fixed-dark tokens. The cover is dark in both
          themes the way a printed brochure's cover is a fixed object
          rather than a preference. The rest of the --chrome-* family
          (text, head, muted, quiet, line) is declared once in
          css/site-chrome.css and read from there. --- */
-  --chrome:       #060B18;
-  --chrome-2:     #0A1226;
-  --chrome-lit:   #22D3EE;
-  --chrome-ind:   #A5B4FC;
+  --chrome:       #EAE4D9;
+  --chrome-2:     #F1EDE6;
+  --chrome-lit:   #EC3013;
+  --chrome-ind:   #6B645A;
 
   --maxw: 1100px;
 }
@@ -108,19 +108,19 @@
   --band-b:       #F4F6FB;
   --surface:      #F7F8FC;
   --surface-2:    #EEF0FF;
-  --ink:          #0F172A;
+  --ink:          #1B1917;
   --body:         #334155;
   --muted:        #5B6472;
   --line:         #D8DCE5;
-  --hairline:     rgba(79, 70, 229, 0.20);
-  --code-bg:      #F1F5F9;
-  --shadow:       0 4px 14px rgba(15, 23, 42, 0.10);
-  --shadow-lift:  0 8px 22px rgba(15, 23, 42, 0.14);
+  --hairline:     rgba(27, 25, 23, 0.20);
+  --code-bg:      #1B1917;
+  --shadow:       0 4px 14px rgba(241, 237, 230, 0.10);
+  --shadow-lift:  0 8px 22px rgba(241, 237, 230, 0.14);
 
-  --indigo:       #4F46E5;
-  --indigo-soft:  #4338CA;
-  --violet:       #6D28D9;
-  --accent:       #0E7490;   /* the single lit accent, light-safe cyan */
+  --indigo:       #1B1917;
+  --indigo-soft:  #1B1917;
+  --violet:       #1B1917;
+  --accent:       #A3220B;   /* the single lit accent, light-safe cyan */
   /* Links sit on tinted note and panel backgrounds, where the accent above
      measures 4.56 to 1 against the stop-note tint and 4.73 against the plain
      note tint: passing, but with almost no margin. This darker cyan is 6.18
@@ -133,17 +133,17 @@
   --bad:          #B91C1C;
   --bad-bg:       #FDE8E6;
   --amber:        #B45309;
-  --amber-bg:     #FEF3C7;
+  --amber-bg:     #F1EDE6;
 
   --d-line:        #9AA3B2;
   --d-node-bg:     #F7F8FC;
   --d-node-stroke: #9AA3B2;
-  --d-text:        #0F172A;
+  --d-text:        #1B1917;
   --d-muted:       #5B6472;
   --d-lit-bg:      #E7F6FB;
-  --d-lit-stroke:  #0E7490;
+  --d-lit-stroke:  #A3220B;
   --d-key-bg:      #EEF0FF;
-  --d-key-stroke:  #4F46E5;
+  --d-key-stroke:  #1B1917;
   --d-bad-bg:      #FDE8E6;
   --d-bad-stroke:  #B91C1C;
   --d-good-bg:     #E3F5EE;
@@ -224,11 +224,11 @@ img, svg { max-width: 100%; display: block; }
 }
 .cover::before {
   left: -240px; top: -280px;
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.22), transparent 70%);
+  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.22), transparent 70%);
 }
 .cover::after {
   right: -260px; bottom: -340px;
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.12), transparent 70%);
+  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.12), transparent 70%);
 }
 .cover .wrap { position: relative; z-index: 1; }
 .cover-mark { display: flex; align-items: center; gap: 20px; margin-bottom: 34px; }
@@ -474,7 +474,7 @@ details.ledger[open] { padding-bottom: 18px; }
 .foot-links a { text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.75rem; font-weight: 600; }
 /* Inside .foot, the brochure's own footer, which is a different
    element from the shared site footer that css/site-chrome.css owns. */
-.foot .legal { color: #7C8AA0; max-width: 62em; font-size: 0.86rem; }
+.foot .legal { color: #8A8278; max-width: 62em; font-size: 0.86rem; }
 
 /* ------------------------------------------------------------ responsive */
 
@@ -508,33 +508,33 @@ details.ledger[open] { padding-bottom: 18px; }
   :root[data-theme="light"] {
     --paper: #FFFFFF; --band-a: #FFFFFF; --band-b: #FFFFFF;
     --surface: #F7F8FC; --surface-2: #EEF0FF;
-    --ink: #0F172A; --body: #1F2937; --muted: #4B5563;
-    --line: #C8CEDA; --hairline: #C8CEDA; --code-bg: #F1F5F9;
+    --ink: #1B1917; --body: #F1EDE6; --muted: #4B453D;
+    --line: #C8CEDA; --hairline: #C8CEDA; --code-bg: #1B1917;
     --shadow: none; --shadow-lift: none;
-    --indigo: #4338CA; --indigo-soft: #4F46E5; --violet: #6D28D9;
-    --accent: #0E7490; --accent-bg: #E7F6FB; --accent-line: #0E7490; --link: #155E75;
+    --indigo: #1B1917; --indigo-soft: #1B1917; --violet: #1B1917;
+    --accent: #A3220B; --accent-bg: #E7F6FB; --accent-line: #A3220B; --link: #155E75;
     --good: #065F46; --good-bg: #E3F5EE;
     --bad: #B91C1C; --bad-bg: #FDE8E6;
-    --amber: #92400E; --amber-bg: #FEF3C7;
+    --amber: #92400E; --amber-bg: #F1EDE6;
     --d-line: #9AA3B2; --d-node-bg: #FFFFFF; --d-node-stroke: #9AA3B2;
-    --d-text: #0F172A; --d-muted: #4B5563;
-    --d-lit-bg: #E7F6FB; --d-lit-stroke: #0E7490;
-    --d-key-bg: #EEF0FF; --d-key-stroke: #4F46E5;
+    --d-text: #1B1917; --d-muted: #4B453D;
+    --d-lit-bg: #E7F6FB; --d-lit-stroke: #A3220B;
+    --d-key-bg: #EEF0FF; --d-key-stroke: #1B1917;
     --d-bad-bg: #FDE8E6; --d-bad-stroke: #B91C1C;
     --d-good-bg: #E3F5EE; --d-good-stroke: #065F46;
     --d-hatch: #C7CDDA;
   }
   @page { margin: 15mm 14mm; }
-  body { background: #FFFFFF; color: #1F2937; font-size: 11pt; line-height: 1.5; }
+  body { background: #FFFFFF; color: #F1EDE6; font-size: 11pt; line-height: 1.5; }
   /* .nav is hidden by css/site-chrome.css, which owns the chrome in
      print as well as on screen. */
   .cover-actions, .no-print { display: none !important; }
-  .cover { background: #FFFFFF; color: #0F172A; padding: 0 0 18px; border-bottom: 2px solid #4F46E5; }
+  .cover { background: #FFFFFF; color: #1B1917; padding: 0 0 18px; border-bottom: 2px solid #1B1917; }
   .cover::before, .cover::after { display: none; }
-  .cover h1 { color: #0F172A; }
-  .cover-sub { color: #4B5563; }
-  .cover-kicker { color: #0E7490; }
-  .stamp { color: #4338CA; border-color: #C8CEDA; }
+  .cover h1 { color: #1B1917; }
+  .cover-sub { color: #4B453D; }
+  .cover-kicker { color: #A3220B; }
+  .stamp { color: #1B1917; border-color: #C8CEDA; }
   .logo-dark { display: none !important; }
   .logo-light { display: block !important; width: 260px; }
   .band { padding: 20px 0; border-top: 1px solid #C8CEDA; background: #FFFFFF; }
@@ -548,10 +548,10 @@ details.ledger[open] { padding-bottom: 18px; }
   thead th { position: static; }
   details.ledger { border: 1px solid #C8CEDA; }
   details.ledger > summary { list-style: none; }
-  .foot { background: #FFFFFF; color: #4B5563; border-top: 2px solid #4F46E5; padding: 14px 0 0; }
-  .foot a, .foot-links { color: #1F2937; }
-  .foot .legal { color: #4B5563; }
-  a { color: #0F172A; text-decoration: none; }
+  .foot { background: #FFFFFF; color: #4B453D; border-top: 2px solid #1B1917; padding: 14px 0 0; }
+  .foot a, .foot-links { color: #F1EDE6; }
+  .foot .legal { color: #4B453D; }
+  a { color: #1B1917; text-decoration: none; }
 }
 
 .logo-light { display: none; }
@@ -563,36 +563,36 @@ details.ledger[open] { padding-bottom: 18px; }
 <header class="nav no-print">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link" href="index.html">Learn</a>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link is-active" href="comp-plan.html" aria-current="page">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </nav>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link" href="index.html">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link is-active" href="comp-plan.html" aria-current="page">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
   </div>
 </header>
 
@@ -602,12 +602,12 @@ details.ledger[open] { padding-bottom: 18px; }
 <section class="cover" id="cover">
   <div class="wrap">
     <div class="cover-mark">
-      <img src="assets/logo-header-dark.svg?v=cef144c6cb42" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
-      <img src="assets/logo-final-primary.svg?v=cef144c6cb42" alt="Orvanna" class="logo-light">
+      <img src="assets/logo-header-dark.svg?v=b3f2bf0935f8" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
+      <img src="assets/logo-final-primary.svg?v=b3f2bf0935f8" alt="Orvanna" class="logo-light">
     </div>
     <p class="cover-kicker">The compensation plan</p>
     <h1>Build an ensemble.<br>Build a team.</h1>
-    <p class="cover-sub">Orvanna sells artificial intelligence (AI) agents by subscription. A <strong style="color:#F1F5F9">Conductor</strong> runs an ensemble of those agents and helps other people do the same. This brochure explains, with the arithmetic in plain sight, exactly how a Conductor is paid for that. Part one is the plan that runs today. Part two is a two-layer extension that has been modelled, verified, and attacked, and has never paid anybody.</p>
+    <p class="cover-sub">Orvanna sells artificial intelligence (AI) agents by subscription. A <strong style="color:#1B1917">Conductor</strong> runs an ensemble of those agents and helps other people do the same. This brochure explains, with the arithmetic in plain sight, exactly how a Conductor is paid for that. Part one is the plan that runs today. Part two is a two-layer extension that has been modelled, verified, and attacked, and has never paid anybody.</p>
     <div class="stamps">
       <span class="stamp">Plan version 1.3</span>
       <span class="stamp">Effective month 2026-08</span>

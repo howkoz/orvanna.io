@@ -69,21 +69,21 @@
   /* The bar is translucent so content shows through the blur.
      0.94 rather than the 0.78 it started at: in the light theme
      a white page scrolls underneath, and at 0.78 the bar
-     composited to about #3D4143, which put the Enroll
+     composited to about #4B453D, which put the Enroll
      placeholder at 2.84 to 1. At 0.94 it composites to about
-     #151A26 over white and 4.98 to 1, and over the dark field
+     #F1EDE6 over white and 4.98 to 1, and over the dark field
      it is indistinguishable from the old value. */
-  --chrome-bg:     rgba(6, 11, 24, 0.94);
-  --chrome-foot:   #050914;
-  --chrome-hi:     #FFFFFF;
-  --chrome-head:   #F1F5F9;
-  --chrome-brand:  #F8FAFC;
-  --chrome-text:   #C7D0DE;
-  --chrome-muted:  #94A3B8;
-  --chrome-quiet:  #7C8AA0;
-  --chrome-line:   rgba(129, 140, 248, 0.18);
-  --chrome-accent: #22D3EE;
-  --chrome-indigo: #818CF8;
+  --chrome-bg:     #EAE4D9;
+  --chrome-foot:   #1B1917;
+  --chrome-hi:     #1B1917;
+  --chrome-head:   #1B1917;
+  --chrome-brand:  #1B1917;
+  --chrome-text:   #4B453D;
+  --chrome-muted:  #6B645A;
+  --chrome-quiet:  #8A8278;
+  --chrome-line:   #1B1917;
+  --chrome-accent: #EC3013;
+  --chrome-indigo: #1B1917;
 }
 
 /* ============================================================
@@ -97,7 +97,7 @@
   z-index: 100;
   padding: 12px 20px;
   background: var(--chrome-accent);
-  color: #05121C;
+  color: #FFFFFF;
   font-size: 0.82rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -115,20 +115,24 @@
   top: 0;
   z-index: 50;
   background: var(--chrome-bg);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--chrome-line);
+  backdrop-filter: none;
+  backdrop-filter: none;
+  border-bottom: 2px solid var(--chrome-line);
 }
 
+/* ONE ROW, ALWAYS. flex-wrap:wrap is what let the bar grow a second row
+   and change height between pages; the disclosure below 900px is what
+   makes nowrap safe, because the items now leave the bar instead of
+   wrapping inside it. */
 .nav-inner {
-  max-width: var(--maxw, 1100px);
+  max-width: var(--maxw, 1180px);
   margin: 0 auto;
-  padding: 14px 28px;
+  padding: 15px 34px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
+  gap: 24px;
+  flex-wrap: nowrap;
 }
 
 /* ---------- brand lockup ---------- */
@@ -136,7 +140,7 @@
 .nav-brand {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: 10px;
   color: var(--chrome-brand);
   text-decoration: none;
   flex-shrink: 0;
@@ -145,224 +149,265 @@
 
 .nav-logo { height: 30px; width: auto; }
 
-.brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(34, 211, 238, 0.75);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 3px rgba(129, 140, 248, 0.18);
-}
+/* THE MARK. Four rectangles in 90 degree rotational symmetry, an ensemble
+   handing work around a central gap. Drawn inline rather than linked so it
+   inherits the ground it sits on: the three structural bars take
+   currentColor, so the same drawing is ink on paper and paper on ink, and
+   only the one accented bar is fixed.
 
+   The large optical cut (bar 22 x 10, inset 10) is correct at 28px. The
+   medium and small cuts are separate files, not this drawing scaled:
+   assets/logo-mark-md.svg and assets/logo-mark-sm.svg thicken the bars and
+   deepen the inset so the pinwheel survives rasterisation instead of
+   closing up into a smudge. */
+.brand-mark {
+  display: block;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  flex-shrink: 0;
+}
+.brand-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 50%;
+  transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+/* The mark is still by default. Anything that moves permanently
+   trains people to stop looking at it, so the turn fires on an
+   event -- the working log advancing -- and never on a timer of
+   its own. */
+@media (prefers-reduced-motion: reduce) {
+  .brand-mark svg { transition: none; }
+}
+.brand-mark .mark-bar { fill: currentColor; }
+.brand-mark .mark-accent { fill: var(--chrome-accent); }
+
+/* The wordmark is SET, not drawn. Shipping letterforms as paths is why the
+   old logo could never match the site's headlines: it could not take the
+   page's face, weight or tracking. */
 .brand-word {
-  font-size: 0.95rem;
+  font-size: 19px;
   font-weight: 800;
-  letter-spacing: 0.12em;
+  letter-spacing: -0.02em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 /* ---------- the items ---------- */
 
-/* GAP 16, AND THE ARITHMETIC BEHIND IT.
-
-   The bar is eleven controls wide on shop.html and product.html
-   (the nine canonical items, the theme button, and the cart) and
-   ten everywhere else. Measured at a 1280 pixel viewport, the
-   items themselves total 733.8 pixels with the cart and 663.8
-   without, against 906.1 pixels of room beside the brand lockup.
-   That leaves 172.3 pixels for the ten gaps on a cart page, so
-   the largest gap that fits on one row is 17.23 pixels.
-
-   At the 26 pixels this started at, the cart pages needed 993.8
-   and wrapped, rendering the bar 105 pixels tall against 69 on
-   the other seven. Same items, different bar, which is the
-   complaint that produced this contract.
-
-   16 was chosen by testing, not by eye: 26, 20 and 18 all still
-   wrap, 16 does not, and it leaves 12.3 pixels of slack at 1280
-   plus another 8 from the tightened Sign In padding below. It is
-   a SHARED value. Giving the two commerce pages a gap of their
-   own would fix the symptom by reintroducing the disease. */
+/* The bar was eleven controls wide and wrapped, so its height changed
+   between pages. That is now fixed structurally rather than by tuning a
+   gap to the pixel: two controls left the bar (the theme no-op and the
+   Enroll placeholder), and below 900px the rest collapse into a disclosure
+   menu instead of wrapping. The gap no longer carries the whole problem,
+   so the arithmetic that used to live in this comment is gone with it. */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  gap: 0;
+  flex: 1 1 auto;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.nav-menu {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-wrap: nowrap;
+  min-width: 0;
 }
 
 .nav-link {
   position: relative;
-  font-size: 0.84rem;
+  font-size: 12.5px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  text-decoration: none;
-  color: var(--chrome-text);
-  padding-bottom: 3px;
-  transition: color 0.15s ease;
-}
-
-a.nav-link:hover { color: var(--chrome-hi); }
-
-/* underline sweep: a gradient bar grows from the left on hover */
-a.nav-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--chrome-accent), var(--chrome-indigo));
-  transform: scaleX(0);
-  transform-origin: left center;
-  transition: transform 0.28s ease;
-}
-a.nav-link:hover::after,
-a.nav-link.is-active::after { transform: scaleX(1); }
-
-.nav-link.is-active { color: var(--chrome-hi); }
-
-/* Kept for the case where a page marks its active item with a
-   span rather than a link. Every page uses a link today. */
-span.nav-link.is-active::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -2px;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--chrome-accent), var(--chrome-indigo));
-}
-
-/* The "not yet" register. #7C8AA0 rather than #64748B: the old
-   value computed 4.13 to 1 against the bar, under the floor.
-   This one computes 5.61 to 1 on the dark field and 4.98 to 1
-   where the bar composites over a white page, and it still sits
-   well below the live links, so the item still reads as muted. */
-.nav-link.is-soon {
-  color: var(--chrome-quiet);
-  cursor: default;
-}
-
-.soon-pill {
-  display: inline-block;
-  margin-left: 7px;
-  padding: 1px 7px 2px;
-  font-size: 0.6rem;
-  letter-spacing: 0.18em;
-  border: 1px solid rgba(124, 138, 160, 0.7);
-  border-radius: 999px;
-  vertical-align: 2px;
-}
-
-/* Quiet member entry: the one door to the member area.
-   Deliberately understated so first-time visitors skim past it. */
-.nav-signin {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.04em;
+  line-height: 1;
   text-decoration: none;
   color: var(--chrome-muted);
-  border-left: 1px solid var(--chrome-line);
-  /* 16 rather than 24, to match the gap either side of the rule
-     so the divider sits centred in its own space, and to buy 8
-     more pixels of slack on the eleven-control cart pages. */
-  padding-left: 16px;
-  transition: color 0.15s ease, text-shadow 0.15s ease;
+  background: none;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 0 0 4px;
+  margin: 0;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
 }
 
-.nav-signin:hover {
-  color: var(--chrome-accent);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.55);
+.nav-link:hover { color: var(--chrome-hi); }
+
+/* The active item carries a rule, not only a colour. Colour alone is the
+   one marker lost to greyscale print and to a reader who cannot separate
+   these two values. */
+.nav-link.is-active {
+  color: var(--chrome-hi);
+  font-weight: 700;
+  border-bottom-color: var(--chrome-accent);
 }
 
-/* ---------- the theme control ----------
-   Icon only, by instruction: a sun while the dark theme is on, a
-   moon while the light theme is on, and never the words Light or
-   Dark. The accessible name lives in aria-label and
-   js/site-chrome.js rewrites it on every change, because an
-   icon-only control with a stale name lies in one of its two
-   states. Forty by forty pixels is the minimum comfortable
-   target on a laptop trackpad. */
-
-.nav-theme {
-  font: inherit;
+.nav-tail {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  flex: 0 0 auto;
-  padding: 0;
-  border: 1px solid var(--chrome-line);
-  border-radius: 10px;
-  background: transparent;
-  color: var(--chrome-text);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+  gap: 18px;
+  margin-left: 12px;
+  flex-shrink: 0;
 }
 
-.nav-theme:hover {
-  color: var(--chrome-accent);
-  border-color: rgba(34, 211, 238, 0.5);
-  background: rgba(34, 211, 238, 0.08);
+.nav-signin {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-decoration: none;
+  color: var(--chrome-muted);
+  white-space: nowrap;
+}
+.nav-signin:hover { color: var(--chrome-hi); }
+
+/* THE BAR'S PRIMARY ACTION: ONE BOX, TWO FILLS.
+
+   .nav-cta and .nav-cart are the two forms of the same slot, and they
+   swap by page. Their box metrics are declared ONCE, together, so the
+   two cannot drift apart: when they were styled separately the cart
+   measured 41px against the button's 37px and the bar stood 73px on the
+   commerce pages against 69px everywhere else. That is the original
+   complaint -- same bar, different height, page to page -- coming back
+   through a new pair of controls, four pixels at a time.
+
+   A lint could have caught it after the fact. Sharing the rule means
+   there is nothing to catch. */
+.nav-cta,
+.nav-cart {
+  display: inline-flex;
+  align-items: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-decoration: none;
+  border: 2px solid var(--chrome-hi);
+  padding: 10px 16px;
+  white-space: nowrap;
+  border-radius: 0;
 }
 
-.nav-theme:focus-visible {
-  outline: 2px solid var(--chrome-accent);
-  outline-offset: 2px;
+/* solid ink, paper label */
+.nav-cta {
+  color: var(--chrome-bg);
+  background: var(--chrome-hi);
+}
+.nav-cta:hover {
+  background: var(--chrome-accent);
+  border-color: var(--chrome-accent);
+  color: #FFFFFF;
 }
 
-.nav-theme svg { width: 19px; height: 19px; }
+/* ---------- the cart, shop.html and product.html only ---------- */
 
-/* Exactly one icon is ever visible. */
-.nav-theme .icon-sun  { display: block; }
-.nav-theme .icon-moon { display: none; }
-:root[data-theme="light"] .nav-theme .icon-sun  { display: none; }
-:root[data-theme="light"] .nav-theme .icon-moon { display: block; }
-
-/* ---------- the Support control ----------
-   A real button sitting among links, so the browser's own widget
-   styling is reset explicitly; colour and size come from the
-   .nav-link class beside it. That reset is the lesson from the
-   invisible-button defect of 2026-08-14. */
-
-.nav-support {
+/* Set as a word rather than a drawn trolley, per 9a. The identifiers and
+   the behaviour are untouched: #cartButton and #cartCount are what the
+   catalog and the drawer read, and renaming either breaks the lookups. */
+/* outlined, ink label -- the box itself is declared with .nav-cta above */
+.nav-cart {
+  gap: 8px;
   font-family: inherit;
-  background: transparent;
-  border: 0;
-  padding: 0 0 3px;
+  color: var(--chrome-hi);
+  background: none;
   cursor: pointer;
 }
+.nav-cart:hover { background: var(--chrome-hi); color: var(--chrome-bg); }
+/* the drawn trolley is gone; the control is set as a word */
+.nav-cart svg { display: none; }
 
-/* The chat vendor's own floating action button is suppressed:
-   the panel opens from the Support item in the navigation and
-   from nowhere else, so nothing can float over the cart control
-   on a phone or over the card form during checkout. */
-.bpFab { display: none !important; }
+/* The count is a figure set beside the word Cart, not a badge stuck to
+   an icon. It was a filled accent chip, which spent the page's one
+   accent event on a number that is zero most of the time. */
+.cart-count {
+  display: inline;
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  transition: transform 0.18s ease;
+}
+.cart-count.bump { transform: scale(1.35); }
 
-/* The two states js/site-chrome.js applies to the Support button.
+@media (prefers-reduced-motion: reduce) {
+  .cart-count.bump { transform: none; }
+}
 
-   "pending": the chat is still loading and a press has been
-   received and queued. Without this a press in that window was
-   swallowed with no feedback at all, which is a dead end.
+/* ---------- support control ---------- */
 
-   "unavailable": the chat did not load within fifteen seconds.
-   The next press sends an email instead, and the button's
-   accessible name says so. Every refusal hands the reader a next
-   step; this is what that looks like on a navigation control. */
+.nav-support { font: inherit; font-size: 12.5px; font-weight: 600; }
+
 .nav-support[data-support-state="pending"] {
-  opacity: 0.65;
+  opacity: 0.55;
   cursor: progress;
 }
-
 .nav-support[data-support-state="unavailable"] {
-  color: var(--chrome-quiet);
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* The vendor's own floating button stays suppressed: the bar owns this
+   control, and two entry points to one chat is one too many. */
+.bpFab { display: none !important; }
+
+/* ---------- the disclosure, under 900px ---------- */
+
+/* Hidden above the breakpoint, and a real disclosure below it: it owns
+   aria-expanded, Escape closes it, and the menu it controls leaves the tab
+   order when shut. The old bar had no disclosure at all -- it shrank the
+   type to 0.72rem and let eleven controls wrap onto a second row. */
+.nav-disclosure {
+  display: none;
+  align-items: center;
+  gap: 9px;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chrome-hi);
+  background: none;
+  border: 2px solid var(--chrome-hi);
+  border-radius: 0;
+  padding: 9px 13px;
+  cursor: pointer;
+}
+
+.nav-disclosure-mark {
+  width: 14px;
+  height: 10px;
+  background:
+    linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) 0 4px / 100% 2px no-repeat,
+    linear-gradient(currentColor, currentColor) 0 8px / 100% 2px no-repeat;
+}
+
+.nav-disclosure[aria-expanded="true"] {
+  background: var(--chrome-hi);
+  color: var(--chrome-bg);
+}
+
+/* ---------- focus, one treatment everywhere ---------- */
+
+.nav-link:focus-visible,
+.nav-signin:focus-visible,
+.nav-cta:focus-visible,
+.nav-cart:focus-visible,
+.nav-disclosure:focus-visible,
+.nav-brand:focus-visible {
+  outline: 2px solid var(--chrome-accent);
+  outline-offset: 2px;
 }
 
 /* ============================================================
@@ -380,12 +425,36 @@ span.nav-link.is-active::after {
   color: var(--chrome-muted);
 }
 
+/* Five columns: four link lists and the brand block, per 6a. The brand
+   block is wider because it carries a lockup and an address rather than a
+   stack of short labels. */
 .footer .footer-cols {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, 1fr) 1.25fr;
   gap: 28px;
   margin-bottom: 48px;
 }
+
+.footer .footer-mark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #EAE4D9;
+  margin-bottom: 16px;
+}
+.footer .footer-mark svg { display: block; width: 22px; height: 22px; }
+/* On ink the structural bars are paper and the accent takes its
+   on-ink form: #EC3013 against #1B1917 is too close to read. */
+.footer .footer-mark .mark-bar { fill: currentColor; }
+.footer .footer-mark .mark-accent { fill: #FF6A4A; }
+.footer .footer-word {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.footer .footer-brand-mail { display: block; }
 
 .footer .footer-head {
   font-size: 0.78rem;
@@ -431,7 +500,7 @@ span.nav-link.is-active::after {
 }
 .footer .footer-mail:hover {
   color: var(--chrome-accent);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+  text-shadow: none;
 }
 
 .footer .socials { display: flex; gap: 14px; }
@@ -443,15 +512,15 @@ span.nav-link.is-active::after {
   align-items: center;
   justify-content: center;
   border: 1px solid var(--chrome-line);
-  border-radius: 50%;
+  border-radius: 0;
   color: var(--chrome-muted);
   transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .footer .social svg { width: 17px; height: 17px; }
 .footer .social:hover {
   color: var(--chrome-accent);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.25);
+  border-color: rgba(236, 48, 19, 0.5);
+  box-shadow: none;
 }
 
 .footer .legal {
@@ -487,25 +556,71 @@ span.nav-link.is-active::after {
 
 @media (max-width: 760px) {
   .footer .footer-cols { grid-template-columns: repeat(2, 1fr); }
+  .footer .footer-brand { grid-column: 1 / -1; }
+}
+
+/* THE DISCLOSURE, under 900px.
+
+   The old bar had no disclosure. It shrank the links to 0.72rem, centred
+   them, and let eleven controls wrap onto a second and sometimes a third
+   row, which is why the bar's height changed from page to page: the cart
+   pages carried one control more than the rest.
+
+   Below the breakpoint the menu leaves the flow entirely and hangs under
+   the bar as a full-width panel of stacked rules. It is hidden with
+   `display: none` rather than opacity or a transform, so its links leave
+   the tab order when it is shut: a menu you cannot see but can still tab
+   into is worse than no menu. */
+@media (max-width: 900px) {
+  .nav-inner { padding: 12px 22px; gap: 12px; }
+
+  .nav-disclosure { display: inline-flex; }
+
+  .nav-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: var(--chrome-bg);
+    border-bottom: 2px solid var(--chrome-line);
+    padding: 6px 22px 18px;
+  }
+
+  .nav-links.is-open .nav-menu { display: flex; }
+
+  .nav-menu .nav-link {
+    padding: 15px 0;
+    font-size: 14px;
+    border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+    text-align: left;
+  }
+  .nav-menu .nav-link.is-active {
+    border-bottom-color: var(--chrome-accent);
+  }
+
+  .nav-tail {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin: 18px 0 0;
+  }
+  .nav-signin {
+    font-size: 14px;
+    padding: 4px 0;
+  }
+  .nav-cta { text-align: center; padding: 14px 16px; font-size: 12.5px; }
 }
 
 @media (max-width: 560px) {
-  .nav-inner { padding: 12px 20px; justify-content: center; }
-  .nav-links { gap: 13px; justify-content: center; }
-  /* min-height 24px: the links measured about 23 pixels tall at
-     this size (quality assurance finding L5, fixed 2026-08-16);
-     inline-flex centres the label inside the taller target. */
-  .nav-link,
-  .nav-signin {
-    font-size: 0.72rem;
-    letter-spacing: 0.1em;
-    min-height: 24px;
-    display: inline-flex;
-    align-items: center;
-  }
-  .nav-signin { padding-left: 13px; border-left: 0; }
-  .soon-pill { margin-left: 5px; padding: 1px 5px 2px; font-size: 0.55rem; }
-  .footer .footer-contact { justify-content: center; }
+  .nav-inner { padding: 12px 18px; }
+  .brand-word { font-size: 17px; }
+  .brand-mark { width: 24px; height: 24px; }
+  .footer .footer-cols { grid-template-columns: 1fr; }
+  .footer .footer-contact { justify-content: flex-start; }
 }
 
 /* ============================================================
@@ -518,3 +633,24 @@ span.nav-link.is-active::after {
   .skip-link,
   .footer { display: none !important; }
 }
+
+
+/* ============================================================
+   THE FOOTER KEEPS THE INK GROUND (redesign, 2026-08-18)
+
+   The bar moved to paper but the footer stays ink, and both were
+   reading the same --chrome-* text tokens. Those tokens now carry
+   paper values, so the footer's own text is restated here against
+   its dark ground rather than inheriting ink-on-ink.
+   ============================================================ */
+.footer { background: #1B1917; border-top: 2px solid #1B1917; }
+.footer,
+.footer .flink,
+.footer .footer-mail { color: #C9C6C1; }
+.footer .footer-head { color: #F8F7F5; }
+.footer .flink:hover,
+.footer .footer-mail:hover { color: #FF6A4A; }
+.footer .footer-meta,
+.footer .footer-legal,
+.footer .disclaimer { color: #8F8981; }
+.footer .social { border-color: #4A453F; color: #C9C6C1; }

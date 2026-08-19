@@ -31,7 +31,7 @@ const RANK_REQS = {
 
 /* ---------------- state and caches ---------------- */
 
-const state = { member: DEFAULT_MEMBER, period: DEFAULT_PERIOD, tab: "team" };
+const state = { member: DEFAULT_MEMBER, period: DEFAULT_PERIOD };
 
 const db = {
   members: [],                 /* v_demo_members rows */
@@ -1283,7 +1283,7 @@ async function renderCompany() {
       ["executive", c.rank_executive_count]
     ];
     const maxCount = Math.max(...dist.map(function (d) { return Number(d[1]); })) || 1;
-    const colors = { member: "#64748B", builder: "#818CF8", leader: "#22D3EE", director: "#FBBF24", executive: "#C084FC" };
+    const colors = { member: "#64748B", builder: "#1B1917", leader: "#EC3013", director: "#FBBF24", executive: "#C084FC" };
     html += '<div class="chart-box"><div class="chart-title">Rank distribution, ' + esc(periodShort(state.period)) + "</div>";
     dist.forEach(function (d) {
       const w = Math.max(0.8, Number(d[1]) / maxCount * 100);
@@ -1409,70 +1409,248 @@ function initPeriodPicker() {
   });
 }
 
+/* Pins the attribute the existing selectors are written against. The logo
+   swap and the icon belonged to the theme control, which the mono palette
+   retired; both are guarded rather than assumed, because the icon was not
+   and it threw on the very first line of boot, before any data was
+   fetched, taking the whole office down with it. */
 function applyTheme(theme) {
   document.documentElement.setAttribute("data-theme", theme);
   const logo = document.getElementById("logoImg");
   if (logo) logo.src = theme === "dark" ? "assets/logo-header-dark.svg" : "assets/logo-final-primary.svg";
-  document.getElementById("themeIcon").innerHTML = theme === "dark" ? "&#9788;" : "&#9789;";
+  const icon = document.getElementById("themeIcon");
+  if (icon) icon.innerHTML = theme === "dark" ? "&#9788;" : "&#9789;";
   try { localStorage.setItem("orvanna-demo-theme", theme); } catch (e) { /* file:// may block storage */ }
 }
 
+/* The palette is mono now, so the office has no theme control and this
+   only pins the attribute the existing selectors are written against. The
+   button is gone from the shell; the null guard is what stops its absence
+   throwing on every load. Same reasoning as the corporate bar. */
 function initTheme() {
-  let theme = "dark";
-  try {
-    const saved = localStorage.getItem("orvanna-demo-theme");
-    if (saved === "light" || saved === "dark") theme = saved;
-  } catch (e) { /* default stands */ }
-  applyTheme(theme);
-  document.getElementById("themeBtn").addEventListener("click", function () {
+  applyTheme("dark");
+  const btn = document.getElementById("themeBtn");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
     const cur = document.documentElement.getAttribute("data-theme");
     applyTheme(cur === "dark" ? "light" : "dark");
   });
 }
 
-function initTabs() {
-  document.querySelectorAll(".tab").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      state.tab = btn.dataset.tab;
-      document.querySelectorAll(".tab").forEach(function (b) { b.classList.toggle("active", b === btn); });
-      document.querySelectorAll(".panel").forEach(function (p) {
-        p.classList.toggle("active", p.id === "panel-" + state.tab);
-      });
-      document.querySelectorAll(".tab").forEach(function (b) {
-        b.setAttribute("aria-current", b === btn ? "page" : "false");
-      });
-      renderActive();
+/* THE SIDEBAR SCROLLS, IT DOES NOT SWAP.
+
+   These were five buttons that hid four panels. They are anchors now, and
+   the only state left is which one is highlighted, which follows the
+   scroll rather than a click: clicking an anchor and then scrolling away
+   used to leave the highlight lying about where you were. */
+function initSectionNav() {
+  const links = Array.prototype.slice.call(document.querySelectorAll(".side-link"));
+  if (!links.length) return;
+
+  const targets = links.map(function (a) {
+    return document.querySelector(a.getAttribute("href"));
+  });
+
+  function mark(el) {
+    links.forEach(function (a, i) {
+      a.classList.toggle("is-active", targets[i] === el);
     });
-  });
-  document.querySelectorAll(".tab").forEach(function (b) {
-    b.setAttribute("aria-current", b.classList.contains("active") ? "page" : "false");
-  });
+  }
+
+  if (!("IntersectionObserver" in window)) return;
+
+  /* The topmost section currently intersecting wins. Without the sort a
+     fast scroll can fire two entries in either order and the highlight
+     lands on whichever arrived last. */
+  const seen = new Set();
+  const io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) { seen.add(e.target); } else { seen.delete(e.target); }
+    });
+    const visible = targets.filter(function (t) { return t && seen.has(t); });
+    if (visible.length) { mark(visible[0]); }
+  }, { rootMargin: "-20% 0px -70% 0px", threshold: 0 });
+
+  targets.forEach(function (t) { if (t) io.observe(t); });
 }
 
 /* ---------------- orchestration ---------------- */
 
+/* ONE PAGE, ONE RENDER PASS.
+
+   This used to be a five-way switch: state.tab picked one renderer and the
+   other four panels sat hidden with whatever they last drew. A member signs
+   in with three questions -- am I qualified, what will I be paid, what do I
+   do next -- and the answers were spread across five screens, so answering
+   them meant clicking through the office and holding the numbers in your
+   head. Everything renders now, and the sidebar scrolls rather than swaps.
+
+   The panels no longer own their own loading and error states either. Five
+   spinners appearing and clearing independently is five chances to look
+   broken; boot() shows one, over the page, and every panel arrives together. */
 function renderActive() {
   renderFooter();
-  switch (state.tab) {
-    case "team": renderTeam(); break;
-    case "volume": renderVolume(); break;
-    case "rank": renderRank(); break;
-    case "statement": renderStatement(); break;
-    case "company": renderCompany(); break;
+  renderAnswers();
+  renderVolume();
+  renderRank();
+  renderTeam();
+  renderStatement();
+  renderCompany();
+}
+
+/* ---------------- the answer band ----------------
+
+   Three cells, and the third is the point of the redesign. The first two
+   restate figures the office already had. The third is an INSTRUCTION, and
+   it is derived from data app.js has always computed -- legStats() and
+   RANK_REQS -- but only ever rendered as a requirements checklist. A
+   checklist tells you what is true. This tells you what to do about it. */
+
+async function renderAnswers() {
+  const periodMap = await getPeriodMap(state.period);
+  const row = periodMap.get(state.member);
+  const me = db.byCode.get(state.member);
+
+  /* the sidebar identity travels with the member picker */
+  const nameEl = document.getElementById("sideName");
+  const codeEl = document.getElementById("sideCode");
+  const rankEl = document.getElementById("sideRank");
+  const rank = ((row && row.rank_earned) || "member").toLowerCase();
+  if (nameEl) nameEl.textContent = (me && me.display_name) || state.member;
+  if (codeEl) codeEl.textContent = state.member;
+  if (rankEl) rankEl.textContent = (RANK_LABEL[rank] || "Member");
+
+  const kicker = document.getElementById("topKicker");
+  if (kicker) kicker.textContent = "Member office \u00b7 " + periodLong(state.period);
+
+  /* ---- am I qualified ---- */
+  const sv = row ? Number(row.sv) : 0;
+  const pv = row ? Number(row.pv) : 0;
+  const cv = row ? Number(row.cv || 0) : 0;
+  const qualified = sv >= QUAL_SV;
+  setText("qualYesNo", qualified ? "Yes" : "Not yet");
+  setText("qualSv", fmt2(sv) + " SV");
+  /* THE METER CAPS AT 100 PERCENT. The drawer rendered "800 / 100 PV" with
+     the fill past the end of its own track; a ratio above one is not a
+     measurement, it is a broken drawing. */
+  const fill = document.getElementById("qualFill");
+  if (fill) fill.style.width = Math.min(100, (sv / QUAL_SV) * 100).toFixed(1) + "%";
+  setText("qualNote", qualified
+    ? "The line is " + fmt2(QUAL_SV) + " SV. Customer orders did " + fmt2(cv) + " of it."
+    : "The line is " + fmt2(QUAL_SV) + " SV. You are " + fmt2(QUAL_SV - sv) + " short.");
+
+  /* ---- what will I be paid ----
+     An OPEN month has no statement, so this recomputes from today's orders
+     and today's ranks and is labelled provisional every time it is drawn.
+     It is never cached: a figure that stops moving while the month is still
+     moving is the one thing a provisional number must not do. */
+  let paid = 0;
+  try {
+    const lines = await getStatement(state.member, state.period);
+    paid = lines.reduce(function (a, l) { return a + Number(l.amount); }, 0);
+  } catch (err) { paid = 0; }
+  setText("payFigure", "$" + fmt2(paid));
+
+  const idx = db.company.findIndex(function (c) { return c.period === state.period; });
+  const prev = idx > 0 ? db.company[idx - 1] : null;
+  let prevPaid = 0;
+  if (prev) {
+    try {
+      const pl = await getStatement(state.member, prev.period);
+      prevPaid = pl.reduce(function (a, l) { return a + Number(l.amount); }, 0);
+    } catch (err) { prevPaid = 0; }
   }
+  setText("payNote", "Recomputed from today's orders and today's ranks." +
+    (prev ? " " + periodLong(prev.period) + " closed at $" + fmt2(prevPaid) + "." : ""));
+
+  /* ---- what to do next ----
+     Ranked: the thing that BLOCKS the next rank first, then whatever is
+     merely short. Each row states the consequence, then explains it. */
+  const legs = legStats(state.member, periodMap);
+  const items = [];
+
+  const inactive = legs.filter(function (l) { return !l.active; })
+                       .sort(function (a, b) { return b.sv - a.sv; });
+  if (inactive.length) {
+    const l = inactive[0];
+    items.push({
+      blocking: true,
+      what: l.code + " has " + fmt2(l.sv) + " SV and needs " + fmt2(QUAL_SV - l.sv) + " more",
+      why: "Their leg does not count as active this month, which is what holds " +
+           (RANK_LABEL[rank] || "your rank") + "."
+    });
+  }
+
+  const nextRank = nextRankAfter(rank);
+  if (nextRank && RANK_REQS[nextRank]) {
+    const req = RANK_REQS[nextRank];
+    const tv = row ? Number(row.tv || 0) : 0;
+    if (req.tv && tv < req.tv) {
+      items.push({
+        blocking: false,
+        what: fmt2(req.tv - tv) + " TV short of " + (RANK_LABEL[nextRank] || nextRank),
+        why: "Every other " + (RANK_LABEL[nextRank] || nextRank) + " requirement is already met."
+      });
+    }
+  }
+
+  if (!items.length) {
+    items.push({
+      blocking: false,
+      what: "Nothing is blocking you this month",
+      why: "Qualified, and every requirement for your next rank is met or ahead."
+    });
+  }
+
+  const list = document.getElementById("todoList");
+  if (list) {
+    list.innerHTML = items.map(function (it) {
+      return '<li class="todo-row">' +
+        '<span class="todo-sq' + (it.blocking ? " is-blocking" : "") + '" aria-hidden="true"></span>' +
+        '<span><b class="todo-what">' + esc(it.what) + "</b>" +
+        '<span class="todo-why">' + esc(it.why) + "</span></span></li>";
+    }).join("");
+  }
+
+  /* the period control's own state, in the sidebar */
+  const c = db.companyByPeriod.get(state.period);
+  const closed = !!(c && c.run_id);
+  setText("sidePeriodState", closed ? "Locked" : "Open");
+  const stEl = document.getElementById("sidePeriodState");
+  if (stEl) stEl.classList.toggle("is-locked", closed);
+  setText("sidePeriodNote", closed
+    ? "Closed on run #" + c.run_id + ". These figures are final."
+    : "Nothing is final until the run closes.");
+}
+
+function setText(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+
+function nextRankAfter(rank) {
+  const order = ["member", "builder", "leader", "director", "executive"];
+  const i = order.indexOf(rank);
+  return i >= 0 && i < order.length - 1 ? order[i + 1] : null;
 }
 
 async function boot() {
   initTheme();
-  initTabs();
-  const teamEl = panelBody("team");
-  setLoading(teamEl, "Connecting to the live demo database");
+  initSectionNav();
+  /* ONE loading state, over the page, not five inside five panels. Five
+     spinners clearing independently is five chances to look broken. */
+  const main = document.getElementById("main");
+  const first = panelBody("volume");
+  setLoading(first, "Connecting to the live demo database");
+  if (main) main.classList.add("is-loading");
   try {
     await loadCore();
   } catch (err) {
-    setError(teamEl, err, boot);
+    if (main) main.classList.remove("is-loading");
+    setError(first, err, boot);
     return;
   }
+  if (main) main.classList.remove("is-loading");
   if (db.company.length > 0 && !db.companyByPeriod.has(state.period)) {
     state.period = db.company[db.company.length - 1].period;
   }

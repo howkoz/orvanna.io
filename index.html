@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna</title>
 <meta name="description" content="Orvanna: an ensemble of intelligent agents, working around the clock. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -24,7 +24,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
 </head>
 <body>
 
@@ -32,380 +32,265 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="#top" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </nav>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
   </div>
 </header>
 
-<main>
+<main id="main">
 
-<!-- ============ HERO: live constellation ============ -->
-<section class="hero" id="hero">
-  <canvas id="constellation" aria-hidden="true"></canvas>
-  <div class="hero-inner">
-    <p class="kicker">Orvanna</p>
-    <h1 class="hero-title">An ensemble of intelligent agents, working around the clock</h1>
-    <p class="hero-sub">Orvanna pairs a human network with artificial intelligence (AI) agents that carry real workloads: reconciling payments, watching prices, answering customers, and keeping the books, every hour of every day.</p>
-    <div class="hero-actions">
-      <a class="btn btn-solid" href="#overview">Explore the company</a>
+<!-- ============ HERO ============
+     Two columns and a 2px rule between them. The right column is the
+     working log: it is what replaced the dead space that made the old
+     hero feel empty, and it is what drives the mark's quarter turn. -->
+<section class="h-sec h-sec-hero" id="hero">
+  <div class="h-in h-hero">
+  <div class="h-hero-say">
+    <p class="h-kicker">AI agent company &middot; est. 2026</p>
+    <h1 class="h-h1">An ensemble that never clocks out</h1>
+    <p class="h-lead">Twelve specialists you subscribe to the way you would hire
+      staff. Each one owns a single job &mdash; payments, shipping, pricing, the
+      books &mdash; and works the queue every hour of every day.</p>
+    <div class="h-actions">
+      <a class="h-btn h-btn-solid" href="shop.html">Browse the catalog</a>
+      <a class="h-btn h-btn-line" href="library.html">How an agent works</a>
     </div>
-  </div>
-</section>
-
-<!-- ============ OVERVIEW ============ -->
-<section class="band glow-indigo" id="overview">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">Overview</p>
-      <h2 class="section-title">A company run with agents</h2>
-      <p class="lead">Orvanna builds AI agents that a business subscribes to the way it would hire staff. Each agent owns one job, a domain such as payments or a support role such as bookkeeping, and works it continuously. Our members bring those agents to the businesses around them, and everything the company records, from subscriptions to monthly statements, is computed, locked, and auditable.</p>
-    </div>
-    <div class="metrics stagger reveal">
-      <div class="metric glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="metric-num"><span class="count" data-count="12">12</span></div>
-        <div class="metric-label">Specialist AI agents, sold solo or in packs</div>
+    <div class="h-stats">
+      <div class="h-stat">
+        <p class="h-stat-num">12</p>
+        <p class="h-stat-label">Specialist agents</p>
       </div>
-      <div class="metric glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="metric-num"><span class="count" data-count="1000" data-comma="1">1,000</span></div>
-        <div class="metric-label">Members in the network</div>
+      <div class="h-stat">
+        <p class="h-stat-num">1,000</p>
+        <p class="h-stat-label">Members in network</p>
       </div>
-      <div class="metric glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <div class="metric-num"><span class="count" data-count="6">6</span></div>
-        <div class="metric-label">Months of locked statements</div>
+      <div class="h-stat">
+        <p class="h-stat-num">6</p>
+        <p class="h-stat-label">Months locked</p>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ============ PILLARS ============ -->
-<section class="band glow-violet" id="pillars">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">What we build</p>
-      <h2 class="section-title">Three pillars</h2>
+  <div class="h-hero-log">
+    <div class="h-log-head">
+      <p class="h-kicker h-kicker-quiet">Working now</p>
+      <p class="h-live"><span class="h-live-dot" aria-hidden="true"></span>Live</p>
     </div>
-    <div class="cards stagger reveal">
-
-      <article class="card glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
-                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
-            <line x1="32" y1="32" x2="32" y2="19" stroke="#818CF8" stroke-width="2"/>
-            <line x1="32" y1="32" x2="21" y2="41" stroke="#818CF8" stroke-width="2"/>
-            <line x1="32" y1="32" x2="43" y2="41" stroke="#818CF8" stroke-width="2"/>
-            <circle cx="32" cy="19" r="3.4" fill="#818CF8"/>
-            <circle cx="21" cy="41" r="3.4" fill="#818CF8"/>
-            <circle cx="43" cy="41" r="3.4" fill="#818CF8"/>
-            <circle cx="32" cy="32" r="4" fill="#22D3EE"/>
-          </svg>
+    <!-- Five rows, newest first. The list is authored here rather than
+         fetched: there is no read endpoint for the orchestration log yet,
+         and the design labels the column demonstration data for exactly
+         that reason. It says so on the page, in the note below, rather
+         than implying a live feed the site does not have. -->
+    <ol class="h-log" id="workingLog">
+      <li class="h-log-row">
+        <div class="h-log-what">
+          <p class="h-log-who">Tax Agent</p>
+          <p class="h-log-note">Filed the quarterly return, ready for sign-off.</p>
         </div>
-        <h3 class="card-title">Domain Agents</h3>
-        <p class="card-desc">Specialist agents that run a business function end to end.</p>
-        <p class="card-body">A domain agent owns one function: payments, shipping, pricing, inventory, marketing, or tax preparation. It works the queue all day, clears the routine cases itself, and brings you the exceptions with the history already gathered.</p>
-      </article>
-
-      <article class="card glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
-                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
-            <line x1="19" y1="32" x2="45" y2="32" stroke="#818CF8" stroke-width="2"/>
-            <circle cx="19" cy="32" r="3.4" fill="#818CF8"/>
-            <circle cx="45" cy="32" r="3.4" fill="#818CF8"/>
-            <circle cx="32" cy="32" r="4" fill="#22D3EE"/>
-          </svg>
+        <p class="h-log-when">18 min</p>
+      </li>
+      <li class="h-log-row">
+        <div class="h-log-what">
+          <p class="h-log-who">Inventory Agent</p>
+          <p class="h-log-note">Reordered 6 lines before they went to zero.</p>
         </div>
-        <h3 class="card-title">Support Agents</h3>
-        <p class="card-desc">The staff roles every operation needs, on demand.</p>
-        <p class="card-body">Support agents cover the desk work that quietly eats a week: code fixes, quality checks, calendars, books, and customer replies. Add one for a single role, or several to staff a small office.</p>
-      </article>
-
-      <article class="card glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <div class="card-icon" aria-hidden="true">
-          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19"
-                     fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>
-            <circle cx="32" cy="20" r="3.2" fill="#818CF8"/>
-            <circle cx="42.5" cy="26" r="3.2" fill="#818CF8"/>
-            <circle cx="42.5" cy="38" r="3.2" fill="#818CF8"/>
-            <circle cx="32" cy="44" r="3.2" fill="#22D3EE"/>
-            <circle cx="21.5" cy="38" r="3.2" fill="#818CF8"/>
-            <circle cx="21.5" cy="26" r="3.2" fill="#818CF8"/>
-          </svg>
+        <p class="h-log-when">24 min</p>
+      </li>
+      <li class="h-log-row">
+        <div class="h-log-what">
+          <p class="h-log-who">Quality Assurance</p>
+          <p class="h-log-note">Traced 12 promises to working pages, 0 failures.</p>
         </div>
-        <h3 class="card-title">The Network</h3>
-        <p class="card-desc">People who bring the agents to the businesses that need them.</p>
-        <p class="card-body">Agents do not sell themselves. Our members know the shops, practices, and firms in their own communities, match them with the right agents, and stay on as the human point of contact.</p>
-      </article>
-
-    </div>
+        <p class="h-log-when">31 min</p>
+      </li>
+      <li class="h-log-row">
+        <div class="h-log-what">
+          <p class="h-log-who">Shipping Agent</p>
+          <p class="h-log-note">Rebooked 4 parcels around a carrier delay.</p>
+        </div>
+        <p class="h-log-when">38 min</p>
+      </li>
+      <li class="h-log-row">
+        <div class="h-log-what">
+          <p class="h-log-who">Payment Agent</p>
+          <p class="h-log-note">Cleared 42 declined retries, 3 escalated with history attached.</p>
+        </div>
+        <p class="h-log-when">Just now</p>
+      </li>
+    </ol>
+    <p class="h-log-foot">Every line is a record in the orchestration log. The
+      mark in the bar turns a quarter every time this list advances.
+      Demonstration data.</p>
+  </div>
   </div>
 </section>
 
-<!-- ============ ORIGIN ============ -->
-<section class="band glow-cyan" id="origin">
-  <div class="wrap origin-grid">
-    <div class="origin-copy reveal">
-      <p class="kicker">Our story</p>
-      <h2 class="section-title on-dark">From a single node</h2>
-      <p class="body-dark">Orvanna was founded by one person with a career spent in payment operations, and it began with an unusual staffing decision: the company that sells AI agents would be staffed by them. Eight named agents planned, specified, built, verified, and styled everything you see here, managed end to end by Fable, the company's Chief Information Officer (CIO), itself an AI. One rule governed the whole build:</p>
-      <blockquote class="pull-quote">
-        The builder never grades its own work.
-      </blockquote>
-      <p class="body-dark">So every phase ended at two independent gates: a verifier that recomputed the math from the specifications, and a quality assurance check that traced every promise to a working page. The property went from first specification to live at orvanna.io in gated phases over two days, August 13 to 14, 2026. The founder made every call a visitor can see; the agents did the work; the gates kept them honest.</p>
+<!-- ============ THREE PILLARS ============ -->
+<section class="h-sec" id="pillars">
+  <div class="h-in h-band">
+  <div class="h-band-head">
+    <p class="h-kicker h-kicker-quiet">What we build</p>
+    <h2 class="h-h2">Three pillars</h2>
+  </div>
+  <div class="h-cells h-cells-3">
+    <div class="h-cell">
+      <p class="h-num">01 / Domain agents</p>
+      <h3 class="h-h3">Runs a business function end to end</h3>
+      <p class="h-body">Payments, shipping, pricing, inventory, marketing, tax.
+        Clears the routine cases itself and brings you the exceptions with the
+        history already gathered.</p>
+      <p class="h-price">$100 / month &middot; 100 PV</p>
     </div>
-    <div class="origin-art reveal" aria-hidden="true">
-      <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="150" cy="150" r="104" fill="none" stroke="#818CF8" stroke-width="1.5" opacity="0.25"/>
-        <g fill="#818CF8" opacity="0.9">
-          <circle cx="150" cy="46"  r="6"/>
-          <circle cx="202" cy="60"  r="6"/>
-          <circle cx="240" cy="98"  r="6"/>
-          <circle cx="254" cy="150" r="6"/>
-          <circle cx="240" cy="202" r="6"/>
-          <circle cx="202" cy="240" r="6"/>
-          <circle cx="150" cy="254" r="6"/>
-          <circle cx="98"  cy="240" r="6"/>
-          <circle cx="60"  cy="202" r="6"/>
-          <circle cx="46"  cy="150" r="6"/>
-          <circle cx="60"  cy="98"  r="6"/>
-        </g>
-        <g stroke="#818CF8" stroke-width="1" opacity="0.18">
-          <line x1="150" y1="150" x2="150" y2="46"/>
-          <line x1="150" y1="150" x2="240" y2="98"/>
-          <line x1="150" y1="150" x2="240" y2="202"/>
-          <line x1="150" y1="150" x2="98"  y2="240"/>
-          <line x1="150" y1="150" x2="46"  y2="150"/>
-          <line x1="150" y1="150" x2="98"  y2="60"/>
-        </g>
-        <circle cx="98" cy="60" r="10" fill="#22D3EE" opacity="0.15"/>
-        <circle cx="98" cy="60" r="6.5" fill="#22D3EE"/>
-        <circle cx="150" cy="150" r="5" fill="#818CF8"/>
-      </svg>
+    <div class="h-cell">
+      <p class="h-num">02 / Support agents</p>
+      <h3 class="h-h3">The desk work that eats a week</h3>
+      <p class="h-body">Code fixes, quality checks, calendars, books, customer
+        replies. Add one for a single role, or several to staff a small
+        office.</p>
+      <p class="h-price">$50 / month &middot; 50 PV</p>
     </div>
+    <div class="h-cell">
+      <p class="h-num">03 / The network</p>
+      <h3 class="h-h3">Agents do not sell themselves</h3>
+      <p class="h-body">Members know the shops, practices and firms in their own
+        communities, match them with the right agents, and stay on as the human
+        contact.</p>
+      <p class="h-price"><a class="h-inline-link" href="conductor.html">Become a Conductor</a></p>
+    </div>
+  </div>
   </div>
 </section>
 
-<!-- ============ TECHNOLOGY ============ -->
-<section class="band glow-indigo" id="technology">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">Technology</p>
-      <h2 class="section-title">One platform underneath</h2>
-      <p class="lead">The platform vision behind every agent we ship.</p>
+<!-- ============ THE STORY: the one ink band on the page ============
+     This is where the drama is spent. The right half used to be empty;
+     it now carries the two gates every phase of this build passed. -->
+<section class="h-sec h-sec-ink" id="origin">
+  <div class="h-in h-story">
+  <div class="h-story-tell">
+    <p class="h-kicker h-kicker-ink">Our story</p>
+    <h2 class="h-h2 h-h2-ink">The company that sells agents is staffed by them</h2>
+    <p class="h-body h-body-ink">Founded by one person with a career in payment
+      operations. Eight named agents planned, specified, built, verified and
+      styled everything you see here, managed end to end by Fable, the Chief
+      Information Officer &mdash; itself an AI.</p>
+    <blockquote class="h-quote">&ldquo;The builder never grades its own work.&rdquo;</blockquote>
+    <p class="h-quote-src">The one rule that governed the build</p>
+  </div>
+  <div class="h-gates">
+    <div class="h-gate">
+      <p class="h-kicker h-kicker-faint">Gate one &middot; the verifier</p>
+      <p class="h-body h-body-ink">Recomputed every number from the specification
+        rather than trusting the page. Nothing shipped on the builder's word.</p>
     </div>
-    <div class="features stagger reveal">
-
-      <div class="feature glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="feature-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="8" cy="16" r="3.4" fill="#818CF8"/>
-            <line x1="11" y1="15" x2="24" y2="7"  stroke="#818CF8" stroke-width="2"/>
-            <line x1="11" y1="16" x2="25" y2="16" stroke="#818CF8" stroke-width="2"/>
-            <line x1="11" y1="17" x2="24" y2="25" stroke="#818CF8" stroke-width="2"/>
-            <circle cx="26" cy="7"  r="2.4" fill="#818CF8"/>
-            <circle cx="27" cy="16" r="2.4" fill="#22D3EE"/>
-            <circle cx="26" cy="25" r="2.4" fill="#818CF8"/>
-          </svg>
-        </div>
-        <h3 class="feature-label">Orchestration</h3>
-        <p class="feature-body">One layer assigns the work, sequences every handoff between agents, and records each step. We are building toward routing payments across processors the same way: one brain, many rails.</p>
-      </div>
-
-      <div class="feature glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="feature-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="16,3 27.2,9.5 27.2,22.5 16,29 4.8,22.5 4.8,9.5"
-                     fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linejoin="round"/>
-            <circle cx="16" cy="16" r="3.2" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="feature-label">Vault</h3>
-        <p class="feature-body">Customer records and payment credentials belong in one guarded place that answers to you. We are building a neutral vault, so your data stays yours and moves with you, never locked to a processor.</p>
-      </div>
-
-      <div class="feature glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <div class="feature-mark" aria-hidden="true">
-          <svg viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-            <rect x="4" y="7" width="24" height="18" rx="3" fill="none" stroke="#818CF8" stroke-width="2.4"/>
-            <line x1="4" y1="13" x2="28" y2="13" stroke="#818CF8" stroke-width="2.4"/>
-            <circle cx="10" cy="19.5" r="2.2" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="feature-label">Secure Payments</h3>
-        <p class="feature-body">Checkout, authentication, and settlement will run through the same platform the agents run on. That is the direction we are building in: every dollar handled with the same discipline as every task.</p>
-      </div>
-
+    <div class="h-gate">
+      <p class="h-kicker h-kicker-faint">Gate two &middot; quality assurance</p>
+      <p class="h-body h-body-ink">Traced every promise in the copy to a working
+        page. First specification to live in two days, in gated phases.</p>
     </div>
+  </div>
   </div>
 </section>
 
-<!-- ============ TEAM TEASER (links to team.html) ============ -->
-<section class="band glow-violet" id="leadership">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">The team</p>
-      <h2 class="section-title">One human. Ten agents.</h2>
-      <p class="lead">Orvanna is an AI agent company whose own staff are AI agents. One human founder makes every call; eight named agents planned, built, verified, and styled the property you are reading, a ninth answers visitors at Support, and the CIO manages the build. That is not a metaphor, it is the actual roster, and every member of it is introduced by name.</p>
+<!-- ============ TECHNOLOGY ============
+     The square before each kicker is filled for what is shipped and
+     outlined for what is direction. Saying which is which in a mark
+     beats saying it in a paragraph nobody reads twice. -->
+<section class="h-sec" id="technology">
+  <div class="h-in h-band">
+  <div class="h-band-head">
+    <p class="h-kicker h-kicker-quiet">Technology</p>
+    <h2 class="h-h2">One platform underneath</h2>
+  </div>
+  <p class="h-band-lead">The platform vision behind every agent we ship &mdash;
+    stated as direction, not as a shipped feature.</p>
+  <div class="h-cells h-cells-3">
+    <div class="h-cell">
+      <p class="h-tech"><span class="h-sq h-sq-on" aria-hidden="true"></span>Orchestration</p>
+      <p class="h-body">One layer assigns the work, sequences every handoff
+        between agents, and records each step. We are building toward routing
+        payments the same way: one brain, many rails.</p>
     </div>
-    <div class="team-teaser glass glass-cyan reveal">
-      <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-      <div class="teaser-marks" aria-hidden="true">
-        <!-- The founder's mark carries his photograph here as it does on the
-             team page: everyone else is a drawn hexagon, the one human is a
-             face. Ring, rim, and the single cyan node are unchanged. -->
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <clipPath id="teaserFounderClip"><circle cx="48" cy="48" r="34"/></clipPath>
-          </defs>
-          <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="1.4" opacity="0.35" stroke-dasharray="2 6"/>
-          <circle cx="48" cy="48" r="34" fill="#4F46E5"/>
-          <image href="assets/hk.jpg" x="14" y="14" width="68" height="68"
-                 clip-path="url(#teaserFounderClip)" preserveAspectRatio="xMidYMid slice"/>
-          <circle cx="48" cy="48" r="34" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.7"/>
-          <circle cx="79" cy="26" r="5.5" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <line x1="48" y1="48" x2="48" y2="22" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="70.5" y2="35" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="70.5" y2="61" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="48" y2="74" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="25.5" y2="61" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="25.5" y2="35" stroke="#818CF8" stroke-width="1.8"/>
-          <circle cx="48" cy="22" r="3.2" fill="#818CF8"/>
-          <circle cx="70.5" cy="35" r="3.2" fill="#818CF8"/>
-          <circle cx="70.5" cy="61" r="3.2" fill="#818CF8"/>
-          <circle cx="48" cy="74" r="3.2" fill="#818CF8"/>
-          <circle cx="25.5" cy="61" r="3.2" fill="#818CF8"/>
-          <circle cx="25.5" cy="35" r="3.2" fill="#818CF8"/>
-          <circle cx="48" cy="48" r="5" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <polygon points="72,48 60,68.8 36,68.8 24,48 36,27.2 60,27.2" fill="none" stroke="#818CF8" stroke-width="2" stroke-linejoin="round"/>
-          <circle cx="72" cy="48" r="2.8" fill="#818CF8"/>
-          <circle cx="24" cy="48" r="2.8" fill="#818CF8"/>
-          <circle cx="48" cy="48" r="4" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <line x1="30" y1="36" x2="66" y2="36" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="30" y1="48" x2="66" y2="48" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="30" y1="60" x2="66" y2="60" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <circle cx="30" cy="36" r="3" fill="#818CF8"/>
-          <circle cx="30" cy="48" r="3" fill="#818CF8"/>
-          <circle cx="30" cy="60" r="3" fill="#818CF8"/>
-          <circle cx="66" cy="48" r="4" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <line x1="34" y1="64" x2="62" y2="32" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="36" cy="36" r="6" fill="none" stroke="#818CF8" stroke-width="3"/>
-          <circle cx="60" cy="60" r="6" fill="none" stroke="#818CF8" stroke-width="3"/>
-          <circle cx="48" cy="48" r="3.5" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <polyline points="38,36 26,48 38,60" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <polyline points="58,36 70,48 58,60" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="48" cy="48" r="3.5" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <circle cx="48" cy="48" r="16" fill="none" stroke="#818CF8" stroke-width="3"/>
-          <line x1="48" y1="26" x2="48" y2="34" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="48" y1="62" x2="48" y2="70" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="26" y1="48" x2="34" y2="48" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-          <line x1="62" y1="48" x2="70" y2="48" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-          <circle cx="48" cy="48" r="4" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <line x1="30" y1="38" x2="66" y2="38" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="30" y1="48" x2="58" y2="48" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <line x1="30" y1="58" x2="50" y2="58" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-          <circle cx="57" cy="58" r="3.5" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <polyline points="30,50 43,62 66,36" fill="none" stroke="#818CF8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-          <circle cx="30" cy="50" r="3" fill="#818CF8"/>
-          <circle cx="66" cy="36" r="3" fill="#818CF8"/>
-          <circle cx="43" cy="62" r="4" fill="#22D3EE"/>
-        </svg>
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <circle cx="32" cy="38" r="3.5" fill="#818CF8"/>
-          <line x1="42" y1="38" x2="66" y2="38" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="32" cy="52" r="3.5" fill="#22D3EE"/>
-          <line x1="42" y1="52" x2="60" y2="52" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-          <circle cx="32" cy="66" r="3.5" fill="#818CF8"/>
-          <line x1="42" y1="66" x2="54" y2="66" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-        </svg>
-      </div>
-      <p class="teaser-note">Howard Koziara, Founder and Owner, with Fable, the CIO, and the eight specialists who built this property. A ninth specialist now answers visitors at Support. Every mark above is a real member of the team.</p>
-      <a class="btn btn-ghost" href="team.html">Meet the team</a>
+    <div class="h-cell">
+      <p class="h-tech"><span class="h-sq" aria-hidden="true"></span>Vault</p>
+      <p class="h-body">Customer records and payment credentials in one guarded
+        place that answers to you. Neutral by design, so your data stays yours
+        and moves with you.</p>
     </div>
+    <div class="h-cell">
+      <p class="h-tech"><span class="h-sq" aria-hidden="true"></span>Secure payments</p>
+      <p class="h-body">Checkout, authentication and settlement on the same
+        platform the agents run on. Every dollar handled with the discipline of
+        every task.</p>
+    </div>
+  </div>
   </div>
 </section>
 
-<!-- The original fictional leadership section, four invented executives with
-     biographies, used to sit here commented out. It stopped rendering on
-     2026-08-14 when the team section became the real team (see team.html),
-     and it was removed from the shipped page on 2026-08-15 because a
-     commented-out block still ships to the public repository. It is archived
-     at docs/archive/2026-08-14-original-fictional-leadership-section.html. -->
-
-
-
-<!-- ============ CALL TO ACTION ============ -->
-<section class="band glow-cyan cta" id="cta">
-  <div class="wrap cta-inner reveal">
-    <h2 class="section-title on-dark">Start the conversation</h2>
-    <p class="body-dark cta-sub">The catalog is open: twelve specialist agents, plus the Manager Agent and three ready-made packs. Or send us a message: we answer every one.</p>
-    <div class="cta-actions">
-      <a class="btn btn-solid" href="shop.html">Browse the catalog</a>
-      <a class="btn btn-ghost" href="mailto:support@orvanna.io">Contact us</a>
+<!-- ============ THE TEAM ============ -->
+<section class="h-sec" id="leadership">
+  <div class="h-in h-team">
+  <div class="h-team-face">
+    <img src="assets/hk.jpg" alt="Howard Koziara, founder" width="360" height="520">
+  </div>
+  <div class="h-team-say">
+    <p class="h-kicker h-kicker-quiet">The team</p>
+    <h2 class="h-h2">One human. Ten agents.</h2>
+    <p class="h-body">One founder makes every call. The roster that built this
+      property is introduced by name &mdash; and every one of them is an agent.</p>
+    <div class="h-roster">
+      <div class="h-roster-row"><p class="h-roster-name">Howard Koziara</p><p class="h-roster-role">Founder</p></div>
+      <div class="h-roster-row"><p class="h-roster-name">Fable</p><p class="h-roster-role">CIO &middot; AI</p></div>
+      <div class="h-roster-row"><p class="h-roster-name">Eight specialists</p><p class="h-roster-role">Built this site</p></div>
+      <div class="h-roster-row"><p class="h-roster-name">A ninth</p><p class="h-roster-role">Answers support</p></div>
     </div>
+    <a class="h-btn h-btn-line" href="team.html">Meet the team</a>
+  </div>
+  </div>
+</section>
+
+<!-- ============ CLOSE: the one place the accent runs as a field ============ -->
+<section class="h-sec h-sec-accent" id="cta">
+  <div class="h-in h-close">
+  <div class="h-close-say">
+    <p class="h-kicker h-kicker-on-accent">Start the conversation</p>
+    <h2 class="h-close-h2">Hire your first agent this afternoon</h2>
+  </div>
+  <div class="h-close-do">
+    <p class="h-close-body">Twelve specialists, the Manager Agent, and three
+      ready-made packs. Or send a message &mdash; we answer every one.</p>
+    <div class="h-actions">
+      <a class="h-btn h-btn-white" href="shop.html">Browse the catalog</a>
+      <button class="h-btn h-btn-white-line" type="button" data-orvanna-support>Contact us</button>
+    </div>
+  </div>
   </div>
 </section>
 
@@ -421,7 +306,7 @@
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h4 class="footer-head">Learn</h4>
         <a class="flink" href="team.html">The team</a>
@@ -443,6 +328,18 @@
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 
@@ -481,217 +378,127 @@
 
 <script>
 /* ============================================================
-   Hero constellation: connected nodes, gentle drift, one lit
-   node pulsing. Pauses when the tab is hidden (the Page Visibility
-   application programming interface), renders a single static frame
-   under prefers-reduced-motion, and is throttled to 30 frames per
-   second to stay light on the central processing unit (CPU).
+   THE WORKING LOG, and the quarter turn it drives.
+
+   Replaces the hero constellation canvas and the scroll-reveal
+   observer, both of which the redesign deletes. Neither had any
+   markup left to act on: the canvas element is gone with the old
+   hero, and there is no .reveal on this page any more.
+
+   Worth recording, because it is the reason the reveal is gone
+   rather than merely fixed: on the live site every reveal was
+   hidden by default and un-hidden by an observer, so anything the
+   observer never saw stayed invisible for good. A full-page
+   capture taken without scrolling rendered the technology and
+   team sections blank, and it had been in production for months,
+   because the people it fails for are screenshot tools, print,
+   crawlers and anyone arriving on an anchor. The last session
+   inverted it so a missed intersection fails VISIBLE. This
+   section now needs neither, and nothing on the page depends on
+   a script running to be readable.
+
+   What is here instead: the log advances every 2.8 seconds from
+   a fixed pool, capped at five rows, and the mark in the bar
+   turns 90 degrees each time it does. In production this reads
+   the orchestration log; the page says so, and says the figures
+   are demonstration data, immediately under the list.
    ============================================================ */
 (function () {
-  var canvas = document.getElementById('constellation');
-  if (!canvas || !canvas.getContext) return;
-  var ctx = canvas.getContext('2d');
+  'use strict';
+
+  var list = document.getElementById('workingLog');
+  if (!list) { return; }
+
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var dpr = 1, W = 0, H = 0, nodes = [], litIndex = 0;
-  var rafId = null, running = false, lastFrame = 0;
-  var FRAME_MS = 1000 / 30;
-  var LINK = 150;
-  var pointer = { x: 0, y: 0, active: false };
+  /* A list that rewrites itself under a reader who asked for no
+     motion is still motion. Under the reduced-motion setting the
+     five authored rows simply stand. */
+  if (reduce.matches) { return; }
 
-  function resize() {
-    var host = canvas.parentElement;
-    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    W = host.clientWidth;
-    H = host.clientHeight;
-    canvas.width = Math.round(W * dpr);
-    canvas.height = Math.round(H * dpr);
-    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  var POOL = [
+    { who: 'Pricing Agent',     note: 'Matched 3 competitor drops, held margin on 11 lines.' },
+    { who: 'Marketing Agent',   note: 'Scheduled the week and measured last week against it.' },
+    { who: 'Secretary',         note: 'Cleared the calendar conflict, both parties confirmed.' },
+    { who: 'Accounting',        note: 'Reconciled the month to the cent, two queries raised.' },
+    { who: 'Customer Care',     note: 'Answered 38 messages, escalated 2 with full history.' },
+    { who: 'Software Engineer', note: 'Shipped the fix, tests green, rolled forward.' },
+    { who: 'Chief Executive',   note: 'Reviewed the queue and reordered the week by consequence.' },
+    { who: 'Tax Agent',         note: 'Checked the filing calendar, nothing due this week.' },
+    { who: 'Shipping Agent',    note: 'Rebooked 4 parcels around a carrier delay.' },
+    { who: 'Inventory Agent',   note: 'Reordered 6 lines before they went to zero.' }
+  ];
+
+  var mark = document.querySelector('.nav-brand .brand-mark svg');
+  var turns = 0;
+  var next = 0;
+
+  function row(rec, when) {
+    var li = document.createElement('li');
+    li.className = 'h-log-row';
+
+    var what = document.createElement('div');
+    what.className = 'h-log-what';
+
+    var who = document.createElement('p');
+    who.className = 'h-log-who';
+    who.textContent = rec.who;
+
+    var note = document.createElement('p');
+    note.className = 'h-log-note';
+    note.textContent = rec.note;
+
+    what.appendChild(who);
+    what.appendChild(note);
+
+    var el = document.createElement('p');
+    el.className = 'h-log-when';
+    el.textContent = when;
+
+    li.appendChild(what);
+    li.appendChild(el);
+    return li;
   }
 
-  function build() {
-    var count = W < 700 ? 26 : 44;
-    nodes = [];
-    for (var i = 0; i < count; i++) {
-      nodes.push({
-        x: Math.random() * W,
-        y: Math.random() * H,
-        vx: (Math.random() - 0.5) * 0.4,
-        vy: (Math.random() - 0.5) * 0.4,
-        r: 1.4 + Math.random() * 1.8
-      });
+  /* Every existing row ages by one step, the newest arrives at the
+     bottom reading "Just now", and the oldest falls off the top, so
+     the column stays at five. Ages are drawn from a fixed ladder
+     rather than a clock: these are authored records, and a real
+     elapsed time would imply a real timestamp behind them. */
+  var LADDER = ['18 min', '24 min', '31 min', '38 min'];
+
+  function advance() {
+    var rec = POOL[next % POOL.length];
+    next += 1;
+
+    var rows = list.querySelectorAll('.h-log-row');
+    if (rows.length) { list.removeChild(rows[0]); }
+
+    /* re-age what is left, then append the new arrival */
+    var left = list.querySelectorAll('.h-log-row .h-log-when');
+    for (var i = 0; i < left.length; i++) {
+      left[i].textContent = LADDER[i] || LADDER[LADDER.length - 1];
     }
-    var tx = W * 0.62, ty = H * 0.4, best = 0, bestD = Infinity;
-    for (var j = 0; j < nodes.length; j++) {
-      var dx = nodes[j].x - tx, dy = nodes[j].y - ty, d = dx * dx + dy * dy;
-      if (d < bestD) { bestD = d; best = j; }
+    list.appendChild(row(rec, 'Just now'));
+
+    if (mark) {
+      turns += 1;
+      mark.style.transform = 'rotate(' + (turns * 90) + 'deg)';
     }
-    litIndex = best;
   }
 
-  function draw(ts) {
-    ctx.clearRect(0, 0, W, H);
-    var i, j, a, b, dx, dy, d2, dist, alpha;
-    for (i = 0; i < nodes.length; i++) {
-      a = nodes[i];
-      a.x += a.vx; a.y += a.vy;
-      if (a.x < -20) a.x = W + 20; else if (a.x > W + 20) a.x = -20;
-      if (a.y < -20) a.y = H + 20; else if (a.y > H + 20) a.y = -20;
-    }
-    ctx.lineWidth = 1;
-    for (i = 0; i < nodes.length; i++) {
-      a = nodes[i];
-      for (j = i + 1; j < nodes.length; j++) {
-        b = nodes[j];
-        dx = a.x - b.x; dy = a.y - b.y;
-        d2 = dx * dx + dy * dy;
-        if (d2 < LINK * LINK) {
-          dist = Math.sqrt(d2);
-          alpha = 0.16 * (1 - dist / LINK);
-          ctx.strokeStyle = 'rgba(129, 140, 248, ' + alpha.toFixed(3) + ')';
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
-        }
-      }
-      if (pointer.active) {
-        dx = a.x - pointer.x; dy = a.y - pointer.y;
-        d2 = dx * dx + dy * dy;
-        if (d2 < 160 * 160) {
-          dist = Math.sqrt(d2);
-          alpha = 0.22 * (1 - dist / 160);
-          ctx.strokeStyle = 'rgba(34, 211, 238, ' + alpha.toFixed(3) + ')';
-          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(pointer.x, pointer.y); ctx.stroke();
-        }
-      }
-    }
-    for (i = 0; i < nodes.length; i++) {
-      if (i === litIndex) continue;
-      a = nodes[i];
-      ctx.fillStyle = 'rgba(129, 140, 248, 0.85)';
-      ctx.beginPath(); ctx.arc(a.x, a.y, a.r, 0, 6.2832); ctx.fill();
-    }
-    a = nodes[litIndex];
-    var pulse = 0.5 + 0.5 * Math.sin((ts || 0) / 700);
-    var haloR = 26 + 10 * pulse;
-    var halo = ctx.createRadialGradient(a.x, a.y, 0, a.x, a.y, haloR);
-    halo.addColorStop(0, 'rgba(34, 211, 238, ' + (0.26 + 0.2 * pulse).toFixed(3) + ')');
-    halo.addColorStop(1, 'rgba(34, 211, 238, 0)');
-    ctx.fillStyle = halo;
-    ctx.beginPath(); ctx.arc(a.x, a.y, haloR, 0, 6.2832); ctx.fill();
-    ctx.fillStyle = '#22D3EE';
-    ctx.beginPath(); ctx.arc(a.x, a.y, 3.2, 0, 6.2832); ctx.fill();
-  }
+  var timer = window.setInterval(advance, 2800);
 
-  function step(ts) {
-    if (!running) return;
-    rafId = requestAnimationFrame(step);
-    if (ts - lastFrame < FRAME_MS) return;
-    lastFrame = ts;
-    draw(ts);
-  }
-
-  function start() {
-    if (running || reduce.matches || document.hidden) return;
-    running = true;
-    lastFrame = 0;
-    rafId = requestAnimationFrame(step);
-  }
-
-  function stop() {
-    running = false;
-    if (rafId !== null) { cancelAnimationFrame(rafId); rafId = null; }
-  }
-
-  function drawStatic() { draw(0); }
-
-  window.addEventListener('resize', function () {
-    resize(); build();
-    if (!running) drawStatic();
-  });
-
+  /* Nothing turns while the tab is in the background: the quarter
+     turn is meant to be seen once, not banked up by the hundred
+     and spent in one spin when somebody comes back. */
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { stop(); } else { start(); }
-  });
-
-  if (typeof reduce.addEventListener === 'function') {
-    reduce.addEventListener('change', function () {
-      if (reduce.matches) { stop(); drawStatic(); } else { start(); }
-    });
-  }
-
-  var hero = canvas.parentElement;
-  hero.addEventListener('pointermove', function (e) {
-    var rect = canvas.getBoundingClientRect();
-    pointer.x = e.clientX - rect.left;
-    pointer.y = e.clientY - rect.top;
-    pointer.active = !reduce.matches;
-  });
-  hero.addEventListener('pointerleave', function () { pointer.active = false; });
-
-  resize(); build();
-  if (reduce.matches) { drawStatic(); }
-  else {
-    start();
-    /* loaded in a hidden tab: paint one static frame so the hero
-       is never blank at the moment the tab first becomes visible */
-    if (!running) drawStatic();
-  }
-
-  window.OrvannaHero = { isRunning: function () { return running; }, start: start, stop: stop, drawStatic: drawStatic };
-})();
-
-/* ============================================================
-   Scroll reveals + metric count-ups (IntersectionObserver).
-   Each section reveals once; numbers count up the first time
-   their tile scrolls into view. Reduced motion jumps straight
-   to the final values.
-   ============================================================ */
-(function () {
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-  function setFinal(el) {
-    var target = parseInt(el.getAttribute('data-count'), 10);
-    el.textContent = el.hasAttribute('data-comma') ? target.toLocaleString('en-US') : String(target);
-  }
-
-  function countUp(el) {
-    if (reduce.matches) { setFinal(el); return; }
-    var target = parseInt(el.getAttribute('data-count'), 10);
-    var comma = el.hasAttribute('data-comma');
-    var DUR = 1100, t0 = null;
-    el.textContent = '0';
-    function tick(ts) {
-      if (t0 === null) t0 = ts;
-      var p = Math.min((ts - t0) / DUR, 1);
-      var eased = 1 - Math.pow(1 - p, 3);
-      var val = Math.round(target * eased);
-      el.textContent = comma ? val.toLocaleString('en-US') : String(val);
-      if (p < 1) requestAnimationFrame(tick);
+    if (document.hidden) {
+      window.clearInterval(timer);
+      timer = null;
+    } else if (!timer) {
+      timer = window.setInterval(advance, 2800);
     }
-    requestAnimationFrame(tick);
-  }
-
-  var reveals = document.querySelectorAll('.reveal');
-
-  if (!('IntersectionObserver' in window)) {
-    reveals.forEach(function (el) { el.classList.add('is-in'); });
-    document.querySelectorAll('.count').forEach(setFinal);
-    return;
-  }
-
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-in');
-      entry.target.querySelectorAll('.count').forEach(function (c) {
-        if (!c.hasAttribute('data-done')) {
-          c.setAttribute('data-done', '1');
-          countUp(c);
-        }
-      });
-      io.unobserve(entry.target);
-    });
-  }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
-
-  reveals.forEach(function (el) { io.observe(el); });
+  });
 })();
 </script>
 

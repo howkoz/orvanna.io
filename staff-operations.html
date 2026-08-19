@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/staff.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/staff-ops.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/staff.css?v=b3f2bf0935f8">
+<link rel="stylesheet" href="css/staff-ops.css?v=b3f2bf0935f8">
 </head>
 <body class="console-body">
 
@@ -18,7 +18,14 @@
 <header class="console-top">
   <div class="console-wrap console-top-inner">
     <a class="console-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <span class="console-title">Operations</span>
@@ -58,6 +65,45 @@
     <div id="areaBilling" role="tabpanel" aria-labelledby="tabBilling">
 
       <div id="billingNotes"></div>
+
+      <!-- ============ 01 ATTENTION QUEUE ============
+           The page, not panel six of twelve. Handoff screen 8a: the rows
+           that demand an action come first and everything that is merely
+           true drops below them as evidence.
+
+           Ranked by CONSEQUENCE. The server returns the queue ordered by
+           reason alphabetically, so "cycle gap" outranked "system fault"
+           on the strength of the letter c. Severity is applied here from
+           the policy map in the script below, because which classes of
+           fault demand a human TODAY is a policy decision about reason
+           classes, not a fact hiding in the data. -->
+      <section class="console-panel console-queue" id="attentionQueue" aria-label="Attention queue">
+        <h2 class="panel-title"><span class="panel-num">01</span>Attention queue
+          <span class="title-chip">Ranked by consequence, not by arrival</span></h2>
+        <p class="queue-count" id="attentionCount">Loading the queue&hellip;</p>
+        <p class="ops-status-line" id="attentionStatus"></p>
+        <div class="ops-table-wrap"><table class="ops-table queue-table" id="attentionTable" hidden>
+          <thead><tr><th class="q-when">When</th><th>What happened</th><th class="q-ref">Reference</th></tr></thead>
+          <tbody id="attentionBody"></tbody>
+        </table></div>
+        <p class="queue-note">Every action on this page is server enforced and
+          written to the audit log against the operator&#39;s member number.</p>
+        <!-- WHAT IS NOT HERE, AND WHY. The design gives each row a money
+             figure and one action button. Neither is built, because neither
+             exists yet: app.v_staff_attention_queue returns reason,
+             member_code, subscription_id, renewal_index, billing_attempt_id,
+             detail and state, and no amount, deadline or decline class. A
+             money column filled in by the browser would be a fabricated
+             figure on the one page where money decides what a human does
+             first, and a Clear button with no audit endpoint behind it would
+             record nothing while looking like it had. Both are specified in
+             docs/OPERATIONS-QUEUE-SERVER-SPEC.md. -->
+        <p class="queue-gap">Money at stake and the one-click actions are not
+          shown: the queue view does not expose an amount, a deadline or a
+          decline class yet. See the server specification rather than reading
+          their absence as nothing being owed.</p>
+      </section>
+
 
       <div class="ops-stats" id="billingStats"></div>
 
@@ -163,14 +209,6 @@
         </section>
 
         <!-- Attention queue -->
-        <section class="console-panel" aria-label="Attention queue">
-          <h2 class="panel-title">Attention queue <span class="title-chip">The rows a human must see</span></h2>
-          <p class="ops-status-line" id="attentionStatus"></p>
-          <div class="ops-table-wrap"><table class="ops-table" id="attentionTable" hidden>
-            <thead><tr><th>Reason</th><th>Member</th><th>Sub</th><th>Detail</th></tr></thead>
-            <tbody id="attentionBody"></tbody>
-          </table></div>
-        </section>
       </div>
 
       <!-- Subscription management -->
@@ -266,7 +304,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=cef144c6cb42"></script>
+<script src="js/catalog.js?v=b3f2bf0935f8"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -961,26 +999,116 @@
     }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
-  /* ---------- attention queue ---------- */
+  /* ---------- attention queue ----------
+
+     RANKED BY CONSEQUENCE. The server orders this queue by reason
+     alphabetically (`order by q.reason, m.member_code`), which is an
+     ordering with no opinion: it put a cycle gap above a system fault on
+     the strength of the letter c. The rows a human must act on TODAY have
+     to come first, so severity is applied here.
+
+     Doing it in the browser is deliberate and is not the same as inventing
+     data. Which CLASSES of fault demand a human today is a policy call
+     about reason classes -- ours to make, ours to change, and readable in
+     one table. The per-row facts a policy cannot supply (how much money is
+     riding on it, what the deadline is, which decline class it was) are
+     the ones the server would have to answer, and those are left visibly
+     absent rather than guessed at. See
+     docs/OPERATIONS-QUEUE-SERVER-SPEC.md.
+
+     An unrecognised reason sorts into DECIDE rather than falling to the
+     bottom: a fault class nobody has classified yet is exactly the kind
+     that should be looked at, not the kind to bury. */
+
+  var SEVERITY = [
+    { key: 'act',    label: 'Act now',      rank: 0 },
+    { key: 'decide', label: 'Decide',       rank: 1 },
+    { key: 'before', label: 'Before close', rank: 2 }
+  ];
+
+  var REASON_SEVERITY = {
+    /* money already moved, or a clock is running on somebody else's terms */
+    'system_fault':        'act',
+    'unrecognized_code':   'act',
+    'orphan_attempt':      'act',
+    /* a judgement call that nothing else can make */
+    'cycle_gap':           'decide',
+    'duplicate_attempt':   'decide',
+    'hard_decline':        'decide',
+    /* true, worth recording, and not urgent */
+    'superseded_trail':    'before',
+    'classification_gap':  'before'
+  };
+
+  function severityFor(reason) {
+    var key = String(reason || '').toLowerCase().replace(/[\s-]+/g, '_');
+    return REASON_SEVERITY[key] || 'decide';
+  }
+  function severityRank(reason) {
+    var k = severityFor(reason);
+    for (var i = 0; i < SEVERITY.length; i++) { if (SEVERITY[i].key === k) return SEVERITY[i].rank; }
+    return 1;
+  }
+  function severityLabel(reason) {
+    var k = severityFor(reason);
+    for (var i = 0; i < SEVERITY.length; i++) { if (SEVERITY[i].key === k) return SEVERITY[i].label; }
+    return 'Decide';
+  }
+
   function loadAttention() {
     var status = byId('attentionStatus');
+    var count = byId('attentionCount');
     status.textContent = 'Loading...';
     opsCall('billing-console', { action: 'attention' }).then(function (result) {
-      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the attention queue.'); return; }
-      var rows = result.data.rows || [];
+      if (result.status !== 200) {
+        status.textContent = serverMessage(result, 'Could not load the attention queue.');
+        count.textContent = 'The queue could not be read.';
+        return;
+      }
+      var rows = (result.data.rows || []).slice();
+
+      /* stable within a severity: the server's own order is kept, so two
+         runs of the same queue read the same way */
+      rows.sort(function (a, b) { return severityRank(a.reason) - severityRank(b.reason); });
+
       var tbody = byId('attentionBody');
       clearNode(tbody);
       byId('attentionTable').hidden = rows.length === 0;
-      status.textContent = rows.length === 0 ? 'Nothing needs a human right now.' : rows.length + ' row(s) need a human.';
+      status.textContent = '';
+      count.textContent = rows.length === 0
+        ? 'Nothing needs a human today.'
+        : rows.length + (rows.length === 1 ? ' thing needs' : ' things need') + ' a human today.';
+
       rows.forEach(function (r) {
         var tr = el('tr');
-        cell(tr, r.reason);
-        cell(tr, r.member_code, 'ops-mono');
-        cell(tr, subCode(r.subscription_id), 'ops-code');
-        cell(tr, r.detail);
+        tr.className = 'q-row q-' + severityFor(r.reason);
+
+        var when = el('td');
+        when.className = 'q-when';
+        var badge = el('span');
+        badge.className = 'q-badge q-badge-' + severityFor(r.reason);
+        badge.textContent = severityLabel(r.reason);
+        when.appendChild(badge);
+        tr.appendChild(when);
+
+        var what = el('td');
+        var title = el('b');
+        title.className = 'q-what';
+        title.textContent = r.reason;
+        var detail = el('span');
+        detail.className = 'q-detail';
+        detail.textContent = r.detail || '';
+        what.appendChild(title);
+        what.appendChild(detail);
+        tr.appendChild(what);
+
+        cell(tr, r.member_code + ' \u00b7 ' + subCode(r.subscription_id), 'q-ref ops-mono');
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
+    }).catch(function () {
+      status.textContent = serviceUnavailable('billing console');
+      count.textContent = 'The queue could not be read.';
+    });
   }
 
   /* ---------- subscription management ---------- */
