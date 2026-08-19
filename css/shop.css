@@ -749,6 +749,181 @@
 
 .checkout-panel { padding: 34px 30px 30px; }
 
+/* ============================================================
+   THE CHECKOUT STEPPER, 2026-08-19 (redesign handoff, defect 1)
+
+   Four tabs across the top of the flow. One panel shows at a
+   time, and each tab carries its step's ANSWER underneath the
+   step name, which is what lets this bar be the review summary as
+   well as the navigation: without the answer line a shopper has
+   to open a step to remember what they put in it.
+
+   Three states, and they are told apart by more than colour: the
+   active tab is ink-filled with an accent rule under it, a
+   completed tab shows a filled check chip, and a step not yet
+   reached is outlined and genuinely disabled. Disabled is the
+   markup telling the truth rather than a hover trick, so a
+   keyboard reaches exactly the steps a mouse does.
+   ============================================================ */
+
+/* THE BAR SPANS THE PAGE, not the form column. Sat inside
+   .checkout-flow it measured 635px against a 1124px grid, which
+   pushed "Billing address" and "Bank account" onto second lines and
+   made a 90px tall bar out of four short labels. It is a header for
+   the whole checkout, including the summary, so it belongs above both
+   columns. */
+.ck-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 2px solid var(--shop-strong);
+  border-bottom: 2px solid var(--shop-strong);
+  margin: 32px 0 0;
+}
+
+.ck-step {
+  font: inherit;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 15px 18px 16px;
+  background: transparent;
+  color: var(--shop-strong);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ck-step + .ck-step { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.ck-step:disabled { cursor: default; }
+.ck-step:not(:disabled):hover { background: var(--shop-panel-raised, #F6F4F0); }
+
+.ck-step-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ck-step-num {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1.5px solid var(--shop-muted);
+  color: var(--shop-muted);
+}
+
+.ck-step-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.ck-step-value {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--shop-muted);
+  overflow-wrap: anywhere;
+}
+
+.ck-step.is-done .ck-step-num {
+  background: var(--shop-strong);
+  border-color: var(--shop-strong);
+  color: var(--shop-panel-raised, #F6F4F0);
+}
+/* The completed chip is a check, set here rather than written into the
+   markup, so the number stays in the document for a reader who meets
+   the tab before it is finished. */
+.ck-step.is-done .ck-step-num { font-size: 0; }
+.ck-step.is-done .ck-step-num::after { content: "\2713"; font-size: 11px; }
+.ck-step.is-done .ck-step-value { color: var(--shop-text); }
+
+.ck-step.is-active {
+  background: var(--shop-strong);
+  color: var(--shop-panel-raised, #F6F4F0);
+  border-bottom-color: var(--shop-accent-fill);
+}
+.ck-step.is-active .ck-step-num {
+  background: var(--shop-accent-fill);
+  border-color: var(--shop-accent-fill);
+  color: var(--shop-strong);
+}
+.ck-step.is-active .ck-step-value { color: rgba(241, 237, 230, 0.78); }
+
+/* The step's own controls. Forward is solid, back is outlined, so the
+   pair reads as one direction rather than two equal choices. */
+.ck-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* Currency and Tax ID, re-seated under the totals and the meter
+   (defect 3). They are settings that move the figures above them, not
+   lines of the receipt, so they sit below it behind a rule. */
+.ck-rail-inputs {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+}
+
+/* ============================================================
+   THE GATED PLACE-ORDER BUTTON (defect 4)
+
+   The label and the amount are separate spans so the figure can be
+   written without rewriting the label. When the gate is on, the button
+   is disabled AND repainted: disabled alone still reads as the primary
+   action because it keeps the accent fill, and a shopper reads colour
+   before they read cursor.
+
+   The reason line is not a tooltip and not a title attribute. It is
+   text under the button, because the shopper needs to know what to
+   change, and the two states this fires on are both fixable in one
+   move.
+   ============================================================ */
+
+.pay-place {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pay-place-label { font-weight: 800; letter-spacing: 0.06em; }
+.pay-place-amount {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.pay-place.is-blocked,
+.pay-place.is-blocked:hover {
+  background: #D9D2C6;
+  border-color: #D9D2C6;
+  color: var(--shop-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.pay-block-reason {
+  margin: 12px 0 0;
+  padding: 13px 16px;
+  background: rgba(236, 48, 19, 0.09);
+  border-left: 5px solid var(--shop-accent-fill);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--shop-text);
+}
+
 #paymentPanel { position: relative; }
 
 /* THE ORDER SUMMARY IS NOT A SCROLL REGION.
@@ -1161,27 +1336,35 @@ a.product-icon { display: block; }
 .pay-row {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0;
+  margin: 22px 0 0;
+  border-top: 2px solid var(--shop-strong);
+  border-bottom: 2px solid var(--shop-strong);
 }
 
 .pay-btn {
   font: inherit;
+  --pay-glyph-accent: var(--shop-accent-fill);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 8px;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  border-radius: 0;
-  border: 1.5px solid transparent;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 18px 16px 17px;
+  color: var(--shop-strong);
+  background: transparent;
+  border: 0;
+  /* The selected state is a 3px rule UNDER the tile, so selecting moves
+     nothing. A row where each tile grows a border when chosen shifts its
+     neighbours by a pixel, and on a payment row that reads as the page
+     flinching at the choice. */
+  border-bottom: 3px solid transparent;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
+.pay-btn + .pay-btn { border-left: 1px solid rgba(27, 25, 23, 0.25); }
 
-.pay-btn:hover { transform: translateY(-1px); }
+.pay-btn:hover { background: var(--shop-panel-raised, #F6F4F0); }
 .pay-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -1189,146 +1372,72 @@ a.product-icon { display: block; }
 }
 .pay-btn:disabled:hover { transform: none; }
 
+/* ============================================================
+   THE PAYMENT METHOD MARKS, redrawn 2026-08-19
+   (redesign handoff, defect 2)
+
+   WHAT WAS HERE. Five tiles, each painted in a payment brand's
+   colours, carrying the literal words "Apple Pay", "GPay",
+   "PayPal", "Card" and "Plaid" set in type and dressed to look
+   like logotypes. Roughly 130 lines of this sheet went on that
+   costume, including a long ruling about a blue letter G that
+   computed 3.41 to 1, and a dark-background variant of a wordmark
+   we do not own.
+
+   WHY IT IS GONE RATHER THAN CORRECTED. The approach was the
+   defect. Text pretending to be brand artwork is neither: it
+   fails the contrast floor as text, it misrepresents the brand as
+   artwork, and the handoff was right to call it the most amateur
+   element on the page. The contrast ruling that used to live here
+   goes with it, because no text is imitating a mark any more.
+
+   WHAT REPLACES IT. Five ORIGINAL neutral glyphs in a uniform
+   40x26 box drawn on the system's 2px ink, plus the method name
+   and its honest state set as real type at real sizes. The glyphs
+   inherit currentColor, so they take the tile's ink and cannot
+   drift from it, and their one accent detail reads from
+   --pay-glyph-accent.
+
+   THE STANDING INSTRUCTION, carried forward from the rule this
+   replaces: when the networks' and the wallets' official artwork
+   is licensed, drop those files into this same box. Do not redraw
+   them. That is a trademark question, not a design one.
+   ============================================================ */
+
 .pay-mark {
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-  min-width: 72px;
-  min-height: 21px;
-  line-height: 1;
-  letter-spacing: 0;
-  white-space: nowrap;
+  display: block;
+  height: 26px;
 }
 
-.mark-applepay {
-  font-size: 0.95rem;
+.pay-glyph {
+  display: block;
+  width: 40px;
+  height: 26px;
+}
+
+.pay-name {
+  font-size: 0.81rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--shop-strong);
 }
 
-.mark-googlepay {
-  gap: 3px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #202124;
-}
-/* THE BLUE G: 3.41 TO 1, ACCEPTED, AND WHY THE OBVIOUS DEFENCE OF
-   IT IS WRONG (quality assurance ruling, 2026-08-17).
-
-   #4285F4 on the tile's #1B1917 face computes 3.41 to 1. That is
-   below the 4.5 to 1 floor every other piece of text on this page
-   is held to, and it is stated here rather than left to be
-   rediscovered.
-
-   THE ARGUMENT THAT WAS REJECTED. The first defence offered for
-   this was the logotype exemption: brand marks carry no contrast
-   requirement. That was considered and REJECTED, and the
-   rejection is the part worth keeping. This is not the Google Pay
-   logotype. It is page text, the letter G, set in Segoe UI at
-   weight 800 by the rule below, dressed to resemble a brand mark.
-   Accepting the exemption here would mean any text on any page
-   could opt out of the floor by asserting a brand, which empties
-   the rule. If this element ever becomes a real supplied
-   logotype, that is a different question and it should be argued
-   again from scratch.
-
-   WHY IT IS ACCEPTABLE ANYWAY, on grounds that survive scrutiny:
-     1. The whole mark is aria-hidden, so assistive technology
-        never reads it. It functions as an icon, and icons are
-        governed by the 3 to 1 non-text contrast criterion, which
-        3.41 clears.
-     2. The tile's accessible name is not this text at all. It
-        lives in a separate screen-reader span reading
-        "Google Pay", so nothing that a reader depends on hangs
-        off these pixels.
-     3. A sighted reader is not left guessing either: the word
-        "Pay" sits immediately beside the G at 15.38 to 1
-        (15.39 by the shop-side computation, a rounding
-        difference), on the same tile.
-
-   THE STANDING INSTRUCTION. The next time this tile is opened for
-   ANY other reason, take #1558C0 with it. That is Google's own
-   darker blue, it computes 6.29 to 1 on the same face, and it
-   clears the text floor outright so the argument above stops
-   being needed. It is not being taken today only because
-   repainting a payment brand mark is not a change to make as a
-   side effect of a chrome round. */
-.mark-googlepay .g-blue {
-  color: #4285F4;
-  font-size: 1.05rem;
-  font-weight: 800;
-}
-
-.mark-paypal {
-  gap: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  font-style: italic;
-}
-/* DARK-BACKGROUND MARK VARIANT (quality assurance finding M-O3,
-   2026-08-16). The light-background brand colors were used on the
-   dark navy tile (#17357C): "Pay" in brand navy #003087 computed
-   1.04 to 1, invisible, and "Pal" in #009CDE computed 3.71 to 1,
-   both below the 4.5 floor for the tile's only label. PayPal's
-   dark-background wordmark treatment is light lettering: white
-   "Pay" computes 11.02 to 1 on this tile, and the lightened brand
-   blue #00B9F2 for "Pal" computes 4.84 to 1. Both halves now clear
-   4.5 to 1 by computation. */
-.mark-paypal span:first-child { color: #1B1917; }
-.mark-paypal span:last-child { color: #00B9F2; }
-
-.mark-card {
-  min-width: 58px;
-  border-radius: 0;
-  padding: 5px 9px 4px;
-  font-size: 0.72rem;
-  font-weight: 800;
+.pay-state {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.3;
   text-transform: uppercase;
-  color: var(--shop-tile-ink);
-  background: linear-gradient(135deg, rgba(236, 48, 19, 0.18), rgba(27, 25, 23, 0.22));
-  border: 1px solid rgba(236, 48, 19, 0.35);
-}
-
-.mark-plaid {
-  min-width: 62px;
-  border-radius: 0;
-  padding: 5px 9px 4px;
-  font-size: 0.76rem;
-  font-weight: 800;
-  color: #EAE4D9;
-  background: #1B1917;
-}
-
-.pay-applepay {
-  background: #EAE4D9;
-  color: #1B1917;
-  border-color: rgba(148, 163, 184, 0.4);
-}
-.pay-googlepay {
-  background: #1B1917;
-  color: #F1EDE6;
-  border-color: rgba(148, 163, 184, 0.3);
-}
-.pay-paypal {
-  background: #17357C;
-  color: #1B1917;
-  border-color: rgba(148, 163, 184, 0.25);
-}
-.pay-card {
-  background: rgba(236, 48, 19, 0.08);
-  color: var(--shop-tile-ink);
-  border-color: rgba(236, 48, 19, 0.45);
-}
-.pay-bank {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--shop-bank-ink);
-  border-color: rgba(16, 185, 129, 0.45);
+  color: var(--shop-muted);
 }
 
 .pay-btn[aria-pressed="true"] {
-  border-color: var(--shop-accent-ink);
+  background: var(--shop-panel-raised, #F6F4F0);
+  border-bottom-color: var(--shop-accent-fill);
   box-shadow: none;
 }
+.pay-btn[aria-pressed="true"] .pay-state { color: var(--shop-accent-ink); }
 
 .pay-note {
   font-size: 0.72rem;
@@ -2052,6 +2161,34 @@ a.back-to-shop { text-decoration: none; }
   .prose-grid { grid-template-columns: 1fr; }
 }
 
+/* THE STEP BAR AND THE METHOD ROW GO TWO-UP BELOW 820px.
+
+   Measured, not guessed. At 760px wide the four tabs get 176px each and
+   the five method tiles get 128px each, which wraps "Billing address" and
+   "Bank account" onto second lines and takes the bar to 90px tall. Two
+   columns give each of them roughly 360px and one line.
+
+   820 rather than the 920 the checkout grid uses, because collapsing the
+   grid to one column HANDS the flow the full width: the row is at its
+   roomiest just under 920 and only starts to hurt further down.
+
+   TWO COLUMNS MEANS THE SEPARATORS MOVE. A single "every tile but the
+   first gets a left border" rule is right on one row and wrong on two: it
+   draws a line down the outside edge of the second row and leaves the two
+   rows with nothing between them. So it is restated per column count
+   rather than inherited. */
+@media (max-width: 820px) {
+  .pay-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pay-btn + .pay-btn { border-left: 0; }
+  .pay-btn:nth-child(2n) { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+  .pay-btn:nth-child(n + 3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+
+  .ck-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ck-step + .ck-step { border-left: 0; }
+  .ck-step:nth-child(2n) { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+  .ck-step:nth-child(n + 3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+}
+
 @media (max-width: 620px) {
   /* a 128px key beside a wrapped sentence is worse than two lines */
   .pdp-fact { grid-template-columns: 1fr; gap: 2px; }
@@ -2065,7 +2202,6 @@ a.back-to-shop { text-decoration: none; }
   .field-row-3 { grid-template-columns: 1fr; }
   .confirm-card { padding: 36px 22px 30px; }
   .checkout-panel { padding: 28px 20px 24px; }
-  .pay-row { grid-template-columns: repeat(2, 1fr); }
   .includes-grid { grid-template-columns: 1fr; }
   .pdp-hero { padding: 34px 0 46px; }
   .pdp-grid { grid-template-columns: 64px minmax(0, 1fr); gap: 14px; }
@@ -2111,8 +2247,21 @@ a.back-to-shop { text-decoration: none; }
   .account-choices .btn { flex: 1 1 100%; text-align: center; }
   .delivery-option { flex-wrap: wrap; }
   .delivery-price { margin-left: auto; }
-  .pay-btn { font-size: 0.7rem; padding: 11px 6px; }
-  .pay-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pay-btn { padding: 14px 12px 13px; }
+  .pay-row { grid-template-columns: 1fr; }
+  .pay-btn + .pay-btn,
+  .pay-btn:nth-child(2n) { border-left: 0; }
+  .pay-btn + .pay-btn { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+
+  /* One column at this width. Four tabs side by side would each get about
+     seventy pixels, which is narrower than the answers they exist to
+     carry, and an answer that wraps to four lines stops being a summary. */
+  .ck-steps { grid-template-columns: 1fr; }
+  .ck-step + .ck-step,
+  .ck-step:nth-child(2n) { border-left: 0; }
+  .ck-step + .ck-step { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .ck-step { padding: 12px 16px 13px; }
+  .ck-nav .btn { flex: 1 1 100%; text-align: center; }
 }
 
 /* ============================================================
@@ -2773,23 +2922,13 @@ body.payment-in-flight .checkout-summary {
   border-left-color: #1B1917;
 }
 
-/* The two payment tiles that were drawn for a navy field. The
-   other three, Apple Pay, Google Pay and PayPal, are brand marks
-   and keep their own colours in both themes. */
-:root[data-theme="light"] .pay-card {
-  background: #F1EDE6;                 /* the label computes 17.16 to 1 */
-  border-color: var(--shop-accent-ink);
-}
-:root[data-theme="light"] .mark-card {
-  background: #E0F7FC;                 /* the mark computes 16.05 to 1 */
-  border-color: rgba(14, 116, 144, 0.35);
-}
-:root[data-theme="light"] .pay-bank {
-  background: #ECFDF5;                 /* the label computes 7.29 to 1 */
-  border-color: #059669;
-}
+/* The per-brand payment tiles are gone with the text marks they
+   dressed (2026-08-19). Nothing here needs a light-theme variant
+   any more: the tiles are transparent, the glyphs inherit the
+   tile's ink, and the selected state is a rule rather than a
+   fill, so all three follow the tokens in both themes. */
 :root[data-theme="light"] .pay-btn[aria-pressed="true"] {
-  border-color: var(--shop-accent-ink);
+  border-bottom-color: var(--shop-accent-fill);
   box-shadow: none;
 }
 

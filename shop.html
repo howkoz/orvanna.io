@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=9b0635590f0b">
-<link rel="stylesheet" href="css/corporate.css?v=9b0635590f0b">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=f931ae5a2e70">
+<link rel="stylesheet" href="css/corporate.css?v=f931ae5a2e70">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=9b0635590f0b">
-<link rel="stylesheet" href="css/shop.css?v=9b0635590f0b">
+<link rel="stylesheet" href="css/site-chrome.css?v=f931ae5a2e70">
+<link rel="stylesheet" href="css/shop.css?v=f931ae5a2e70">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -155,6 +155,55 @@
       <p class="kicker">Checkout</p>
       <h1 class="section-title">Review and place your order</h1>
 
+      <!-- THE STEPPER, 2026-08-19 (redesign handoff, defect 1).
+           Before this, #accountPanel, #addressPanel, #deliveryPanel and
+           #paymentPanel all rendered at once: eleven fields, three
+           disclosures and a five-button payment row in one column, every
+           panel wearing its own accent bar. There was no sense of
+           progress and no review state.
+
+           One step shows at a time and this bar carries the ANSWERS, so
+           it is the review summary as well as the navigation. That is
+           the reason each tab has a value line: a stepper that only
+           numbers the steps makes the shopper open a step to remember
+           what they put in it.
+
+           Completed steps are reachable, later ones are not, and the
+           rule is enforced in setCkStep rather than in the markup, so a
+           tab cannot be pressed into a state the flow has not reached.
+           The panels keep every identifier they had; this changes which
+           one is visible, not what any of them contain. -->
+      <div class="ck-steps" id="ckSteps" role="tablist" aria-label="Checkout steps">
+        <button class="ck-step" type="button" id="ckStep0" data-ck-step="0" role="tab" aria-selected="true" aria-controls="accountPanel">
+          <span class="ck-step-head">
+            <span class="ck-step-num" aria-hidden="true">1</span>
+            <span class="ck-step-name">Account</span>
+          </span>
+          <span class="ck-step-value" id="ckValue0">Not chosen</span>
+        </button>
+        <button class="ck-step" type="button" id="ckStep1" data-ck-step="1" role="tab" aria-selected="false" aria-controls="addressPanel">
+          <span class="ck-step-head">
+            <span class="ck-step-num" aria-hidden="true">2</span>
+            <span class="ck-step-name">Billing address</span>
+          </span>
+          <span class="ck-step-value" id="ckValue1">Not entered</span>
+        </button>
+        <button class="ck-step" type="button" id="ckStep2" data-ck-step="2" role="tab" aria-selected="false" aria-controls="deliveryPanel">
+          <span class="ck-step-head">
+            <span class="ck-step-num" aria-hidden="true">3</span>
+            <span class="ck-step-name">Activation</span>
+          </span>
+          <span class="ck-step-value" id="ckValue2">Standard, free</span>
+        </button>
+        <button class="ck-step" type="button" id="ckStep3" data-ck-step="3" role="tab" aria-selected="false" aria-controls="paymentPanel">
+          <span class="ck-step-head">
+            <span class="ck-step-num" aria-hidden="true">4</span>
+            <span class="ck-step-name">Payment</span>
+          </span>
+          <span class="ck-step-value" id="ckValue3">Card</span>
+        </button>
+      </div>
+
       <div class="checkout-grid">
 
         <div class="checkout-flow">
@@ -243,6 +292,10 @@
               <label class="field-label" for="memberCode">Member code</label>
               <input class="field" type="text" id="memberCode" autocomplete="off" spellcheck="false">
               <p class="field-hint">Optional. Credits this order to a referring member.</p>
+              <div class="ck-nav">
+                <button class="btn btn-solid" type="button" data-ck-go="2">Continue to activation</button>
+                <button class="btn btn-ghost" type="button" data-ck-go="0">Back</button>
+              </div>
             </div>
 
             <!-- STEP 3: ACTIVATION (delivery method for digital goods) -->
@@ -268,6 +321,10 @@
                   <span class="delivery-price delivery-free">Free</span>
                 </label>
               </div>
+              <div class="ck-nav">
+                <button class="btn btn-solid" type="button" data-ck-go="3">Continue to payment</button>
+                <button class="btn btn-ghost" type="button" data-ck-go="1">Back</button>
+              </div>
             </div>
 
             <!-- STEP 4: PAYMENT -->
@@ -285,26 +342,59 @@
                 <p>Card runs through the HyperSwitch sandbox. Google Pay and PayPal show approval previews before the demo order completes.</p>
               </details>
 
+              <!-- THE METHOD MARKS ARE DRAWN, 2026-08-19 (redesign handoff,
+                   defect 2). These five buttons used to render the literal
+                   strings "Apple Pay", "GPay", "PayPal", "Card" and "Plaid"
+                   inside .pay-mark spans, dressed with CSS to look like
+                   logos. The handoff called it the single most amateur
+                   element on the page and it was right.
+
+                   The glyphs below are ORIGINAL neutral marks on the
+                   system's 2px ink in a uniform 40x26 box, so they are safe
+                   to ship. They are deliberately NOT imitations of anybody's
+                   brand artwork: the networks and the wallets require their
+                   own official files, which is a trademark question rather
+                   than a design one, and an earlier draft that imitated one
+                   was thrown away. When those files are licensed, drop them
+                   into this same box.
+
+                   Each mark now carries the method's HONEST STATE. Card is
+                   the only one live on the sandbox rail; the wallets show an
+                   approval preview; bank debit is staged. Saying so on the
+                   button is what stops a shopper choosing a rail that cannot
+                   take their order.
+
+                   Card leads because card is the method that works. -->
               <div class="pay-row" role="group" aria-label="Payment method">
+                <button class="pay-btn pay-card" type="button" data-pay="card" aria-pressed="true">
+                  <span class="pay-mark" aria-hidden="true"><svg class="pay-glyph" viewBox="0 0 40 26" width="40" height="26" aria-hidden="true"><rect x="1.2" y="1.2" width="37.6" height="23.6" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="1.2" y="6.6" width="37.6" height="4.4" fill="currentColor"/><rect x="5.6" y="16" width="7" height="5" fill="var(--pay-glyph-accent)"/><rect x="15" y="18" width="12" height="2.4" fill="currentColor"/></svg></span>
+                  <span class="pay-name" aria-hidden="true">Card</span>
+                  <span class="pay-state" aria-hidden="true">Live on sandbox</span>
+                  <span class="sr-only">Credit card, live on sandbox</span>
+                </button>
                 <button class="pay-btn pay-applepay" type="button" data-pay="applepay" aria-pressed="false">
-                  <span class="pay-mark mark-applepay" aria-hidden="true">Apple Pay</span>
-                  <span class="sr-only">Apple Pay</span>
+                  <span class="pay-mark" aria-hidden="true"><svg class="pay-glyph" viewBox="0 0 40 26" width="40" height="26" aria-hidden="true"><rect x="12" y="1.2" width="16" height="23.6" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="16.4" y="6" width="7.2" height="7.2" fill="var(--pay-glyph-accent)"/><rect x="16" y="19" width="8" height="2.2" fill="currentColor"/></svg></span>
+                  <span class="pay-name" aria-hidden="true">Apple Pay</span>
+                  <span class="pay-state" aria-hidden="true">Approval preview</span>
+                  <span class="sr-only">Apple Pay, approval preview</span>
                 </button>
                 <button class="pay-btn pay-googlepay" type="button" data-pay="googlepay" aria-pressed="false">
-                  <span class="pay-mark mark-googlepay" aria-hidden="true"><span class="g-blue">G</span><span>Pay</span></span>
-                  <span class="sr-only">Google Pay</span>
+                  <span class="pay-mark" aria-hidden="true"><svg class="pay-glyph" viewBox="0 0 40 26" width="40" height="26" aria-hidden="true"><path d="M2.3 5.3 H31 a1 1 0 0 1 1 1 V19.7 a1 1 0 0 1 -1 1 H2.3 Z" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="24" y="10.6" width="13.5" height="5" fill="var(--pay-glyph-accent)"/><path d="M2.3 5.3 L2.3 20.7" stroke="currentColor" stroke-width="2.2"/></svg></span>
+                  <span class="pay-name" aria-hidden="true">Google Pay</span>
+                  <span class="pay-state" aria-hidden="true">Approval preview</span>
+                  <span class="sr-only">Google Pay, approval preview</span>
                 </button>
                 <button class="pay-btn pay-paypal" type="button" data-pay="paypal" aria-pressed="false">
-                  <span class="pay-mark mark-paypal" aria-hidden="true"><span>Pay</span><span>Pal</span></span>
-                  <span class="sr-only">PayPal</span>
-                </button>
-                <button class="pay-btn pay-card" type="button" data-pay="card" aria-pressed="true">
-                  <span class="pay-mark mark-card" aria-hidden="true">Card</span>
-                  <span class="sr-only">Credit card</span>
+                  <span class="pay-mark" aria-hidden="true"><svg class="pay-glyph" viewBox="0 0 40 26" width="40" height="26" aria-hidden="true"><rect x="2.4" y="7" width="16" height="12" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="21.6" y="7" width="16" height="12" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="15" y="11.6" width="10" height="2.8" fill="var(--pay-glyph-accent)"/></svg></span>
+                  <span class="pay-name" aria-hidden="true">PayPal</span>
+                  <span class="pay-state" aria-hidden="true">Approval preview</span>
+                  <span class="sr-only">PayPal, approval preview</span>
                 </button>
                 <button class="pay-btn pay-bank" type="button" data-pay="bank" aria-pressed="false">
-                  <span class="pay-mark mark-plaid" aria-hidden="true">Plaid</span>
-                  <span class="sr-only">Bank account through Plaid</span>
+                  <span class="pay-mark" aria-hidden="true"><svg class="pay-glyph" viewBox="0 0 40 26" width="40" height="26" aria-hidden="true"><path d="M4 9.5 L20 2.4 L36 9.5" fill="none" stroke="currentColor" stroke-width="2.2"/><rect x="7.4" y="12" width="3.6" height="9" fill="currentColor"/><rect x="14.6" y="12" width="3.6" height="9" fill="var(--pay-glyph-accent)"/><rect x="21.8" y="12" width="3.6" height="9" fill="currentColor"/><rect x="29" y="12" width="3.6" height="9" fill="currentColor"/><rect x="4" y="22.6" width="32" height="2.4" fill="currentColor"/></svg></span>
+                  <span class="pay-name" aria-hidden="true">Bank account</span>
+                  <span class="pay-state" aria-hidden="true">Staged</span>
+                  <span class="sr-only">Bank account through Plaid, staged</span>
                 </button>
               </div>
 
@@ -349,17 +439,13 @@
                     </span>
                     <span class="sk-caption">Preparing the secure card form</span>
                   </div>
-                  <!-- WHY THERE ARE NO CARD FIELDS. Live card settlement is
-                       guarded to USD until order records store currency, which
-                       is correct, but the guard used to be SILENT: pick GBP and
-                       the card form simply was not there, with the reason
-                       reachable only by pressing a button that says it cannot
-                       be pressed. The reason now stands where the fields would,
-                       and offers the one action that resolves it. -->
-                  <p class="pay-note pay-currency-guard" id="currencyGuardNote" hidden>
-                    <span id="currencyGuardText"></span>
-                    <button class="link-btn" type="button" id="currencyGuardSwitch">Switch to USD to pay by card</button>
-                  </p>
+                  <!-- The currency guard used to stand here, where the card
+                       fields would be. It moved to the currency control in the
+                       order summary on 2026-08-19 (redesign handoff, defect 3),
+                       because that is where the shopper can act on it: the
+                       reason and the control that resolves it are now the same
+                       place. The payment step still states the block, as the
+                       reason line under the place-order button. -->
                   <div id="hyperswitchMount"></div>
                   <p class="pay-note" id="livePayStatus" hidden role="status" aria-live="polite" tabindex="-1"></p>
                 </div>
@@ -376,10 +462,33 @@
                      payment, so the shopper holds it BEFORE anything can go wrong. -->
                 <p class="pay-order-chip" id="payOrderChip" hidden>Order <span id="payOrderNum"></span>, not yet charged. Keep this number.</p>
 
-                <button class="btn btn-solid btn-block" type="submit" id="placeOrderBtn">Place order</button>
+                <!-- THE BUTTON CARRIES THE AMOUNT AND CAN BE GATED,
+                     2026-08-19 (redesign handoff, defect 4). It used to stay
+                     live and accent-red on rails that cannot take an order:
+                     pick bank debit, which is staged, or a non-USD currency
+                     with card selected, and the page still offered to place
+                     the order. Offering an action that cannot succeed is
+                     worse than not offering it, because the refusal arrives
+                     after the shopper has committed.
+
+                     The label is two spans so the figure can be set without
+                     rewriting the label, and so a shopper does not scroll
+                     back up to check what they are about to be charged.
+                     Every path that used to write textContent on this button
+                     now goes through renderPayButton, which is the only
+                     writer: two writers on one button is how a gated button
+                     comes back to life a moment after it is disabled. -->
+                <button class="btn btn-solid btn-block pay-place" type="submit" id="placeOrderBtn">
+                  <span class="pay-place-label" id="placeOrderLabel">Place order</span>
+                  <span class="pay-place-amount" id="placeOrderAmount" hidden></span>
+                </button>
+                <p class="pay-block-reason" id="placeOrderBlock" role="status" aria-live="polite" hidden></p>
               </form>
               <p class="pay-lookup-line"><button class="link-btn" type="button" id="openLookup">Started an order that never finished? Look it up by order number.</button></p>
               <p class="login-note">Demonstration checkout. The address and contact fields above accept any values. The card form is a real payment form on a test rail, so it needs a valid test card number and it will refuse anything else.</p>
+              <div class="ck-nav">
+                <button class="btn btn-ghost" type="button" data-ck-go="2">Back</button>
+              </div>
             </div>
 
           </div>
@@ -407,21 +516,6 @@
               <span id="taxLabel">Tax <span class="row-hint">5 percent</span></span>
               <span class="total-num" id="sumTax">$0.00</span>
             </div>
-            <div class="taxid-row currency-row">
-              <label class="field-label" for="currencySelect">Currency</label>
-              <select class="field field-compact" id="currencySelect">
-                <option value="USD">USD, United States dollar</option>
-                <option value="GBP">GBP, British pound</option>
-                <option value="EUR">EUR, euro</option>
-                <option value="CHF">CHF, Swiss franc</option>
-              </select>
-              <p class="field-hint" id="currencyHint">Card checkout settles in USD. GBP, EUR, and CHF are display-ready while the payment rail matures.</p>
-            </div>
-            <div class="taxid-row">
-              <label class="field-label" for="taxId">Tax ID</label>
-              <input class="field field-compact" type="text" id="taxId" autocomplete="off" spellcheck="false" placeholder="Optional">
-              <p class="field-hint">Enter a tax identifier and the tax service decides whether an exemption applies. It checks the format, not the register behind it.</p>
-            </div>
             <div class="total-row total-main">
               <span>Order total</span>
               <span class="total-num" id="checkoutTotal">$0.00</span>
@@ -439,6 +533,39 @@
             </div>
             <div class="pv-track"><div class="pv-fill" id="checkoutMeterFill"></div></div>
             <p class="pv-meter-note" id="checkoutMeterNote">A qualified month needs 100 PV.</p>
+          </div>
+
+          <!-- CURRENCY AND TAX ID, MOVED 2026-08-19 (redesign handoff, defect
+               3). Both used to sit INSIDE the run of total rows, between Tax
+               and Order total, so two inputs interrupted a receipt. They are
+               settings that change the figures above them, not lines of the
+               receipt, so they belong under it.
+
+               The currency guard travelled with them. Its old home was the
+               card-field position in the payment step, which answered "why
+               are there no card fields" but left the shopper reading an
+               explanation nowhere near the control that resolves it. Here the
+               reason and the switch are the same place. -->
+          <div class="ck-rail-inputs">
+            <div class="taxid-row currency-row">
+              <label class="field-label" for="currencySelect">Currency</label>
+              <select class="field field-compact" id="currencySelect">
+                <option value="USD">USD, United States dollar</option>
+                <option value="GBP">GBP, British pound</option>
+                <option value="EUR">EUR, euro</option>
+                <option value="CHF">CHF, Swiss franc</option>
+              </select>
+              <p class="pay-note pay-currency-guard" id="currencyGuardNote" hidden>
+                <span id="currencyGuardText"></span>
+                <button class="link-btn" type="button" id="currencyGuardSwitch">Switch back to USD</button>
+              </p>
+              <p class="field-hint" id="currencyHint">Card checkout settles in USD. GBP, EUR, and CHF are display-ready while the payment rail matures.</p>
+            </div>
+            <div class="taxid-row">
+              <label class="field-label" for="taxId">Tax ID</label>
+              <input class="field field-compact" type="text" id="taxId" autocomplete="off" spellcheck="false" placeholder="Optional">
+              <p class="field-hint">Enter a tax identifier and the tax service decides whether an exemption applies. It checks the format, not the register behind it.</p>
+            </div>
           </div>
         </div>
 
@@ -783,8 +910,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=9b0635590f0b"></script>
-<script src="js/payments.js?v=9b0635590f0b"></script>
+<script src="js/catalog.js?v=f931ae5a2e70"></script>
+<script src="js/payments.js?v=f931ae5a2e70"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1469,11 +1596,137 @@
   var accountStatus = document.getElementById('accountStatus');
   var checkoutRest = document.getElementById('checkoutRest');
 
+  /* ============================================================
+     THE STEP MACHINE
+     Added 2026-08-19 (redesign handoff, defect 1).
+
+     One panel is visible at a time and the tab bar above carries each
+     step's ANSWER, so the bar is the review summary as well as the
+     navigation. Nothing inside the panels changed: this decides which
+     one is shown and what each tab reads.
+
+     REACHABILITY IS DECIDED HERE, NOT IN THE MARKUP. A step is reachable
+     when it has been reached, tracked by ckHighWater, so pressing a tab
+     can never jump the shopper past a step the flow has not opened. The
+     account step is the gate for all of it: until an account choice is
+     made, checkoutRest stays hidden exactly as it did before, and this
+     machine cannot move off step zero.
+     ============================================================ */
+
+  var CK_STEPS = 4;
+  var ckStep = 0;
+  var ckHighWater = 0;
+  var ckStepEls = [];
+  var ckValueEls = [];
+  for (var ckI = 0; ckI < CK_STEPS; ckI++) {
+    ckStepEls.push(document.getElementById('ckStep' + ckI));
+    ckValueEls.push(document.getElementById('ckValue' + ckI));
+  }
+
+  function ckPanel(i) {
+    return document.getElementById(
+      ['accountPanel', 'addressPanel', 'deliveryPanel', 'paymentPanel'][i]);
+  }
+
+  /* The four answers. Each reads the same controls the step owns, so a
+     tab cannot report something the panel behind it does not hold. */
+  function ckAnswer(i) {
+    if (i === 0) {
+      if (accountMode === 'member') {
+        var code = document.getElementById('acctUser');
+        return (code && code.value.trim()) ? code.value.trim().toUpperCase() : 'Signed in';
+      }
+      return accountMode === 'guest' ? 'Guest' : 'Not chosen';
+    }
+    if (i === 1) {
+      var name = (document.getElementById('billName') || {}).value || '';
+      var st = (document.getElementById('billState') || {}).value || '';
+      var zip = (document.getElementById('billZip') || {}).value || '';
+      name = name.trim(); zip = zip.trim();
+      /* NO STATE MEANS NOT ENTERED, even when a name is sitting in the
+         field. The State is what sets the tax destination, so an address
+         without one has not answered the question this step asks, and a
+         tab reading "Dana Ortiz" would say it had. Switching currency
+         rebuilds the region list and clears the selection, which is
+         exactly how a half-answered address appears without anyone
+         deleting anything. */
+      if (!st) return 'Not entered';
+      return (name ? name + ', ' : '') + st + (zip ? ' ' + zip : '');
+    }
+    if (i === 2) {
+      var choice = deliveryChoice();
+      return choice === 'priority'
+        ? 'Priority, ' + fmtMoney(DELIVERY.priority.price)
+        : 'Standard, free';
+    }
+    return PAY_LABELS[payMethod] || 'Card';
+  }
+
+  function renderCkSteps() {
+    for (var i = 0; i < CK_STEPS; i++) {
+      var tab = ckStepEls[i];
+      if (!tab) continue;
+      var done = i < ckStep;
+      var active = i === ckStep;
+      tab.classList.toggle('is-active', active);
+      tab.classList.toggle('is-done', done);
+      tab.setAttribute('aria-selected', String(active));
+      /* A step nobody has reached yet is not a control. It is left in the
+         bar because the shopper should see how many steps there are, but
+         it is disabled so it cannot be pressed into a state the flow has
+         not opened. */
+      tab.disabled = i > ckHighWater;
+      if (ckValueEls[i]) ckValueEls[i].textContent = ckAnswer(i);
+    }
+  }
+
+  function setCkStep(i) {
+    if (i < 0) i = 0;
+    if (i > CK_STEPS - 1) i = CK_STEPS - 1;
+    /* The account step gates the rest, the same rule setAccountStage has
+       always enforced; this machine does not get to overrule it. */
+    if (i > 0 && !accountMode) i = 0;
+    if (i > ckHighWater) ckHighWater = i;
+    ckStep = i;
+    for (var k = 0; k < CK_STEPS; k++) {
+      var panel = ckPanel(k);
+      if (panel) panel.hidden = k !== i;
+    }
+    if (checkoutRest) checkoutRest.hidden = (i === 0) || !accountMode;
+    renderCkSteps();
+    /* The payment step is where the provider's form belongs, and it is
+       only now that it is on screen. Opening it earlier is what
+       liveEnsureCheckout already refuses to do for a step nobody can
+       see. */
+    if (i === 3 && typeof liveEnsureCheckout === 'function') liveEnsureCheckout();
+  }
+
+  function ckReset() {
+    ckHighWater = 0;
+    setCkStep(0);
+  }
+
+  document.addEventListener('click', function (e) {
+    var tab = e.target.closest ? e.target.closest('[data-ck-step]') : null;
+    if (tab && !tab.disabled) { setCkStep(Number(tab.getAttribute('data-ck-step'))); return; }
+    var go = e.target.closest ? e.target.closest('[data-ck-go]') : null;
+    if (go) setCkStep(Number(go.getAttribute('data-ck-go')));
+  });
+
   function setAccountStage(stage) {
     accountChooser.hidden = stage !== 'chooser';
     accountSignin.hidden = stage !== 'signin';
     accountDone.hidden = stage !== 'done';
     checkoutRest.hidden = stage !== 'done';
+    /* Choosing an account is what makes the rest of the flow reachable,
+       so this is the moment the step machine is allowed to move. Going
+       back to the chooser or the sign-in form pulls it back to step
+       zero, so the bar can never advertise a step the flow has closed. */
+    if (stage === 'done') {
+      if (typeof setCkStep === 'function' && ckStep === 0) setCkStep(1);
+    } else if (typeof ckReset === 'function') {
+      ckReset();
+    }
     /* This is the moment the payment step first becomes reachable,
        for both the guest and the sign-in paths. Entering checkout is
        too early: everything below is still hidden then, so
@@ -1849,6 +2102,16 @@
     return checked ? checked.value : 'standard';
   }
 
+  /* The address tab has to follow the fields as they are typed. These
+     three are the ones it reports, and they are also the three the tax
+     destination depends on, so nothing else needs watching. */
+  ['billName', 'billState', 'billZip'].forEach(function (id) {
+    var el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', renderCkSteps);
+    el.addEventListener('change', renderCkSteps);
+  });
+
   document.querySelectorAll('input[name="delivery"]').forEach(function (radio) {
     radio.addEventListener('change', renderSummary);
   });
@@ -1961,17 +2224,109 @@
   /* The guard note tracks exactly the condition the button label reports,
      so the two can never disagree: same currency test, same moment. */
   function syncCurrencyGuardNote() {
+    /* The gate reads the same currency condition this note does, so it is
+       re-asked here rather than at each of the six call sites: one of them
+       would eventually be forgotten, and a stale gate on a payment button
+       is the defect this whole change exists to remove. */
+    if (typeof applyPayGate === 'function') applyPayGate();
     var box = document.getElementById('currencyGuardNote');
     if (!box) { return; }
     var text = document.getElementById('currencyGuardText');
+    var hint = document.getElementById('currencyHint');
     var blocked = LIVE_PAYMENTS && payMethod === 'card' && selectedCurrency() !== 'USD';
     box.hidden = !blocked;
+    /* ONE EXPLANATION AT A TIME. The standing hint under this control says
+       what the currency rail can and cannot do in general; the guard says
+       what is wrong right now and offers the fix. Showing both put three
+       overlapping currency messages on one screen, counting the reason
+       line under the place-order button, and a shopper reading three
+       explanations of one problem reads none of them. The general note
+       stands down while the specific one is up. */
+    if (hint) hint.hidden = blocked;
     if (blocked && text) {
-      text.textContent = 'Card fields are not shown for ' + selectedCurrency() +
-        '. The storefront can price and display ' + selectedCurrency() +
-        ', but live card settlement stays guarded to USD until order records store ' +
-        'currency. Nothing here is broken and nothing has been charged. ';
+      /* Short, and in the order a shopper needs it: the rule, then what
+         it means for the currency they picked. The long version, that
+         settlement is guarded until order records store currency, is
+         engineering's reason rather than the shopper's, and it belongs
+         in the code comment it came from. */
+      text.textContent = 'Card settles in USD only. ' + selectedCurrency() +
+        ' shows prices but cannot take a card. ';
     }
+  }
+
+  /* ============================================================
+     THE PLACE-ORDER BUTTON: ONE WRITER, ONE GATE
+     Added 2026-08-19 (redesign handoff, defect 4).
+
+     Before this the button had five writers scattered through the live
+     payment flow, each assigning textContent, and nothing at all stopping
+     it being offered on a rail that cannot take an order. Two states did
+     exactly that:
+
+       bank debit                  staged, not live on this storefront
+       card in a non-USD currency  settlement is guarded to USD
+
+     In both the button stayed enabled and accent-red, so the refusal
+     arrived only after the shopper committed to it.
+
+     The rule that keeps this fixed is that ONE function writes the label
+     and ONE function decides the gate. Any path that wants the button
+     usable calls releasePayButton rather than assigning disabled itself,
+     so unlocking re-asks the gate instead of overriding it. Locking is
+     still free to assign disabled directly: a lock that is too strict
+     costs a moment, and a gate that is too loose costs an order.
+     ============================================================ */
+
+  var placeOrderLabelEl = document.getElementById('placeOrderLabel');
+  var placeOrderAmountEl = document.getElementById('placeOrderAmount');
+  var placeOrderBlockEl = document.getElementById('placeOrderBlock');
+
+  /* The two blocked states, in the order a shopper meets them. Bank is
+     checked first because picking it is a deliberate act, where the
+     currency block is usually a leftover from a currency chosen earlier
+     for its prices. */
+  function payBlockReason() {
+    if (!LIVE_PAYMENTS) return '';
+    if (payMethod === 'bank') {
+      return 'Bank debit is staged, not live. Pick Card to complete this order.';
+    }
+    if (payMethod === 'card' && selectedCurrency() !== 'USD') {
+      return 'Card settles in USD only. Switch the currency back to USD to place this order.';
+    }
+    return '';
+  }
+
+  /* The only writer of the button's text. Amount is optional: before the
+     first payment is open there is no settled figure to promise, and a
+     button carrying a figure nobody has quoted is worse than one that
+     carries none. */
+  function setPayButtonLabel(label, amount) {
+    if (placeOrderLabelEl) placeOrderLabelEl.textContent = label;
+    if (placeOrderAmountEl) {
+      placeOrderAmountEl.textContent = amount || '';
+      placeOrderAmountEl.hidden = !amount;
+    }
+    applyPayGate();
+  }
+
+  /* The only decider of the gate. Called by setPayButtonLabel, so every
+     label change re-asks, and by releasePayButton, so every unlock does
+     too. */
+  function applyPayGate() {
+    var reason = payBlockReason();
+    var blocked = !!reason;
+    placeOrderBtn.classList.toggle('is-blocked', blocked);
+    if (blocked) placeOrderBtn.disabled = true;
+    if (placeOrderBlockEl) {
+      placeOrderBlockEl.textContent = reason;
+      placeOrderBlockEl.hidden = !blocked;
+    }
+  }
+
+  /* Every "the button may be pressed again" path goes through here. */
+  function releasePayButton() {
+    placeOrderBtn.disabled = false;
+    applyPayGate();
   }
 
   function paymentButtonLabel() {
@@ -2165,7 +2520,12 @@
         ? stagedPaymentMessage()
         : PAY_LABELS[method] + ' opens inside the secure HyperSwitch payment form. No card details are typed on this page.';
     }
-    if (threeDsNotice) threeDsNotice.hidden = method === 'bank';
+    /* 3-D SECURE IS A CARD-NETWORK CHECK, so it belongs under card and
+       nowhere else. This used to hide only for bank debit, which left the
+       notice standing under Google Pay, Apple Pay and PayPal, promising a
+       bank approval screen those rails do not show. Corrected 2026-08-19
+       (redesign handoff, smaller correction one). */
+    if (threeDsNotice) threeDsNotice.hidden = method !== 'card';
     if (method === 'bank' && LIVE_PAYMENTS) {
       revealStagedPaymentMessage(false);
     } else if (demoWalletPayment() && LIVE_PAYMENTS) {
@@ -2179,8 +2539,9 @@
       livePayArea.hidden = true;
       liveStatus('');
     }
-    placeOrderBtn.textContent = paymentButtonLabel();
+    setPayButtonLabel(paymentButtonLabel());
     syncCurrencyGuardNote();
+    if (typeof renderCkSteps === 'function') renderCkSteps();
     if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
       liveResetPayment('');
     }
@@ -2458,7 +2819,10 @@
     if (!canOpenLivePayment()) return;
     if (!liveState.clientSecret || liveState.checkOnly || liveState.busy) return;
     if (placeOrderBtn.hidden) return;
-    placeOrderBtn.textContent = 'Pay ' + fmtMoney(displayedTotal) + ' now, test mode';
+    /* The figure the shopper is about to be charged, carried on the
+       button itself, so nobody scrolls back to the summary to check
+       what they are agreeing to. */
+    setPayButtonLabel('Pay now, test mode', fmtMoney(displayedTotal));
   }
 
   function renderSummary() {
@@ -2526,6 +2890,10 @@
     document.getElementById('summaryRenews').hidden = m.t.subMoney === 0;
     document.getElementById('checkoutPv').textContent = fmtPv(m.t.pv);
     renderMeter('checkoutMeter', m.t.pv);
+    /* Every control that can move the total lands here, which makes it the
+       one place that can promise the step bar is telling the truth about
+       activation and address. */
+    if (typeof renderCkSteps === 'function') renderCkSteps();
     /* Every control that can move the total ends up here, which makes
        this the one honest place to ask what tax is owed, and to open
        or re-open the payment. See liveEnsureCheckout for why a moved
@@ -2557,6 +2925,10 @@
     closeDrawer();
     accountMode = null;
     setAccountStage('chooser');
+    /* setAccountStage('chooser') already pulls the step machine back, but
+       the high-water mark has to fall with it: a second visit to checkout
+       must not inherit the reachable steps of the first. */
+    ckReset();
     setPayMethod('card');
     /* start fetching the card-form script now, in parallel with the
        account step, so it is already in hand when the payment step
@@ -2776,9 +3148,11 @@
        liveMountCheckout below. */
     onTotalsApplied: function (t) {
       if (!placeOrderBtn.hidden && liveState.clientSecret) {
-        placeOrderBtn.textContent = canOpenLivePayment()
-          ? 'Pay ' + fmtMoney(t.total_cents / 100) + ' now, test mode'
-          : paymentButtonLabel();
+        if (canOpenLivePayment()) {
+          setPayButtonLabel('Pay now, test mode', fmtMoney(t.total_cents / 100));
+        } else {
+          setPayButtonLabel(paymentButtonLabel());
+        }
       }
     },
     /* THE SHOPPER COPY TABLE. Second person, speaking to the person
@@ -2849,8 +3223,8 @@
         payOrderNum.textContent = '';
         livePayArea.hidden = !message;
         cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
-        placeOrderBtn.disabled = false;
-        placeOrderBtn.textContent = paymentButtonLabel();
+        releasePayButton();
+        setPayButtonLabel(paymentButtonLabel());
     syncCurrencyGuardNote();
       },
       /* success clears the cart (only then); the engine has already
@@ -2875,7 +3249,7 @@
         /* leaving the finishing state on would hide the very button
            this message tells the shopper to press (audit finding A2) */
         engine.setFinishing(false);
-        placeOrderBtn.disabled = false;
+        releasePayButton();
         liveStatus(friendlyError(result,
           'Could not check the order just now. Your order number is ' + liveState.orderNumber +
           '. Nothing has been charged. Press the button again in a moment.'));
@@ -2924,8 +3298,8 @@
     setCardSkeleton(false);
     document.getElementById('hyperswitchMount').innerHTML = '';
     liveStatus(stagedMessage);
-    placeOrderBtn.disabled = false;
-    placeOrderBtn.textContent = paymentButtonLabel();
+    releasePayButton();
+    setPayButtonLabel(paymentButtonLabel());
     syncCurrencyGuardNote();
     if (payMethod === 'bank') openPlaidPanel();
     if (shouldFocus && payMethod !== 'bank') {
@@ -3154,7 +3528,7 @@
       });
     }).catch(function (err) {
       liveState.busy = false;
-      placeOrderBtn.disabled = false;
+      releasePayButton();
       liveStatus(err.message || 'Something went wrong. Nothing was charged. Please try again.');
     });
   }
@@ -3235,12 +3609,14 @@
        math survives as a fallback for the case where no server answer
        exists yet, and it is the same figure the summary is showing at
        that moment, so the two can never disagree on screen. */
-    placeOrderBtn.textContent = canOpenLivePayment()
-      ? 'Pay ' + fmtMoney(
-          liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
-        ) + ' now, test mode'
-      : paymentButtonLabel();
-    placeOrderBtn.disabled = false;
+    if (canOpenLivePayment()) {
+      setPayButtonLabel('Pay now, test mode', fmtMoney(
+        liveTotalsAreCurrent() ? engine.getServerTotals().total_cents / 100 : orderMath().total
+      ));
+    } else {
+      setPayButtonLabel(paymentButtonLabel());
+    }
+    releasePayButton();
     liveState.busy = false;
     /* H1, verifier audit 2026-08-15. liveEnsureCheckout refuses to act while a
        payment is being opened, and used to leave nothing behind when it did.
@@ -3301,7 +3677,7 @@
   function liveAfterSdk(sdkError) {
     if (engine.isValidationError(sdkError)) {
       liveState.busy = false;
-      placeOrderBtn.disabled = false;
+      releasePayButton();
       liveStatus('The card form says: ' + sdkError.message +
         '. Fix the card details and press the button again. Nothing was charged.');
       return;
@@ -3431,6 +3807,17 @@
       if (method === 'applepay') {
         b.disabled = true;
         b.title = 'Apple Pay needs Braintree Apple Pay domain setup before this sandbox rail can be enabled.';
+        /* THE STATE LABEL HAS TO FOLLOW THE BUTTON. Apple Pay is turned
+           off here, waiting on Braintree domain setup, so leaving its
+           mark reading "approval preview" would promise a rail that
+           cannot be reached, which is the exact dishonesty the state
+           labels were added to remove. The screen-reader name carries
+           the same correction, because a greyed tile is not information
+           anybody hears. */
+        var appleState = b.querySelector('.pay-state');
+        if (appleState) appleState.textContent = 'Awaiting setup';
+        var appleSr = b.querySelector('.sr-only');
+        if (appleSr) appleSr.textContent = 'Apple Pay, awaiting setup, not selectable';
       }
     });
   } else {
@@ -3778,6 +4165,6 @@
 })();
 </script>
 
-<script src="js/site-chrome.js?v=9b0635590f0b"></script>
+<script src="js/site-chrome.js?v=f931ae5a2e70"></script>
 </body>
 </html>
