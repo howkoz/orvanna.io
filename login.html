@@ -5,13 +5,38 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Sign In</title>
 <meta name="description" content="Orvanna sign in. Credentials are checked against the demonstration database on the server; nothing is compared in this page.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a48860bd798">
-<link rel="stylesheet" href="css/corporate.css?v=8a48860bd798">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a18eb622fa8">
+<link rel="stylesheet" href="css/corporate.css?v=8a18eb622fa8">
+<link rel="stylesheet" href="css/site-chrome.css?v=8a18eb622fa8">
+<!-- Theme boot. Applies the stored choice before first paint, so no page ever
+     flashes the wrong palette. Dark is the default everywhere, so a visitor who
+     never touches the theme icon sees exactly what they saw before. One key for
+     the whole site: orvanna-theme. See docs/CORPORATE-CHROME-CONTRACT.md. -->
+<script>
+(function () {
+  var theme = 'dark';
+  try {
+    if (window.localStorage.getItem('orvanna-theme') === 'light') { theme = 'light'; }
+  } catch (err) { /* storage blocked: dark, the default, stands */ }
+  document.documentElement.setAttribute('data-theme', theme);
+  document.documentElement.classList.add('js');
+})();
+</script>
+<script src="js/site-chrome.js?v=8a18eb622fa8" defer></script>
 </head>
 <body class="login-body">
 
-<a class="login-logo" href="index.html" aria-label="Orvanna home">
-  <span class="brand-mark" aria-hidden="true">
+<!-- THE SITE HEADER, added 2026-08-19. This page used to carry a bare
+     centred lockup and nothing else, on the reading that a sign-in screen is
+     outside the site. That reads as a missing header, not as a rule: a person
+     who lands here from a link has no way back to anything.
+     It is now the canonical bar, linted against _partials/nav.html like every
+     other page, and it marks NOTHING active, because signing in is not one of
+     the seven destinations. -->
+<header class="nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="index.html" aria-label="Orvanna home">
+      <span class="brand-mark" aria-hidden="true">
         <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
           <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
           <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
@@ -19,8 +44,32 @@
           <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
         </svg>
       </span>
-  <span class="brand-word">Orvanna</span>
-</a>
+      <span class="brand-word">Orvanna</span>
+    </a>
+    <nav class="nav-links" aria-label="Primary">
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link" href="index.html">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
+  </div>
+</header>
+
+<main class="login-stage">
 
 <div class="login-card glass glass-cyan">
   <span class="accent-bar bar-cyan" aria-hidden="true"></span>
@@ -55,6 +104,7 @@
 </div>
 
 <p class="login-legal">Orvanna is a demonstration company. All data is synthetic. No real earnings, products, or offers exist.</p>
+</main>
 
 <script>
 /* ============================================================
@@ -214,6 +264,7 @@
   });
 })();
 </script>
+
 
 </body>
 </html>

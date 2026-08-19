@@ -34,49 +34,17 @@
   --lvl-4: #6B645A;
   --lvl-5: #F1EDE6;
 }
-html[data-theme="light"] {
-  --bg: #1B1917;
-  --bg-soft: #1B1917;
-  --bg-inset: #1B1917;
-  --line: #4B453D;
-  --text: #1B1917;
-  --muted: #4B453D;
-  --indigo-soft: #1B1917;
-  /* Cyan carries TEXT in four places (the demo-mode pill, the Leader rank
-     badge, the tree expand control, the customer tag). At #EC3013 it measures
-     1.73:1 to 1.81:1 on the light backgrounds, so the light theme must restate
-     it, exactly as the comment above already said it should. This darker teal
-     measures 5.36:1 on white and 4.89:1 on the page background. */
-  --cyan: #A3220B;
-  /* Darkened 2026-08-15. These carry the portal's most important signal,
-     QUALIFIED and NOT QUALIFIED, and they are drawn on TINTED chips rather
-     than on the page background, which the lighter pair was never checked
-     against: 3.28:1 and 4.12:1 composited. This is the same mistake as the
-     cyan token fixed this morning, missed because only cyan was swept.
-     Computed now: #15803D on the green chip is 6.72:1 and on the page 7.34:1;
-     #B91C1C on the red chip is 5.53:1. */
-  --good: #15803D;
-  --bad: #B91C1C;
-  --amber: #B45309;
-  --violet: #1B1917;
-  --shadow: 0 4px 14px rgba(27, 25, 23, 0.10);
+/* THE LIGHT-THEME BLOCK WAS DELETED 2026-08-19, and it was a landmine, not
+   merely dead weight. The mono redesign retired the theme control -- app.js
+   now calls applyTheme("dark") unconditionally and the button is gone -- so
+   nothing could reach this block. But the redesign's token sweep had run
+   through it anyway, setting --bg, --bg-soft, --bg-inset AND --text all to
+   #1B1917: every surface ink, every word on it ink. Anything that ever set
+   data-theme="light" again -- a restored toggle, a hand-set attribute, a
+   stale key -- would have blacked the office out entirely, at 1:1.
 
-  --c-own: #1B1917;
-  --c-cust: #A3220B;
-  --c-cust-bg: rgba(14, 116, 144, 0.14);
-  --c-earn: #1B1917;
-  --c-earn-fill: rgba(27, 25, 23, 0.16);
-  --c-rule: #4B453D;
-  --c-hatch: rgba(71, 85, 105, 0.4);
-  --mark: #1B1917;
-  --mark-lit: #A3220B;
-  --lvl-1: #1B1917;
-  --lvl-2: #1B1917;
-  --lvl-3: #1B1917;
-  --lvl-4: #1B1917;
-  --lvl-5: #6B645A;
-}
-
+   One palette, one set of tokens. The :root block above is the whole
+   palette now, and there is no second one to keep in step with it. */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -253,9 +221,13 @@ main {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-title { color: var(--bad); font-weight: 700; }
+/* The label was #1B1917 on var(--indigo), which the sweep had also set to
+   #1B1917: a solid black rectangle with an invisible word on it, and it is
+   the ONE control on a failed panel. Paper on ink, like every other solid
+   button in the office. */
 .retry-btn {
   background: var(--indigo);
-  color: #1B1917;
+  color: #EAE4D9;
   border: none;
   border-radius: 0;
   padding: 8px 18px;
@@ -901,12 +873,12 @@ table.stmt {
    calmer chart surfaces.
    ============================================================ */
 
-body {
-  background:
-    radial-gradient(circle at 18% 0%, rgba(236, 48, 19, 0.10), transparent 32%),
-    radial-gradient(circle at 92% 16%, rgba(27, 25, 23, 0.10), transparent 28%),
-    var(--bg);
-}
+/* Two radial washes from the old glow system, deleted 2026-08-19. The
+   redesign has no gradients anywhere; these survived because the shell
+   covers the body edge to edge, so nobody ever saw them fail. A rule that
+   contradicts the system and is invisible is still the rule someone copies
+   next time. */
+body { background: var(--bg); }
 
 .portal-shell {
   width: 100%;
@@ -991,7 +963,6 @@ body {
   border-bottom: 1px solid rgba(27, 25, 23, 0.22);
   backdrop-filter: none;
 }
-html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
 .topbar-inner {
   max-width: 1280px;
   min-height: 82px;
@@ -1162,10 +1133,6 @@ main {
   border-color: rgba(27, 25, 23, 0.22);
   box-shadow: none;
 }
-html[data-theme="light"] .panel-body {
-  background: rgba(255, 255, 255, 0.82);
-}
-
 .ident {
   padding: 0 0 18px;
   margin-bottom: 20px;
@@ -1481,6 +1448,17 @@ html[data-theme="light"] .panel-body {
   font-weight: 700;
   padding: 8px 9px;
 }
+/* THE OPTIONS, not just the closed control. The sidebar select is
+   #F8F7F5 on a dark rail, and the native popup takes the control's colour
+   but the SYSTEM's background -- white -- so every month but the
+   highlighted one was near-white on white. Stated ink on white here, in
+   that order, because a platform that ignores one of the two properties
+   ignores the background first: ink then survives on the system white. */
+.side-period .period-select option {
+  background-color: #FFFFFF;
+  color: #1B1917;
+}
+
 .side-period-state {
   font-size: 10px;
   font-weight: 700;
@@ -1546,7 +1524,25 @@ html[data-theme="light"] .panel-body {
 
 .portal-workspace { background: #EAE4D9; min-width: 0; }
 
-.topbar { border-bottom: 2px solid #1B1917; }
+/* THE BAR ITSELF, repainted 2026-08-19. Everything INSIDE it was swept to
+   the paper palette in the redesign -- the title to ink, the kicker to the
+   accent, one outline button and one solid -- but the bar kept the old
+   dark-theme fill, rgba(27,25,23,0.86) over paper. Measured: ink title on
+   that composite is 1.3:1, and the outline button was ink on ink, so the
+   bar read as a smear with a heading somewhere under it. The rule below it
+   for the light theme was the same colour family and is neutralised too. */
+.topbar {
+  background: #EAE4D9;
+  border-bottom: 2px solid #1B1917;
+  backdrop-filter: none;
+}
+
+/* ANCHORS CLEAR THE STICKY BAR. The sidebar's section links and every
+   #panel-... link scrolled their target to y=0, which is UNDER the bar --
+   so following "Statements" put the heading behind 117 pixels of chrome
+   and the reader saw the table with no title. scroll-margin-top belongs on
+   the target, not the scroller, so it holds whichever ancestor scrolls. */
+.panel { scroll-margin-top: 132px; }
 .topbar-inner {
   display: flex;
   align-items: flex-end;

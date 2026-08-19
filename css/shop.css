@@ -3416,3 +3416,18 @@ body.payment-in-flight .checkout-summary {
   border-color: var(--shop-strong);
   color: #EAE4D9;
 }
+
+/* THE CURRENCY GUARD NOTE. Stands where the card fields would be when the
+   order is priced in anything but dollars. A rule on the accent side, so it
+   reads as an explanation rather than an error: nothing has gone wrong. */
+.pay-currency-guard {
+  border-left: 2px solid #EC3013;
+  background: #F1EDE6;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+}
+.pay-currency-guard .link-btn {
+  display: inline;
+  font-weight: 700;
+  color: #A3220B;
+}

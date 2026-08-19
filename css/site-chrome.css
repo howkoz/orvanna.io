@@ -176,12 +176,39 @@
   transform-origin: 50% 50%;
   transition: transform 0.8s cubic-bezier(0.2, 0.9, 0.2, 1);
 }
-/* The mark is still by default. Anything that moves permanently
-   trains people to stop looking at it, so the turn fires on an
-   event -- the working log advancing -- and never on a timer of
-   its own. */
+/* THE QUARTER TURN, on every page carrying the mark.
+   Ruled 2026-08-19. It used to fire only on the home page, driven
+   by the working log advancing, on the reasoning that a mark which
+   moves permanently trains people to stop looking at it. Howard
+   read that as a fault, not a restraint: the mark sat dead on six
+   of the seven public pages, so the one page it moved on looked
+   like the broken one.
+
+   So the turn is CHROME now, not home-page furniture, and it is
+   CSS rather than script -- the same rhythm the log keeps (a two
+   second hold, then an eight tenths turn) without asking six pages
+   to load a timer. Four quarters make the cycle, so it closes on
+   360 and loops without snapping back.
+
+   The home page still drives its own from the log, because there
+   the caption claims cause -- "the mark in the bar turns a quarter
+   every time this list advances" -- and a second clock would make
+   that sentence a lie. Its rule is below. */
+@keyframes mark-quarter {
+  0%,   17.857% { transform: rotate(0deg); }
+  25%,  42.857% { transform: rotate(90deg); }
+  50%,  67.857% { transform: rotate(180deg); }
+  75%,  92.857% { transform: rotate(270deg); }
+  100%          { transform: rotate(360deg); }
+}
+.brand-mark svg {
+  animation: mark-quarter 11.2s cubic-bezier(0.2, 0.9, 0.2, 1) infinite;
+}
+/* The home page's mark answers to the log, not to a clock. */
+body:has(#workingLog) .brand-mark svg { animation: none; }
+
 @media (prefers-reduced-motion: reduce) {
-  .brand-mark svg { transition: none; }
+  .brand-mark svg { transition: none; animation: none; }
 }
 .brand-mark .mark-bar { fill: currentColor; }
 .brand-mark .mark-accent { fill: var(--chrome-accent); }

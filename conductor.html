@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductors</title>
 <meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a48860bd798">
-<link rel="stylesheet" href="css/site-chrome.css?v=8a48860bd798">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a18eb622fa8">
+<link rel="stylesheet" href="css/site-chrome.css?v=8a18eb622fa8">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -23,7 +23,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=8a48860bd798" defer></script>
+<script src="js/site-chrome.js?v=8a18eb622fa8" defer></script>
 <style>
 /* ============================================================
    Orvanna: what is a Conductor.
@@ -517,12 +517,18 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
           <text class="d-title" x="30" y="40">Your ensemble</text>
           <text class="d-sub"   x="30" y="62">the agents you run</text>
 
-          <g stroke="var(--mark-line)" stroke-width="1.6">
-            <line x1="225" y1="212" x2="105" y2="132"/>
-            <line x1="225" y1="212" x2="225" y2="112"/>
-            <line x1="225" y1="212" x2="345" y2="132"/>
-            <line x1="225" y1="212" x2="120" y2="308"/>
-            <line x1="225" y1="212" x2="330" y2="308"/>
+          <!-- Connectors stop at the EDGE of what they connect, both ends.
+               Drawn centre to centre they ran straight through the hub and
+               out through each hexagon, which is what made the drawing read
+               as sloppy: a line that crosses a node says the two are on top
+               of each other, not joined. 33 clears the hub (r30), 24 clears
+               the hexagon (21 tall, 18.2 wide), each leaving a small gap. -->
+          <g stroke="var(--mark-line)" stroke-width="1.6" stroke-linecap="round">
+            <line x1="197.5" y1="193.7" x2="125.0" y2="145.3"/>
+            <line x1="225.0" y1="179.0" x2="225.0" y2="136.0"/>
+            <line x1="252.5" y1="193.7" x2="325.0" y2="145.3"/>
+            <line x1="200.6" y1="234.3" x2="137.7" y2="291.8"/>
+            <line x1="249.4" y1="234.3" x2="312.3" y2="291.8"/>
           </g>
 
           <circle cx="225" cy="212" r="30" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
@@ -545,7 +551,7 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
           </g>
           <g class="d-small" text-anchor="middle">
             <text x="105" y="172">Payment</text>
-            <text x="225" y="152">Customer Care</text>
+            <text x="225" y="84">Customer Care</text>
             <text x="345" y="172">Secretary</text>
             <text x="120" y="348">Accounting</text>
             <text x="330" y="348">Tax</text>
@@ -559,12 +565,21 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
           <text class="d-title" x="510" y="40">Your team</text>
           <text class="d-sub"   x="510" y="62">the people you sponsored</text>
 
-          <g stroke="var(--mark-line)" stroke-width="1.6" fill="none">
-            <path d="M 700 132 V 165 H 590 V 200"/>
-            <path d="M 700 132 V 200"/>
-            <path d="M 700 132 V 165 H 810 V 200"/>
-            <path d="M 590 232 V 262 H 545 V 296"/>
-            <path d="M 590 232 V 262 H 640 V 296"/>
+          <!-- Same rule on this side. The old paths began at y132, six
+               pixels INSIDE the top circle (bottom edge y138), and landed at
+               y200, six inside the children (top edge y194) -- so every
+               branch was drawn over a face. Now: a stem from the parent's
+               edge, one horizontal bus, and a drop to each child's edge. -->
+          <g stroke="var(--mark-line)" stroke-width="1.6" fill="none" stroke-linecap="round">
+            <path d="M 700 141 V 168"/>
+            <path d="M 590 168 H 810"/>
+            <path d="M 590 168 V 191"/>
+            <path d="M 700 168 V 191"/>
+            <path d="M 810 168 V 191"/>
+            <path d="M 590 241 V 268"/>
+            <path d="M 545 268 H 640"/>
+            <path d="M 545 268 V 287"/>
+            <path d="M 640 268 V 287"/>
           </g>
 
           <circle cx="700" cy="112" r="26" fill="var(--mark-fill)" stroke="var(--mark-lit)" stroke-width="2.2"/>
@@ -582,8 +597,8 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
             <circle cx="640" cy="312" r="22" fill="var(--mark-fill)" stroke="var(--mark)" stroke-width="2"/>
             <use href="#person" x="640" y="314" fill="var(--mark)"/>
           </g>
-          <text class="d-small" x="700" y="152" text-anchor="middle">You</text>
-          <text class="d-small" x="700" y="258" text-anchor="middle">the Conductors you sponsored</text>
+          <text class="d-small" x="734" y="117">You</text>
+          <text class="d-small" x="700" y="256" text-anchor="middle">the Conductors you sponsored</text>
           <text class="d-small" x="592" y="352" text-anchor="middle">the Conductors they sponsored</text>
           <text class="d-small" x="510" y="386">People. Nobody is bought. Nobody carries Personal Volume.</text>
         </svg>

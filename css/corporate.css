@@ -88,7 +88,13 @@
   --glow-b: transparent;
   --glow-c: transparent;
   --solid-bg:     #EC3013;   /* the solid accent button */
-  --solid-hv:     #67E3F4;
+  /* WAS #67E3F4 until 2026-08-19. A survivor of the old cyan palette,
+     and the one Howard saw: the sign-in pages set no data-theme, so they
+     fall through to THIS block, and every solid button flashed bright
+     cyan on hover in the middle of a warm paper design. The light block
+     below had already been swept to #A3220B; this one had not, because
+     nothing on a swept page ever reads it. */
+  --solid-hv:     #A3220B;
   --solid-fg:     #FFFFFF;   /* ink on the solid accent button */
   --ghost-fg:     #1B1917;
   /* Flat, 2026-08-19. A two-stop wash between two paper values is a
@@ -272,7 +278,11 @@ img, svg { max-width: 100%; display: block; }
 
 /* ---------- bands: all dark now, separated by glow washes ---------- */
 
-.band { padding: 104px 0; position: relative; overflow: hidden; }
+/* 104px was the old airy system's rhythm and it survived the redesign
+   untouched: 104 above the first kicker and 208 between any two bands, on
+   a design whose whole argument is that rules and alignment organise a
+   page rather than emptiness. Halved 2026-08-19. */
+.band { padding: 56px 0; position: relative; overflow: hidden; }
 
 section { scroll-margin-top: 84px; }
 
@@ -302,6 +312,13 @@ section { scroll-margin-top: 84px; }
 
 /* faint horizon line between bands */
 .band + .band { border-top: 1px solid var(--band-line); }
+
+/* A band's last child keeps its own bottom margin, which then STACKS on the
+   band's padding: the space under a section read visibly deeper than the
+   space above it. The band owns the rhythm; the last element inside it does
+   not get a second say. */
+.band .wrap > :last-child,
+.band .wrap > .reveal > :last-child { margin-bottom: 0; }
 
 /* ---------- type ---------- */
 
@@ -478,7 +495,7 @@ section { scroll-margin-top: 84px; }
 
 .hero .kicker { color: var(--chrome-accent); }
 .hero .btn-solid { background: var(--chrome-accent); color: #FFFFFF; }
-.hero .btn-solid:hover { background: #67E3F4; }
+.hero .btn-solid:hover { background: #A3220B; }
 
 /* layered hero glows: indigo left, cyan right */
 .hero::before,
@@ -829,8 +846,17 @@ section { scroll-margin-top: 84px; }
    LOGIN PAGE (login.html): centered glass card on the navy field
    ============================================================ */
 
+/* THE SIGN-IN STAGE. The centring used to live on <body>, which is why
+   the site header could not be added: a full-width bar cannot be a child
+   of a centred flex column without becoming a centred box itself. The
+   body is now an ordinary block that stacks header then stage, and the
+   stage owns the centring and the two corner washes. */
 .login-body {
   min-height: 100vh;
+  position: relative;
+}
+.login-stage {
+  min-height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -841,54 +867,15 @@ section { scroll-margin-top: 84px; }
   overflow: hidden;
 }
 
-.login-body::before,
-.login-body::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 720px;
-  height: 720px;
-  border-radius: 0;
-}
-.login-body::before {
-  left: -280px; top: -260px;
-  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.2), transparent 70%);
-}
-.login-body::after {
-  right: -300px; bottom: -320px;
-  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.11), transparent 70%);
-}
+/* The two corner washes were deleted 2026-08-19. They were soft radial
+   gradients from the old glow system, and on warm paper they render as
+   grey smudges behind the card -- which in a design with no gradients and
+   no shadows reads as a rendering fault, not as atmosphere. */
 
-.login-logo {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  color: #1B1917;
-  text-decoration: none;
-}
-.login-logo img { height: 34px; width: auto; }
-
-/* The brand lockup, scoped to the login card. login.html is a
-   sign-in area, excluded from this round by name, so it does not
-   load css/site-chrome.css and cannot take the shared rule. This
-   is the one deliberate copy of .brand-mark and .brand-word, and
-   it is scoped so it can never style a navigation bar. */
-.login-logo .brand-mark {
-  width: 18px;
-  height: 18px;
-  border: 1px solid rgba(236, 48, 19, 0.75);
-  border-radius: 0;
-  box-shadow: none;
-}
-.login-logo .brand-word {
-  font-size: 0.95rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-}
+/* .login-logo and its scoped copy of .brand-mark/.brand-word were deleted
+   2026-08-19. They existed only because this page could not load
+   css/site-chrome.css; it loads it now, and carries the real navigation
+   bar, so the copy had nothing left to style and would only have drifted. */
 
 .login-card {
   position: relative;
@@ -1228,7 +1215,7 @@ section { scroll-margin-top: 84px; }
 }
 
 @media (max-width: 760px) {
-  .band { padding: 72px 0; }
+  .band { padding: 40px 0; }
   .hero { padding: 104px 0 116px; }
   .cards { grid-template-columns: 1fr; }
   .features { grid-template-columns: 1fr; }

@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a48860bd798">
-<link rel="stylesheet" href="css/corporate.css?v=8a48860bd798">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8a18eb622fa8">
+<link rel="stylesheet" href="css/corporate.css?v=8a18eb622fa8">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=8a48860bd798">
-<link rel="stylesheet" href="css/shop.css?v=8a48860bd798">
+<link rel="stylesheet" href="css/site-chrome.css?v=8a18eb622fa8">
+<link rel="stylesheet" href="css/shop.css?v=8a18eb622fa8">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -349,6 +349,17 @@
                     </span>
                     <span class="sk-caption">Preparing the secure card form</span>
                   </div>
+                  <!-- WHY THERE ARE NO CARD FIELDS. Live card settlement is
+                       guarded to USD until order records store currency, which
+                       is correct, but the guard used to be SILENT: pick GBP and
+                       the card form simply was not there, with the reason
+                       reachable only by pressing a button that says it cannot
+                       be pressed. The reason now stands where the fields would,
+                       and offers the one action that resolves it. -->
+                  <p class="pay-note pay-currency-guard" id="currencyGuardNote" hidden>
+                    <span id="currencyGuardText"></span>
+                    <button class="link-btn" type="button" id="currencyGuardSwitch">Switch to USD to pay by card</button>
+                  </p>
                   <div id="hyperswitchMount"></div>
                   <p class="pay-note" id="livePayStatus" hidden role="status" aria-live="polite" tabindex="-1"></p>
                 </div>
@@ -772,8 +783,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=8a48860bd798"></script>
-<script src="js/payments.js?v=8a48860bd798"></script>
+<script src="js/catalog.js?v=8a18eb622fa8"></script>
+<script src="js/payments.js?v=8a18eb622fa8"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -1784,6 +1795,22 @@
     if (!allowed && payMethod === 'bank') setPayMethod('card');
   }
 
+  /* The guard note tracks exactly the condition the button label reports,
+     so the two can never disagree: same currency test, same moment. */
+  function syncCurrencyGuardNote() {
+    var box = document.getElementById('currencyGuardNote');
+    if (!box) { return; }
+    var text = document.getElementById('currencyGuardText');
+    var blocked = LIVE_PAYMENTS && payMethod === 'card' && selectedCurrency() !== 'USD';
+    box.hidden = !blocked;
+    if (blocked && text) {
+      text.textContent = 'Card fields are not shown for ' + selectedCurrency() +
+        '. The storefront can price and display ' + selectedCurrency() +
+        ', but live card settlement stays guarded to USD until order records store ' +
+        'currency. Nothing here is broken and nothing has been charged. ';
+    }
+  }
+
   function paymentButtonLabel() {
     if (!LIVE_PAYMENTS) return payMethod === 'card' ? 'Place order' : 'Place order with ' + PAY_LABELS[payMethod];
     if (payMethod === 'card') {
@@ -1990,6 +2017,7 @@
       liveStatus('');
     }
     placeOrderBtn.textContent = paymentButtonLabel();
+    syncCurrencyGuardNote();
     if (LIVE_PAYMENTS && liveState && liveState.clientSecret && !canOpenLivePayment()) {
       liveResetPayment('');
     }
@@ -2112,9 +2140,18 @@
     });
   }
 
+  var currencyGuardSwitch = document.getElementById('currencyGuardSwitch');
+  if (currencyGuardSwitch && currencySelect) {
+    currencyGuardSwitch.addEventListener('click', function () {
+      currencySelect.value = 'USD';
+      currencySelect.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+  }
+
   if (currencySelect) {
     updateCurrencyHint();
     syncBankAvailability();
+    syncCurrencyGuardNote();
     /* the currency persists in localStorage, so a page can LOAD
        non-USD: the state lock has to be right from the first paint,
        not only after the first change */
@@ -2126,6 +2163,7 @@
       applyCurrencyAddressDefault();
       updateCurrencyHint();
       syncBankAvailability();
+      syncCurrencyGuardNote();
       if (payMethod === 'bank') setPayMethod('bank');
       /* NEVER RESET A PAYMENT THAT IS IN FLIGHT (verifier finding
          O-M2, 2026-08-16). The inert list now disables this select
@@ -2650,6 +2688,7 @@
         cardFields.hidden = LIVE_PAYMENTS || payMethod !== 'card';
         placeOrderBtn.disabled = false;
         placeOrderBtn.textContent = paymentButtonLabel();
+    syncCurrencyGuardNote();
       },
       /* success clears the cart (only then); the engine has already
          fired the record-tax bookkeeping call */
@@ -2724,6 +2763,7 @@
     liveStatus(stagedMessage);
     placeOrderBtn.disabled = false;
     placeOrderBtn.textContent = paymentButtonLabel();
+    syncCurrencyGuardNote();
     if (payMethod === 'bank') openPlaidPanel();
     if (shouldFocus && payMethod !== 'bank') {
       window.setTimeout(function () {
@@ -3575,6 +3615,6 @@
 })();
 </script>
 
-<script src="js/site-chrome.js?v=8a48860bd798"></script>
+<script src="js/site-chrome.js?v=8a18eb622fa8"></script>
 </body>
 </html>
