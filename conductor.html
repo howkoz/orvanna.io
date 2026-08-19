@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Conductors</title>
 <meta name="description" content="What an Orvanna Conductor is, what the work looks like day to day, how someone starts, and the mechanisms a Conductor is paid by. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
-<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=0d500c098786">
+<link rel="stylesheet" href="css/site-chrome.css?v=0d500c098786">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -23,7 +23,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
+<script src="js/site-chrome.js?v=0d500c098786" defer></script>
 <style>
 /* ============================================================
    Orvanna: what is a Conductor.
@@ -56,10 +56,10 @@
   --field:        #EAE4D9;
   --field-2:      #F1EDE6;
   --field-3:      #F1EDE6;
-  --panel:        linear-gradient(165deg, rgba(241, 237, 230, 0.62), rgba(241, 237, 230, 0.44));
+  --panel:        #F1EDE6;
   --panel-border: rgba(27, 25, 23, 0.26);
   --panel-lit:    rgba(236, 48, 19, 0.30);
-  --panel-shadow: 0 0 26px rgba(27, 25, 23, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  --panel-shadow: none;
   --heading:      #1B1917;
   --body:         #4B453D;
   --muted:        #6B645A;
@@ -72,9 +72,14 @@
   --hairline:     rgba(27, 25, 23, 0.18);
   --chip-bg:      rgba(27, 25, 23, 0.10);
   --btn-solid-bg: #EC3013;
-  --btn-solid-fg: #05121C;
-  --btn-solid-hv: #67E3F4;
-  --btn-ghost-bg: linear-gradient(180deg, rgba(241, 237, 230, 0.85), rgba(234, 228, 217, 0.85));
+  /* Corrected 2026-08-19. The label was #05121C and the HOVER was #67E3F4,
+     both survivors of the dark site: the palette pass remaps the values it
+     recognises, and a hover state renders nowhere until a pointer is on it,
+     so neither showed up in a static sweep. A solid accent button takes a
+     white label and deepens on hover, the same as .h-btn-solid. */
+  --btn-solid-fg: #FFFFFF;
+  --btn-solid-hv: #A3220B;
+  --btn-ghost-bg: #F1EDE6;
   --btn-ghost-fg: #1B1917;
   --btn-ghost-bd: rgba(27, 25, 23, 0.55);
   --glow-a:       rgba(27, 25, 23, 0.17);
@@ -150,16 +155,13 @@ img, svg { max-width: 100%; display: block; }
 .band + .band { border-top: 1px solid var(--hairline); }
 .band-2 { background: var(--field-2); }
 
-.glow-a::before, .glow-b::before, .glow-c::before {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 680px; height: 680px;
-  border-radius: 50%;
-}
-.glow-a::before { left: -220px; top: -160px; background: radial-gradient(closest-side, var(--glow-a), transparent 70%); }
-.glow-b::before { right: -240px; top: 8%;    background: radial-gradient(closest-side, var(--glow-b), transparent 70%); }
-.glow-c::before { left: 50%; transform: translateX(-50%); bottom: -320px; background: radial-gradient(closest-side, var(--glow-c), transparent 70%); }
+/* THE GLOWS ARE GONE, 2026-08-19. Three 680px radial washes bleeding
+   behind the bands -- the starfield aesthetic this redesign replaces.
+   Deleted rather than squared off: the border-radius was only a problem
+   because the circle should not have been there at all. The .glow-a/b/c
+   classes stay on the markup and now do nothing, which is deliberate:
+   removing them is a markup change across two files for no visual
+   difference, and the next content round can drop them. */
 
 .band > .wrap { position: relative; z-index: 1; }
 
@@ -172,19 +174,20 @@ img, svg { max-width: 100%; display: block; }
 
 h1.page-title {
   font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 700; text-transform: uppercase; letter-spacing: 0.09em;
-  line-height: 1.18; color: var(--heading); margin-bottom: 26px;
+  font-weight: 800; letter-spacing: -0.035em;
+  line-height: 1.02; color: var(--heading); margin-bottom: 26px;
 }
 
 h2.section-title {
   font-size: clamp(1.45rem, 3vw, 2.05rem);
-  font-weight: 700; text-transform: uppercase; letter-spacing: 0.10em;
-  line-height: 1.25; color: var(--heading); margin-bottom: 22px;
+  font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1.05; color: var(--heading); margin-bottom: 22px;
 }
 
 h3.card-title {
-  font-size: 1.02rem; font-weight: 700; text-transform: uppercase;
-  letter-spacing: 0.12em; color: var(--heading); margin-bottom: 10px;
+  font-size: 1.15rem; font-weight: 800;
+  letter-spacing: -0.02em; line-height: 1.15;
+  color: var(--heading); margin-bottom: 10px;
 }
 
 h4.mini-title {
@@ -211,7 +214,7 @@ em.q { font-style: normal; color: var(--accent); font-weight: 600; }
 .btn {
   font: inherit; display: inline-block; padding: 12px 26px;
   font-size: 0.86rem; font-weight: 650; text-transform: uppercase;
-  letter-spacing: 0.14em; text-decoration: none; border-radius: 8px;
+  letter-spacing: 0.14em; text-decoration: none; border-radius: 0;
   border: 1.5px solid transparent; background: transparent; color: inherit;
   cursor: pointer;
   transition: transform 0.16s ease, background-color 0.16s ease,
@@ -236,22 +239,24 @@ em.q { font-style: normal; color: var(--accent); font-weight: 600; }
 
 .panel {
   position: relative; background: var(--panel);
-  border: 1px solid var(--panel-border); border-radius: 14px;
+  border: 1px solid var(--panel-border); border-radius: 0;
   box-shadow: var(--panel-shadow);
   padding: 30px 32px;
 }
 .panel-lit { border-color: var(--panel-lit); }
 .accent-bar {
   position: absolute; top: 0; left: 22px; right: 22px; height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--indigo), var(--accent));
+  border-radius: 0;
+  /* was a two-stop gradient; the handoff replaces gradient bars with 2px
+     of ink. One accent event per screen, and on this page it is not here. */
+  background: #1B1917;
 }
 
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
 
 .chip {
-  display: inline-block; padding: 3px 12px 4px; border-radius: 999px;
+  display: inline-block; padding: 3px 12px 4px; border-radius: 0;
   background: var(--chip-bg); border: 1px solid var(--panel-border);
   font-size: 0.66rem; font-weight: 700; text-transform: uppercase;
   letter-spacing: 0.18em; color: var(--indigo-soft);
@@ -264,14 +269,14 @@ em.q { font-style: normal; color: var(--accent); font-weight: 600; }
 .step {
   counter-increment: step;
   display: grid; grid-template-columns: 54px 1fr; gap: 20px;
-  padding: 22px 26px; border-radius: 14px;
+  padding: 22px 26px; border-radius: 0;
   background: var(--panel); border: 1px solid var(--panel-border);
   box-shadow: var(--panel-shadow);
 }
 .step::before {
   content: counter(step);
   display: flex; align-items: center; justify-content: center;
-  width: 44px; height: 44px; border-radius: 999px;
+  width: 44px; height: 44px; border-radius: 0;
   border: 1.5px solid var(--panel-lit); color: var(--accent);
   font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums;
 }
@@ -292,17 +297,17 @@ ul.plain { list-style: none; display: grid; gap: 12px; }
 ul.plain li { position: relative; padding-left: 26px; color: var(--body); }
 ul.plain li::before {
   content: ""; position: absolute; left: 0; top: 11px;
-  width: 9px; height: 9px; border-radius: 2px;
+  width: 9px; height: 9px; border-radius: 0;
   background: var(--accent); transform: rotate(45deg);
 }
 ul.plain.quiet li::before { background: var(--indigo); }
 
 /* the week table */
-.table-scroll { overflow-x: auto; border-radius: 14px; }
+.table-scroll { overflow-x: auto; border-radius: 0; }
 table.week {
   width: 100%; border-collapse: collapse; min-width: 560px;
   background: var(--panel); border: 1px solid var(--panel-border);
-  border-radius: 14px; box-shadow: var(--panel-shadow);
+  border-radius: 0; box-shadow: var(--panel-shadow);
 }
 table.week th, table.week td {
   text-align: left; padding: 14px 20px;
@@ -321,7 +326,7 @@ table.week tr:last-child td { border-bottom: 0; }
 /* the drawing frames */
 .figure { margin: 0 0 12px; }
 .figure-frame {
-  overflow-x: auto; border-radius: 14px;
+  overflow-x: auto; border-radius: 0;
   border: 1px solid var(--panel-border); background: var(--panel);
   box-shadow: var(--panel-shadow); padding: 18px 20px;
 }
@@ -342,7 +347,7 @@ figcaption { font-size: 0.86rem; color: var(--muted); margin-top: 12px; }
   letter-spacing: 0.22em; color: var(--accent); margin-bottom: 6px;
 }
 .oneliner {
-  margin-top: 30px; padding: 20px 26px; border-radius: 14px;
+  margin-top: 30px; padding: 20px 26px; border-radius: 0;
   border: 1px solid var(--panel-lit); background: var(--accent-soft);
   color: var(--heading); font-size: 1.06rem;
 }

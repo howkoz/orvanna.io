@@ -61,7 +61,10 @@
   --icon-lit:      #EC3013;
   --panel-shadow:  0 0 26px rgba(27, 25, 23, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.05);
   --panel-lift:    0 0 38px rgba(236, 48, 19, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --rule:          linear-gradient(90deg, rgba(236, 48, 19, 0.45), rgba(27, 25, 23, 0.2), transparent);
+  /* A rule is a rule: 2px of ink, not a fade to nothing. The design
+     asks for rules and alignment to do the organising, and a rule
+     that dissolves halfway along organises only its first half. */
+  --rule:          #1B1917;
 
   /* The --chrome-* tokens moved to css/site-chrome.css, which is
      now the single source of chrome presentation for all nine
@@ -91,7 +94,7 @@
   --icon-lit:     #A3220B;
   --panel-shadow: 0 4px 14px rgba(27, 25, 23, 0.10);
   --panel-lift:   0 10px 26px rgba(27, 25, 23, 0.14);
-  --rule:         linear-gradient(90deg, rgba(14, 116, 144, 0.55), rgba(27, 25, 23, 0.28), transparent);
+  --rule:         #1B1917;
 }
 
 /* ============================================================
@@ -164,29 +167,26 @@ img, svg { max-width: 100%; display: block; }
 
 .page-title {
   font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  line-height: 1.22;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.04;
   color: var(--heading);
   margin-bottom: 22px;
 }
 
 .section-title {
   font-size: clamp(1.45rem, 3vw, 2.05rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--heading);
   margin-bottom: 18px;
 }
 
 .sub-title {
   font-size: 1.02rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 10px;
 }
@@ -425,10 +425,9 @@ section { scroll-margin-top: 150px; }
 
 .lib-card-name {
   font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  line-height: 1.3;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
   color: var(--heading);
   margin-bottom: 4px;
 }
@@ -629,7 +628,10 @@ table a:focus-visible {
   max-width: 52em;
 }
 
-.callout .sub-title { font-size: 0.82rem; letter-spacing: 0.16em; margin-bottom: 6px; }
+/* A callout's heading is a heading, not a label: it keeps the type
+   system's negative tracking rather than the +0.16em it inherited
+   from the old uppercase treatment. */
+.callout .sub-title { font-size: 0.95rem; letter-spacing: -0.02em; margin-bottom: 6px; }
 .callout p { font-size: 0.92rem; }
 .callout p + p { margin-top: 10px; }
 

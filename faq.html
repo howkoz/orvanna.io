@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Frequently Asked Questions</title>
 <meta name="description" content="Short, straight answers about the Orvanna Conductor program: the agents, the two purchase modes, how earning works, what makes a month qualified, and when commissions run. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
-<link rel="stylesheet" href="css/corporate.css?v=b3f2bf0935f8">
-<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=0d500c098786">
+<link rel="stylesheet" href="css/corporate.css?v=0d500c098786">
+<link rel="stylesheet" href="css/site-chrome.css?v=0d500c098786">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -24,7 +24,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
+<script src="js/site-chrome.js?v=0d500c098786" defer></script>
 <style>
 /* ============================================================
    FREQUENTLY ASKED QUESTIONS: page styles.
@@ -58,7 +58,11 @@
   --faq-card-hover:  rgba(241, 237, 230, 0.72);
   --faq-border:      rgba(27, 25, 23, 0.26);
   --faq-border-soft: rgba(27, 25, 23, 0.16);
-  --faq-shadow:      0 0 24px rgba(27, 25, 23, 0.13);
+  /* No shadows anywhere, 2026-08-19. Kept as a token set to none rather
+     than deleted, so the three rules that reference it still parse and a
+     future author reintroducing a shadow has to change it HERE, once,
+     instead of scattering one per rule. */
+  --faq-shadow:      none;
 
   /* text */
   --faq-heading:     #1B1917;
@@ -79,7 +83,7 @@
   --faq-card-hover:  #FAFBFF;
   --faq-border:      rgba(27, 25, 23, 0.22);
   --faq-border-soft: #E3E8F0;
-  --faq-shadow:      0 1px 2px rgba(241, 237, 230, 0.07);
+  --faq-shadow:      none;
 
   --faq-heading:     #1B1917;
   --faq-text:        #2B3444;
@@ -105,7 +109,7 @@ body {
 .faq-page summary:focus-visible {
   outline: 2px solid var(--faq-focus);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 /* The navigation and the footer are dark bands in both themes, so
@@ -142,10 +146,9 @@ body {
 
 .faq-title {
   font-size: clamp(1.5rem, 3.4vw, 2.1rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   color: var(--faq-heading);
   margin-bottom: 20px;
 }
@@ -161,7 +164,7 @@ body {
 .faq-key {
   background: var(--faq-card);
   border: 1px solid var(--faq-border);
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: var(--faq-shadow);
   padding: 22px 24px 18px;
   max-width: 46em;
@@ -169,9 +172,8 @@ body {
 
 .faq-key h2 {
   font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
   margin-bottom: 12px;
 }
@@ -218,7 +220,7 @@ body {
   color: var(--faq-accent);
   background: var(--faq-accent-soft);
   border: 1px solid var(--faq-border);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 14px;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -234,7 +236,7 @@ body {
   color: var(--faq-accent);
   background: transparent;
   border: 1.5px solid var(--faq-border);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 16px;
   cursor: pointer;
   margin-left: auto;
@@ -265,9 +267,8 @@ body {
 
 .faq-group-title {
   font-size: 1.12rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
 }
 
@@ -285,7 +286,7 @@ body {
 .faq-item {
   background: var(--faq-card);
   border: 1px solid var(--faq-border-soft);
-  border-radius: 12px;
+  border-radius: 0;
   margin-bottom: 10px;
   overflow: hidden;
   transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -326,7 +327,7 @@ body {
   content: "";
   position: absolute;
   background: var(--faq-accent);
-  border-radius: 1px;
+  border-radius: 0;
   transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
@@ -368,7 +369,7 @@ body {
 .faq-contact-card {
   background: var(--faq-card);
   border: 1px solid var(--faq-border);
-  border-radius: 14px;
+  border-radius: 0;
   box-shadow: var(--faq-shadow);
   padding: 30px 30px 26px;
   max-width: 46em;
@@ -376,9 +377,8 @@ body {
 
 .faq-contact-card h2 {
   font-size: 1.02rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
   margin-bottom: 12px;
 }

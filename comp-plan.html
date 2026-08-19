@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Compensation Plan</title>
 <meta name="description" content="The Orvanna compensation plan, version 1.3: how a Conductor earns, every term defined, every earning mechanism with worked arithmetic, the rank ladder, and the qualification rules. Demonstration document, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=b3f2bf0935f8">
-<link rel="stylesheet" href="css/site-chrome.css?v=b3f2bf0935f8">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=0d500c098786">
+<link rel="stylesheet" href="css/site-chrome.css?v=0d500c098786">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -23,7 +23,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=b3f2bf0935f8" defer></script>
+<script src="js/site-chrome.js?v=0d500c098786" defer></script>
 <style>
 /* ==========================================================================
    Orvanna compensation plan brochure.
@@ -56,7 +56,7 @@
   --line:        rgba(27, 25, 23, 0.22);
   --hairline:    rgba(27, 25, 23, 0.18);
   --code-bg:     #F1EDE6;
-  --shadow:      0 0 26px rgba(27, 25, 23, 0.14);
+  --shadow:      none;
   --shadow-lift: 0 0 38px rgba(236, 48, 19, 0.16);
 
   --indigo:      #1B1917;
@@ -114,7 +114,7 @@
   --line:         #D8DCE5;
   --hairline:     rgba(27, 25, 23, 0.20);
   --code-bg:      #1B1917;
-  --shadow:       0 4px 14px rgba(241, 237, 230, 0.10);
+  --shadow:       none;
   --shadow-lift:  0 8px 22px rgba(241, 237, 230, 0.14);
 
   --indigo:       #1B1917;
@@ -195,7 +195,7 @@ img, svg { max-width: 100%; display: block; }
   color: var(--chrome-head);
   background: transparent;
   border: 1px solid var(--chrome-line);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 14px;
   cursor: pointer;
   white-space: nowrap;
@@ -215,21 +215,9 @@ img, svg { max-width: 100%; display: block; }
   overflow: hidden;
 }
 .cover::before,
-.cover::after {
-  content: "";
-  position: absolute;
-  pointer-events: none;
-  width: 640px; height: 640px;
-  border-radius: 50%;
-}
-.cover::before {
-  left: -240px; top: -280px;
-  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.22), transparent 70%);
-}
-.cover::after {
-  right: -260px; bottom: -340px;
-  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.12), transparent 70%);
-}
+/* The cover's two 640px radial washes are gone, 2026-08-19: the same
+   starfield leftover removed from conductor.html. The cover is paper and
+   a rule now. */
 .cover .wrap { position: relative; z-index: 1; }
 .cover-mark { display: flex; align-items: center; gap: 20px; margin-bottom: 34px; }
 .cover-kicker {
@@ -238,8 +226,7 @@ img, svg { max-width: 100%; display: block; }
 }
 .cover h1 {
   font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 700; letter-spacing: 0.09em; line-height: 1.15;
-  text-transform: uppercase; color: var(--chrome-head);
+  font-weight: 800; letter-spacing: -0.035em; line-height: 1.02; color: var(--chrome-head);
 }
 .cover-sub {
   margin-top: 20px; max-width: 42em; color: var(--chrome-muted); font-size: 1.05rem;
@@ -248,7 +235,7 @@ img, svg { max-width: 100%; display: block; }
 .stamp {
   font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
   color: var(--chrome-ind); border: 1px solid var(--chrome-line);
-  border-radius: 999px; padding: 5px 14px; white-space: nowrap;
+  border-radius: 0; padding: 5px 14px; white-space: nowrap;
 }
 .cover-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
 
@@ -265,12 +252,12 @@ section { scroll-margin-top: 72px; }
 }
 h2 {
   font-size: clamp(1.3rem, 2.6vw, 1.85rem);
-  font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase;
-  line-height: 1.25; color: var(--ink); margin-bottom: 18px;
+  font-weight: 800; letter-spacing: -0.03em;
+  line-height: 1.05; color: var(--ink); margin-bottom: 18px;
 }
 h3 {
-  font-size: 1.02rem; font-weight: 700; letter-spacing: 0.10em;
-  text-transform: uppercase; color: var(--ink); margin: 30px 0 10px;
+  font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em;
+  line-height: 1.15; color: var(--ink); margin: 30px 0 10px;
 }
 h4 {
   font-size: 0.9rem; font-weight: 700; letter-spacing: 0.04em;
@@ -286,7 +273,7 @@ a { color: var(--link); }
 .num, .money { font-variant-numeric: tabular-nums; white-space: nowrap; }
 code, .mono {
   font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
-  font-size: 0.9em; background: var(--code-bg); border-radius: 4px; padding: 1px 6px;
+  font-size: 0.9em; background: var(--code-bg); border-radius: 0; padding: 1px 6px;
 }
 
 /* ----------------------------------------------------------- panels, notes */
@@ -294,7 +281,7 @@ code, .mono {
 .panel {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 0;
   padding: 26px 28px;
   box-shadow: var(--shadow);
   margin: 22px 0;
@@ -305,7 +292,7 @@ code, .mono {
 .note {
   background: var(--surface-2);
   border-left: 5px solid var(--indigo);
-  border-radius: 0 10px 10px 0;
+  border-radius: 0;
   padding: 16px 20px;
   margin: 20px 0;
   max-width: 46em;
@@ -326,7 +313,7 @@ code, .mono {
 .chip {
   display: inline-block;
   font-size: 0.66rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
-  border-radius: 999px; padding: 3px 12px; white-space: nowrap;
+  border-radius: 0; padding: 3px 12px; white-space: nowrap;
   border: 1px solid currentColor;
 }
 .chip.ok    { color: var(--good); background: var(--good-bg); }
@@ -340,7 +327,7 @@ code, .mono {
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   margin: 20px 0;
   background: var(--paper);
 }
@@ -379,7 +366,7 @@ tfoot td { font-weight: 700; color: var(--ink); background: var(--surface); bord
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 14px;
   background: var(--paper);
 }
@@ -451,7 +438,7 @@ tfoot td { font-weight: 700; color: var(--ink); background: var(--surface); bord
 /* -------------------------------------------------------------- details */
 
 details.ledger {
-  border: 1px solid var(--line); border-radius: 12px;
+  border: 1px solid var(--line); border-radius: 0;
   background: var(--surface); margin: 22px 0; padding: 0 20px;
 }
 details.ledger > summary {
@@ -602,8 +589,8 @@ details.ledger[open] { padding-bottom: 18px; }
 <section class="cover" id="cover">
   <div class="wrap">
     <div class="cover-mark">
-      <img src="assets/logo-header-dark.svg?v=b3f2bf0935f8" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
-      <img src="assets/logo-final-primary.svg?v=b3f2bf0935f8" alt="Orvanna" class="logo-light">
+      <img src="assets/logo-header-dark.svg?v=0d500c098786" alt="Orvanna" class="logo-dark" style="height:44px;width:auto;">
+      <img src="assets/logo-final-primary.svg?v=0d500c098786" alt="Orvanna" class="logo-light">
     </div>
     <p class="cover-kicker">The compensation plan</p>
     <h1>Build an ensemble.<br>Build a team.</h1>

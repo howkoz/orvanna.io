@@ -433,7 +433,8 @@
   width: min(430px, 100%);
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, rgba(241, 237, 230, 0.97), rgba(234, 228, 217, 0.97));
+  /* flat paper-raised; the wash was two values of the same paper */
+  background: #F1EDE6;
   border-left: 1px solid rgba(236, 48, 19, 0.28);
   box-shadow: none;
   transform: translateX(102%);
@@ -1654,10 +1655,9 @@ a.back-to-shop { text-decoration: none; }
 
 .pdp-name {
   font-size: clamp(1.32rem, 2.4vw, 1.85rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.065em;
-  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--shop-strong);
   margin: 10px 0 6px;
 }
@@ -1901,10 +1901,9 @@ a.back-to-shop { text-decoration: none; }
 
 .prose-title {
   font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--shop-strong);
   margin-bottom: 10px;
 }

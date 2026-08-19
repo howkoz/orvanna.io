@@ -71,7 +71,9 @@
   --solid-hv:     #67E3F4;
   --solid-fg:     #FFFFFF;   /* ink on the solid accent button */
   --ghost-fg:     #1B1917;
-  --ghost-bg:     linear-gradient(180deg, rgba(241, 237, 230, 0.85), rgba(234, 228, 217, 0.85));
+  /* Flat, 2026-08-19. A two-stop wash between two paper values is a
+     gradient doing the work of one colour. */
+  --ghost-bg:     #F1EDE6;
   --ghost-bd:     rgba(27, 25, 23, 0.55);
   --field-bg:     rgba(234, 228, 217, 0.6);
   --field-fg:     #1B1917;
@@ -138,7 +140,7 @@
   --solid-hv:     #A3220B;
   --solid-fg:     #1B1917;
   --ghost-fg:     #1B1917;
-  --ghost-bg:     linear-gradient(180deg, #1B1917, #1B1917);
+  --ghost-bg:     #1B1917;
   --ghost-bd:     rgba(27, 25, 23, 0.45);
   --field-bg:     #1B1917;
   --field-fg:     #1B1917;
@@ -295,12 +297,25 @@ section { scroll-margin-top: 84px; }
 
 .kicker-light { color: var(--indigo-l); text-shadow: none; }
 
+/* SENTENCE CASE, TIGHT TRACKING, 2026-08-19.
+
+   The handoff's type table gives every heading 800 weight and NEGATIVE
+   tracking, and every comp sets its headlines in sentence case: "An
+   ensemble that never clocks out", "Staff your back office in an
+   afternoon", "Your month so far". These rules did the opposite --
+   uppercase at +0.09em to +0.12em -- which is the old look, and the
+   handoff names loose small type as "the single biggest reason it reads
+   as unfinished".
+
+   The markup was already sentence case; only the transform had to go, so
+   the copy needed no edits. Kickers, buttons, table column heads, badges
+   and role labels STAY uppercase: the design keeps those, and they are
+   what the tracking was always for. */
 .section-title {
   font-size: clamp(1.45rem, 3vw, 2.05rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--heading);
   margin-bottom: 26px;
 }
@@ -483,10 +498,9 @@ section { scroll-margin-top: 84px; }
 
 .hero-title {
   font-size: clamp(1.9rem, 4.6vw, 3.1rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  line-height: 1.22;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   color: var(--chrome-hi);
   margin-bottom: 24px;
 }
@@ -639,9 +653,8 @@ section { scroll-margin-top: 84px; }
 
 .card-title {
   font-size: 1.02rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 8px;
 }
@@ -715,9 +728,8 @@ section { scroll-margin-top: 84px; }
 
 .feature-label {
   font-size: 0.92rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 8px;
 }
@@ -875,9 +887,8 @@ section { scroll-margin-top: 84px; }
 
 .login-title {
   font-size: 1.25rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 28px;
 }
@@ -1016,8 +1027,8 @@ section { scroll-margin-top: 84px; }
 
 .profile-name {
   font-size: 1.3rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin: 10px 0 2px;
 }
@@ -1062,8 +1073,8 @@ section { scroll-margin-top: 84px; }
 .member-name {
   font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
   font-size: 0.88rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 2px;
 }
@@ -1130,9 +1141,8 @@ section { scroll-margin-top: 84px; }
 
 .phase-name {
   font-size: 0.9rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-weight: 800;
+  letter-spacing: -0.02em;
   color: var(--heading);
   margin-bottom: 8px;
 }
