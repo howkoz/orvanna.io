@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=43aa4cbba647">
-<link rel="stylesheet" href="css/corporate.css?v=43aa4cbba647">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=88f3f64fc9ca">
+<link rel="stylesheet" href="css/corporate.css?v=88f3f64fc9ca">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=43aa4cbba647">
-<link rel="stylesheet" href="css/shop.css?v=43aa4cbba647">
+<link rel="stylesheet" href="css/site-chrome.css?v=88f3f64fc9ca">
+<link rel="stylesheet" href="css/shop.css?v=88f3f64fc9ca">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -641,7 +641,7 @@
         <div class="resume-actions">
           <button class="btn btn-solid" type="button" id="resumeCheckAgain" hidden>Check again</button>
           <button class="btn btn-ghost" type="button" id="resumeRetry" hidden>Back to my cart</button>
-          <a class="btn btn-ghost" href="shop.html">Back to the catalog</a>
+          <button class="btn btn-ghost" type="button" id="resumeLeave">Back to the catalog</button>
         </div>
       </div>
 
@@ -910,8 +910,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=43aa4cbba647"></script>
-<script src="js/payments.js?v=43aa4cbba647"></script>
+<script src="js/catalog.js?v=88f3f64fc9ca"></script>
+<script src="js/payments.js?v=88f3f64fc9ca"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -3922,8 +3922,15 @@
     resumeSay('We have not charged you. ' + (awaitingAuthentication(receipt)
       ? 'Your bank still has the approval open. If a window from your bank is still on your phone, finish it there.'
       : 'The payment service has not answered yet.'),
-      'Keep this order number. This page checks again on its own, and you can check it any time from the lookup below.');
+      'Keep this order number. This page checks again on its own, and you can check it any time from the lookup below. You can carry on shopping meanwhile.');
     resumeCheckAgain.hidden = false;
+    /* THE ONLY BRANCH THAT USED TO OFFER NO WAY BACK. Succeeded and
+       failed both un-hide the return control; in-flight showed Check
+       again alone, which keeps the shopper exactly where they are. It
+       is also the one branch that can last indefinitely, because a bank
+       approval nobody finishes never becomes terminal. The state that
+       lasts longest was the state with no exit. */
+    resumeRetry.hidden = false;
   }
 
   function resumeConfirm(orderNum, startedAt, silent) {
@@ -3967,6 +3974,28 @@
       resumeSay('We could not reach the payment service just now. Nothing has been charged.',
         'Press Check again in a moment.');
       resumeCheckAgain.hidden = false;
+    });
+  }
+
+  /* LEAVING HAS TO ACTUALLY LEAVE. This was an anchor to shop.html,
+     which is the page whose resumeBoot re-reads the stored record and
+     forces this view straight back. Pressing it looked like an escape
+     and was a reload of the trap, for the full thirty-minute life of
+     the record: the owner reported being unable to reach his own
+     catalog after abandoning a payment.
+
+     Two changes make it real. It dismisses the record first, so the
+     next arrival does not force this view. And it switches view in
+     place rather than navigating, so there is no reload to race. The
+     order is not forgotten and nothing is cancelled: the number stays
+     in storage for the lookup, and if the bank does come back through
+     the address bar, that still wins. */
+  var resumeLeave = document.getElementById('resumeLeave');
+  if (resumeLeave) {
+    resumeLeave.addEventListener('click', function () {
+      if (typeof engine.resumeDismiss === 'function') engine.resumeDismiss();
+      liveState.resuming = false;
+      showView('catalog');
     });
   }
 
@@ -4056,6 +4085,11 @@
     var stored = resumeRead();
 
     if (!fromQuery && !hasProviderReturn && !stored) return false;
+    /* A dismissed record still exists, and still answers the lookup. It
+       just no longer seizes the storefront on arrival. A return from
+       the bank in the address bar overrides the dismissal, because that
+       is the bank answering rather than the shopper browsing. */
+    if (stored && stored.dismissed && !fromQuery && !hasProviderReturn) return false;
 
     var orderNum = ORDER_NUMBER_RE.test(fromQuery)
       ? fromQuery
@@ -4181,6 +4215,6 @@
 })();
 </script>
 
-<script src="js/site-chrome.js?v=43aa4cbba647"></script>
+<script src="js/site-chrome.js?v=88f3f64fc9ca"></script>
 </body>
 </html>

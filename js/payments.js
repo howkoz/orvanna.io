@@ -283,6 +283,40 @@
       return s || l;
     }
 
+    /* DISMISSING IS NOT CLEARING, and the difference is the whole point.
+
+       An order the bank never finished stays non-terminal on the server
+       for as long as the bank keeps it open, so the resume record is
+       never cleared by resumeApply and every load of the storefront
+       forces the resume view again. The way out was a link back to
+       shop.html, which is the page that re-reads that record: the
+       escape hatch led straight back into the cage, for the full
+       thirty-minute life of the record.
+
+       Clearing the record instead would fix the trap by throwing away
+       the one thing protecting the shopper, which is our note of an
+       order that MIGHT still complete. So the record survives and only
+       stops SHOUTING: dismissed means the storefront no longer forces
+       this view on arrival, while the order number stays in storage for
+       the lookup, and a real return from the bank in the address bar
+       still overrides it, because that is the bank actually answering.
+
+       The shopper is trusted to say "not now" without being made to
+       give up their claim on the order. */
+    function resumeDismiss() {
+      var current = resumeRead();
+      if (!current) return;
+      current.dismissed = true;
+      try {
+        window.sessionStorage.setItem(opts.resumeKey, JSON.stringify(current));
+      } catch (e) { /* private mode: the view simply shows again */ }
+      try {
+        var lean = JSON.parse(JSON.stringify(current));
+        lean.client_secret = null;
+        window.localStorage.setItem(opts.resumeKey, JSON.stringify(lean));
+      } catch (e) { /* same */ }
+    }
+
     function resumeClear() {
       try { window.sessionStorage.removeItem(opts.resumeKey); } catch (e) { /* nothing to clear */ }
       try { window.localStorage.removeItem(opts.resumeKey); } catch (e) { /* nothing to clear */ }
@@ -1362,6 +1396,7 @@
       resumeSave: resumeSave,
       resumeRead: resumeRead,
       resumeClear: resumeClear,
+      resumeDismiss: resumeDismiss,
       canonicalReturnUrl: canonicalReturnUrl,
       loadHyperLoader: loadHyperLoader,
       warmHyperLoader: warmHyperLoader,
