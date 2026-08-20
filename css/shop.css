@@ -1484,20 +1484,50 @@ a.product-icon { display: block; }
   align-items: flex-start;
   justify-content: center;
   padding: 76px 16px 24px;
-  background: rgba(2, 6, 20, 0.72);
+  background: rgba(27, 25, 23, 0.55);
   backdrop-filter: none;
 }
 .wallet-panel[hidden] { display: none; }
+/* ============================================================
+   THE WALLET SHEET WAS DARK TEXT ON A DARK GROUND, 2026-08-20
+
+   Reported as "the coloring is off" on Google Pay and PayPal, and it
+   was worse than off: the sheet declared
+
+     color:      #202124   Google's near-black
+     background: #1B1917   ink
+
+   which is near-black text on an ink ground. The heading, the
+   merchant line and the amount were all present and all invisible.
+
+   HOW IT HAPPENED, and it is the mirror of the Plaid fault found the
+   same morning. There, a token was repurposed under text that never
+   moved. Here the reverse: the paper conversion swept this
+   BACKGROUND to ink and left the foreground behind. Both are the
+   same underlying hazard seen from opposite ends, which is that
+   colour lives in pairs and a sweep that touches one half of a pair
+   leaves no evidence.
+
+   Neither was caught because both live in dialogs OUTSIDE the four
+   views, so the redesign's #viewCheckout scope never reached them
+   and no lint reads a foreground against its own background.
+
+   The sheet is now the design's raised surface with ink on it. The
+   Google greys below (#202124, #3C4043, #5F6368) are all dark values
+   and read correctly on it, so they stay: they were never the
+   problem, the ground under them was.
+   ============================================================ */
 .wallet-sheet {
   width: min(560px, 100%);
   border-radius: 0;
   overflow: hidden;
-  color: #202124;
-  background: #1B1917;
+  color: #1B1917;
+  background: var(--shop-panel-raised, #F6F4F0);
+  border: 2px solid #1B1917;
   box-shadow: none;
 }
 .wallet-paypal-sheet {
-  color: #F1EDE6;
+  color: #1B1917;
   background: #1B1917;
 }
 .wallet-head {
@@ -1575,7 +1605,7 @@ a.product-icon { display: block; }
   font-weight: 500;
   white-space: nowrap;
 }
-.wallet-paypal-sheet .wallet-merchant-row strong { color: #F1EDE6; }
+.wallet-paypal-sheet .wallet-merchant-row strong { color: #1B1917; }
 .wallet-funding {
   min-height: 72px;
   display: grid;
@@ -1639,7 +1669,7 @@ a.product-icon { display: block; }
   font-size: 1rem;
   font-weight: 500;
 }
-.wallet-paypal-sheet .wallet-funding-main strong { color: #F1EDE6; }
+.wallet-paypal-sheet .wallet-funding-main strong { color: #1B1917; }
 .wallet-funding-main small {
   margin-top: 3px;
   color: #5F6368;
@@ -1664,12 +1694,24 @@ a.product-icon { display: block; }
   font-weight: 700;
   cursor: pointer;
 }
+/* THREE MORE INVERTED PAIRS, measured 2026-08-20. Each one is a
+   foreground the paper sweep moved without its background, or the
+   reverse, and each computes below the 4.5 to 1 text floor:
+
+     ink on Google blue        #1B1917 on #185ABC   2.69 to 1
+     near-white on PayPal gold #F1EDE6 on #FFC439   1.36 to 1
+     near-white on the sheet   #F1EDE6 on #F6F4F0   1.06 to 1
+
+   The last is effectively invisible, which is what the owner saw.
+   Corrected to 6.51, 11.02 and 15.96 respectively. Both brand fills
+   keep their own colour: only the ink on them moves, because the
+   fill is the brand's and the legibility is ours. */
 .wallet-pay-btn {
-  color: #1B1917;
+  color: #FFFFFF;
   background: #185ABC;
 }
 .wallet-paypal-sheet .wallet-pay-btn {
-  color: #F1EDE6;
+  color: #1B1917;
   background: #FFC439;
 }
 .wallet-secondary {
