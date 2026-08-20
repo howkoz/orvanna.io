@@ -565,7 +565,18 @@
             fontSizeBase: '15px',   /* .field is 0.95rem */
             borderRadius: '0',      /* the system has no corner radius anywhere */
             colorPrimary: '#EC3013',
-            colorBackground: '#EDE8DE',
+            /* THE INPUT SURFACE IS THE DESIGN'S, NOT THE LIVE SHEET'S.
+               This first shipped as #EDE8DE, derived by compositing the
+               page's own --field-bg alpha layer. It was too close to the
+               panel behind it: the owner could not see where the card
+               number went. The redesign handoff names #F6F4F0 as the
+               input surface outright, and it measures better on every
+               pair that matters: typed digits 15.96 to 1 (was 14.36),
+               placeholder 5.32 (was 4.78), the border 3.57 against the
+               field (was 3.21). Deriving a value from the implementation
+               when the design states one is how you land on a number
+               nobody chose. */
+            colorBackground: '#F6F4F0',
             colorText: '#1B1917',
             colorTextSecondary: '#4B453D',
             colorTextPlaceholder: '#6B645A',
@@ -859,9 +870,19 @@
       frame.style.setProperty('max-height', 'calc(100vh - 108px)', 'important');
       frame.style.setProperty('overflow', 'hidden', 'important');
       frame.style.setProperty('z-index', '2147483646', 'important');
-      frame.style.setProperty('box-shadow', '0 24px 70px rgba(2, 6, 20, 0.55)', 'important');
-      frame.style.setProperty('border-radius', '10px', 'important');
-      frame.style.setProperty('background', '#fff', 'important');
+      /* THE FRAME IS OURS, THE PAGE INSIDE IT IS NOT. What renders in
+         this window is the card issuer's own authentication page, served
+         through the card network, and no merchant can restyle it: that
+         is the point of it, since it is where somebody types a passcode.
+         So these four properties are the entire surface area we have,
+         and they were still wearing the old dark theme. A navy drop
+         shadow and a 10px radius on a site with zero radius anywhere
+         announced the window as foreign before its contents did. Paper
+         ground, square corners, ink shadow: the bank's page still looks
+         like the bank's page, but the object holding it belongs here. */
+      frame.style.setProperty('box-shadow', '0 24px 70px rgba(27, 25, 23, 0.35)', 'important');
+      frame.style.setProperty('border-radius', '0', 'important');
+      frame.style.setProperty('background', '#F1EDE6', 'important');
     }
 
     function setChallengeFrameVisible(frame, visible) {
