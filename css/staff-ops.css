@@ -153,6 +153,21 @@
 
 .ops-mono { font-family: ui-monospace, Menlo, Consolas, monospace; }
 
+.ops-ref-button {
+  appearance: none;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: #A3220B;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.ops-ref-button:hover { color: #741A0A; }
+.ops-ref-button:focus-visible { outline: 2px solid #A3220B; outline-offset: 3px; }
+
 /* Frozen superseded rows (commission dashboard spec 3.5): visibly
    old, never mistaken for the final word. */
 .ops-superseded td { color: #6B645A; }
@@ -201,6 +216,11 @@
 .ops-state-paused               { background: #F1EDE6; color: #1B1917; }
 .ops-state-suspended            { background: #F3F4F6; color: #4B453D; }
 .ops-state-cancelled            { background: #E5E7EB; color: #4B453D; }
+.ops-state-paid                 { background: #ECFDF5; color: #15803D; }
+.ops-state-open                 { background: #FFFBEB; color: #92400E; }
+.ops-state-unpaid               { background: #FEE2E2; color: #991B1B; }
+.ops-state-skipped_paused,
+.ops-state-void_cancelled       { background: #E5E7EB; color: #4B453D; }
 
 /* ---------- stat strips ---------- */
 
@@ -243,6 +263,106 @@
 
 .ops-explain .panel-title {
   margin-top: 0;
+}
+
+/* ---------- billing health ---------- */
+
+.console-panel.billing-health {
+  border-top: 0;
+  padding-top: 8px;
+}
+
+.billing-health-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.billing-kpis {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 2px solid #1B1917;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.30);
+  gap: 0;
+  margin: 0;
+}
+
+.billing-kpis .ops-stat {
+  border: 0;
+  border-right: 1px solid rgba(27, 25, 23, 0.22);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  padding: 16px 18px;
+}
+
+.billing-kpis .ops-stat:nth-child(3n) { border-right: 0; }
+.billing-kpis .ops-stat:nth-last-child(-n + 3) { border-bottom: 0; }
+
+.billing-health-grid {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr 1fr;
+  gap: 0;
+  margin-top: 20px;
+}
+
+.billing-health-block {
+  min-width: 0;
+  padding: 0 20px;
+  border-right: 1px solid rgba(27, 25, 23, 0.24);
+}
+
+.billing-health-block:first-child { padding-left: 0; }
+.billing-health-block:last-child { padding-right: 0; border-right: 0; }
+
+.billing-health-title {
+  margin: 0 0 10px;
+  color: #6B645A;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.billing-health-lead {
+  margin: 0 0 10px;
+  color: #1B1917;
+  font-size: 1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.billing-meter {
+  height: 8px;
+  background: #D8D0C4;
+  overflow: hidden;
+}
+
+.billing-meter-fill {
+  display: block;
+  height: 100%;
+  background: #15803D;
+}
+
+.billing-health-meta {
+  margin: 9px 0 0;
+  color: #6B645A;
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.billing-aging { display: grid; gap: 7px; }
+
+.billing-aging-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #6B645A;
+  font-size: 0.82rem;
+}
+
+.billing-aging-row strong {
+  color: #1B1917;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 /* ---------- forms ---------- */
@@ -353,6 +473,21 @@
 .ops-sub-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
 
 .ops-sub-title { font-weight: 700; color: #1B1917; }
+
+.ops-sub-history {
+  margin-top: 14px;
+  border-top: 1px solid rgba(27, 25, 23, 0.24);
+  padding-top: 10px;
+}
+
+.ops-sub-history summary {
+  cursor: pointer;
+  color: #A3220B;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.ops-sub-history .ops-table-wrap { margin-top: 10px; }
 
 .ops-confirm {
   border: 1px solid rgba(217, 119, 6, 0.55);
@@ -582,6 +717,30 @@
 @media (max-width: 760px) {
   .queue-table th.q-when, .queue-table th.q-ref { width: auto; }
   .q-ref { white-space: normal; }
+  .billing-kpis { grid-template-columns: 1fr 1fr; }
+  .billing-kpis .ops-stat,
+  .billing-kpis .ops-stat:nth-child(3n),
+  .billing-kpis .ops-stat:nth-last-child(-n + 3) {
+    border-right: 1px solid rgba(27, 25, 23, 0.22);
+    border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  }
+  .billing-kpis .ops-stat:nth-child(2n) { border-right: 0; }
+  .billing-kpis .ops-stat:nth-last-child(-n + 2) { border-bottom: 0; }
+  .billing-health-grid { grid-template-columns: 1fr; gap: 18px; }
+  .billing-health-block,
+  .billing-health-block:first-child,
+  .billing-health-block:last-child {
+    padding: 0 0 18px;
+    border-right: 0;
+    border-bottom: 1px solid rgba(27, 25, 23, 0.24);
+  }
+  .billing-health-block:last-child { border-bottom: 0; padding-bottom: 0; }
+}
+
+.integrity-actions {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(27, 25, 23, 0.24);
 }
 
 

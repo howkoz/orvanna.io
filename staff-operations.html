@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=dc01918c3035">
-<link rel="stylesheet" href="css/corporate.css?v=dc01918c3035">
-<link rel="stylesheet" href="css/staff.css?v=dc01918c3035">
-<link rel="stylesheet" href="css/staff-ops.css?v=dc01918c3035">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=f8e5e82fef7a">
+<link rel="stylesheet" href="css/corporate.css?v=f8e5e82fef7a">
+<link rel="stylesheet" href="css/staff.css?v=f8e5e82fef7a">
+<link rel="stylesheet" href="css/staff-ops.css?v=f8e5e82fef7a">
 </head>
 <body class="console-body">
 
@@ -66,6 +66,15 @@
 
       <div id="billingNotes"></div>
 
+      <section class="console-panel billing-health" aria-label="Billing health">
+        <div class="billing-health-head">
+          <h2 class="panel-title">Billing health</h2>
+          <span class="title-chip" id="billingHealthAsOf"></span>
+        </div>
+        <div class="ops-stats billing-kpis" id="billingStats"></div>
+        <div class="billing-health-grid" id="billingHealthBody"></div>
+      </section>
+
       <!-- ============ 01 ATTENTION QUEUE ============
            The page, not panel six of twelve. Handoff screen 8a: the rows
            that demand an action come first and everything that is merely
@@ -95,6 +104,14 @@
           written to the audit log against the operator&#39;s member number.
           Clearing a row records that a human looked; it does not move money
           and does not resolve the fault.</p>
+        <div class="ops-actions integrity-actions">
+          <button class="ops-btn-quiet" id="integrityAuditBtn" type="button">Run cycle integrity audit</button>
+          <span class="ops-status-line" id="integrityStatus"></span>
+        </div>
+        <div class="ops-table-wrap"><table class="ops-table" id="integrityTable" hidden>
+          <thead><tr><th>Member</th><th>Subscription</th><th class="ops-num">Cycle</th><th>Expected</th><th>State</th></tr></thead>
+          <tbody id="integrityBody"></tbody>
+        </table></div>
         <!-- WHAT IS NOT HERE, AND WHY. The design gives each row a money
              figure and one action button. Neither is built, because neither
              exists yet: app.v_staff_attention_queue returns reason,
@@ -220,16 +237,13 @@
           <p class="ops-status-line" id="schedStatus"></p>
         </section>
 
-
-      <div class="ops-stats" id="billingStats"></div>
-
       <!-- Subscription management -->
       <section class="console-panel" aria-label="Subscription management">
         <h2 class="panel-title">Subscription management <span class="title-chip">Every action server enforced and audited</span></h2>
         <div class="ops-form-row">
           <div class="ops-field">
-            <label class="order-label" for="subMemberInput">Member number</label>
-            <input class="lookup-input" id="subMemberInput" type="text" autocomplete="off" spellcheck="false" placeholder="GW-000003, 3">
+            <label class="order-label" for="subMemberInput">Member or subscription</label>
+            <input class="lookup-input" id="subMemberInput" type="text" autocomplete="off" spellcheck="false" placeholder="GW-000003 or A-100001">
           </div>
           <button class="btn-addline" id="subLookupBtn" type="button">Open subscriptions</button>
         </div>
@@ -316,7 +330,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=dc01918c3035"></script>
+<script src="js/catalog.js?v=f8e5e82fef7a"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -480,6 +494,11 @@
     while (t.length < 6) { t = '0' + t; }
     return 'GW-' + t;
   }
+  function normalizeSubLookup(raw) {
+    var value = String(raw).trim().toUpperCase();
+    if (/^A-\d{6,}$/.test(value)) { return value; }
+    return normalizeCode(value);
+  }
   function statePill(state) {
     var span = el('span', 'ops-state ops-state-' + state, String(state).replace(/_/g, ' '));
     return span;
@@ -598,15 +617,17 @@
       var d = result.data;
       renderHonestyNotes(byId('billingNotes'), d);
 
+      var health = d.health || {};
+      var trailing = health.trailing_30 || {};
       var stats = byId('billingStats');
       clearNode(stats);
       var items = [
-        ['Active subscriptions', d.counts.active_subscriptions],
-        ['Paused', d.counts.paused_subscriptions],
-        ['In trouble states', d.counts.troubled_subscriptions],
-        ['Billing runs', d.counts.billing_runs],
-        ['Retry pointers', d.counts.retry_pointers],
-        ['Attention rows', d.counts.attention_rows]
+        ['Monthly recurring value', fmtMoney(health.recurring_monthly_value || 0)],
+        ['Active recurring value', fmtMoney(health.active_monthly_value || 0)],
+        ['Collected, 30 days', fmtMoney(trailing.collected || 0)],
+        ['Collection rate', fmtPercent(trailing.collection_rate || 0)],
+        ['Recovered by retries', fmtMoney(trailing.retry_recovered_amount || 0)],
+        ['Unresolved balance', fmtMoney(trailing.unresolved || 0)]
       ];
       items.forEach(function (pair) {
         var box = el('div', 'ops-stat');
@@ -614,6 +635,11 @@
         box.appendChild(el('span', 'ops-stat-value', pair[1]));
         stats.appendChild(box);
       });
+
+      byId('billingHealthAsOf').textContent = health.as_of
+        ? ('Engine date ' + fmtDate(health.as_of))
+        : '';
+      renderBillingHealth(health, d.counts || {});
 
       var s = d.schedule || {};
       byId('schedEnabled').checked = !!s.enabled;
@@ -628,6 +654,66 @@
     }).catch(function () {
       byId('billingNotes').appendChild(el('div', 'ops-bad', serviceUnavailable('billing console')));
     });
+  }
+
+  function renderBillingHealth(health, counts) {
+    var body = byId('billingHealthBody');
+    clearNode(body);
+    var trailing = health.trailing_30 || {};
+
+    var collection = el('section', 'billing-health-block');
+    collection.appendChild(el('h3', 'billing-health-title', '30-day collections'));
+    collection.appendChild(el('p', 'billing-health-lead',
+      fmtMoney(trailing.collected || 0) + ' collected of ' +
+      fmtMoney(trailing.billed || 0) + ' billed'));
+    var meter = el('div', 'billing-meter');
+    meter.setAttribute('role', 'progressbar');
+    meter.setAttribute('aria-label', 'Collection rate');
+    meter.setAttribute('aria-valuemin', '0');
+    meter.setAttribute('aria-valuemax', '100');
+    meter.setAttribute('aria-valuenow', String(Math.round(trailing.collection_rate || 0)));
+    var fill = el('span', 'billing-meter-fill');
+    fill.style.width = Math.max(0, Math.min(100, Number(trailing.collection_rate || 0))) + '%';
+    meter.appendChild(fill);
+    collection.appendChild(meter);
+    collection.appendChild(el('p', 'billing-health-meta',
+      (trailing.first_pass_periods || 0) + ' first-pass successes, ' +
+      (trailing.retry_recovered_periods || 0) + ' recovered by retry, ' +
+      (trailing.unresolved_periods || 0) + ' unresolved.'));
+    body.appendChild(collection);
+
+    var aging = el('section', 'billing-health-block');
+    aging.appendChild(el('h3', 'billing-health-title', 'Unresolved aging'));
+    var agingList = el('div', 'billing-aging');
+    (health.aging || []).forEach(function (row) {
+      var line = el('div', 'billing-aging-row');
+      line.appendChild(el('span', null, row.label));
+      line.appendChild(el('strong', null, fmtMoney(row.amount) + ' · ' + row.count));
+      agingList.appendChild(line);
+    });
+    aging.appendChild(agingList);
+    body.appendChild(aging);
+
+    var readiness = el('section', 'billing-health-block');
+    readiness.appendChild(el('h3', 'billing-health-title', 'Portfolio readiness'));
+    var credentials = health.credentials || {};
+    var cancellations = health.cancellations_30 || {};
+    var readinessList = el('div', 'billing-aging');
+    [
+      ['Live subscriptions', health.live_subscriptions || 0],
+      ['Paused', counts.paused_subscriptions || 0],
+      ['Troubled', counts.troubled_subscriptions || 0],
+      ['Credential gaps', (credentials.missing || 0) + (credentials.retired || 0) + (credentials.expired || 0)],
+      ['Cards expiring in 90 days', credentials.expiring_90_days || 0],
+      ['30-day cancellations', (cancellations.subscriptions || 0) + ' · ' + fmtMoney(cancellations.monthly_value || 0) + ' MRR']
+    ].forEach(function (row) {
+      var line = el('div', 'billing-aging-row');
+      line.appendChild(el('span', null, row[0]));
+      line.appendChild(el('strong', null, row[1]));
+      readinessList.appendChild(line);
+    });
+    readiness.appendChild(readinessList);
+    body.appendChild(readiness);
   }
 
   byId('schedSaveBtn').addEventListener('click', function () {
@@ -1061,7 +1147,9 @@
       rows.forEach(function (r) {
         var tr = el('tr');
         cell(tr, r.member_code, 'ops-mono');
-        cell(tr, subCode(r.subscription_id), 'ops-code');
+        var subCell = el('td', 'ops-code');
+        subCell.appendChild(subscriptionLookupButton(r.subscription_id));
+        tr.appendChild(subCell);
         cell(tr, r.decline_class);
         cell(tr, r.decline_code);
         cell(tr, fmtDate(r.next_retry_date));
@@ -1221,7 +1309,12 @@
           : '\u2014';
         tr.appendChild(stake);
 
-        cell(tr, r.member_code + ' \u00b7 ' + subCode(r.subscription_id), 'q-ref ops-mono');
+        var ref = el('td', 'q-ref ops-mono');
+        ref.appendChild(subscriptionLookupButton(
+          r.subscription_id,
+          r.member_code + ' \u00b7 ' + subCode(r.subscription_id)
+        ));
+        tr.appendChild(ref);
 
         /* Cleared rows stay visible and drop back, per 8a: the queue is a
            record of what was looked at, not a list that empties itself. */
@@ -1237,18 +1330,66 @@
     });
   }
 
+  byId('integrityAuditBtn').addEventListener('click', function () {
+    var button = byId('integrityAuditBtn');
+    var status = byId('integrityStatus');
+    var tbody = byId('integrityBody');
+    button.disabled = true;
+    status.textContent = 'Auditing every expected billing cycle...';
+    clearNode(tbody);
+    byId('integrityTable').hidden = true;
+    opsCall('billing-console', { action: 'integrity_audit' }).then(function (result) {
+      button.disabled = false;
+      if (result.status !== 200) {
+        status.textContent = serverMessage(result, 'The integrity audit could not run.');
+        return;
+      }
+      var rows = result.data.rows || [];
+      status.textContent = rows.length === 0
+        ? 'Audit complete. No cycle gaps found.'
+        : rows.length + (rows.length === 1 ? ' cycle gap found.' : ' cycle gaps found.');
+      byId('integrityTable').hidden = rows.length === 0;
+      rows.forEach(function (r) {
+        var tr = el('tr');
+        cell(tr, r.member_code, 'ops-mono');
+        var sub = el('td', 'ops-code');
+        sub.appendChild(subscriptionLookupButton(r.subscription_id));
+        tr.appendChild(sub);
+        cell(tr, r.renewal_index, 'ops-num');
+        cell(tr, fmtDate(r.expected_date));
+        var state = el('td'); state.appendChild(statePill(r.state)); tr.appendChild(state);
+        tbody.appendChild(tr);
+      });
+    }).catch(function () {
+      button.disabled = false;
+      status.textContent = serviceUnavailable('billing console');
+    });
+  });
+
   /* ---------- subscription management ---------- */
   var subStatus = byId('subStatus');
   var subList = byId('subList');
   var subEvents = byId('subEvents');
   var currentMemberCode = null;
 
+  function subscriptionLookupButton(subscriptionId, label) {
+    var button = el('button', 'ops-ref-button', label || subCode(subscriptionId));
+    button.type = 'button';
+    button.title = 'Open this subscription';
+    button.addEventListener('click', function () {
+      byId('subMemberInput').value = subCode(subscriptionId);
+      lookupSubs();
+      byId('subMemberInput').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+    return button;
+  }
+
   byId('subLookupBtn').addEventListener('click', lookupSubs);
   byId('subMemberInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); lookupSubs(); } });
 
   function lookupSubs() {
-    var code = normalizeCode(byId('subMemberInput').value);
-    if (!code) { subStatus.textContent = 'Member codes look like GW-000123.'; return; }
+    var code = normalizeSubLookup(byId('subMemberInput').value);
+    if (!code) { subStatus.textContent = 'Enter a member code like GW-000123 or a subscription code like A-100001.'; return; }
     currentMemberCode = code;
     subStatus.textContent = 'Loading ' + code + '...';
     clearNode(subList); clearNode(subEvents);
@@ -1498,7 +1639,10 @@
       return { node: wrap, value: function () { return inp.value.trim(); } };
     }
 
-    actionButton('Pause', function () {
+    var allowed = s.allowed_operations || [];
+    function can(op) { return allowed.indexOf(op) !== -1; }
+
+    if (can('pause')) actionButton('Pause', function () {
       var months = selectField('Months', 'pm' + s.subscription_id, [
         { value: '1', label: '1 month' }, { value: '2', label: '2 months' }]);
       return confirmStrip(
@@ -1506,18 +1650,18 @@
         [months], { label: 'Pause it', danger: false },
         function () { return { op: 'pause', months: Number(months.value()) }; });
     });
-    actionButton('Resume', function () {
+    if (can('resume')) actionButton('Resume', function () {
       return confirmStrip('Resume this subscription early?', [],
         { label: 'Resume it', danger: false },
         function () { return { op: 'resume' }; });
     });
-    actionButton('Cancel', function () {
+    if (can('cancel')) actionButton('Cancel', function () {
       return confirmStrip(
         'Cancel this subscription? Cancellation is TERMINAL: a returning member is a new subscription. Remaining retries are cancelled and unpaid periods stay unpaid forever.',
         [], { label: 'Cancel the subscription', danger: true },
         function () { return { op: 'cancel' }; });
     });
-    actionButton('Change billing day', function () {
+    if (can('change_day')) actionButton('Change billing day', function () {
       var day = textField('New day (1 to 28)', 'day' + s.subscription_id, '25');
       return confirmStrip(
         'Change the billing day? The transition charge runs on the first occurrence of the new day strictly after today, covering the next uncovered month, so the change month may contain two billings, exactly once. The engine\'s own disclosure is shown after the change.',
@@ -1528,7 +1672,7 @@
           return { op: 'change_day', new_day: v };
         });
     });
-    actionButton('Change frequency', function () {
+    if (can('change_frequency')) actionButton('Change frequency', function () {
       var f = selectField('New frequency', 'fq' + s.subscription_id, [
         { value: '1', label: 'Monthly' }, { value: '2', label: 'Every 2 months' },
         { value: '3', label: 'Quarterly' }, { value: '6', label: 'Every 6 months' }]);
@@ -1537,13 +1681,13 @@
         [f], { label: 'Change the frequency', danger: false },
         function () { return { op: 'change_frequency', new_frequency: Number(f.value()) }; });
     });
-    actionButton('Flag card update', function () {
+    if (can('flag_card_update')) actionButton('Flag card update', function () {
       return confirmStrip(
         'Flag this subscription as needing a card update? No retry will run until the member completes a fresh checkout with a new card.',
         [], { label: 'Flag it', danger: false },
         function () { return { op: 'flag_card_update' }; });
     });
-    actionButton('Reactivate', function () {
+    if (can('reactivate')) actionButton('Reactivate', function () {
       var brand = textField('Card brand', 'br' + s.subscription_id, 'visa');
       var last4 = textField('Last four digits', 'l4' + s.subscription_id, '4242');
       return confirmStrip(
@@ -1557,6 +1701,37 @@
 
     card.appendChild(actions);
     card.appendChild(confirmZone);
+
+    var history = s.renewal_history || [];
+    if (history.length) {
+      var details = el('details', 'ops-sub-history');
+      details.appendChild(el('summary', null,
+        'Billing history · ' + history.length + (history.length === 1 ? ' cycle' : ' cycles')));
+      var wrap = el('div', 'ops-table-wrap');
+      var table = el('table', 'ops-table');
+      var thead = el('thead');
+      var htr = el('tr');
+      ['Cycle', 'Scheduled', 'Coverage', 'Amount', 'Result', 'Attempts', 'Last answer', 'Next step', 'Order'].forEach(function (label, i) {
+        htr.appendChild(el('th', i === 3 || i === 5 ? 'ops-num' : null, label));
+      });
+      thead.appendChild(htr); table.appendChild(thead);
+      var tbody = el('tbody');
+      history.forEach(function (r) {
+        var tr = el('tr');
+        cell(tr, r.renewal_index, 'ops-num');
+        cell(tr, fmtDate(r.scheduled_date));
+        cell(tr, periodLabel(r.covered_month_first) + (r.covered_months > 1 ? ' · ' + r.covered_months + ' months' : ''));
+        cell(tr, fmtMoney(r.amount), 'ops-num');
+        var outcome = el('td'); outcome.appendChild(statePill(r.outcome)); tr.appendChild(outcome);
+        cell(tr, r.attempt_count, 'ops-num');
+        cell(tr, r.last_outcome || 'not attempted');
+        cell(tr, r.next_retry_date ? ('Retry ' + fmtDate(r.next_retry_date)) : (r.next_action || 'none'));
+        cell(tr, r.order_number || 'none', 'ops-mono');
+        tbody.appendChild(tr);
+      });
+      table.appendChild(tbody); wrap.appendChild(table); details.appendChild(wrap);
+      card.appendChild(details);
+    }
     return card;
   }
 
@@ -2044,7 +2219,15 @@
         return ok({
           action: 'overview', engine: ENGINE_INERT, honesty_notes: NOTES,
           schedule: mockSchedule,
-          counts: { billing_runs: 0, last_final_tick: null, retry_pointers: 0, attention_rows: 0, active_subscriptions: 1419, paused_subscriptions: 0, troubled_subscriptions: 0 }
+          counts: { active_subscriptions: 1419, paused_subscriptions: 0, troubled_subscriptions: 0 },
+          health: {
+            as_of: '2026-08-16', live_subscriptions: 1419,
+            recurring_monthly_value: 118250, active_monthly_value: 118250, troubled_monthly_value: 0,
+            trailing_30: { periods: 0, billed: 0, collected: 0, unresolved: 0, paid_periods: 0, unresolved_periods: 0, collection_rate: 0, first_pass_periods: 0, first_pass_rate: 0, retry_recovered_periods: 0, retry_recovered_amount: 0 },
+            aging: [{ label: '0 to 7 days', count: 0, amount: 0 }, { label: '8 to 15 days', count: 0, amount: 0 }, { label: '16 to 30 days', count: 0, amount: 0 }, { label: '31+ days', count: 0, amount: 0 }],
+            credentials: { missing: 1419, retired: 0, expired: 0, expiring_90_days: 0 },
+            cancellations_30: { subscriptions: 0, monthly_value: 0 }
+          }
         });
       }
       if (body.action === 'schedule_set') {
@@ -2078,6 +2261,7 @@
       if (body.action === 'run_history') { return ok({ action: 'run_history', runs: [], total: 0, limit: 50, offset: 0 }); }
       if (body.action === 'retry_queue') { return ok({ action: 'retry_queue', retries: [] }); }
       if (body.action === 'attention') { return ok({ action: 'attention', rows: [] }); }
+      if (body.action === 'integrity_audit') { return ok({ action: 'integrity_audit', rows: [] }); }
       if (body.action === 'forecast') {
         return ok({ action: 'forecast', engine: ENGINE_INERT, honesty_notes: NOTES, days: [], retry_days: [], past_due_backlog_subscriptions: 1419 });
       }
@@ -2086,8 +2270,8 @@
         return ok({
           action: 'member_subscriptions', member_code: 'GW-000003', display_name: 'Member Three',
           subscriptions: [
-            { subscription_id: 8, product_name: 'Inventory Agent', sku: 'AGT-D-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 100, monthly_pv: 100, credential: null },
-            { subscription_id: 9, product_name: 'Chief Executive', sku: 'AGT-S-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 50, monthly_pv: 50, credential: null }
+            { subscription_id: 8, product_name: 'Inventory Agent', sku: 'AGT-D-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 100, monthly_pv: 100, credential: null, allowed_operations: ['pause', 'cancel', 'change_day', 'change_frequency', 'flag_card_update'], renewal_history: [] },
+            { subscription_id: 9, product_name: 'Chief Executive', sku: 'AGT-S-004', quantity: 1, frequency_months: 1, billing_day: null, billing_anchor_date: '2024-09-01', state: 'active', state_changed_at: '2026-08-16T00:00:00Z', start_month: '2024-09-01', cancel_month: null, next_billing_date: '2024-09-01', monthly_price: 50, monthly_pv: 50, credential: null, allowed_operations: ['pause', 'cancel', 'change_day', 'change_frequency', 'flag_card_update'], renewal_history: [] }
           ],
           recent_events: []
         });
