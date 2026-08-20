@@ -580,7 +580,20 @@
             colorText: '#1B1917',
             colorTextSecondary: '#4B453D',
             colorTextPlaceholder: '#6B645A',
-            colorDanger: '#B91C1C'
+            colorDanger: '#B91C1C',
+            /* THE FIELD EDGE, WHICH THE FIRST PASS COMPUTED AND THEN
+               NEVER APPLIED. #84807A was worked out as the lightest ink
+               that clears the 3 to 1 non-text floor, and then no border
+               variable was set at all, so the widget drew its own faint
+               default and the fields had no edge on a lighter screen.
+               A value calculated but not wired is worth nothing.
+
+               It goes to full ink rather than that computed minimum,
+               because the design's own inputs are 2px solid #1b1917 and
+               the floor was the wrong target: 3 to 1 is the minimum a
+               border may be, not what this system asks for. 15.96 to 1
+               on the #F6F4F0 field. */
+            borderColor: '#1B1917'
           }
         }
       });
@@ -880,6 +893,15 @@
          announced the window as foreign before its contents did. Paper
          ground, square corners, ink shadow: the bank's page still looks
          like the bank's page, but the object holding it belongs here. */
+      /* A BORDER, BECAUSE THE BACKGROUND WAS NEVER GOING TO SHOW. The
+         previous pass set this frame's background to paper and the owner
+         correctly reported that nothing changed. It could not: the
+         issuer's page fills the frame with its own opaque white body, so
+         our background sits behind it and is never seen. The background
+         stays as the correct value for the moments the frame is empty,
+         but the thing that actually reads is a rule AROUND the content,
+         at the system's own 2px ink weight. That we can draw. */
+      frame.style.setProperty('border', '2px solid #1B1917', 'important');
       frame.style.setProperty('box-shadow', '0 24px 70px rgba(27, 25, 23, 0.35)', 'important');
       frame.style.setProperty('border-radius', '0', 'important');
       frame.style.setProperty('background', '#F1EDE6', 'important');
