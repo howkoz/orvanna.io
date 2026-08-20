@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=352395396756">
-<link rel="stylesheet" href="css/corporate.css?v=352395396756">
-<link rel="stylesheet" href="css/staff.css?v=352395396756">
-<link rel="stylesheet" href="css/staff-ops.css?v=352395396756">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=dc01918c3035">
+<link rel="stylesheet" href="css/corporate.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/staff.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/staff-ops.css?v=dc01918c3035">
 </head>
 <body class="console-body">
 
@@ -316,7 +316,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=352395396756"></script>
+<script src="js/catalog.js?v=dc01918c3035"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -483,6 +483,57 @@
   function statePill(state) {
     var span = el('span', 'ops-state ops-state-' + state, String(state).replace(/_/g, ' '));
     return span;
+  }
+  function fmtPercent(n) {
+    return Number(n || 0).toFixed(2) + '%';
+  }
+  function appendStats(container, pairs) {
+    pairs.forEach(function (pair) {
+      var box = el('div', 'ops-stat');
+      box.appendChild(el('span', 'ops-stat-label', pair[0]));
+      box.appendChild(el('span', 'ops-stat-value', pair[1]));
+      container.appendChild(box);
+    });
+  }
+  function renderEconomics(economics, title) {
+    if (!economics) { return null; }
+    var card = el('div', 'ops-explain');
+    card.appendChild(el('h3', 'panel-title', title || 'Commission economics'));
+    var stats = el('div', 'ops-stats');
+    appendStats(stats, [
+      ['Sales volume', fmtPv(economics.sales_volume)],
+      ['CV basis', fmtPv(economics.commissionable_volume) + ' (' + fmtPercent(economics.cv_rate_of_sv) + ')'],
+      ['Non-CV reserve', fmtPv(economics.non_commissionable_reserve)],
+      ['Actual payout', fmtMoney(economics.actual_payout)],
+      ['Unpaid generated', fmtMoney(economics.unpaid_generated)],
+      ['Payout rate', fmtPercent(economics.payout_rate_of_sv) + ' of SV']
+    ]);
+    card.appendChild(stats);
+    var t = el('table', 'ops-table');
+    var thead = el('thead'); var htr = el('tr');
+    ['Level', 'Rate', 'Sources', 'Source CV', 'Generated', 'Paid', 'Not paid'].forEach(function (h, i) {
+      htr.appendChild(el('th', i > 1 ? 'ops-num' : null, h));
+    });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = el('tbody');
+    (economics.by_level || []).forEach(function (row) {
+      var tr = el('tr');
+      cell(tr, 'Level ' + row.level);
+      cell(tr, fmtPercent(Number(row.rate || 0) * 100), 'ops-num');
+      cell(tr, row.source_count || 0, 'ops-num');
+      cell(tr, fmtPv(row.source_cv), 'ops-num');
+      cell(tr, fmtMoney(row.generated_amount), 'ops-num');
+      cell(tr, fmtMoney(row.paid_amount), 'ops-num');
+      cell(tr, fmtMoney(row.unpaid_amount), 'ops-num');
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+    card.appendChild(wrap);
+    if (economics.note) {
+      card.appendChild(el('p', 'ops-status-line', economics.note));
+    }
+    return card;
   }
 
   /* ============================================================
@@ -1581,16 +1632,12 @@
       byId('cmChip').textContent = periodLabel(d.open_period) + (d.has_final_run ? ' (already finalized)' : ', accumulating');
       var stats = byId('cmStats');
       clearNode(stats);
-      [
+      appendStats(stats, [
         ['Bridged SV so far', fmtPv(d.bridged_sv)],
+        ['Implied CV at 80%', fmtPv(d.bridged_cv || (Number(d.bridged_sv || 0) * 0.8))],
         ['Bridged orders', d.bridged_orders],
         ['House retained PV (' + d.house_slices + ' slices)', fmtPv(d.house_retained_pv)]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       var tbody = byId('cmBody');
       clearNode(tbody);
       byId('cmTable').hidden = d.members.length === 0;
@@ -1631,19 +1678,16 @@
         body.appendChild(el('div', 'ops-bad', 'ALERT: the server reports the dry run may have left rows behind. Stop and tell the engineer; do not trust these numbers.'));
       }
       var stats = el('div', 'ops-stats');
-      [
+      appendStats(stats, [
         ['Projected total SV', fmtPv(d.totals.total_sv)],
         ['Projected total CV', fmtPv(d.totals.total_cv)],
         ['Projected payout', fmtMoney(d.totals.total_payout)],
         ['Members paid', d.totals.members_paid],
         ['Qualified members', d.qualified_members]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       body.appendChild(stats);
+      var economics = renderEconomics(d.economics, 'Projected payout waterfall');
+      if (economics) { body.appendChild(economics); }
       if ((d.top_projected_earners || []).length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
@@ -1751,6 +1795,8 @@
       drawer.appendChild(el('p', 'ops-status-line',
         'Total SV ' + fmtPv(d.total_sv) + ', total CV ' + fmtPv(d.total_cv) +
         ', payout ' + fmtMoney(d.total_payout) + ', members paid ' + d.members_paid + '.'));
+      var runEconomics = renderEconomics(d.economics, 'Run payout waterfall');
+      if (runEconomics) { drawer.appendChild(runEconomics); }
 
       drawer.appendChild(el('h3', 'panel-title', 'Member results (top ' + d.results.length + ' of ' + d.results_total + ' by earnings)'));
       var rt = el('table', 'ops-table');
@@ -1815,17 +1861,12 @@
       status.textContent = '';
 
       var stats = el('div', 'ops-stats');
-      [
+      appendStats(stats, [
         ['Member', d.member_code],
         ['Current rank (run ' + d.current_rank_run_id + ')', d.current_rank || 'none'],
         ['Open month SV so far', fmtPv(d.open_month.sv)],
         ['Qualified so far', d.open_month.qualified_so_far ? 'yes' : ('not yet (gate ' + fmtPv(d.open_month.qualification_gate) + ')')]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       body.appendChild(el('p', 'ops-status-line', d.display_name + ', enrolled ' + fmtDate(d.enrolled_on) + '.'));
       body.appendChild(stats);
 
@@ -1856,14 +1897,18 @@
           'Downline contribution, ' + periodLabel(d.contribution.period) + ' (run ' + d.contribution.run_id + '), active legs: ' + d.contribution.active_legs));
         var ct = el('table', 'ops-table');
         var cthead = el('thead'); var chtr = el('tr');
-        ['Level', 'Lines', 'Amount'].forEach(function (h, i) { chtr.appendChild(el('th', i > 0 ? 'ops-num' : null, h)); });
+        ['Level', 'Rate', 'Sources', 'Source CV', 'Generated', 'Paid', 'Not paid'].forEach(function (h, i) { chtr.appendChild(el('th', i > 1 ? 'ops-num' : null, h)); });
         cthead.appendChild(chtr); ct.appendChild(cthead);
         var ctb = el('tbody');
         d.contribution.by_level.forEach(function (l) {
           var tr = el('tr');
           cell(tr, 'Level ' + l.level);
-          cell(tr, l.line_count, 'ops-num');
-          cell(tr, fmtMoney(l.amount), 'ops-num');
+          cell(tr, fmtPercent(Number(l.rate || 0) * 100), 'ops-num');
+          cell(tr, l.source_count || l.line_count || 0, 'ops-num');
+          cell(tr, fmtPv(l.source_cv), 'ops-num');
+          cell(tr, fmtMoney(l.generated_amount === undefined ? l.amount : l.generated_amount), 'ops-num');
+          cell(tr, fmtMoney(l.paid_amount === undefined ? l.amount : l.paid_amount), 'ops-num');
+          cell(tr, fmtMoney(l.unpaid_amount || 0), 'ops-num');
           ctb.appendChild(tr);
         });
         ct.appendChild(ctb);
@@ -1980,6 +2025,19 @@
       'The renewal engine clock is not initialized on this fixture, so no billing run can execute here yet. Run now can preview fixture data, but execution stays locked until a runnable tick date exists.'
     ];
     var mockSchedule = { enabled: false, run_at_time: null, timezone: 'America/New_York', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
+    var MOCK_ECONOMICS = {
+      sales_volume: 108250, commissionable_volume: 86600, non_commissionable_reserve: 21650,
+      reachable_generated_payout: 22680, actual_payout: 20669.2, unpaid_generated: 2010.8,
+      payout_rate_of_sv: 19.09, payout_rate_of_cv: 23.87, cv_rate_of_sv: 80,
+      note: 'Generated payout is calculated only from existing upline positions in levels 1 through 5. If a gate or paid-depth rule blocks a line, it remains unpaid.',
+      by_level: [
+        { level: 1, rate: 0.10, source_count: 284, source_cv: 86600, generated_amount: 8660, paid_lines: 260, paid_source_cv: 81000, paid_amount: 8100, unpaid_amount: 560 },
+        { level: 2, rate: 0.05, source_count: 220, source_cv: 120000, generated_amount: 6000, paid_lines: 195, paid_source_cv: 112000, paid_amount: 5600, unpaid_amount: 400 },
+        { level: 3, rate: 0.05, source_count: 170, source_cv: 100000, generated_amount: 5000, paid_lines: 150, paid_source_cv: 96000, paid_amount: 4800, unpaid_amount: 200 },
+        { level: 4, rate: 0.03, source_count: 120, source_cv: 70000, generated_amount: 2100, paid_lines: 102, paid_source_cv: 63333.33, paid_amount: 1900, unpaid_amount: 200 },
+        { level: 5, rate: 0.02, source_count: 90, source_cv: 46000, generated_amount: 920, paid_lines: 70, paid_source_cv: 13460, paid_amount: 269.2, unpaid_amount: 650.8 }
+      ]
+    };
 
     if (fnName === 'billing-console') {
       if (body.action === 'overview') {
@@ -2043,7 +2101,7 @@
       if (body.panel === 'current_month') {
         return ok({
           panel: 'current_month', open_period: '2026-08-01', has_final_run: false,
-          bridged_orders: 11, bridged_sv: 2000, house_retained_pv: 3050, house_slices: 21,
+          bridged_orders: 11, bridged_sv: 2000, bridged_cv: 1600, house_retained_pv: 3050, house_slices: 21,
           members: [
             { member_code: 'GW-000003', display_name: 'Member Three', sv: 900, orders: 2 },
             { member_code: 'GW-000014', display_name: 'Member Fourteen', sv: 600, orders: 3 },
@@ -2059,6 +2117,13 @@
           banner: 'WHAT-IF PROJECTION, not a statement. Computed ' + when + '. Numbers change as the month accumulates and are not payable.',
           computed_at: when, period: '2026-08-01',
           totals: { total_sv: 2000, total_cv: 1600, total_payout: 289.6, members_paid: 7 },
+          economics: {
+            sales_volume: 2000, commissionable_volume: 1600, non_commissionable_reserve: 400,
+            reachable_generated_payout: 330, actual_payout: 289.6, unpaid_generated: 40.4,
+            payout_rate_of_sv: 14.48, payout_rate_of_cv: 18.1, cv_rate_of_sv: 80,
+            note: MOCK_ECONOMICS.note,
+            by_level: MOCK_ECONOMICS.by_level
+          },
           qualified_members: 4,
           rank_distribution: [{ rank: 'member', members: 996 }, { rank: 'builder', members: 4 }],
           top_projected_earners: [
@@ -2075,6 +2140,7 @@
             drill: {
               run_id: Number(body.run_id), period: '2026-07-01', spec_version: 'v1.3', status: Number(body.run_id) <= 6 ? 'superseded' : 'final',
               total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-15T00:00:00Z',
+              economics: MOCK_ECONOMICS,
               lines: [
                 { earner_code: 'GW-000001', source_code: 'GW-000004', level: 1, source_cv: 120, rate: 0.10, amount: 12 },
                 { earner_code: 'GW-000001', source_code: 'GW-000009', level: 2, source_cv: 80, rate: 0.05, amount: 4 }
@@ -2113,11 +2179,11 @@
           contribution: {
             run_id: 12, period: '2026-07-01',
             by_level: [
-              { level: 1, line_count: 56, amount: 916 },
-              { level: 2, line_count: 65, amount: 654 },
-              { level: 3, line_count: 85, amount: 610 },
-              { level: 4, line_count: 70, amount: 338.4 },
-              { level: 5, line_count: 42, amount: 162.4 }
+              { level: 1, rate: 0.10, source_count: 56, source_cv: 9160, generated_amount: 916, paid_lines: 56, paid_amount: 916, unpaid_amount: 0 },
+              { level: 2, rate: 0.05, source_count: 65, source_cv: 13080, generated_amount: 654, paid_lines: 65, paid_amount: 654, unpaid_amount: 0 },
+              { level: 3, rate: 0.05, source_count: 85, source_cv: 12200, generated_amount: 610, paid_lines: 85, paid_amount: 610, unpaid_amount: 0 },
+              { level: 4, rate: 0.03, source_count: 70, source_cv: 11280, generated_amount: 338.4, paid_lines: 70, paid_amount: 338.4, unpaid_amount: 0 },
+              { level: 5, rate: 0.02, source_count: 42, source_cv: 8120, generated_amount: 162.4, paid_lines: 42, paid_amount: 162.4, unpaid_amount: 0 }
             ],
             active_legs: 51
           }

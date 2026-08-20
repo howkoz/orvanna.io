@@ -234,6 +234,17 @@
   font-variant-numeric: tabular-nums;
 }
 
+.ops-explain {
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.035);
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.ops-explain .panel-title {
+  margin-top: 0;
+}
+
 /* ---------- forms ---------- */
 
 .ops-form-row {
