@@ -16,15 +16,29 @@
   display: flex;
   gap: 8px;
   margin: 14px 0 18px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.35);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.30);
 }
 
+/* THE OLD DARK PALETTE LEFT SURVIVORS HERE, found 2026-08-19 by
+   sweeping the page at the AA thresholds rather than at gate one's
+   3:1 floor. Every colour below was chosen to sit on a navy ground
+   and was left behind when the ground became paper:
+
+     .ops-tab and .ops-status-line   #9FB0C7 at 1.75:1
+     .ops-note                       #F1EDE6 on a 10% ink wash, ~1.1:1
+     --ops-ok fallback               #86efac, a pale green
+     --ops-accent fallback           #38bdf8, a sky blue
+     .ops-warn                       #8A6D3B at 3.26:1
+
+   Gate one passed the page on every build: 3:1 catches text that is
+   invisible, not text that is merely unreadable. The sweep that found
+   these asks the stricter question and is now part of the round. */
 .ops-tab {
   appearance: none;
   background: transparent;
   border: none;
   border-bottom: 3px solid transparent;
-  color: #9FB0C7;
+  color: #6B645A;
   font: inherit;
   font-size: 0.95rem;
   font-weight: 700;
@@ -32,21 +46,21 @@
   cursor: pointer;
 }
 
-.ops-tab:hover { color: #E2E8F0; }
+.ops-tab:hover { color: #1B1917; }
 
 .ops-tab[aria-selected="true"] {
-  color: #67E8F9;
-  border-bottom-color: #22D3EE;
+  color: #A3220B;
+  border-bottom-color: #A3220B;
 }
 
 /* ---------- honest status banners ---------- */
 
 /* Neutral information: engine facts, schedule facts. */
 .ops-note {
-  border: 1px solid rgba(129, 140, 248, 0.45);
-  background: rgba(129, 140, 248, 0.10);
-  color: #C7D2FE;
-  border-radius: 10px;
+  border: 1px solid rgba(27, 25, 23, 0.45);
+  background: rgba(27, 25, 23, 0.10);
+  color: #1B1917;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -59,8 +73,8 @@
 .ops-warn {
   border: 1px solid rgba(217, 119, 6, 0.65);
   background: rgba(217, 119, 6, 0.12);
-  color: #FCD34D;
-  border-radius: 10px;
+  color: #6B4A15;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -69,8 +83,8 @@
 .ops-bad {
   border: 1px solid rgba(220, 38, 38, 0.6);
   background: rgba(220, 38, 38, 0.12);
-  color: #FCA5A5;
-  border-radius: 10px;
+  color: #B91C1C;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -79,8 +93,8 @@
 .ops-ok {
   border: 1px solid rgba(5, 150, 105, 0.6);
   background: rgba(5, 150, 105, 0.12);
-  color: #6EE7B7;
-  border-radius: 10px;
+  color: #15803D;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   margin: 0 0 10px;
@@ -90,8 +104,8 @@
 .ops-mock {
   border: 2px dashed #D97706;
   background: rgba(217, 119, 6, 0.18);
-  color: #FCD34D;
-  border-radius: 10px;
+  color: #6B4A15;
+  border-radius: 0;
   padding: 10px 14px;
   font-size: 0.9rem;
   font-weight: 700;
@@ -107,17 +121,17 @@
 .ops-table th {
   text-align: left;
   font-weight: 600;
-  color: #7C8AA0;
+  color: #6B645A;
   padding: 6px 8px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.35);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.30);
   white-space: nowrap;
 }
 
 .ops-table td {
   padding: 7px 8px;
-  border-bottom: 1px solid rgba(124, 138, 160, 0.18);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
   vertical-align: middle;
-  color: #CBD5E1;
+  color: #4B453D;
 }
 
 .ops-table td.ops-num { font-variant-numeric: tabular-nums; text-align: right; }
@@ -133,7 +147,7 @@
 
 .ops-row-click { cursor: pointer; }
 .ops-row-click:hover, .ops-row-click:focus-visible {
-  background: rgba(124, 138, 160, 0.12);
+  background: rgba(27, 25, 23, 0.22);
   outline: none;
 }
 
@@ -141,29 +155,32 @@
 
 /* Frozen superseded rows (commission dashboard spec 3.5): visibly
    old, never mistaken for the final word. */
-.ops-superseded td { color: #7C8AA0; }
+.ops-superseded td { color: #6B645A; }
 .ops-superseded-chip {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #374151;
-  color: #D1D5DB;
+  background: #4B453D;
+  color: #EAE4D9;
   white-space: nowrap;
 }
 .ops-final-chip {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  background: #064E3B;
-  color: #6EE7B7;
+  /* Was #15803D text on a #15803D fill: green on green, 1:1. The tinted
+     chip and dark label below match .ops-state-active, which is the same
+     signal drawn correctly. */
+  background: #ECFDF5;
+  color: #15803D;
   white-space: nowrap;
 }
 
@@ -172,18 +189,18 @@
 .ops-state {
   display: inline-block;
   padding: 2px 8px;
-  border-radius: 999px;
+  border-radius: 0;
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
 }
-.ops-state-active               { background: #ECFDF5; color: #065F46; }
+.ops-state-active               { background: #ECFDF5; color: #15803D; }
 .ops-state-past_due             { background: #FFFBEB; color: #92400E; }
 .ops-state-dunning              { background: #FEF3C7; color: #B45309; }
 .ops-state-card_update_required { background: #FEE2E2; color: #991B1B; }
-.ops-state-paused               { background: #EEF2FF; color: #3730A3; }
-.ops-state-suspended            { background: #F3F4F6; color: #4B5563; }
-.ops-state-cancelled            { background: #E5E7EB; color: #374151; }
+.ops-state-paused               { background: #F1EDE6; color: #1B1917; }
+.ops-state-suspended            { background: #F3F4F6; color: #4B453D; }
+.ops-state-cancelled            { background: #E5E7EB; color: #4B453D; }
 
 /* ---------- stat strips ---------- */
 
@@ -195,8 +212,8 @@
 }
 
 .ops-stat {
-  border: 1px solid rgba(124, 138, 160, 0.3);
-  border-radius: 10px;
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
   padding: 10px 12px;
 }
 
@@ -206,15 +223,26 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #7C8AA0;
+  color: #6B645A;
   margin-bottom: 4px;
 }
 
 .ops-stat .ops-stat-value {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #E2E8F0;
+  color: #1B1917;
   font-variant-numeric: tabular-nums;
+}
+
+.ops-explain {
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.035);
+  padding: 12px;
+  margin: 12px 0;
+}
+
+.ops-explain .panel-title {
+  margin-top: 0;
 }
 
 /* ---------- forms ---------- */
@@ -233,21 +261,25 @@
   padding: 7px 9px;
   font: inherit;
   font-size: 14px;
-  border: 1px solid rgba(124, 138, 160, 0.5);
-  border-radius: 6px;
-  background: rgba(15, 23, 42, 0.7);
-  color: #E2E8F0;
+  border: 1px solid rgba(27, 25, 23, 0.35);
+  border-radius: 0;
+  /* Was rgba(27,25,23,0.7): a dark inset from the dark site, remapped to
+     ink and left dark while the text on it stayed ink. An operator could
+     not read the member number they were typing. */
+  background: #F1EDE6;
+  color: #1B1917;
+  color: #1B1917;
   min-width: 110px;
 }
 
 .ops-field input:focus, .ops-field select:focus {
   outline: none;
-  border-color: #22D3EE;
+  border-color: #A3220B;
 }
 
 /* A toggle rendered as a plain labelled checkbox: staff tools do
    not need a novelty switch. */
-.ops-check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #CBD5E1; }
+.ops-check { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #4B453D; }
 
 .ops-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-top: 8px; }
 
@@ -255,24 +287,49 @@
 .ops-btn-quiet {
   appearance: none;
   background: transparent;
-  border: 1px solid rgba(124, 138, 160, 0.5);
-  border-radius: 8px;
-  color: #CBD5E1;
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  color: #4B453D;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
   padding: 7px 14px;
   cursor: pointer;
 }
-.ops-btn-quiet:hover { border-color: #22D3EE; color: #67E8F9; }
+.ops-btn-quiet:hover { border-color: #A3220B; color: #A3220B; }
 .ops-btn-quiet:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* The disclosure that ends a folded list. Full width so it reads as the
+   bottom edge of the list it belongs to rather than a stray control, and
+   it states the count it is hiding so nobody has to click to find out
+   whether anything is there. */
+.ops-more {
+  appearance: none;
+  display: block;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.16);
+  border-radius: 0;
+  color: #4B453D;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-align: left;
+  padding: 9px 2px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+.ops-more:hover { color: #A3220B; border-top-color: rgba(163, 34, 11, 0.45); }
+.ops-more:focus-visible { outline: 2px solid #A3220B; outline-offset: 2px; }
 
 /* Danger button for cancel confirmations. */
 .ops-btn-danger {
   appearance: none;
   background: #DC2626;
   border: 1px solid #DC2626;
-  border-radius: 8px;
+  border-radius: 0;
   color: #fff;
   font: inherit;
   font-size: 14px;
@@ -287,24 +344,24 @@
    greying a button gates nothing, and the page never pretends
    otherwise). */
 .ops-sub-card {
-  border: 1px solid rgba(124, 138, 160, 0.3);
-  border-radius: 10px;
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
   padding: 12px;
   margin: 10px 0;
 }
 
 .ops-sub-head { display: flex; gap: 10px; align-items: baseline; flex-wrap: wrap; margin-bottom: 6px; }
 
-.ops-sub-title { font-weight: 700; color: #E2E8F0; }
+.ops-sub-title { font-weight: 700; color: #1B1917; }
 
 .ops-confirm {
   border: 1px solid rgba(217, 119, 6, 0.55);
   background: rgba(217, 119, 6, 0.10);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 10px;
   margin-top: 8px;
   font-size: 0.9rem;
-  color: #FCD34D;
+  color: #6B4A15;
 }
 
 /* The engine's own disclosure text (for example the 12.1 double
@@ -312,14 +369,14 @@
 .ops-disclosure {
   border-left: 3px solid #D97706;
   background: rgba(217, 119, 6, 0.08);
-  color: #FCD34D;
+  color: #6B4A15;
   padding: 8px 12px;
   margin: 8px 0;
   font-size: 0.9rem;
   white-space: pre-wrap;
 }
 
-.ops-status-line { font-size: 0.85rem; color: #9FB0C7; margin: 6px 0; }
+.ops-status-line { font-size: 0.85rem; color: #4B453D; margin: 6px 0; }
 
 .ops-hidden { display: none !important; }
 
@@ -335,11 +392,11 @@
 
 /* Detail drawers under a drilled table row. */
 .ops-drawer {
-  border: 1px solid rgba(34, 211, 238, 0.35);
-  border-radius: 10px;
+  border: 1px solid rgba(236, 48, 19, 0.35);
+  border-radius: 0;
   padding: 12px;
   margin: 10px 0;
-  background: rgba(34, 211, 238, 0.05);
+  background: rgba(236, 48, 19, 0.05);
 }
 
 
@@ -358,7 +415,7 @@
   --peek-head: 34px;
   margin: 14px 0 6px;
   border: 1px solid var(--ops-line, rgba(148, 163, 184, 0.22));
-  border-radius: 10px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -380,7 +437,7 @@
 }
 
 .ops-peek-toggle:hover { background: rgba(148, 163, 184, 0.12); }
-.ops-peek-toggle:focus-visible { outline: 2px solid var(--ops-accent, #38bdf8); outline-offset: -2px; }
+.ops-peek-toggle:focus-visible { outline: 2px solid var(--ops-accent, #A3220B); outline-offset: -2px; }
 
 .ops-peek-label { font-weight: 600; }
 
@@ -411,7 +468,7 @@
   position: sticky;
   top: 0;
   z-index: 1;
-  background: var(--ops-panel, #0b1220);
+  background: var(--ops-panel, #F1EDE6);
 }
 
 
@@ -419,11 +476,11 @@
    table and mean opposite things: one is dunning, the other is business as
    usual. Colour separates them, and the WORD beside each date says which it
    is, so the meaning survives greyscale and colour blindness. */
-.ops-table td.ops-next-cycle { color: var(--ops-ok, #86efac); white-space: nowrap; }
-.ops-table td.ops-next-retry { color: var(--ops-warn, #fcd34d); white-space: nowrap; font-weight: 600; }
-.ops-table td.ops-next-none  { color: var(--ops-muted, #94a3b8); white-space: nowrap; }
+.ops-table td.ops-next-cycle { color: var(--ops-ok, #166534); white-space: nowrap; }
+.ops-table td.ops-next-retry { color: var(--ops-warn, #6B4A15); white-space: nowrap; font-weight: 600; }
+.ops-table td.ops-next-none  { color: var(--ops-muted, #6B645A); white-space: nowrap; }
 
-.ops-table td.ops-next-pending { color: var(--ops-muted, #94a3b8); white-space: nowrap; font-style: italic; }
+.ops-table td.ops-next-pending { color: var(--ops-muted, #6B645A); white-space: nowrap; font-style: italic; }
 
 /* The processor that actually handled the attempt. */
 .ops-table td.ops-conn { white-space: nowrap; font-variant-numeric: tabular-nums; }
@@ -434,4 +491,186 @@
    right instead and the table scrolls to it. */
 .ops-table td.ops-msg,
 .ops-table th.ops-msg { white-space: nowrap; max-width: none; }
-.ops-table td.ops-msg { color: var(--ops-muted, #94a3b8); font-size: 0.78rem; }
+.ops-table td.ops-msg { color: var(--ops-muted, #6B645A); font-size: 0.78rem; }
+
+
+/* ============================================================
+   THE ATTENTION QUEUE AS THE PAGE
+   Handoff screen 8a, built 2026-08-18.
+
+   It was panel six of twelve, sharing a row with the retry queue.
+   It is now the first thing on the console, ranked by consequence,
+   and everything that is merely true sits below it as evidence.
+   ============================================================ */
+
+.console-queue { border-top: 2px solid #1B1917; }
+
+.panel-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #6B645A;
+  margin-right: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* The count is the console's headline: what a human is here to do,
+   stated as a number before anything explains itself. */
+.queue-count {
+  font-size: clamp(1.5rem, 3vw, 2.125rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  color: #1B1917;
+  margin: 6px 0 18px;
+}
+
+.queue-table { width: 100%; }
+.queue-table th.q-when { width: 130px; }
+.queue-table th.q-ref  { width: 200px; }
+
+.q-row td { vertical-align: top; padding-top: 14px; padding-bottom: 14px; }
+
+/* ACT NOW rows carry a tint. Nothing else on the page does, so the
+   eye lands on them without reading a word. */
+.q-row.q-act { background: rgba(236, 48, 19, 0.06); }
+
+.q-badge {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+  border: 1px solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+}
+.q-badge-act    { background: #EC3013; color: #FFFFFF; }
+.q-badge-decide { background: #1B1917; color: #EAE4D9; }
+.q-badge-before { background: none; border-color: #6B645A; color: #4B453D; }
+
+.q-what { display: block; font-size: 14px; font-weight: 700; color: #1B1917; }
+.q-detail { display: block; font-size: 12.5px; line-height: 1.45; color: #6B645A; margin-top: 3px; }
+
+.q-ref {
+  font-size: 12.5px;
+  color: #6B645A;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.queue-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #6B645A;
+  margin: 16px 0 0;
+}
+
+/* The absence is stated on the page, not left to be discovered. A
+   console that quietly shows less than it should reads as a console
+   with nothing to report. */
+.queue-gap {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #4B453D;
+  border-left: 2px solid #EC3013;
+  padding: 2px 0 2px 14px;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 760px) {
+  .queue-table th.q-when, .queue-table th.q-ref { width: auto; }
+  .q-ref { white-space: normal; }
+}
+
+
+/* ============================================================
+   THE CONSOLE AS ONE COLUMN OF EVIDENCE
+   Handoff 8a, second pass, 2026-08-19.
+
+   The panels were bordered boxes laid out in two-up grids that
+   paired unrelated blocks by height: the schedule beside Run
+   now, the retry queue beside the attention queue. On a console
+   whose whole argument is an ORDER -- act on this, then this,
+   and everything below is evidence -- a grid shuffles the
+   argument. One column, and a rule between blocks.
+   ============================================================ */
+
+.console-panel {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid #1B1917;
+  border-radius: 0;
+  padding: 22px 0 26px;
+  overflow: visible;
+}
+.console-panel + .console-panel { margin-top: 0; }
+
+/* The queue is the page, so it does not need a rule to announce it:
+   the headline above it already does. */
+.console-queue { border-top: 0; padding-top: 8px; }
+
+.panel-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  text-transform: none;
+  color: #1B1917;
+  margin-bottom: 14px;
+  align-items: baseline;
+  gap: 12px;
+}
+
+/* The chip after a title is a caption, not a heading: it says how to read
+   the block, so it keeps the small tracked treatment the title just lost. */
+.title-chip {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: none;
+  color: #6B645A;
+}
+
+.ops-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+}
+
+.ops-table th {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6B645A;
+  border-bottom: 2px solid #1B1917;
+  padding: 0 12px 10px 0;
+}
+.ops-table td {
+  font-size: 13.5px;
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.ops-table td.ops-num { font-weight: 700; color: #1B1917; }
+
+/* AT STAKE. Right-aligned and tabular so the column reads as a column of
+   money; the em dash sits in the same register as the figures rather than
+   drifting. Cleared rows drop back but stay visible, per 8a: this queue is a
+   record of what was looked at, not a list that empties itself. */
+.queue-table th.q-stake, .queue-table td.q-stake { width: 116px; white-space: nowrap; }
+
+.q-row.q-cleared { opacity: 0.45; }
+.q-row.q-cleared .q-what { text-decoration: line-through; }
+.q-row.q-cleared .q-badge-act { background: none; border-color: #6B645A; color: #4B453D; }
+
+/* THE DRAWER IS A DARKER GROUND THAN THE PANEL IT OPENS IN.
+   Its 5% accent wash takes the paper from #EAE4D9 to #EADBCF, which is
+   enough to drop the quiet token from 4.60:1 to 4.32:1 -- readable
+   everywhere else on the page and not quite readable here. The rule that
+   set the colour and the rule that set the ground were correct on their
+   own; only the pair was wrong. Body ink inside the drawer, 7.1:1. */
+.ops-drawer .ops-table th,
+.ops-drawer .ops-table td.ops-mono,
+.ops-drawer .ops-table td { color: #4B453D; }

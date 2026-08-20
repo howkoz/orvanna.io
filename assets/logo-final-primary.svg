@@ -1,6 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 460 100">
   <!-- Orvanna primary lockup, light background. Wordmark is drawn geometry, no fonts. -->
-  <rect width="460" height="100" fill="#FFFFFF"/>
+  <!-- The baked-in white ground was deleted 2026-08-18 per the design
+       handoff: it stopped the lockup sitting on any ground but white. -->
   <!-- Hex Team badge -->
   <g transform="translate(20,22)">
     <polygon points="28,0 52.2,14 52.2,42 28,56 3.8,42 3.8,14" fill="none" stroke="#4F46E5" stroke-width="5" stroke-linejoin="round"/>

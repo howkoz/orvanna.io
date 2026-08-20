@@ -24,17 +24,17 @@
      --shop-accent-fill  the brand cyan as a FILL (the cart count
                          badge, the selected tier pill, the Added
                          state on a catalog button, the switch).
-                         It stays #22D3EE in both themes because
+                         It stays #EC3013 in both themes because
                          dark ink on it computes 10.47 to 1 either
                          way. The Pay button is NOT on this token:
                          it is corporate.css's .btn-solid, which is
-                         dark ink on #22D3EE in the dark theme
-                         (10.47 to 1) and white on #0E7490 in the
+                         dark ink on #EC3013 in the dark theme
+                         (10.47 to 1) and white on #A3220B in the
                          light theme (5.36 to 1). Both computed.
      --shop-accent-ink   the accent as TEXT and as a state ring
                          (Personal Volume figures, kickers, order
                          numbers, the selected payment method
-                         outline). #22D3EE on white is 1.72 to 1,
+                         outline). #EC3013 on white is 1.72 to 1,
                          so the light theme must darken it; the
                          light value computes 5.36 to 1 on white
                          and 5.12 to 1 on the panel.
@@ -45,71 +45,79 @@
 
    MIRROR NOTE. The light values below are deliberately the same
    colours corporate.css uses for the same jobs, so the storefront
-   and the pages around it read as one site: body #263244, muted
-   #5B6472, headings #0F172A, indigo #4338CA, violet #6D28D9, and
-   the lit accent #0E7490. If corporate.css moves one of those,
+   and the pages around it read as one site: body #4B453D, muted
+   #6B645A, headings #1B1917, indigo #1B1917, violet #1B1917, and
+   the lit accent #A3220B. If corporate.css moves one of those,
    move it here in the same commit and recompute, the way the
    currency table in shop.html mirrors the one in tax.ts.
    ============================================================ */
 
 :root {
   /* text */
-  --shop-strong:         #F1F5F9;   /* headings, figures, names */
-  --shop-paper:          #FFFFFF;   /* the few labels that were pure white:
+  --shop-strong:         #1B1917;   /* headings, figures, names */
+  --shop-paper:          #1B1917;   /* the few labels that were pure white:
                                        the Plaid sandbox panel. Kept separate
                                        from --shop-strong so the dark theme
                                        renders the same pixel it rendered
                                        before this change, 18.63 to 1 rather
                                        than 16.79 */
-  --shop-text:           #C7D0DE;   /* body */
-  --shop-muted:          #94A3B8;   /* secondary and hints */
-  --shop-tile-ink:       #E2E8F0;   /* ink on the cyan-tinted payment tiles */
-  --shop-bank-ink:       #D1FAE5;   /* ink on the green bank tile */
-  --shop-pill-ink-hover: #FFFFFF;   /* filter pill, hover */
+  --shop-text:           #4B453D;   /* body */
+  --shop-muted:          #6B645A;   /* secondary and hints */
+  --shop-tile-ink:       #1B1917;   /* ink on the cyan-tinted payment tiles */
+  --shop-bank-ink:       #F1EDE6;   /* ink on the green bank tile */
+  --shop-pill-ink-hover: #1B1917;   /* filter pill, hover */
   /* accents */
-  --shop-accent-fill:    #22D3EE;
-  --shop-accent-ink:     #22D3EE;
-  --shop-on-accent:      #05121C;   /* ink on any cyan fill */
-  --shop-indigo-ink:     #A5B4FC;
-  --shop-violet-ink:     #A78BFA;
+  --shop-accent-fill:    #EC3013;
+/* THE ACCENT IS A FILL, NOT A TEXT COLOUR ON PAPER. The handoff's own
+   token table says so: "--accent is used for fills, large numerals and
+   interface chrome, never for paragraph text on paper -- use
+   --accent-deep there." Measured on the built pages, accent text on the
+   paper grounds lands between 2.91:1 and 3.60:1 -- above gate one's 3:1
+   floor on most of them, and under AA on all of them. The deep form is
+   5.95:1 on paper and 6.36:1 on the raised panel. Swept 2026-08-19 after
+   the owner reported text "blending too close to the page". */
+  --shop-accent-ink:     #A3220B;
+  --shop-on-accent:      #FFFFFF;   /* ink on any cyan fill */
+  --shop-indigo-ink:     #6B645A;
+  --shop-violet-ink:     #1B1917;
   /* status */
-  --shop-danger:         #F87171;   /* remove, hover */
-  --shop-fail:           #FCA5A5;   /* a payment that did not go through */
-  --shop-disabled-bg:    #7C8AA0;
-  --shop-disabled-ink:   #0F172A;
+  --shop-danger:         #B91C1C;   /* remove, hover */
+  --shop-fail:           #B91C1C;   /* a payment that did not go through */
+  --shop-disabled-bg:    #8A8278;
+  --shop-disabled-ink:   #1B1917;
   /* the card-form placeholder bars */
-  --shop-skeleton:       #1E2A44;
+  --shop-skeleton:       #F1EDE6;
 }
 
 :root[data-theme="light"] {
   /* text. Ratios are against the glass panel's lower gradient
-     stop (#F8FAFC), which is the darkest paper any of this text
+     stop (#1B1917), which is the darkest paper any of this text
      lands on, so the real figure is never worse than the one
      quoted. */
-  --shop-strong:         #0F172A;   /* 17.06 to 1 */
-  --shop-paper:          #0F172A;   /* 17.85 to 1 on the white Plaid panel */
-  --shop-text:           #263244;   /* 12.37 to 1 */
-  --shop-muted:          #5B6472;   /*  5.72 to 1, and 5.43 on the sunken block */
-  --shop-tile-ink:       #0F172A;   /* 17.16 to 1 on the light card tile */
-  --shop-bank-ink:       #065F46;   /*  7.29 to 1 on the light bank tile */
-  --shop-pill-ink-hover: #0B1220;   /* 18.72 to 1 */
+  --shop-strong:         #1B1917;   /* 17.06 to 1 */
+  --shop-paper:          #1B1917;   /* 17.85 to 1 on the white Plaid panel */
+  --shop-text:           #4B453D;   /* 12.37 to 1 */
+  --shop-muted:          #6B645A;   /*  5.72 to 1, and 5.43 on the sunken block */
+  --shop-tile-ink:       #1B1917;   /* 17.16 to 1 on the light card tile */
+  --shop-bank-ink:       #15803D;   /*  7.29 to 1 on the light bank tile */
+  --shop-pill-ink-hover: #F1EDE6;   /* 18.72 to 1 */
   /* accents: the FILL stays brand cyan in both themes because
      dark ink on it computes 10.47 to 1 either way. Only the INK
-     form darkens, because #22D3EE as text on paper is 1.72 to 1. */
-  --shop-accent-fill:    #22D3EE;
-  --shop-accent-ink:     #0E7490;   /*  5.12 on the panel, 5.36 on white,
+     form darkens, because #EC3013 as text on paper is 1.72 to 1. */
+  --shop-accent-fill:    #EC3013;
+  --shop-accent-ink:     #A3220B;   /*  5.12 on the panel, 5.36 on white,
                                         4.86 on the sunken block, 4.90 over
                                         the indigo glow wash: the two thinnest
                                         margins on the page, both computed */
-  --shop-on-accent:      #05121C;
-  --shop-indigo-ink:     #4338CA;   /*  7.55 to 1 */
-  --shop-violet-ink:     #6D28D9;   /*  6.79 to 1 */
+  --shop-on-accent:      #FFFFFF;
+  --shop-indigo-ink:     #1B1917;   /*  7.55 to 1 */
+  --shop-violet-ink:     #1B1917;   /*  6.79 to 1 */
   /* status */
   --shop-danger:         #B91C1C;   /*  6.18 to 1 */
   --shop-fail:           #B42318;   /*  6.28 on the panel, 5.97 on the sunken block */
-  --shop-disabled-bg:    #7C8AA0;   /* unchanged: the pair computes 5.10 to 1 in both themes */
-  --shop-disabled-ink:   #0F172A;
-  --shop-skeleton:       #E2E8F0;
+  --shop-disabled-bg:    #8A8278;   /* unchanged: the pair computes 5.10 to 1 in both themes */
+  --shop-disabled-ink:   #1B1917;
+  --shop-skeleton:       #1B1917;
 }
 
 /* ---------- shop hero: compact, catalog-first ---------- */
@@ -118,7 +126,7 @@
   position: relative;
   padding: 84px 0 56px;
   overflow: hidden;
-  border-bottom: 1px solid rgba(129, 140, 248, 0.08);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.08);
 }
 
 .shop-hero::before,
@@ -128,15 +136,15 @@
   pointer-events: none;
   width: 640px;
   height: 640px;
-  border-radius: 50%;
+  border-radius: 0;
 }
 .shop-hero::before {
   left: -240px; top: -240px;
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.2), transparent 70%);
+  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.2), transparent 70%);
 }
 .shop-hero::after {
   right: -260px; bottom: -320px;
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.1), transparent 70%);
+  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.1), transparent 70%);
 }
 
 .shop-hero .wrap { position: relative; z-index: 1; }
@@ -160,9 +168,9 @@
   text-transform: uppercase;
   letter-spacing: 0.16em;
   color: var(--shop-text);
-  background: rgba(13, 20, 38, 0.5);
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 999px;
+  background: rgba(241, 237, 230, 0.5);
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  border-radius: 0;
   padding: 8px 20px;
   cursor: pointer;
   transition: color 0.16s ease, border-color 0.16s ease,
@@ -171,14 +179,14 @@
 
 .filter-pill:hover {
   color: var(--shop-pill-ink-hover);
-  border-color: rgba(34, 211, 238, 0.5);
+  border-color: rgba(236, 48, 19, 0.5);
 }
 
 .filter-pill[aria-pressed="true"] {
   color: var(--shop-on-accent);
   background: var(--shop-accent-fill);
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.35);
+  box-shadow: none;
 }
 
 /* ---------- tier sections ---------- */
@@ -213,77 +221,83 @@
   height: 1px;
   border: 0;
   margin: 14px 0 34px;
-  background: linear-gradient(90deg, rgba(34, 211, 238, 0.45), rgba(129, 140, 248, 0.2), transparent);
+  background: #1B1917;
 }
 
 /* ---------- product cards ---------- */
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
 }
 
 .product {
   display: flex;
   flex-direction: column;
-  padding: 32px 28px 26px;
+  padding: 18px 18px 16px;
   transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product:hover {
   transform: translateY(-5px);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 38px rgba(34, 211, 238, 0.18),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(236, 48, 19, 0.5);
+  box-shadow: none;
 }
 
 .product-top {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .product-icon {
-  width: 56px;
-  height: 56px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 9px rgba(34, 211, 238, 0.35));
+  filter: none;
 }
 
 .tier-badge {
+  /* FONT SIZE HELD AT 0.62rem ON PURPOSE. The 2026-08-18 tightening
+     shrank it to 0.58rem, which computes to 9.3px: legible on a
+     designer's screen, not on a customer's. The height this card
+     needed to lose was in the PADDING, not the type, so the padding
+     and the letter-spacing came down and the size stayed put. */
   font-size: 0.62rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.18em;
-  padding: 4px 11px 5px;
-  border-radius: 999px;
-  border: 1px solid rgba(129, 140, 248, 0.5);
+  letter-spacing: 0.14em;
+  padding: 3px 9px 4px;
+  border-radius: 0;
+  border: 1px solid rgba(27, 25, 23, 0.5);
   color: var(--shop-indigo-ink);
   white-space: nowrap;
 }
 
 .tier-badge.badge-domain {
-  border-color: rgba(34, 211, 238, 0.5);
+  border-color: rgba(236, 48, 19, 0.5);
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
 }
 
 .product-name {
-  font-size: 1.02rem;
+  font-size: 0.9rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.07em;
+  line-height: 1.3;
   color: var(--shop-strong);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .product-desc {
-  font-size: 0.92rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
   color: var(--shop-muted);
-  margin-bottom: 20px;
+  margin-bottom: 12px;
   flex-grow: 1;
 }
 
@@ -291,21 +305,21 @@
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 10px;
-  padding-top: 16px;
-  border-top: 1px solid rgba(129, 140, 248, 0.14);
-  margin-bottom: 16px;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(27, 25, 23, 0.14);
+  margin-bottom: 8px;
 }
 
 .product-price {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   font-weight: 700;
   color: var(--shop-strong);
   font-variant-numeric: tabular-nums;
 }
 
 .product-price .per {
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.08em;
   color: var(--shop-muted);
@@ -313,12 +327,13 @@
 }
 
 .product-pv {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
   text-transform: uppercase;
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
   font-variant-numeric: tabular-nums;
 }
 
@@ -330,15 +345,15 @@
   justify-content: center;
   gap: 9px;
   width: 100%;
-  padding: 11px 18px;
-  font-size: 0.8rem;
+  padding: 9px 14px;
+  font-size: 0.74rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.11em;
   color: var(--shop-tile-ink);
-  background: rgba(34, 211, 238, 0.08);
-  border: 1.5px solid rgba(34, 211, 238, 0.45);
-  border-radius: 8px;
+  background: rgba(236, 48, 19, 0.08);
+  border: 1.5px solid rgba(236, 48, 19, 0.45);
+  border-radius: 0;
   cursor: pointer;
   transition: color 0.16s ease, background-color 0.16s ease,
               border-color 0.16s ease, box-shadow 0.16s ease, transform 0.16s ease;
@@ -348,7 +363,7 @@
   color: var(--shop-on-accent);
   background: var(--shop-accent-fill);
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 24px rgba(34, 211, 238, 0.4);
+  box-shadow: none;
   transform: translateY(-1px);
 }
 
@@ -358,7 +373,7 @@
   color: var(--shop-on-accent);
   background: var(--shop-accent-fill);
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 28px rgba(34, 211, 238, 0.55);
+  box-shadow: none;
 }
 .btn-add.is-added .add-label-default { display: none; }
 .btn-add.is-added .add-check { display: block; }
@@ -378,58 +393,26 @@
 
    Measured on the bar as it composites over a white page: the
    cart glyph computes 11.22 to 1 and its hover 9.65 to 1. On the
-   dark theme's bar (#060B18) the same two are 12.64 and 10.87.
+   dark theme's bar (#EAE4D9) the same two are 12.64 and 10.87.
    The count badge is dark ink on the brand cyan, 10.47 to 1, the
    same figure in both themes.
    (The light-bar figure was first recorded as 11.18. That came
-   from rounding the composited bar colour to 8-bit, #151A26,
+   from rounding the composited bar colour to 8-bit, #F1EDE6,
    before taking the ratio. Carrying the composite unrounded gives
    11.22, which is what the browser actually paints and what an
    independent recomputation will get. The difference is 0.04 and
    changes nothing, but the smaller number was the wrong method
    and is corrected rather than left standing.) */
 
-.nav-cart {
-  position: relative;
-  font: inherit;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px 6px 12px;
-  background: transparent;
-  border: 1px solid rgba(129, 140, 248, 0.35);
-  border-radius: 999px;
-  color: var(--chrome-text);
-  cursor: pointer;
-  transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-}
+/* The cart control moved to css/site-chrome.css on 2026-08-18.
 
-.nav-cart:hover {
-  color: var(--chrome-accent);
-  border-color: rgba(34, 211, 238, 0.55);
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.25);
-}
+   It used to live here because it was a shop-only icon button, and the
+   chrome lint excluded it by name for that reason. The redesign changed
+   what it IS: it is now one of the two forms of the bar's single primary
+   action, swapping with .nav-cta by page, and the two have to measure
+   the same or the bar changes height between pages. That makes it
+   chrome, so it is declared with the chrome and linted with it. */
 
-.nav-cart svg { width: 18px; height: 18px; }
-
-.cart-count {
-  min-width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 6px;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--shop-on-accent);
-  background: var(--shop-accent-fill);
-  border-radius: 999px;
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.45);
-  font-variant-numeric: tabular-nums;
-  transition: transform 0.18s ease;
-}
-
-.cart-count.bump { transform: scale(1.35); }
 
 /* ============================================================
    CART DRAWER: glass sheet from the right, per the storefront
@@ -441,8 +424,8 @@
   inset: 0;
   z-index: 90;
   background: rgba(3, 6, 14, 0.55);
-  backdrop-filter: blur(2px);
-  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: none;
+  backdrop-filter: none;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.25s ease;
@@ -458,9 +441,10 @@
   width: min(430px, 100%);
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, rgba(13, 20, 38, 0.97), rgba(6, 11, 24, 0.97));
-  border-left: 1px solid rgba(34, 211, 238, 0.28);
-  box-shadow: -12px 0 48px rgba(3, 6, 14, 0.6), 0 0 34px rgba(34, 211, 238, 0.08);
+  /* flat paper-raised; the wash was two values of the same paper */
+  background: #F1EDE6;
+  border-left: 1px solid rgba(236, 48, 19, 0.28);
+  box-shadow: none;
   transform: translateX(102%);
   transition: transform 0.3s ease;
 }
@@ -491,16 +475,16 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 50%;
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  border-radius: 0;
   color: var(--shop-muted);
   cursor: pointer;
   transition: color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 .drawer-close:hover {
   color: var(--shop-accent-ink);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.25);
+  border-color: rgba(236, 48, 19, 0.5);
+  box-shadow: none;
 }
 .drawer-close svg { width: 14px; height: 14px; }
 
@@ -522,7 +506,7 @@
   height: 52px;
   margin: 0 auto 16px;
   opacity: 0.7;
-  filter: drop-shadow(0 0 10px rgba(129, 140, 248, 0.3));
+  filter: none;
 }
 
 /* line items */
@@ -531,15 +515,28 @@
   align-items: center;
   gap: 14px;
   padding: 16px 0;
-  border-bottom: 1px solid rgba(129, 140, 248, 0.12);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.12);
 }
 
+/* Same change as the library's .ico, same reason: the marks lost their
+   shared hexagon on 2026-08-19 so the sixteen could be told apart by
+   shape, and the cell gives back the containment the frame provided. The
+   two surfaces show the same sixteen catalog items and a customer moves straight
+   between them, so they get the same treatment. */
 .line-icon {
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 7px rgba(34, 211, 238, 0.3));
+  filter: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 1px solid rgba(27, 25, 23, 0.25);
+  border-radius: 0;
+  background: #F1EDE6;
 }
+.line-icon svg { width: 100%; height: 100%; display: block; }
 
 .line-info { flex: 1; min-width: 0; }
 
@@ -572,8 +569,8 @@
 .qty-group {
   display: flex;
   align-items: center;
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 999px;
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -639,29 +636,29 @@
 .pv-meter-label .pv-now {
   color: var(--shop-accent-ink);
   font-variant-numeric: tabular-nums;
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
 }
 
 .pv-track {
   height: 8px;
-  border-radius: 999px;
-  background: rgba(129, 140, 248, 0.14);
-  border: 1px solid rgba(129, 140, 248, 0.2);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.14);
+  border: 1px solid rgba(27, 25, 23, 0.2);
   overflow: hidden;
 }
 
 .pv-fill {
   height: 100%;
   width: 0%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--indigo), var(--cyan));
-  box-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+  border-radius: 0;
+  background: #1B1917;
+  box-shadow: none;
   transition: width 0.45s ease, background-color 0.3s ease;
 }
 
 .pv-meter.is-qualified .pv-fill {
   background: var(--shop-accent-fill);
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.75);
+  box-shadow: none;
 }
 
 .pv-meter-note {
@@ -674,14 +671,14 @@
 .pv-meter.is-qualified .pv-meter-note {
   color: var(--shop-accent-ink);
   font-weight: 600;
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
 }
 
 /* drawer footer: totals + checkout */
 .drawer-foot {
   padding: 16px 24px 22px;
   border-top: 1px solid var(--hairline);
-  background: rgba(6, 11, 24, 0.6);
+  background: rgba(234, 228, 217, 0.6);
 }
 
 .total-row {
@@ -707,7 +704,7 @@
   font-variant-numeric: tabular-nums;
   color: var(--shop-accent-ink);
   font-weight: 700;
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
 }
 
 .drawer-foot .btn { margin-top: 14px; }
@@ -724,7 +721,7 @@
    floor the same comment invokes. The claim was written rather than computed,
    which is the failure this project keeps repeating, so the number below was
    calculated and is stated as a measurement.
-   Computed: #0F172A on #7C8AA0 is 5.10:1. */
+   Computed: #1B1917 on #8A8278 is 5.10:1. */
 .btn:disabled {
   background: var(--shop-disabled-bg);
   border-color: var(--shop-disabled-bg);
@@ -732,7 +729,7 @@
   opacity: 1;
   cursor: default;
   transform: none !important;
-  box-shadow: none !important;
+  box-shadow: none;
   text-shadow: none;
 }
 
@@ -752,16 +749,205 @@
 
 .checkout-panel { padding: 34px 30px 30px; }
 
+/* ============================================================
+   THE CHECKOUT STEPPER, 2026-08-19 (redesign handoff, defect 1)
+
+   Four tabs across the top of the flow. One panel shows at a
+   time, and each tab carries its step's ANSWER underneath the
+   step name, which is what lets this bar be the review summary as
+   well as the navigation: without the answer line a shopper has
+   to open a step to remember what they put in it.
+
+   Three states, and they are told apart by more than colour: the
+   active tab is ink-filled with an accent rule under it, a
+   completed tab shows a filled check chip, and a step not yet
+   reached is outlined and genuinely disabled. Disabled is the
+   markup telling the truth rather than a hover trick, so a
+   keyboard reaches exactly the steps a mouse does.
+   ============================================================ */
+
+/* THE BAR SPANS THE PAGE, not the form column. Sat inside
+   .checkout-flow it measured 635px against a 1124px grid, which
+   pushed "Billing address" and "Bank account" onto second lines and
+   made a 90px tall bar out of four short labels. It is a header for
+   the whole checkout, including the summary, so it belongs above both
+   columns. */
+.ck-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 2px solid var(--shop-strong);
+  border-bottom: 2px solid var(--shop-strong);
+  margin: 32px 0 0;
+}
+
+.ck-step {
+  font: inherit;
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 15px 18px 16px;
+  background: transparent;
+  color: var(--shop-strong);
+  border: 0;
+  border-bottom: 3px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ck-step + .ck-step { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.ck-step:disabled { cursor: default; }
+.ck-step:not(:disabled):hover { background: var(--shop-panel-raised, #F6F4F0); }
+
+.ck-step-head {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.ck-step-num {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  flex: none;
+  font-size: 0.66rem;
+  font-weight: 700;
+  line-height: 1;
+  border: 1.5px solid var(--shop-muted);
+  color: var(--shop-muted);
+}
+
+.ck-step-name {
+  font-size: 0.84rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.ck-step-value {
+  display: block;
+  margin-top: 8px;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--shop-muted);
+  overflow-wrap: anywhere;
+}
+
+.ck-step.is-done .ck-step-num {
+  background: var(--shop-strong);
+  border-color: var(--shop-strong);
+  color: var(--shop-panel-raised, #F6F4F0);
+}
+/* The completed chip is a check, set here rather than written into the
+   markup, so the number stays in the document for a reader who meets
+   the tab before it is finished. */
+.ck-step.is-done .ck-step-num { font-size: 0; }
+.ck-step.is-done .ck-step-num::after { content: "\2713"; font-size: 11px; }
+.ck-step.is-done .ck-step-value { color: var(--shop-text); }
+
+.ck-step.is-active {
+  background: var(--shop-strong);
+  color: var(--shop-panel-raised, #F6F4F0);
+  border-bottom-color: var(--shop-accent-fill);
+}
+.ck-step.is-active .ck-step-num {
+  background: var(--shop-accent-fill);
+  border-color: var(--shop-accent-fill);
+  color: var(--shop-strong);
+}
+.ck-step.is-active .ck-step-value { color: rgba(241, 237, 230, 0.78); }
+
+/* The step's own controls. Forward is solid, back is outlined, so the
+   pair reads as one direction rather than two equal choices. */
+.ck-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+/* Currency and Tax ID, re-seated under the totals and the meter
+   (defect 3). They are settings that move the figures above them, not
+   lines of the receipt, so they sit below it behind a rule. */
+.ck-rail-inputs {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+}
+
+/* ============================================================
+   THE GATED PLACE-ORDER BUTTON (defect 4)
+
+   The label and the amount are separate spans so the figure can be
+   written without rewriting the label. When the gate is on, the button
+   is disabled AND repainted: disabled alone still reads as the primary
+   action because it keeps the accent fill, and a shopper reads colour
+   before they read cursor.
+
+   The reason line is not a tooltip and not a title attribute. It is
+   text under the button, because the shopper needs to know what to
+   change, and the two states this fires on are both fixable in one
+   move.
+   ============================================================ */
+
+.pay-place {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.pay-place-label { font-weight: 800; letter-spacing: 0.06em; }
+.pay-place-amount {
+  font-weight: 800;
+  font-size: 1.05rem;
+  letter-spacing: -0.02em;
+}
+
+.pay-place.is-blocked,
+.pay-place.is-blocked:hover {
+  background: #D9D2C6;
+  border-color: #D9D2C6;
+  color: var(--shop-muted);
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.pay-block-reason {
+  margin: 12px 0 0;
+  padding: 13px 16px;
+  background: rgba(236, 48, 19, 0.09);
+  border-left: 5px solid var(--shop-accent-fill);
+  font-size: 0.78rem;
+  line-height: 1.5;
+  color: var(--shop-text);
+}
+
 #paymentPanel { position: relative; }
 
+/* THE ORDER SUMMARY IS NOT A SCROLL REGION.
+   It used to be capped at calc(100vh - 120px) with its own
+   overflow-y, which put a second scrollbar inside the page's
+   scrollbar. Measured 2026-08-18 at 1440x950: a three-item cart
+   already trapped 27px behind it, six items trapped 157px, and a
+   full cart trapped 1,180px. Three items is an ordinary order, so
+   this was not an edge case.
+
+   The rail now grows to its content. It still sticks, but only
+   while it actually fits: a sticky box taller than the viewport
+   pins its own top and puts its bottom permanently out of reach,
+   which is worse than the nested scrollbar it replaced. The
+   .is-tall switch is set from shop.html by a ResizeObserver. */
 .checkout-summary {
   position: sticky;
   top: 96px;
   align-self: start;
-  max-height: calc(100vh - 120px);
-  overflow-y: auto;
-  scrollbar-gutter: stable;
   z-index: 2;
+}
+
+.checkout-summary.is-tall {
+  position: static;
 }
 
 .checkout-panel-title {
@@ -793,7 +979,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 9px 0;
-  border-bottom: 1px solid rgba(129, 140, 248, 0.12);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.12);
   font-size: 0.86rem;
   color: var(--shop-text);
 }
@@ -828,7 +1014,7 @@
 }
 .back-to-shop:hover {
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+  text-shadow: none;
 }
 
 /* ============================================================
@@ -848,7 +1034,7 @@
   width: 72px;
   height: 72px;
   margin: 0 auto 20px;
-  filter: drop-shadow(0 0 16px rgba(34, 211, 238, 0.45));
+  filter: none;
 }
 
 .confirm-title {
@@ -865,7 +1051,7 @@
   font-weight: 700;
   letter-spacing: 0.18em;
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 14px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
   font-variant-numeric: tabular-nums;
   margin-bottom: 26px;
 }
@@ -874,9 +1060,9 @@
   text-align: left;
   margin: 0 0 22px;
   padding: 18px 22px 10px;
-  background: rgba(6, 11, 24, 0.5);
-  border: 1px solid rgba(129, 140, 248, 0.18);
-  border-radius: 10px;
+  background: rgba(234, 228, 217, 0.5);
+  border: 1px solid rgba(27, 25, 23, 0.18);
+  border-radius: 0;
 }
 
 .confirm-note {
@@ -906,7 +1092,6 @@
   .cart-drawer { transition: none; }
   .drawer-overlay { transition: none; }
   .pv-fill { transition: none; }
-  .cart-count.bump { transform: none; }
 }
 
 /* ============================================================
@@ -928,25 +1113,25 @@ a.product-icon { display: block; }
 }
 .product-name-link:hover {
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 14px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
 }
 
 .tier-badge.badge-bundle {
-  border-color: rgba(167, 139, 250, 0.55);
+  border-color: rgba(27, 25, 23, 0.55);
   color: var(--shop-violet-ink);
-  text-shadow: 0 0 10px rgba(167, 139, 250, 0.4);
+  text-shadow: none;
 }
 
 .product-includes {
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   color: var(--shop-muted);
-  margin: -10px 0 18px;
-  line-height: 1.6;
+  margin: -4px 0 12px;
+  line-height: 1.5;
 }
 
 .includes-label {
   font-weight: 700;
-  font-size: 0.68rem;
+  font-size: 0.63rem;
   text-transform: uppercase;
   letter-spacing: 0.14em;
   color: var(--shop-indigo-ink);
@@ -954,12 +1139,12 @@ a.product-icon { display: block; }
 }
 
 .product-once-hint {
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   color: var(--shop-muted);
   font-variant-numeric: tabular-nums;
-  margin: -10px 0 16px;
+  margin: -2px 0 10px;
 }
 
 /* ---------- billing-mode badges (cart lines, summaries) ---------- */
@@ -971,21 +1156,21 @@ a.product-icon { display: block; }
   text-transform: uppercase;
   letter-spacing: 0.14em;
   padding: 2px 9px 3px;
-  border-radius: 999px;
+  border-radius: 0;
   white-space: nowrap;
   vertical-align: 1px;
 }
 
 .mode-badge.mode-sub {
   color: var(--shop-accent-ink);
-  border: 1px solid rgba(34, 211, 238, 0.45);
-  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(236, 48, 19, 0.45);
+  background: rgba(236, 48, 19, 0.08);
 }
 
 .mode-badge.mode-one {
   color: var(--shop-indigo-ink);
-  border: 1px solid rgba(129, 140, 248, 0.5);
-  background: rgba(129, 140, 248, 0.1);
+  border: 1px solid rgba(27, 25, 23, 0.5);
+  background: rgba(27, 25, 23, 0.1);
 }
 
 .line-badges { margin: 2px 0 3px; }
@@ -1016,10 +1201,10 @@ a.product-icon { display: block; }
   font-size: 0.74rem;
   font-weight: 700;
   color: var(--shop-accent-ink);
-  border: 1px solid rgba(34, 211, 238, 0.5);
-  border-radius: 50%;
+  border: 1px solid rgba(236, 48, 19, 0.5);
+  border-radius: 0;
   vertical-align: -5px;
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
 }
 
 .step-intro {
@@ -1056,7 +1241,7 @@ a.product-icon { display: block; }
 }
 .link-btn:hover {
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.5);
+  text-shadow: none;
 }
 
 .hint-loose { margin: 14px 0 0; }
@@ -1081,19 +1266,19 @@ a.product-icon { display: block; }
   align-items: center;
   gap: 14px;
   padding: 15px 18px;
-  border: 1px solid rgba(129, 140, 248, 0.3);
-  border-radius: 10px;
-  background: rgba(6, 11, 24, 0.45);
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  border-radius: 0;
+  background: rgba(234, 228, 217, 0.45);
   cursor: pointer;
   transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.16s ease;
 }
 
-.delivery-option:hover { border-color: rgba(34, 211, 238, 0.45); }
+.delivery-option:hover { border-color: rgba(236, 48, 19, 0.45); }
 
 .delivery-option:has(input:checked) {
-  border-color: rgba(34, 211, 238, 0.65);
-  background: rgba(34, 211, 238, 0.06);
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.16);
+  border-color: rgba(236, 48, 19, 0.65);
+  background: rgba(236, 48, 19, 0.06);
+  box-shadow: none;
 }
 
 .delivery-option input[type="radio"] {
@@ -1131,7 +1316,7 @@ a.product-icon { display: block; }
 
 .delivery-price.delivery-free {
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 10px rgba(34, 211, 238, 0.35);
+  text-shadow: none;
 }
 
 /* ---------- payment method row: generic branded-style buttons ---------- */
@@ -1151,27 +1336,35 @@ a.product-icon { display: block; }
 .pay-row {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  gap: 0;
+  margin: 22px 0 0;
+  border-top: 2px solid var(--shop-strong);
+  border-bottom: 2px solid var(--shop-strong);
 }
 
 .pay-btn {
   font: inherit;
+  --pay-glyph-accent: var(--shop-accent-fill);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 12px 8px;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  border-radius: 8px;
-  border: 1.5px solid transparent;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 18px 16px 17px;
+  color: var(--shop-strong);
+  background: transparent;
+  border: 0;
+  /* The selected state is a 3px rule UNDER the tile, so selecting moves
+     nothing. A row where each tile grows a border when chosen shifts its
+     neighbours by a pixel, and on a payment row that reads as the page
+     flinching at the choice. */
+  border-bottom: 3px solid transparent;
   cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
 }
+.pay-btn + .pay-btn { border-left: 1px solid rgba(27, 25, 23, 0.25); }
 
-.pay-btn:hover { transform: translateY(-1px); }
+.pay-btn:hover { background: var(--shop-panel-raised, #F6F4F0); }
 .pay-btn:disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -1179,147 +1372,72 @@ a.product-icon { display: block; }
 }
 .pay-btn:disabled:hover { transform: none; }
 
+/* ============================================================
+   THE PAYMENT METHOD MARKS, redrawn 2026-08-19
+   (redesign handoff, defect 2)
+
+   WHAT WAS HERE. Five tiles, each painted in a payment brand's
+   colours, carrying the literal words "Apple Pay", "GPay",
+   "PayPal", "Card" and "Plaid" set in type and dressed to look
+   like logotypes. Roughly 130 lines of this sheet went on that
+   costume, including a long ruling about a blue letter G that
+   computed 3.41 to 1, and a dark-background variant of a wordmark
+   we do not own.
+
+   WHY IT IS GONE RATHER THAN CORRECTED. The approach was the
+   defect. Text pretending to be brand artwork is neither: it
+   fails the contrast floor as text, it misrepresents the brand as
+   artwork, and the handoff was right to call it the most amateur
+   element on the page. The contrast ruling that used to live here
+   goes with it, because no text is imitating a mark any more.
+
+   WHAT REPLACES IT. Five ORIGINAL neutral glyphs in a uniform
+   40x26 box drawn on the system's 2px ink, plus the method name
+   and its honest state set as real type at real sizes. The glyphs
+   inherit currentColor, so they take the tile's ink and cannot
+   drift from it, and their one accent detail reads from
+   --pay-glyph-accent.
+
+   THE STANDING INSTRUCTION, carried forward from the rule this
+   replaces: when the networks' and the wallets' official artwork
+   is licensed, drop those files into this same box. Do not redraw
+   them. That is a trademark question, not a design one.
+   ============================================================ */
+
 .pay-mark {
-  display: inline-flex;
-  align-items: baseline;
-  justify-content: center;
-  min-width: 72px;
-  min-height: 21px;
-  line-height: 1;
-  letter-spacing: 0;
-  white-space: nowrap;
+  display: block;
+  height: 26px;
 }
 
-.mark-applepay {
-  font-size: 0.95rem;
+.pay-glyph {
+  display: block;
+  width: 40px;
+  height: 26px;
+}
+
+.pay-name {
+  font-size: 0.81rem;
   font-weight: 700;
   letter-spacing: -0.01em;
+  line-height: 1.2;
+  color: var(--shop-strong);
 }
 
-.mark-googlepay {
-  gap: 3px;
-  font-size: 0.95rem;
-  font-weight: 700;
-  color: #202124;
-}
-/* THE BLUE G: 3.41 TO 1, ACCEPTED, AND WHY THE OBVIOUS DEFENCE OF
-   IT IS WRONG (quality assurance ruling, 2026-08-17).
-
-   #4285F4 on the tile's #F8FAFC face computes 3.41 to 1. That is
-   below the 4.5 to 1 floor every other piece of text on this page
-   is held to, and it is stated here rather than left to be
-   rediscovered.
-
-   THE ARGUMENT THAT WAS REJECTED. The first defence offered for
-   this was the logotype exemption: brand marks carry no contrast
-   requirement. That was considered and REJECTED, and the
-   rejection is the part worth keeping. This is not the Google Pay
-   logotype. It is page text, the letter G, set in Segoe UI at
-   weight 800 by the rule below, dressed to resemble a brand mark.
-   Accepting the exemption here would mean any text on any page
-   could opt out of the floor by asserting a brand, which empties
-   the rule. If this element ever becomes a real supplied
-   logotype, that is a different question and it should be argued
-   again from scratch.
-
-   WHY IT IS ACCEPTABLE ANYWAY, on grounds that survive scrutiny:
-     1. The whole mark is aria-hidden, so assistive technology
-        never reads it. It functions as an icon, and icons are
-        governed by the 3 to 1 non-text contrast criterion, which
-        3.41 clears.
-     2. The tile's accessible name is not this text at all. It
-        lives in a separate screen-reader span reading
-        "Google Pay", so nothing that a reader depends on hangs
-        off these pixels.
-     3. A sighted reader is not left guessing either: the word
-        "Pay" sits immediately beside the G at 15.38 to 1
-        (15.39 by the shop-side computation, a rounding
-        difference), on the same tile.
-
-   THE STANDING INSTRUCTION. The next time this tile is opened for
-   ANY other reason, take #1558C0 with it. That is Google's own
-   darker blue, it computes 6.29 to 1 on the same face, and it
-   clears the text floor outright so the argument above stops
-   being needed. It is not being taken today only because
-   repainting a payment brand mark is not a change to make as a
-   side effect of a chrome round. */
-.mark-googlepay .g-blue {
-  color: #4285F4;
-  font-size: 1.05rem;
-  font-weight: 800;
-}
-
-.mark-paypal {
-  gap: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  font-style: italic;
-}
-/* DARK-BACKGROUND MARK VARIANT (quality assurance finding M-O3,
-   2026-08-16). The light-background brand colors were used on the
-   dark navy tile (#17357C): "Pay" in brand navy #003087 computed
-   1.04 to 1, invisible, and "Pal" in #009CDE computed 3.71 to 1,
-   both below the 4.5 floor for the tile's only label. PayPal's
-   dark-background wordmark treatment is light lettering: white
-   "Pay" computes 11.02 to 1 on this tile, and the lightened brand
-   blue #00B9F2 for "Pal" computes 4.84 to 1. Both halves now clear
-   4.5 to 1 by computation. */
-.mark-paypal span:first-child { color: #FFFFFF; }
-.mark-paypal span:last-child { color: #00B9F2; }
-
-.mark-card {
-  min-width: 58px;
-  border-radius: 4px;
-  padding: 5px 9px 4px;
-  font-size: 0.72rem;
-  font-weight: 800;
+.pay-state {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: 1.3;
   text-transform: uppercase;
-  color: var(--shop-tile-ink);
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.18), rgba(129, 140, 248, 0.22));
-  border: 1px solid rgba(34, 211, 238, 0.35);
-}
-
-.mark-plaid {
-  min-width: 62px;
-  border-radius: 4px;
-  padding: 5px 9px 4px;
-  font-size: 0.76rem;
-  font-weight: 800;
-  color: #0B0F19;
-  background: #FFFFFF;
-}
-
-.pay-applepay {
-  background: #05070B;
-  color: #F8FAFC;
-  border-color: rgba(148, 163, 184, 0.4);
-}
-.pay-googlepay {
-  background: #F8FAFC;
-  color: #1F2937;
-  border-color: rgba(148, 163, 184, 0.3);
-}
-.pay-paypal {
-  background: #17357C;
-  color: #F8FAFC;
-  border-color: rgba(148, 163, 184, 0.25);
-}
-.pay-card {
-  background: rgba(34, 211, 238, 0.08);
-  color: var(--shop-tile-ink);
-  border-color: rgba(34, 211, 238, 0.45);
-}
-.pay-bank {
-  background: rgba(16, 185, 129, 0.1);
-  color: var(--shop-bank-ink);
-  border-color: rgba(16, 185, 129, 0.45);
+  color: var(--shop-muted);
 }
 
 .pay-btn[aria-pressed="true"] {
-  border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.55),
-              0 0 22px rgba(34, 211, 238, 0.3);
+  background: var(--shop-panel-raised, #F6F4F0);
+  border-bottom-color: var(--shop-accent-fill);
+  box-shadow: none;
 }
+.pay-btn[aria-pressed="true"] .pay-state { color: var(--shop-accent-ink); }
 
 .pay-note {
   font-size: 0.72rem;
@@ -1329,10 +1447,10 @@ a.product-icon { display: block; }
 
 /* A failure ending on the payment status line reads as a failure
    (owner request 2026-08-16; the engine sets and clears the class,
-   see js/payments.js). #FCA5A5 is the light stop of the red family
-   already in this sheet (.line-remove:hover uses #F87171, one stop
+   see js/payments.js). #B91C1C is the light stop of the red family
+   already in this sheet (.line-remove:hover uses #B91C1C, one stop
    deeper). COMPUTED, not eyeballed: 10.35 to 1 on the bare navy
-   field (#060B18), 8.80 to 1 on the lightest glass-panel gradient
+   field (#EAE4D9), 8.80 to 1 on the lightest glass-panel gradient
    stop composited over navy, 10.07 to 1 on the darkest, all above
    the 4.5 to 1 floor.
    UPDATED 2026-08-17: this page now HAS a light theme, so the dark
@@ -1342,7 +1460,7 @@ a.product-icon { display: block; }
    the one message a shopper must never miss, so it is measured in
    both themes. (The panel figure was recomputed on 2026-08-17
    against the lightest glass stop composited over the navy field,
-   which resolves to #151E2E, and came out at 8.80 rather than the
+   which resolves to #F1EDE6, and came out at 8.80 rather than the
    8.84 recorded earlier. The 0.04 is a compositing rounding
    difference; both clear the floor, and the earlier number is left
    named here rather than quietly overwritten.) */
@@ -1353,9 +1471,9 @@ a.product-icon { display: block; }
   color: var(--shop-text);
   padding: 13px 16px;
   margin-bottom: 20px;
-  border: 1px solid rgba(34, 211, 238, 0.3);
-  border-radius: 8px;
-  background: rgba(34, 211, 238, 0.06);
+  border: 1px solid rgba(236, 48, 19, 0.3);
+  border-radius: 0;
+  background: rgba(236, 48, 19, 0.06);
 }
 
 .wallet-panel {
@@ -1367,20 +1485,20 @@ a.product-icon { display: block; }
   justify-content: center;
   padding: 76px 16px 24px;
   background: rgba(2, 6, 20, 0.72);
-  backdrop-filter: blur(10px);
+  backdrop-filter: none;
 }
 .wallet-panel[hidden] { display: none; }
 .wallet-sheet {
   width: min(560px, 100%);
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
   color: #202124;
-  background: #FFFFFF;
-  box-shadow: 0 26px 80px rgba(2, 6, 20, 0.72);
+  background: #1B1917;
+  box-shadow: none;
 }
 .wallet-paypal-sheet {
-  color: #0C2145;
-  background: #FFFFFF;
+  color: #F1EDE6;
+  background: #1B1917;
 }
 .wallet-head {
   min-height: 58px;
@@ -1419,7 +1537,7 @@ a.product-icon { display: block; }
   width: 34px;
   height: 34px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
   color: #5F6368;
   background: transparent;
   font-size: 1.1rem;
@@ -1441,7 +1559,7 @@ a.product-icon { display: block; }
   font-size: 0.86rem;
   line-height: 1.45;
 }
-.wallet-paypal-sheet .wallet-sandbox-note { color: #334155; }
+.wallet-paypal-sheet .wallet-sandbox-note { color: #4B453D; }
 .wallet-merchant-row {
   display: flex;
   align-items: center;
@@ -1457,7 +1575,7 @@ a.product-icon { display: block; }
   font-weight: 500;
   white-space: nowrap;
 }
-.wallet-paypal-sheet .wallet-merchant-row strong { color: #0C2145; }
+.wallet-paypal-sheet .wallet-merchant-row strong { color: #F1EDE6; }
 .wallet-funding {
   min-height: 72px;
   display: grid;
@@ -1466,8 +1584,8 @@ a.product-icon { display: block; }
   gap: 14px;
   margin: 0 24px 18px;
   padding: 12px 16px;
-  border: 1px solid #CBD5E1;
-  border-radius: 8px;
+  border: 1px solid #4B453D;
+  border-radius: 0;
   background: #EEF2F7;
   cursor: pointer;
 }
@@ -1484,14 +1602,14 @@ a.product-icon { display: block; }
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 4px;
-  background: #FFFFFF;
+  border-radius: 0;
+  background: #1B1917;
   border: 1px solid #DADCE0;
 }
 .wallet-card-art span {
   width: 22px;
   height: 22px;
-  border-radius: 999px;
+  border-radius: 0;
   opacity: 0.9;
 }
 .wallet-card-art span:first-child {
@@ -1502,9 +1620,9 @@ a.product-icon { display: block; }
 .wallet-radio {
   width: 28px;
   height: 28px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 8px solid #0070BA;
-  background: #FFFFFF;
+  background: #1B1917;
   justify-self: center;
 }
 .wallet-funding-main {
@@ -1521,7 +1639,7 @@ a.product-icon { display: block; }
   font-size: 1rem;
   font-weight: 500;
 }
-.wallet-paypal-sheet .wallet-funding-main strong { color: #0C2145; }
+.wallet-paypal-sheet .wallet-funding-main strong { color: #F1EDE6; }
 .wallet-funding-main small {
   margin-top: 3px;
   color: #5F6368;
@@ -1540,18 +1658,18 @@ a.product-icon { display: block; }
   place-items: center;
   margin: 0 24px 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 0;
   font: inherit;
   font-size: 0.94rem;
   font-weight: 700;
   cursor: pointer;
 }
 .wallet-pay-btn {
-  color: #FFFFFF;
+  color: #1B1917;
   background: #185ABC;
 }
 .wallet-paypal-sheet .wallet-pay-btn {
-  color: #0C2145;
+  color: #F1EDE6;
   background: #FFC439;
 }
 .wallet-secondary {
@@ -1581,8 +1699,8 @@ a.product-icon { display: block; }
 .taxid-row {
   margin: 12px 0 10px;
   padding: 13px 15px 9px;
-  border: 1px dashed rgba(129, 140, 248, 0.35);
-  border-radius: 10px;
+  border: 1px dashed rgba(27, 25, 23, 0.35);
+  border-radius: 0;
 }
 
 .taxid-row .field-compact {
@@ -1607,7 +1725,7 @@ a.product-icon { display: block; }
   padding: 42px 0 54px;
   position: relative;
   overflow: hidden;
-  border-bottom: 1px solid rgba(129, 140, 248, 0.08);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.08);
 }
 
 .pdp-hero .wrap { position: relative; z-index: 1; }
@@ -1629,13 +1747,13 @@ a.back-to-shop { text-decoration: none; }
   width: 96px;
   min-height: 96px;
   padding: 18px;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .pdp-mark-icon {
   width: 60px;
   height: 60px;
-  filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.34));
+  filter: none;
 }
 
 .pdp-buy {
@@ -1649,7 +1767,8 @@ a.back-to-shop { text-decoration: none; }
 
 .pdp-buy > .tier-badge,
 .pdp-name,
-.pdp-blurb {
+.pdp-blurb,
+.pdp-facts {
   grid-column: 1;
 }
 
@@ -1666,10 +1785,9 @@ a.back-to-shop { text-decoration: none; }
 
 .pdp-name {
   font-size: clamp(1.32rem, 2.4vw, 1.85rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.065em;
-  line-height: 1.18;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--shop-strong);
   margin: 10px 0 6px;
 }
@@ -1682,9 +1800,51 @@ a.back-to-shop { text-decoration: none; }
   margin-bottom: 0;
 }
 
+/* ---------- the product's non-price facts ----------
+   A definition list in all but name: a short key, then the fact.
+   It lives under the blurb so the left column carries the product
+   and the price box carries the purchase. Keys are a fixed column
+   so the values line up; below 620px that column collapses and the
+   pairs stack, because a 92px key beside a wrapped sentence on a
+   phone is worse than two lines. */
+
+.pdp-facts {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.14);
+  max-width: 42em;
+}
+
+.pdp-fact {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  gap: 4px 14px;
+  padding: 7px 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.pdp-fact + .pdp-fact {
+  border-top: 1px solid rgba(27, 25, 23, 0.08);
+}
+
+.pdp-fact-key {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--shop-indigo-ink);
+  padding-top: 2px;
+}
+
+.pdp-fact-val {
+  color: var(--shop-muted);
+}
+
 .pdp-price-box {
   padding: 22px;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 /* the subscription toggle: checked by default */
@@ -1693,7 +1853,7 @@ a.back-to-shop { text-decoration: none; }
   align-items: flex-start;
   gap: 12px;
   padding-bottom: 15px;
-  border-bottom: 1px solid rgba(129, 140, 248, 0.14);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.14);
 }
 
 .switch {
@@ -1702,9 +1862,9 @@ a.back-to-shop { text-decoration: none; }
   height: 27px;
   flex-shrink: 0;
   margin-top: 2px;
-  border-radius: 999px;
-  border: 1px solid rgba(129, 140, 248, 0.45);
-  background: rgba(129, 140, 248, 0.18);
+  border-radius: 0;
+  border: 1px solid rgba(27, 25, 23, 0.45);
+  background: rgba(27, 25, 23, 0.18);
   cursor: pointer;
   transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
@@ -1715,20 +1875,20 @@ a.back-to-shop { text-decoration: none; }
   left: 3px;
   width: 21px;
   height: 21px;
-  border-radius: 50%;
-  background: #E2E8F0;
+  border-radius: 0;
+  background: #1B1917;
   transition: transform 0.2s ease, background-color 0.2s ease;
 }
 
 .switch[aria-checked="true"] {
   background: var(--shop-accent-fill);
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 16px rgba(34, 211, 238, 0.45);
+  box-shadow: none;
 }
 
 .switch[aria-checked="true"] .switch-knob {
   transform: translateX(20px);
-  background: #05121C;
+  background: #FFFFFF;
 }
 
 .mode-copy { min-width: 0; }
@@ -1781,13 +1941,6 @@ a.back-to-shop { text-decoration: none; }
   margin-bottom: 6px;
 }
 
-.pdp-pv-note {
-  font-size: 0.74rem;
-  line-height: 1.55;
-  color: var(--shop-muted);
-  margin-bottom: 16px;
-}
-
 .btn-add-pdp {
   max-width: none;
   min-height: 44px;
@@ -1801,14 +1954,6 @@ a.back-to-shop { text-decoration: none; }
 .pdp-toast a {
   color: var(--shop-accent-ink);
   font-weight: 700;
-}
-
-.pdp-digital {
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(129, 140, 248, 0.14);
-  font-size: 0.76rem;
-  color: var(--shop-muted);
 }
 
 /* includes section (bundles and packs) */
@@ -1829,7 +1974,7 @@ a.back-to-shop { text-decoration: none; }
   align-items: center;
   gap: 14px;
   padding: 16px 18px;
-  border-radius: 8px;
+  border-radius: 0;
   color: inherit;   /* never fall back to the browser's link blue */
   text-decoration: none;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
@@ -1837,16 +1982,15 @@ a.back-to-shop { text-decoration: none; }
 
 .include-chip:hover {
   transform: translateY(-3px);
-  border-color: rgba(34, 211, 238, 0.5);
-  box-shadow: 0 0 28px rgba(34, 211, 238, 0.16),
-              inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border-color: rgba(236, 48, 19, 0.5);
+  box-shadow: none;
 }
 
 .include-icon {
   width: 38px;
   height: 38px;
   flex-shrink: 0;
-  filter: drop-shadow(0 0 8px rgba(34, 211, 238, 0.3));
+  filter: none;
 }
 
 .include-body { min-width: 0; }
@@ -1882,15 +2026,14 @@ a.back-to-shop { text-decoration: none; }
 
 .prose-panel {
   padding: 22px 20px 20px;
-  border-radius: 8px;
+  border-radius: 0;
 }
 
 .prose-title {
   font-size: 0.78rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  line-height: 1.35;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--shop-strong);
   margin-bottom: 10px;
 }
@@ -1921,7 +2064,7 @@ a.back-to-shop { text-decoration: none; }
 
 .cart-children {
   padding: 0 0 14px 54px;   /* 40px icon + 14px gap: children align under the name */
-  border-bottom: 1px solid rgba(129, 140, 248, 0.12);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.12);
 }
 
 .cart-child {
@@ -1945,7 +2088,7 @@ a.back-to-shop { text-decoration: none; }
 }
 .cart-child .child-name:hover {
   color: var(--shop-accent-ink);
-  text-shadow: 0 0 12px rgba(34, 211, 238, 0.4);
+  text-shadow: none;
 }
 
 .child-qty { white-space: nowrap; }
@@ -1961,8 +2104,8 @@ a.back-to-shop { text-decoration: none; }
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--shop-indigo-ink);
-  border: 1px solid rgba(129, 140, 248, 0.4);
-  border-radius: 999px;
+  border: 1px solid rgba(27, 25, 23, 0.4);
+  border-radius: 0;
   padding: 1px 7px 2px;
   white-space: nowrap;
 }
@@ -1972,7 +2115,7 @@ a.back-to-shop { text-decoration: none; }
   padding: 5px 0 5px 16px;
   font-size: 0.8rem;
   color: var(--shop-muted);
-  border-bottom: 1px solid rgba(129, 140, 248, 0.07);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.07);
 }
 
 .summary-child .sl-name .product-name-link { color: var(--shop-text); }
@@ -2018,6 +2161,39 @@ a.back-to-shop { text-decoration: none; }
   .prose-grid { grid-template-columns: 1fr; }
 }
 
+/* THE STEP BAR AND THE METHOD ROW GO TWO-UP BELOW 820px.
+
+   Measured, not guessed. At 760px wide the four tabs get 176px each and
+   the five method tiles get 128px each, which wraps "Billing address" and
+   "Bank account" onto second lines and takes the bar to 90px tall. Two
+   columns give each of them roughly 360px and one line.
+
+   820 rather than the 920 the checkout grid uses, because collapsing the
+   grid to one column HANDS the flow the full width: the row is at its
+   roomiest just under 920 and only starts to hurt further down.
+
+   TWO COLUMNS MEANS THE SEPARATORS MOVE. A single "every tile but the
+   first gets a left border" rule is right on one row and wrong on two: it
+   draws a line down the outside edge of the second row and leaves the two
+   rows with nothing between them. So it is restated per column count
+   rather than inherited. */
+@media (max-width: 820px) {
+  .pay-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pay-btn + .pay-btn { border-left: 0; }
+  .pay-btn:nth-child(2n) { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+  .pay-btn:nth-child(n + 3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+
+  .ck-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ck-step + .ck-step { border-left: 0; }
+  .ck-step:nth-child(2n) { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+  .ck-step:nth-child(n + 3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+}
+
+@media (max-width: 620px) {
+  /* a 128px key beside a wrapped sentence is worse than two lines */
+  .pdp-fact { grid-template-columns: 1fr; gap: 2px; }
+}
+
 @media (max-width: 600px) {
   .product-grid { grid-template-columns: 1fr; gap: 20px; }
   .tier-band { padding: 48px 0 16px; }
@@ -2026,14 +2202,18 @@ a.back-to-shop { text-decoration: none; }
   .field-row-3 { grid-template-columns: 1fr; }
   .confirm-card { padding: 36px 22px 30px; }
   .checkout-panel { padding: 28px 20px 24px; }
-  .pay-row { grid-template-columns: repeat(2, 1fr); }
   .includes-grid { grid-template-columns: 1fr; }
   .pdp-hero { padding: 34px 0 46px; }
   .pdp-grid { grid-template-columns: 64px minmax(0, 1fr); gap: 14px; }
   .pdp-buy { display: contents; }
+  /* .pdp-facts belongs in this list. When .pdp-buy becomes
+     display: contents its children are laid out by .pdp-grid, whose
+     first column is the 64px product mark. Anything left at column 1
+     is squeezed into that 64px and wraps one word per line. */
   .pdp-buy > .tier-badge,
   .pdp-name,
-  .pdp-blurb {
+  .pdp-blurb,
+  .pdp-facts {
     grid-column: 2;
   }
   .pdp-mark {
@@ -2067,8 +2247,21 @@ a.back-to-shop { text-decoration: none; }
   .account-choices .btn { flex: 1 1 100%; text-align: center; }
   .delivery-option { flex-wrap: wrap; }
   .delivery-price { margin-left: auto; }
-  .pay-btn { font-size: 0.7rem; padding: 11px 6px; }
-  .pay-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pay-btn { padding: 14px 12px 13px; }
+  .pay-row { grid-template-columns: 1fr; }
+  .pay-btn + .pay-btn,
+  .pay-btn:nth-child(2n) { border-left: 0; }
+  .pay-btn + .pay-btn { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+
+  /* One column at this width. Four tabs side by side would each get about
+     seventy pixels, which is narrower than the answers they exist to
+     carry, and an answer that wraps to four lines stops being a summary. */
+  .ck-steps { grid-template-columns: 1fr; }
+  .ck-step + .ck-step,
+  .ck-step:nth-child(2n) { border-left: 0; }
+  .ck-step + .ck-step { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .ck-step { padding: 12px 16px 13px; }
+  .ck-nav .btn { flex: 1 1 100%; text-align: center; }
 }
 
 /* ============================================================
@@ -2085,10 +2278,10 @@ a.back-to-shop { text-decoration: none; }
   font-size: 0.8rem;
   line-height: 1.6;
   color: var(--shop-text);
-  border: 1px solid rgba(129, 140, 248, 0.28);
+  border: 1px solid rgba(27, 25, 23, 0.28);
   border-left: 3px solid var(--indigo-d);
-  border-radius: 8px;
-  background: rgba(79, 70, 229, 0.08);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.08);
   padding: 11px 14px;
   margin: 0 0 14px;
 }
@@ -2152,10 +2345,10 @@ a.back-to-shop { text-decoration: none; }
    interrupt them without opening anything. Only the explanation of what
    3-D Secure is sits behind the toggle. */
 .pay-disclosure-3ds {
-  border: 1px solid rgba(129, 140, 248, 0.28);
+  border: 1px solid rgba(27, 25, 23, 0.28);
   border-left: 3px solid var(--indigo-d);
-  border-radius: 8px;
-  background: rgba(79, 70, 229, 0.08);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.08);
   padding: 6px 14px 8px;
 }
 
@@ -2172,9 +2365,9 @@ a.back-to-shop { text-decoration: none; }
 .pay-order-chip {
   font-size: 0.82rem;
   color: var(--shop-text);
-  border: 1px solid rgba(34, 211, 238, 0.34);
-  border-radius: 8px;
-  background: rgba(34, 211, 238, 0.07);
+  border: 1px solid rgba(236, 48, 19, 0.34);
+  border-radius: 0;
+  background: rgba(236, 48, 19, 0.07);
   padding: 10px 14px;
   margin: 0 0 16px;
 }
@@ -2229,9 +2422,9 @@ body.payment-in-flight .checkout-summary {
      mattered. Found 2026-08-15, before the challenge had ever fired
      in front of a shopper. */
   z-index: 2147483647;
-  background: #0A1226;
+  background: #F1EDE6;
   border-bottom: 1px solid var(--cyan);
-  box-shadow: 0 6px 26px rgba(2, 6, 20, 0.7);
+  box-shadow: none;
 }
 .challenge-chrome[hidden] { display: none; }
 
@@ -2244,7 +2437,7 @@ body.payment-in-flight .checkout-summary {
   justify-content: center;
   padding: 86px 18px 24px;
   background: rgba(2, 6, 20, 0.78);
-  backdrop-filter: blur(12px);
+  backdrop-filter: none;
 }
 .plaid-panel[hidden] { display: none; }
 .plaid-card {
@@ -2252,9 +2445,9 @@ body.payment-in-flight .checkout-summary {
   max-height: calc(100vh - 120px);
   overflow: auto;
   padding: 28px;
-  border-radius: 8px;
-  border-color: rgba(34, 211, 238, 0.42);
-  box-shadow: 0 26px 70px rgba(2, 6, 20, 0.65);
+  border-radius: 0;
+  border-color: rgba(236, 48, 19, 0.42);
+  box-shadow: none;
 }
 .plaid-head {
   display: flex;
@@ -2274,7 +2467,7 @@ body.payment-in-flight .checkout-summary {
   display: grid;
   place-items: center;
   border: 1px solid rgba(148, 163, 184, 0.24);
-  border-radius: 999px;
+  border-radius: 0;
   color: var(--shop-text);
   font-size: 0.68rem;
   font-weight: 800;
@@ -2284,8 +2477,8 @@ body.payment-in-flight .checkout-summary {
 .plaid-progress-step.is-active {
   border-color: var(--shop-accent-ink);
   color: var(--shop-paper);
-  background: rgba(34, 211, 238, 0.12);
-  box-shadow: 0 0 18px rgba(34, 211, 238, 0.14);
+  background: rgba(236, 48, 19, 0.12);
+  box-shadow: none;
 }
 .plaid-kicker,
 .plaid-label {
@@ -2313,13 +2506,17 @@ body.payment-in-flight .checkout-summary {
 .plaid-grid > div,
 .plaid-result {
   padding: 14px 16px;
-  border: 1px solid rgba(34, 211, 238, 0.24);
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(236, 48, 19, 0.24);
+  border-radius: 0;
+  /* Was rgba(27,25,23,0.7). The same dark-inset-remapped-to-ink fault as
+     the console's fields, and this one is the bank approval screen: the
+     copy under each heading is --shop-text, which is dark, so the
+     shopper was reading dark on dark in the middle of paying. */
+  background: #F1EDE6;
 }
 .plaid-grid strong {
   display: block;
-  color: var(--shop-paper);
+  color: #1B1917;
   font-size: 1rem;
 }
 .plaid-copy,
@@ -2343,7 +2540,7 @@ body.payment-in-flight .checkout-summary {
   align-items: center;
   column-gap: 14px;
   border: 1px solid rgba(148, 163, 184, 0.34);
-  border-radius: 8px;
+  border-radius: 0;
   background: rgba(2, 6, 20, 0.42);
   color: var(--shop-paper);
   font-weight: 800;
@@ -2353,7 +2550,7 @@ body.payment-in-flight .checkout-summary {
 }
 .plaid-bank.is-selected {
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.24);
+  box-shadow: none;
 }
 .plaid-bank span {
   grid-row: 1 / span 2;
@@ -2361,10 +2558,10 @@ body.payment-in-flight .checkout-summary {
   height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--shop-accent-ink);
-  background: rgba(34, 211, 238, 0.12);
-  border: 1px solid rgba(34, 211, 238, 0.24);
+  background: rgba(236, 48, 19, 0.12);
+  border: 1px solid rgba(236, 48, 19, 0.24);
 }
 .plaid-bank strong,
 .plaid-bank small {
@@ -2403,14 +2600,14 @@ body.payment-in-flight .checkout-summary {
   align-items: center;
   gap: 14px;
   padding: 12px 14px;
-  border-radius: 8px;
+  border-radius: 0;
   border: 1px solid rgba(148, 163, 184, 0.34);
   background: rgba(2, 6, 20, 0.42);
   color: var(--shop-paper);
 }
 .plaid-account.is-selected {
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+  box-shadow: none;
 }
 .plaid-account span,
 .plaid-account strong,
@@ -2427,7 +2624,7 @@ body.payment-in-flight .checkout-summary {
   width: 54px;
   height: 54px;
   margin: 20px auto;
-  border-radius: 50%;
+  border-radius: 0;
   border: 3px solid rgba(148, 163, 184, 0.24);
   border-top-color: var(--shop-accent-ink);
   animation: plaid-spin 0.85s linear infinite;
@@ -2448,17 +2645,17 @@ body.payment-in-flight .checkout-summary {
 .cc-line {
   font-size: 0.78rem;
   line-height: 1.5;
-  color: #C7D0DE;
+  color: #4B453D;
   margin: 0;
   flex: 1 1 240px;
   min-width: 0;
 }
-.cc-line b { color: #FFFFFF; }
+.cc-line b { color: #1B1917; }
 .cc-order {
   flex: 0 1 auto;
   font-family: Consolas, "Cascadia Mono", monospace;
   letter-spacing: 0.05em;
-  color: #22D3EE;
+  color: #A3220B;
 }
 .btn-sm {
   font-size: 0.72rem;
@@ -2505,7 +2702,7 @@ body.payment-in-flight .checkout-summary {
 .sk-line {
   display: block;
   height: 42px;
-  border-radius: 8px;
+  border-radius: 0;
   background: var(--shop-skeleton);
   animation: skPulse 1.4s ease-in-out infinite;
 }
@@ -2581,14 +2778,14 @@ body.payment-in-flight .checkout-summary {
    the accent kicker 4.90 to 1, the thinnest margin on the page. */
 
 :root[data-theme="light"] .shop-hero::before {
-  background: radial-gradient(closest-side, rgba(79, 70, 229, 0.06), transparent 70%);
+  background: radial-gradient(closest-side, rgba(27, 25, 23, 0.06), transparent 70%);
 }
 :root[data-theme="light"] .shop-hero::after {
-  background: radial-gradient(closest-side, rgba(34, 211, 238, 0.06), transparent 70%);
+  background: radial-gradient(closest-side, rgba(236, 48, 19, 0.06), transparent 70%);
 }
 :root[data-theme="light"] .shop-hero,
 :root[data-theme="light"] .pdp-hero {
-  border-bottom-color: rgba(15, 23, 42, 0.1);
+  border-bottom-color: rgba(27, 25, 23, 0.1);
 }
 
 /* ---------- hairlines that were drawn for a navy field ---------- */
@@ -2603,7 +2800,7 @@ body.payment-in-flight .checkout-summary {
 :root[data-theme="light"] .drawer-head,
 :root[data-theme="light"] .drawer-foot,
 :root[data-theme="light"] .confirm-summary {
-  border-color: rgba(15, 23, 42, 0.1);
+  border-color: rgba(27, 25, 23, 0.1);
 }
 
 :root[data-theme="light"] .drawer-close,
@@ -2612,19 +2809,19 @@ body.payment-in-flight .checkout-summary {
 :root[data-theme="light"] .tier-badge,
 :root[data-theme="light"] .child-tag,
 :root[data-theme="light"] .plaid-progress-step {
-  border-color: rgba(15, 23, 42, 0.18);
+  border-color: rgba(27, 25, 23, 0.18);
 }
 
 :root[data-theme="light"] .product:hover {
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 10px 30px rgba(14, 116, 144, 0.16);
+  box-shadow: none;
 }
 
 /* ---------- catalog controls ---------- */
 
 :root[data-theme="light"] .filter-pill {
-  background: #FFFFFF;                 /* pill text computes 12.95 to 1 on it */
-  border-color: rgba(15, 23, 42, 0.18);
+  background: #1B1917;                 /* pill text computes 12.95 to 1 on it */
+  border-color: rgba(27, 25, 23, 0.18);
 }
 :root[data-theme="light"] .filter-pill:hover {
   border-color: var(--shop-accent-ink);
@@ -2648,7 +2845,7 @@ body.payment-in-flight .checkout-summary {
 }
 
 :root[data-theme="light"] .btn-add {
-  background: #ECFEFF;                 /* the label computes 17.16 to 1 on it */
+  background: #F1EDE6;                 /* the label computes 17.16 to 1 on it */
   border-color: var(--shop-accent-ink);
 }
 :root[data-theme="light"] .btn-add:hover,
@@ -2656,7 +2853,7 @@ body.payment-in-flight .checkout-summary {
   color: var(--shop-on-accent);        /* 10.47 to 1 on the fill */
   background: var(--shop-accent-fill);
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 4px 14px rgba(14, 116, 144, 0.25);
+  box-shadow: none;
 }
 
 /* the tier badges keep their hue, which is how a Domain agent is
@@ -2674,21 +2871,21 @@ body.payment-in-flight .checkout-summary {
 /* ---------- the cart drawer ---------- */
 
 :root[data-theme="light"] .cart-drawer {
-  background: linear-gradient(180deg, #FFFFFF, #F7F9FC);
-  border-left-color: rgba(15, 23, 42, 0.13);
-  box-shadow: -12px 0 48px rgba(15, 23, 42, 0.18);
+  background: linear-gradient(180deg, #1B1917, #F7F9FC);
+  border-left-color: rgba(27, 25, 23, 0.13);
+  box-shadow: none;
 }
 :root[data-theme="light"] .drawer-foot {
-  background: #F1F4FA;                 /* totals 16.20, labels 5.43, Personal Volume 4.86 */
+  background: #EAE4D9;                 /* totals 16.20, labels 5.43, Personal Volume 4.86 */
 }
 :root[data-theme="light"] .drawer-overlay {
-  background: rgba(15, 23, 42, 0.35);
+  background: rgba(27, 25, 23, 0.35);
 }
 
 /* the Personal Volume meter track has to be visible on paper */
 :root[data-theme="light"] .pv-track {
-  background: #E2E8F0;
-  border-color: rgba(15, 23, 42, 0.18);
+  background: #1B1917;
+  border-color: rgba(27, 25, 23, 0.18);
 }
 :root[data-theme="light"] .pv-fill,
 :root[data-theme="light"] .pv-meter.is-qualified .pv-fill {
@@ -2698,51 +2895,41 @@ body.payment-in-flight .checkout-summary {
 /* ---------- checkout ---------- */
 
 :root[data-theme="light"] .confirm-summary {
-  background: #F1F4FA;                 /* body text computes 11.75 to 1 on it */
+  background: #EAE4D9;                 /* body text computes 11.75 to 1 on it */
 }
 
 :root[data-theme="light"] .delivery-option {
-  background: #FFFFFF;                 /* name 17.85, description 5.98 */
-  border-color: rgba(15, 23, 42, 0.18);
+  background: #1B1917;                 /* name 17.85, description 5.98 */
+  border-color: rgba(27, 25, 23, 0.18);
 }
 :root[data-theme="light"] .delivery-option:hover {
   border-color: var(--shop-accent-ink);
 }
 :root[data-theme="light"] .delivery-option:has(input:checked) {
-  background: #ECFEFF;
+  background: #F1EDE6;
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 1px var(--shop-accent-ink);
+  box-shadow: none;
 }
 
 :root[data-theme="light"] .wallet-note,
 :root[data-theme="light"] .pay-order-chip {
-  background: #ECFEFF;                 /* body text computes 12.44 to 1 on it */
+  background: #F1EDE6;                 /* body text computes 12.44 to 1 on it */
   border-color: rgba(14, 116, 144, 0.35);
 }
 :root[data-theme="light"] .pay-3ds-note {
-  background: #EEF2FF;                 /* body text computes 11.58 to 1 on it */
-  border-color: rgba(79, 70, 229, 0.28);
-  border-left-color: #4F46E5;
+  background: #F1EDE6;                 /* body text computes 11.58 to 1 on it */
+  border-color: rgba(27, 25, 23, 0.28);
+  border-left-color: #1B1917;
 }
 
-/* The two payment tiles that were drawn for a navy field. The
-   other three, Apple Pay, Google Pay and PayPal, are brand marks
-   and keep their own colours in both themes. */
-:root[data-theme="light"] .pay-card {
-  background: #ECFEFF;                 /* the label computes 17.16 to 1 */
-  border-color: var(--shop-accent-ink);
-}
-:root[data-theme="light"] .mark-card {
-  background: #E0F7FC;                 /* the mark computes 16.05 to 1 */
-  border-color: rgba(14, 116, 144, 0.35);
-}
-:root[data-theme="light"] .pay-bank {
-  background: #ECFDF5;                 /* the label computes 7.29 to 1 */
-  border-color: #059669;
-}
+/* The per-brand payment tiles are gone with the text marks they
+   dressed (2026-08-19). Nothing here needs a light-theme variant
+   any more: the tiles are transparent, the glyphs inherit the
+   tile's ink, and the selected state is a rule rather than a
+   fill, so all three follow the tokens in both themes. */
 :root[data-theme="light"] .pay-btn[aria-pressed="true"] {
-  border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 2px rgba(14, 116, 144, 0.55);
+  border-bottom-color: var(--shop-accent-fill);
+  box-shadow: none;
 }
 
 /* the placeholder that holds the card form's space while the
@@ -2753,12 +2940,12 @@ body.payment-in-flight .checkout-summary {
 
 /* the subscription switch on the product page */
 :root[data-theme="light"] .switch {
-  background: #E2E8F0;
-  border-color: rgba(15, 23, 42, 0.22);
+  background: #1B1917;
+  border-color: rgba(27, 25, 23, 0.22);
 }
 :root[data-theme="light"] .switch-knob {
-  background: #FFFFFF;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.35);
+  background: #1B1917;
+  box-shadow: none;
 }
 :root[data-theme="light"] .switch[aria-checked="true"] {
   background: var(--shop-accent-fill); /* the on position keeps the brand fill */
@@ -2772,11 +2959,11 @@ body.payment-in-flight .checkout-summary {
 
 /* billing-mode badges */
 :root[data-theme="light"] .mode-badge.mode-sub {
-  background: #ECFEFF;                 /* 5.15 to 1 */
+  background: #F1EDE6;                 /* 5.15 to 1 */
   border-color: var(--shop-accent-ink);
 }
 :root[data-theme="light"] .mode-badge.mode-one {
-  background: #EEF2FF;                 /* 7.07 to 1 */
+  background: #F1EDE6;                 /* 7.07 to 1 */
   border-color: var(--shop-indigo-ink);
 }
 
@@ -2787,31 +2974,31 @@ body.payment-in-flight .checkout-summary {
 }
 :root[data-theme="light"] .plaid-grid > div,
 :root[data-theme="light"] .plaid-result {
-  background: #F1F4FA;                 /* stat values compute 16.20 to 1 */
-  border-color: rgba(15, 23, 42, 0.13);
+  background: #EAE4D9;                 /* stat values compute 16.20 to 1 */
+  border-color: rgba(27, 25, 23, 0.13);
 }
 :root[data-theme="light"] .plaid-bank,
 :root[data-theme="light"] .plaid-account {
-  background: #FFFFFF;                 /* titles 17.85, sub-lines 12.95 */
-  border-color: rgba(15, 23, 42, 0.18);
+  background: #1B1917;                 /* titles 17.85, sub-lines 12.95 */
+  border-color: rgba(27, 25, 23, 0.18);
 }
 :root[data-theme="light"] .plaid-bank span {
-  background: #ECFEFF;
+  background: #F1EDE6;
   border-color: rgba(14, 116, 144, 0.35);
 }
 :root[data-theme="light"] .plaid-bank.is-selected,
 :root[data-theme="light"] .plaid-account.is-selected {
   border-color: var(--shop-accent-ink);
-  box-shadow: 0 0 0 2px rgba(14, 116, 144, 0.45);
+  box-shadow: none;
 }
 :root[data-theme="light"] .plaid-progress-step.is-active {
   color: var(--shop-strong);           /* 17.16 to 1 on the tinted chip */
-  background: #ECFEFF;
+  background: #F1EDE6;
   border-color: var(--shop-accent-ink);
   box-shadow: none;
 }
 :root[data-theme="light"] .plaid-processing {
-  border-color: rgba(15, 23, 42, 0.18);
+  border-color: rgba(27, 25, 23, 0.18);
   border-top-color: var(--shop-accent-ink);
 }
 
@@ -2837,4 +3024,639 @@ body.payment-in-flight .checkout-summary {
 :root[data-theme="light"] .back-to-shop:hover,
 :root[data-theme="light"] .link-btn:hover {
   text-shadow: none;
+}
+
+
+/* ============================================================
+   THE CATALOG: PROMOTED PACK, DENSE ROWS, STICKY MONTH RAIL
+   Redesign section 3, built 2026-08-18 from
+   Site-Redesign/SHOP-CATALOG-BUILD-SPEC.md
+
+   Replaces the sixteen-card grid. Rules and alignment do the
+   organising: there is no card, no shadow and no radius here.
+   ============================================================ */
+
+.catalog-shell {
+  max-width: var(--maxw, 1180px);
+  margin: 0 auto;
+  padding: 0 32px 80px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 0 34px;
+  align-items: start;
+}
+
+/* THE COLUMN DIVIDER. The comp shows one continuous 2px ink rule between
+   the list and the rail, running the height of the catalog. It cannot live
+   on .rail: the rail is position:sticky and align-self:start, so its border
+   is only as tall as its own content and stops dead a third of the way down
+   an empty cart. It lives here instead, on the taller column, centred in the
+   34px grid gap. */
+.catalog-main {
+  min-width: 0;
+  padding-top: 34px;
+  position: relative;
+}
+
+.catalog-main::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -18px;
+  width: 2px;
+  background: var(--shop-strong);
+}
+
+.catalog-title {
+  font-size: clamp(1.9rem, 3.4vw, 2.6rem);
+  font-weight: 800;
+  line-height: 1.04;
+  letter-spacing: -0.035em;
+  /* 16ch broke this to three lines in the built column; 22ch holds it
+     to two, breaking after "in an" as the design does. */
+  max-width: 22ch;
+  text-wrap: balance;
+  color: var(--shop-strong);
+  margin: 6px 0 14px;
+}
+
+.catalog-lead {
+  font-size: 1.06rem;
+  line-height: 1.55;
+  max-width: 47ch;
+  color: var(--shop-muted);
+  margin-bottom: 26px;
+}
+
+/* ---------- the promoted pack ---------- */
+
+.promo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 0 26px;
+  border-top: 2px solid var(--shop-strong);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.25);
+  background: #F1EDE6;
+  padding: 20px 22px 22px;
+  margin-bottom: 26px;
+}
+
+.promo-kicker {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #A3220B;
+  margin-bottom: 8px;
+}
+
+.promo-name {
+  font-size: 1.62rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--shop-strong);
+  margin-bottom: 8px;
+}
+
+.promo-desc {
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: var(--shop-muted);
+  max-width: 46ch;
+  margin-bottom: 12px;
+}
+
+.promo-chips { display: flex; flex-wrap: wrap; gap: 7px; }
+
+.promo-chip {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--shop-muted);
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  padding: 5px 9px;
+}
+
+.promo-buy {
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+  padding-left: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.promo-price {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--shop-strong);
+  font-variant-numeric: tabular-nums;
+}
+.promo-price .per,
+.row-price .per,
+.rail-total .per {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--shop-muted);
+  letter-spacing: 0;
+}
+
+.promo-pv {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #A3220B;
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.promo-once {
+  font-size: 0.76rem;
+  color: var(--shop-muted);
+  margin: 2px 0 14px;
+  font-variant-numeric: tabular-nums;
+}
+
+.promo-btn {
+  font: inherit;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #FFFFFF;
+  background: #EC3013;
+  border: 0;
+  padding: 12px 18px;
+  cursor: pointer;
+  width: 100%;
+  text-align: center;
+}
+.promo-btn:hover { background: #A3220B; }
+.promo-btn.is-held { background: var(--shop-strong); }
+
+/* ---------- filters ---------- */
+
+.filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 26px;
+}
+
+.filter-count {
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6B645A;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ---------- group headers ---------- */
+
+.group { margin-bottom: 34px; }
+.group[hidden] { display: none; }
+
+.group-head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  border-bottom: 2px solid var(--shop-strong);
+  padding-bottom: 8px;
+  margin-bottom: 2px;
+}
+
+.group-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--shop-strong);
+}
+
+.group-meta {
+  font-size: 0.78rem;
+  color: var(--shop-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- the rows ---------- */
+
+.row {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) 108px 86px 92px;
+  align-items: center;
+  gap: 0 14px;
+  padding: 13px 8px 13px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+
+.row:hover { background: rgba(236, 48, 19, 0.05); }
+
+.row.is-held {
+  background: rgba(236, 48, 19, 0.06);
+  border-bottom: 2px solid #EC3013;
+}
+
+.row-mark {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(27, 25, 23, 0.3);
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: var(--shop-muted);
+}
+
+.row-name { min-width: 0; }
+
+.row-link {
+  display: block;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--shop-strong);
+  text-decoration: none;
+}
+.row-link:hover { color: #A3220B; }
+
+.row-desc {
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: var(--shop-muted);
+  margin-top: 1px;
+}
+
+.row-price {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--shop-strong);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.row-pv {
+  font-size: 0.8rem;
+  color: var(--shop-muted);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.row-btn {
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--shop-strong);
+  background: transparent;
+  border: 1px solid var(--shop-strong);
+  padding: 9px 0;
+  cursor: pointer;
+  width: 100%;
+}
+.row-btn:hover { background: rgba(236, 48, 19, 0.08); }
+.row-btn.is-held {
+  background: var(--shop-strong);
+  color: #EAE4D9;
+  border-color: var(--shop-strong);
+}
+
+/* ---------- the month rail ----------
+   Sticky only while it fits. A sticky box taller than the viewport
+   pins its own top and carries its bottom out of reach; the guard
+   in shop.html adds .is-tall at exactly that height. */
+
+.rail {
+  position: sticky;
+  top: 88px;
+  align-self: start;
+  padding: 34px 0 26px 24px;
+}
+.rail.is-tall { position: static; }
+
+.rail-kicker {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6B645A;
+  margin-bottom: 8px;
+}
+
+.rail-total {
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--shop-strong);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 14px;
+}
+
+/* ============================================================
+   THE BILLING SWITCH, 2026-08-19.
+
+   The same control in three places now: the product page, the shop
+   rail (one setting for the whole order) and each subscribable line
+   in the cart (so an order can mix). .switch and .switch-knob above
+   are the drawing; these rules only place it.
+
+   Subscription is the selected state everywhere, on every arrival.
+   ============================================================ */
+
+.rail-second {
+  font-size: 0.82rem;
+  color: var(--shop-muted);
+  margin: -8px 0 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-billing {
+  padding: 12px 0 14px;
+  border-top: 1px solid rgba(27, 25, 23, 0.14);
+  margin-bottom: 4px;
+}
+.rail-billing-head {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6B645A;
+  margin-bottom: 10px;
+}
+/* The product page's .mode-toggle carries a bottom rule and padding that
+   belong to the price box it sits in; in the rail the block above owns
+   both, so they come off rather than doubling up. */
+.mode-toggle.rail-toggle { padding-bottom: 0; border-bottom: 0; }
+.rail-billing-fixed {
+  margin-top: 10px;
+  font-size: 0.76rem;
+  line-height: 1.45;
+  color: #6B645A;
+}
+
+/* The cart line: the switch and the word it sets, on one baseline. */
+.line-billing {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.line-billing .switch {
+  width: 38px;
+  height: 21px;
+  margin-top: 0;
+}
+.line-billing .switch-knob {
+  width: 15px;
+  height: 15px;
+  top: 2px;
+  left: 2px;
+}
+.line-billing .switch[aria-checked="true"] .switch-knob { transform: translateX(17px); }
+
+.line-alt {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.78rem;
+  color: #6B645A;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-qual {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--shop-muted);
+  padding-top: 10px;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+}
+
+.rail-qual-state { color: var(--shop-muted); white-space: nowrap; }
+.rail-qual-state.is-met { color: #A3220B; }
+
+.rail-note {
+  font-size: 0.76rem;
+  line-height: 1.5;
+  color: var(--shop-muted);
+  margin: 8px 0 14px;
+}
+
+.rail-lines { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+
+.rail-line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 10px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+
+.rail-line-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--shop-strong);
+  min-width: 0;
+}
+
+.rail-line-pv {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: var(--shop-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-line-money {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--shop-strong);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-remove {
+  font: inherit;
+  grid-column: 2;
+  justify-self: end;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #6B645A;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+.rail-remove:hover { color: #A3220B; }
+
+.rail-empty {
+  font-size: 0.78rem;
+  color: var(--shop-muted);
+  padding: 12px 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+}
+
+.rail-tot {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  padding: 12px 0 14px;
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--shop-muted);
+}
+
+.rail-tot-num {
+  font-size: 1.06rem;
+  font-weight: 800;
+  color: var(--shop-strong);
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-checkout {
+  font: inherit;
+  width: 100%;
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #EAE4D9;
+  background: var(--shop-strong);
+  border: 0;
+  padding: 14px 0;
+  cursor: pointer;
+}
+.rail-checkout:hover { background: #A3220B; }
+.rail-checkout[disabled] {
+  background: transparent;
+  color: #6B645A;
+  border: 1px solid rgba(27, 25, 23, 0.25);
+  cursor: not-allowed;
+}
+
+.rail-foot {
+  font-size: 0.72rem;
+  line-height: 1.5;
+  color: #6B645A;
+  margin-top: 10px;
+}
+
+/* one focus treatment for every control on this page */
+.row-btn:focus-visible,
+.promo-btn:focus-visible,
+.rail-checkout:focus-visible,
+.rail-remove:focus-visible,
+.filter-pill:focus-visible,
+.row-link:focus-visible {
+  outline: 2px solid #EC3013;
+  outline-offset: 2px;
+}
+
+@media (max-width: 1080px) {
+  /* The rail stops being a rail and becomes a block UNDER the list, per the
+     build spec. It sat above until 2026-08-18: a reader arriving on a phone
+     met "YOUR MONTH, $0" before the page had said what it sells, and the
+     headline started below the fold. */
+  .catalog-shell { grid-template-columns: minmax(0, 1fr); }
+  /* stacked: there is no column boundary left to draw */
+  .catalog-main::after { display: none; }
+  .rail {
+    position: static;
+    border-left: 0;
+    border-top: 2px solid var(--shop-strong);
+    padding: 22px 0 20px;
+  }
+  .promo { grid-template-columns: minmax(0, 1fr); }
+  .promo-buy {
+    border-left: 0;
+    border-top: 1px solid rgba(27, 25, 23, 0.25);
+    padding: 16px 0 0;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 760px) {
+  .catalog-shell { padding: 0 20px 60px; }
+  /* PV is the first column to go: the price and the action are what
+     a shopper is deciding with. */
+  .row { grid-template-columns: 24px minmax(0, 1fr) 92px 84px; }
+  .row-pv { display: none; }
+}
+
+@media (max-width: 480px) {
+  .row {
+    grid-template-columns: 24px minmax(0, 1fr);
+    row-gap: 8px;
+  }
+  .row-price { grid-column: 2; text-align: left; }
+  .row-btn { grid-column: 2; }
+}
+
+
+/* ---------- catalog delta against the approved design, 2026-08-18 ----------
+   CORRECTED 2026-08-18 (second pass), and the correction is smaller than
+   the thing it corrects.
+
+   The first pass read the comp's ARTBOARD EDGE as a page element and
+   rebuilt the reading column as a bordered panel on a raised ground, then
+   set the rail's border-left to 0 because the new box already looked
+   divided. Neither was in the design. In 9a that border wraps the whole
+   screen, nav included: it is the canvas separating the artboard from its
+   background, the way every design tool draws a frame. Recreating it put a
+   card back on a page whose stated premise is that rules and alignment
+   organise INSTEAD of boxes, and it spent the page's heaviest line to do
+   it. What Howard saw as thin lines was the 2px ink rule between the list
+   and the rail being replaced by a 1px box edge.
+
+   It also inverted the two grounds: the column was raised to #F1EDE6 and
+   the promoted pack sunk to #EAE4D9, when the token table gives
+   paper-raised to "a panel that must separate from the ground" and the
+   pack is the only such panel here.
+
+   So the base rules above were right all along and this block no longer
+   overrides them. What the first pass got right is kept, and it is only
+   this: the active filter pill is ink, so the accent stays on the one
+   primary action, which on this page is Add the pack. (Whole money and
+   the per-pack marks were markup changes and live in shop.html.)
+
+   The lesson, for the pages still to come: an artboard frame is not a
+   border. Read a comp's outermost rectangle as the canvas until something
+   inside it proves otherwise. */
+
+.filter-pill[aria-pressed="true"] {
+  background: var(--shop-strong);
+  border-color: var(--shop-strong);
+  color: #EAE4D9;
+}
+
+/* THE CURRENCY GUARD NOTE. Stands where the card fields would be when the
+   order is priced in anything but dollars. A rule on the accent side, so it
+   reads as an explanation rather than an error: nothing has gone wrong. */
+.pay-currency-guard {
+  border-left: 2px solid #EC3013;
+  background: #F1EDE6;
+  padding: 12px 14px;
+  margin: 0 0 14px;
+}
+.pay-currency-guard .link-btn {
+  display: inline;
+  font-weight: 700;
+  color: #A3220B;
 }

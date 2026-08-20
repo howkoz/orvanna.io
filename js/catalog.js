@@ -5,7 +5,18 @@
    icon. Round 4 (Phase 4C.2).
 
    Billing modes, per the house pricing rule:
-   - Subscription is the DEFAULT mode on every item.
+   - Subscription is the DEFAULT mode on every item that can
+     carry one, and it stays selected until the shopper says
+     otherwise. Nothing on the site pre-selects one-time.
+   - ONLY THE TWELVE AGENTS SUBSCRIBE. Ruled 2026-08-19: the
+     $100 domain agents and the $50 support agents are the
+     subscribable items. The Manager bundle and the three packs
+     are one-time purchases, at the one-time price already in
+     the table below -- so a pack is $2,000 rather than $200 a
+     month, and there is no monthly figure for it anywhere.
+     subscribable() is the single test; nothing reads the tier
+     to decide this, so a new tier does not silently inherit an
+     answer.
    - The one-time alternative uses the 10x rule: the one-time
      price shows what the product is WORTH without subscription.
      Domain agents: $100.00 / month becomes $1,000.00 once.
@@ -23,10 +34,29 @@ window.ORVANNA = (function () {
 
   /* ---------- icon builders (brand hexagon, inline SVG) ---------- */
 
-  var HEX = '<polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linejoin="round"/>';
+  /* THE SHARED HEXAGON FRAME WAS DROPPED 2026-08-19.
 
+     Sixteen marks each wrapped in the same polygon is sixteen identical
+     hexagons: the frame was the loudest shape in every cell, so the set
+     could not be told apart at a glance, which is the one job an index
+     of sixteen has. The glyphs are untouched -- they do the telling
+     apart now.
+
+     Dropped in BOTH copies. This project had two: this one, and
+     mark() in js/library-icons.js. Removing one would have left the same
+     sixteen marks framed on one page and unframed on the next, which a
+     customer moving from the Library to the Shop sees immediately.
+
+     THE CONSTANT SURVIVES for one caller that is not one of the sixteen:
+     shop.html builds its empty-cart placeholder from it, an empty vessel
+     with a single dot inside. There the hexagon IS the symbol rather than
+     a frame around one, so it stays. */
+  var HEX = '<polygon points="32,6 54.5,19 54.5,45 32,58 9.5,45 9.5,19" fill="none" stroke="#1B1917" stroke-width="3.5" stroke-linejoin="round"/>';
+
+  /* The name is kept: it is exported, and renaming an exported identifier
+     to describe its new internals is how call sites get missed. */
   function hexIcon(inner) {
-    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + HEX + inner + '</svg>';
+    return '<svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">' + inner + '</svg>';
   }
 
   /* ---------- the catalog ---------- */
@@ -46,53 +76,53 @@ window.ORVANNA = (function () {
     { sku: 'payment', tier: 'domain', name: 'Payment Agent',
       blurb: 'Runs checkout, retries, and settlement without a break.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<rect x="20" y="24" width="24" height="17" rx="2.5" fill="none" stroke="#818CF8" stroke-width="2.4"/><line x1="20" y1="30" x2="44" y2="30" stroke="#818CF8" stroke-width="2.4"/><circle cx="26" cy="35.5" r="2" fill="#22D3EE"/>') },
+      icon: hexIcon('<rect x="20" y="24" width="24" height="17" rx="2.5" fill="none" stroke="#1B1917" stroke-width="2.4"/><line x1="20" y1="30" x2="44" y2="30" stroke="#1B1917" stroke-width="2.4"/><circle cx="26" cy="35.5" r="2" fill="#EC3013"/>') },
     { sku: 'shipping', tier: 'domain', name: 'Shipping Agent',
       blurb: 'Books carriers, tracks parcels, and clears delays.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<path d="M 20 36 h 14 v -9 h -14 z" fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linejoin="round"/><path d="M 34 30 h 6 l 4 4 v 2 h -10 z" fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linejoin="round"/><circle cx="25" cy="39.5" r="2.4" fill="#22D3EE"/><circle cx="38" cy="39.5" r="2.4" fill="#818CF8"/>') },
+      icon: hexIcon('<path d="M 20 36 h 14 v -9 h -14 z" fill="none" stroke="#1B1917" stroke-width="2.4" stroke-linejoin="round"/><path d="M 34 30 h 6 l 4 4 v 2 h -10 z" fill="none" stroke="#1B1917" stroke-width="2.4" stroke-linejoin="round"/><circle cx="25" cy="39.5" r="2.4" fill="#EC3013"/><circle cx="38" cy="39.5" r="2.4" fill="#1B1917"/>') },
     { sku: 'pricing', tier: 'domain', name: 'Pricing Agent',
       blurb: 'Watches the market and keeps every price sharp.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<line x1="24" y1="41" x2="40" y2="23" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/><circle cx="25.5" cy="26.5" r="3.4" fill="none" stroke="#818CF8" stroke-width="2.2"/><circle cx="38.5" cy="38.5" r="3.4" fill="none" stroke="#22D3EE" stroke-width="2.2"/>') },
+      icon: hexIcon('<line x1="24" y1="41" x2="40" y2="23" stroke="#1B1917" stroke-width="2.4" stroke-linecap="round"/><circle cx="25.5" cy="26.5" r="3.4" fill="none" stroke="#1B1917" stroke-width="2.2"/><circle cx="38.5" cy="38.5" r="3.4" fill="none" stroke="#EC3013" stroke-width="2.2"/>') },
     { sku: 'inventory', tier: 'domain', name: 'Inventory Agent',
       blurb: 'Counts stock and reorders before shelves go bare.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<rect x="21" y="33" width="9.5" height="9.5" fill="none" stroke="#818CF8" stroke-width="2.2" stroke-linejoin="round"/><rect x="33.5" y="33" width="9.5" height="9.5" fill="none" stroke="#818CF8" stroke-width="2.2" stroke-linejoin="round"/><rect x="27" y="21.5" width="9.5" height="9.5" fill="none" stroke="#22D3EE" stroke-width="2.2" stroke-linejoin="round"/>') },
+      icon: hexIcon('<rect x="21" y="33" width="9.5" height="9.5" fill="none" stroke="#1B1917" stroke-width="2.2" stroke-linejoin="round"/><rect x="33.5" y="33" width="9.5" height="9.5" fill="none" stroke="#1B1917" stroke-width="2.2" stroke-linejoin="round"/><rect x="27" y="21.5" width="9.5" height="9.5" fill="none" stroke="#EC3013" stroke-width="2.2" stroke-linejoin="round"/>') },
     { sku: 'marketing', tier: 'domain', name: 'Marketing Agent',
       blurb: 'Writes, schedules, and measures every campaign.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<circle cx="26" cy="32" r="2.6" fill="#22D3EE"/><path d="M 32 24 a 10.5 10.5 0 0 1 0 16" fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/><path d="M 37 19.5 a 16.5 16.5 0 0 1 0 25" fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/>') },
+      icon: hexIcon('<circle cx="26" cy="32" r="2.6" fill="#EC3013"/><path d="M 32 24 a 10.5 10.5 0 0 1 0 16" fill="none" stroke="#1B1917" stroke-width="2.4" stroke-linecap="round"/><path d="M 37 19.5 a 16.5 16.5 0 0 1 0 25" fill="none" stroke="#1B1917" stroke-width="2.4" stroke-linecap="round"/>') },
     { sku: 'tax', tier: 'domain', name: 'Tax Agent',
       blurb: 'Prepares every filing on time, ready for your sign-off.',
       sub: { price: 100, pv: 100 }, once: { price: 1000, pv: 1000 }, includes: null,
-      icon: hexIcon('<line x1="24" y1="40" x2="40" y2="24" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="26" r="2.6" fill="#818CF8"/><circle cx="38" cy="38" r="2.6" fill="#22D3EE"/><line x1="21" y1="45.5" x2="43" y2="45.5" stroke="#818CF8" stroke-width="2.2" stroke-linecap="round"/>') },
+      icon: hexIcon('<line x1="24" y1="40" x2="40" y2="24" stroke="#1B1917" stroke-width="2.4" stroke-linecap="round"/><circle cx="26" cy="26" r="2.6" fill="#1B1917"/><circle cx="38" cy="38" r="2.6" fill="#EC3013"/><line x1="21" y1="45.5" x2="43" y2="45.5" stroke="#1B1917" stroke-width="2.2" stroke-linecap="round"/>') },
 
     /* ----- Support agents: $50.00 / month, 50 PV ----- */
     { sku: 'engineer', tier: 'support', name: 'Software Engineer',
       blurb: 'Ships fixes and features on request.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<path d="M 26 25 L 19.5 32 L 26 39" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M 38 25 L 44.5 32 L 38 39" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="34" y1="23" x2="30" y2="41" stroke="#22D3EE" stroke-width="2.4" stroke-linecap="round"/>') },
+      icon: hexIcon('<path d="M 26 25 L 19.5 32 L 26 39" fill="none" stroke="#1B1917" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M 38 25 L 44.5 32 L 38 39" fill="none" stroke="#1B1917" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><line x1="34" y1="23" x2="30" y2="41" stroke="#EC3013" stroke-width="2.4" stroke-linecap="round"/>') },
     { sku: 'qa', tier: 'support', name: 'Quality Assurance',
       blurb: 'Tests everything twice before customers see it.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<path d="M 22 32.5 L 29.5 40 L 42 25" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>') },
+      icon: hexIcon('<path d="M 22 32.5 L 29.5 40 L 42 25" fill="none" stroke="#EC3013" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>') },
     { sku: 'secretary', tier: 'support', name: 'Secretary',
       blurb: 'Keeps the calendar, notes, and follow-ups straight.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<rect x="21" y="23" width="22" height="19" rx="2.5" fill="none" stroke="#818CF8" stroke-width="2.4"/><line x1="21" y1="29.5" x2="43" y2="29.5" stroke="#818CF8" stroke-width="2.2"/><line x1="27" y1="20" x2="27" y2="25" stroke="#818CF8" stroke-width="2.2" stroke-linecap="round"/><line x1="37" y1="20" x2="37" y2="25" stroke="#818CF8" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="35.5" r="2" fill="#22D3EE"/>') },
+      icon: hexIcon('<rect x="21" y="23" width="22" height="19" rx="2.5" fill="none" stroke="#1B1917" stroke-width="2.4"/><line x1="21" y1="29.5" x2="43" y2="29.5" stroke="#1B1917" stroke-width="2.2"/><line x1="27" y1="20" x2="27" y2="25" stroke="#1B1917" stroke-width="2.2" stroke-linecap="round"/><line x1="37" y1="20" x2="37" y2="25" stroke="#1B1917" stroke-width="2.2" stroke-linecap="round"/><circle cx="27" cy="35.5" r="2" fill="#EC3013"/>') },
     { sku: 'executive', tier: 'support', name: 'Chief Executive',
       blurb: 'Sets direction and keeps every agent aligned.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<circle cx="32" cy="24.5" r="3.2" fill="#22D3EE"/><circle cx="23" cy="39" r="3" fill="#818CF8"/><circle cx="41" cy="39" r="3" fill="#818CF8"/><line x1="32" y1="27.5" x2="24" y2="36.5" stroke="#818CF8" stroke-width="2.2"/><line x1="32" y1="27.5" x2="40" y2="36.5" stroke="#818CF8" stroke-width="2.2"/>') },
+      icon: hexIcon('<circle cx="32" cy="24.5" r="3.2" fill="#EC3013"/><circle cx="23" cy="39" r="3" fill="#1B1917"/><circle cx="41" cy="39" r="3" fill="#1B1917"/><line x1="32" y1="27.5" x2="24" y2="36.5" stroke="#1B1917" stroke-width="2.2"/><line x1="32" y1="27.5" x2="40" y2="36.5" stroke="#1B1917" stroke-width="2.2"/>') },
     { sku: 'accounting', tier: 'support', name: 'Accounting',
       blurb: 'Balances books to the cent, month after month.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<line x1="24" y1="42" x2="24" y2="33" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/><line x1="32" y1="42" x2="32" y2="26" stroke="#22D3EE" stroke-width="3" stroke-linecap="round"/><line x1="40" y1="42" x2="40" y2="29.5" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>') },
+      icon: hexIcon('<line x1="24" y1="42" x2="24" y2="33" stroke="#1B1917" stroke-width="3" stroke-linecap="round"/><line x1="32" y1="42" x2="32" y2="26" stroke="#EC3013" stroke-width="3" stroke-linecap="round"/><line x1="40" y1="42" x2="40" y2="29.5" stroke="#1B1917" stroke-width="3" stroke-linecap="round"/>') },
     { sku: 'care', tier: 'support', name: 'Customer Care',
       blurb: 'Answers customers day and night, in any tone.',
       sub: { price: 50, pv: 50 }, once: { price: 500, pv: 500 }, includes: null,
-      icon: hexIcon('<path d="M 23 36 v -3.5 a 9 9 0 0 1 18 0 V 36" fill="none" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/><rect x="20.5" y="34" width="5" height="8" rx="2.4" fill="#818CF8"/><rect x="38.5" y="34" width="5" height="8" rx="2.4" fill="#22D3EE"/>') },
+      icon: hexIcon('<path d="M 23 36 v -3.5 a 9 9 0 0 1 18 0 V 36" fill="none" stroke="#1B1917" stroke-width="2.4" stroke-linecap="round"/><rect x="20.5" y="34" width="5" height="8" rx="2.4" fill="#1B1917"/><rect x="38.5" y="34" width="5" height="8" rx="2.4" fill="#EC3013"/>') },
 
     /* ----- Bundle: the Manager Agent ----- */
     /* A parent item whose children are three support agents. Priced
@@ -102,24 +132,24 @@ window.ORVANNA = (function () {
       blurb: 'One agent that runs your back office: engineering, scheduling, and the books, coordinated as a single ensemble.',
       sub: { price: 200, pv: 200 }, once: { price: 2000, pv: 2000 },
       includes: ['engineer', 'secretary', 'accounting'],
-      icon: hexIcon('<circle cx="32" cy="22.5" r="3.6" fill="#22D3EE"/><circle cx="21.5" cy="40" r="3" fill="#818CF8"/><circle cx="32" cy="42.5" r="3" fill="#818CF8"/><circle cx="42.5" cy="40" r="3" fill="#818CF8"/><line x1="32" y1="26" x2="22.5" y2="37.5" stroke="#818CF8" stroke-width="2.2"/><line x1="32" y1="26" x2="32" y2="39" stroke="#818CF8" stroke-width="2.2"/><line x1="32" y1="26" x2="41.5" y2="37.5" stroke="#818CF8" stroke-width="2.2"/>') },
+      icon: hexIcon('<circle cx="32" cy="22.5" r="3.6" fill="#EC3013"/><circle cx="21.5" cy="40" r="3" fill="#1B1917"/><circle cx="32" cy="42.5" r="3" fill="#1B1917"/><circle cx="42.5" cy="40" r="3" fill="#1B1917"/><line x1="32" y1="26" x2="22.5" y2="37.5" stroke="#1B1917" stroke-width="2.2"/><line x1="32" y1="26" x2="32" y2="39" stroke="#1B1917" stroke-width="2.2"/><line x1="32" y1="26" x2="41.5" y2="37.5" stroke="#1B1917" stroke-width="2.2"/>') },
 
     /* ----- Digital packs: curated ensembles, even pricing, PV = dollars ----- */
     { sku: 'ignition', tier: 'pack', name: 'Ignition Pack',
       blurb: 'The first-storefront trio: take payments, answer customers, keep the calendar straight.',
       sub: { price: 200, pv: 200 }, once: { price: 2000, pv: 2000 },
       includes: ['payment', 'care', 'secretary'],
-      icon: hexIcon('<path d="M 32 42 V 25" stroke="#818CF8" stroke-width="2.6" stroke-linecap="round"/><path d="M 25 32 L 32 24 L 39 32" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="44" r="2.6" fill="#22D3EE"/>') },
+      icon: hexIcon('<path d="M 32 42 V 25" stroke="#1B1917" stroke-width="2.6" stroke-linecap="round"/><path d="M 25 32 L 32 24 L 39 32" fill="none" stroke="#1B1917" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="32" cy="44" r="2.6" fill="#EC3013"/>') },
     { sku: 'momentum', tier: 'pack', name: 'Momentum Pack',
       blurb: 'Five agents tuned for growth: sell it, promote it, price it, build it, test it.',
       sub: { price: 400, pv: 400 }, once: { price: 4000, pv: 4000 },
       includes: ['payment', 'marketing', 'pricing', 'engineer', 'qa'],
-      icon: hexIcon('<path d="M 21 24 L 30 32 L 21 40" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M 33 24 L 42 32 L 33 40" fill="none" stroke="#22D3EE" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>') },
+      icon: hexIcon('<path d="M 21 24 L 30 32 L 21 40" fill="none" stroke="#1B1917" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M 33 24 L 42 32 L 33 40" fill="none" stroke="#EC3013" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>') },
     { sku: 'constellation', tier: 'pack', name: 'Constellation Pack',
       blurb: 'The full formation: every domain agent, plus the Manager Agent running support behind them.',
       sub: { price: 800, pv: 800 }, once: { price: 8000, pv: 8000 },
       includes: ['payment', 'shipping', 'pricing', 'inventory', 'marketing', 'tax', 'manager'],
-      icon: hexIcon('<circle cx="32" cy="32" r="3.4" fill="#22D3EE"/><circle cx="23" cy="25" r="2.4" fill="#818CF8"/><circle cx="41" cy="25" r="2.4" fill="#818CF8"/><circle cx="23" cy="39" r="2.4" fill="#818CF8"/><circle cx="41" cy="39" r="2.4" fill="#818CF8"/><line x1="32" y1="32" x2="23.8" y2="25.8" stroke="#818CF8" stroke-width="1.8"/><line x1="32" y1="32" x2="40.2" y2="25.8" stroke="#818CF8" stroke-width="1.8"/><line x1="32" y1="32" x2="23.8" y2="38.2" stroke="#818CF8" stroke-width="1.8"/><line x1="32" y1="32" x2="40.2" y2="38.2" stroke="#818CF8" stroke-width="1.8"/>') }
+      icon: hexIcon('<circle cx="32" cy="32" r="3.4" fill="#EC3013"/><circle cx="23" cy="25" r="2.4" fill="#1B1917"/><circle cx="41" cy="25" r="2.4" fill="#1B1917"/><circle cx="23" cy="39" r="2.4" fill="#1B1917"/><circle cx="41" cy="39" r="2.4" fill="#1B1917"/><line x1="32" y1="32" x2="23.8" y2="25.8" stroke="#1B1917" stroke-width="1.8"/><line x1="32" y1="32" x2="40.2" y2="25.8" stroke="#1B1917" stroke-width="1.8"/><line x1="32" y1="32" x2="23.8" y2="38.2" stroke="#1B1917" stroke-width="1.8"/><line x1="32" y1="32" x2="40.2" y2="38.2" stroke="#1B1917" stroke-width="1.8"/>') }
   ];
 
   /* ---------- product page prose (Round 1 content pass) ----------
@@ -387,9 +417,40 @@ window.ORVANNA = (function () {
     return n.toLocaleString('en-US') + ' PV';
   }
 
+  /* Which items can carry a subscription. The four that cannot are named
+     rather than derived, because "bundle and pack" is today's answer to
+     the question and the SKU list is the question itself. */
+  var ONE_TIME_ONLY = { manager: true, ignition: true, momentum: true, constellation: true };
+  function subscribable(p) {
+    var sku = typeof p === 'string' ? p : (p && p.sku);
+    return !!BY_SKU[sku] && !ONE_TIME_ONLY[sku];
+  }
+
+  /* The mode an item is actually allowed to transact in. Every reader of a
+     cart key goes through this, so a stored 'sub' on a one-time-only item
+     -- an old cart, a hand-edited localStorage -- prices as one-time
+     rather than at a tenth of its price. */
+  function modeFor(p, mode) { return subscribable(p) ? (mode === 'one' ? 'one' : 'sub') : 'one'; }
+
+  /* THE HEADLINE. What an item costs when a page has to name one figure
+     and the shopper has not chosen a mode: the monthly price for the
+     twelve agents, the one-time price for the four that cannot subscribe.
+     Every page that quotes a bare price uses this, so the Library and the
+     Shop cannot show the same item at two different numbers. */
+  function headline(p) {
+    var mode = subscribable(p) ? 'sub' : 'one';
+    return {
+      mode: mode,
+      price: priceOf(p, mode),
+      pv: pvOf(p, mode),
+      per: mode === 'sub' ? '/ month' : 'one time',
+      perShort: mode === 'sub' ? '/mo' : ' once'
+    };
+  }
+
   /* price and pv for an item in a given mode */
-  function priceOf(p, mode) { return mode === 'one' ? p.once.price : p.sub.price; }
-  function pvOf(p, mode)    { return mode === 'one' ? p.once.pv    : p.sub.pv; }
+  function priceOf(p, mode) { return modeFor(p, mode) === 'one' ? p.once.price : p.sub.price; }
+  function pvOf(p, mode)    { return modeFor(p, mode) === 'one' ? p.once.pv    : p.sub.pv; }
 
   /* ---------- cart (localStorage, shared by every page) ---------- */
 
@@ -407,7 +468,7 @@ window.ORVANNA = (function () {
         /* migrate round-3 keys (bare sku) to sku|sub */
         var parts = key.indexOf('|') >= 0 ? key.split('|') : [key, 'sub'];
         var sku = parts[0];
-        var mode = parts[1] === 'one' ? 'one' : 'sub';
+        var mode = modeFor(sku, parts[1]);
         if (BY_SKU[sku]) {
           var k = sku + '|' + mode;
           clean[k] = Math.min((clean[k] || 0) + q, 99);
@@ -429,7 +490,13 @@ window.ORVANNA = (function () {
 
   function keyParts(key) {
     var parts = key.split('|');
-    return { sku: parts[0], mode: parts[1] === 'one' ? 'one' : 'sub' };
+    return { sku: parts[0], mode: modeFor(parts[0], parts[1]) };
+  }
+
+  /* The key an item must be stored under, so callers never build one by
+     hand and never store a mode the item cannot have. */
+  function cartKey(p, mode) {
+    return (typeof p === 'string' ? p : p.sku) + '|' + modeFor(p, mode);
   }
 
   /* totals across the cart:
@@ -445,6 +512,8 @@ window.ORVANNA = (function () {
       if (!p) return;
       var q = cart[key];
       if (kp.mode === 'one') { oneMoney += p.once.price * q; } else { subMoney += p.sub.price * q; }
+      /* kp.mode is already normalised by keyParts, so a one-time-only item
+         cannot reach the monthly total from here. */
       pv += pvOf(p, kp.mode) * q;
       count += q;
     });
@@ -463,6 +532,10 @@ window.ORVANNA = (function () {
     fmtPv: fmtPv,
     priceOf: priceOf,
     pvOf: pvOf,
+    subscribable: subscribable,
+    headline: headline,
+    modeFor: modeFor,
+    cartKey: cartKey,
     loadCart: loadCart,
     saveCart: saveCart,
     keyParts: keyParts,

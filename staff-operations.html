@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/staff.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/staff-ops.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=dc01918c3035">
+<link rel="stylesheet" href="css/corporate.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/staff.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/staff-ops.css?v=dc01918c3035">
 </head>
 <body class="console-body">
 
@@ -18,7 +18,14 @@
 <header class="console-top">
   <div class="console-wrap console-top-inner">
     <a class="console-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <span class="console-title">Operations</span>
@@ -59,41 +66,85 @@
 
       <div id="billingNotes"></div>
 
-      <div class="ops-stats" id="billingStats"></div>
+      <!-- ============ 01 ATTENTION QUEUE ============
+           The page, not panel six of twelve. Handoff screen 8a: the rows
+           that demand an action come first and everything that is merely
+           true drops below them as evidence.
 
-      <div class="ops-grid-2">
+           Ranked by CONSEQUENCE. The server returns the queue ordered by
+           reason alphabetically, so "cycle gap" outranked "system fault"
+           on the strength of the letter c. Severity is applied here from
+           the policy map in the script below, because which classes of
+           fault demand a human TODAY is a policy decision about reason
+           classes, not a fact hiding in the data. -->
+      <section class="console-panel console-queue" id="attentionQueue" aria-label="Attention queue">
+        <h2 class="panel-title"><span class="panel-num">01</span>Attention queue
+          <span class="title-chip">Ranked by consequence, not by arrival</span></h2>
+        <p class="queue-count" id="attentionCount">Loading the queue&hellip;</p>
+        <p class="ops-status-line" id="attentionStatus"></p>
+        <div class="ops-table-wrap"><table class="ops-table queue-table" id="attentionTable" hidden>
+          <thead><tr>
+            <th class="q-when">When</th>
+            <th>What happened</th>
+            <th class="q-stake ops-num">At stake</th>
+            <th class="q-ref">Reference</th>
+          </tr></thead>
+          <tbody id="attentionBody"></tbody>
+        </table></div>
+        <p class="queue-note">Every action on this page is server enforced and
+          written to the audit log against the operator&#39;s member number.
+          Clearing a row records that a human looked; it does not move money
+          and does not resolve the fault.</p>
+        <!-- WHAT IS NOT HERE, AND WHY. The design gives each row a money
+             figure and one action button. Neither is built, because neither
+             exists yet: app.v_staff_attention_queue returns reason,
+             member_code, subscription_id, renewal_index, billing_attempt_id,
+             detail and state, and no amount, deadline or decline class. A
+             money column filled in by the browser would be a fabricated
+             figure on the one page where money decides what a human does
+             first, and a Clear button with no audit endpoint behind it would
+             record nothing while looking like it had. Both are specified in
+             docs/OPERATIONS-QUEUE-SERVER-SPEC.md. -->
+        <!-- Shown ONLY while the server is still returning the old seven
+             columns. The migration that adds them is applied; the Edge
+             Function that returns them may not be deployed yet, and the page
+             must be truthful in both states without a second release. -->
+        <p class="queue-gap" id="queueGap" hidden>Money at stake is not being
+          returned by the billing console service yet, so every amount reads as
+          a dash. The queue view exposes it; the service has not been
+          redeployed. Read the dashes as "not reported", never as "nothing
+          owed".</p>
+      </section>
 
-        <!-- Schedule control -->
-        <section class="console-panel" aria-label="Daily run schedule">
-          <h2 class="panel-title">Daily run schedule <span class="title-chip">Stored server side</span></h2>
-          <p class="ops-status-line">The renewal engine runs automatically each day at this time, when enabled and once the scheduler is installed. When disabled or no time is set, the engine runs manually only.</p>
-          <div class="ops-form-row">
-            <label class="ops-check"><input type="checkbox" id="schedEnabled"> Enabled</label>
-            <div class="ops-field">
-              <label class="order-label" for="schedTime">Run at (24 hour)</label>
-              <input id="schedTime" type="time" step="60">
-            </div>
-            <div class="ops-field">
-              <label class="order-label" for="schedTz">Timezone</label>
-              <input id="schedTz" type="text" list="tzList" placeholder="America/New_York" spellcheck="false">
-              <datalist id="tzList">
-                <option value="America/New_York"></option>
-                <option value="America/Chicago"></option>
-                <option value="UTC"></option>
-                <option value="America/Denver"></option>
-                <option value="America/Los_Angeles"></option>
-                <option value="Europe/Berlin"></option>
-                <option value="Asia/Seoul"></option>
-              </datalist>
-            </div>
-            <button class="btn-addline" id="schedSaveBtn" type="button">Save schedule</button>
-          </div>
-          <p class="ops-status-line" id="schedStatus"></p>
+      <!-- ============ THE EVIDENCE, BELOW THE QUEUE ============
+           Handoff 8a: "everything that is merely true drops below it as
+           evidence." Ordered by whether it demands an action rather than
+           by when it was built. Retry queue first, because it is the only
+           block down here still describing money in motion. The schedule
+           last, because it is a setting, and a setting is the least
+           urgent true thing on a console.
+
+           These were spread across two-up grids that paired unrelated
+           panels by height. They are one column now: the order IS the
+           argument, and a grid shuffles it. -->
+
+        <section class="console-panel" aria-label="Retry queue">
+          <h2 class="panel-title"><span class="panel-num">02</span>Retry queue <span class="title-chip">By decline class</span></h2>
+          <p class="ops-status-line" id="retryStatus"></p>
+          <div class="ops-table-wrap"><table class="ops-table" id="retryTable" hidden>
+            <thead><tr><th>Member</th><th>Sub</th><th>Class</th><th>Code</th><th>Next retry</th><th class="ops-num">Step</th><th class="ops-num">Amount</th></tr></thead>
+            <tbody id="retryBody"></tbody>
+          </table></div>
         </section>
 
-        <!-- Run now -->
+      <section class="console-panel" aria-label="Seven day forecast">
+        <h2 class="panel-title"><span class="panel-num">03</span>Next seven days <span class="title-chip">Derived from the same schedule arithmetic the engine runs</span></h2>
+        <p class="ops-status-line" id="forecastStatus"></p>
+        <div id="forecastBody"></div>
+      </section>
+
         <section class="console-panel" aria-label="Run now">
-          <h2 class="panel-title">Run now <span class="title-chip">Preview first, always</span></h2>
+          <h2 class="panel-title"><span class="panel-num">04</span>Run now <span class="title-chip">Preview first, always</span></h2>
           <p class="ops-status-line">The preview is the same gather and price read the real run performs, and it creates nothing. Execution is a separate confirm step.</p>
           <div class="ops-form-row">
             <div class="ops-field">
@@ -131,18 +182,9 @@
           <div id="previewBody"></div>
           <div id="executeBody"></div>
         </section>
-      </div>
 
-      <!-- Seven day forecast -->
-      <section class="console-panel" aria-label="Seven day forecast">
-        <h2 class="panel-title">Next seven days <span class="title-chip">Derived from the same schedule arithmetic the engine runs</span></h2>
-        <p class="ops-status-line" id="forecastStatus"></p>
-        <div id="forecastBody"></div>
-      </section>
-
-      <!-- Run history -->
       <section class="console-panel" aria-label="Run history">
-        <h2 class="panel-title">Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
+        <h2 class="panel-title"><span class="panel-num">05</span>Run history <span class="title-chip">Member fault and system fault reported separately</span></h2>
         <p class="ops-status-line" id="runHistStatus"></p>
         <div class="ops-table-wrap"><table class="ops-table" id="runHistTable" hidden>
           <thead><tr><th>Run</th><th>Tick date</th><th>Status</th><th>Clock</th><th class="ops-num">Due</th><th class="ops-num">Attempts</th><th class="ops-num">Succeeded</th><th class="ops-num">Declined</th><th class="ops-num">Member fault</th><th class="ops-num">System fault</th><th>Limit</th><th>Finished</th></tr></thead>
@@ -151,27 +193,35 @@
         <div id="runDetailBody"></div>
       </section>
 
-      <div class="ops-grid-2">
-        <!-- Retry queue -->
-        <section class="console-panel" aria-label="Retry queue">
-          <h2 class="panel-title">Retry queue <span class="title-chip">By decline class</span></h2>
-          <p class="ops-status-line" id="retryStatus"></p>
-          <div class="ops-table-wrap"><table class="ops-table" id="retryTable" hidden>
-            <thead><tr><th>Member</th><th>Sub</th><th>Class</th><th>Code</th><th>Next retry</th><th class="ops-num">Step</th><th class="ops-num">Amount</th></tr></thead>
-            <tbody id="retryBody"></tbody>
-          </table></div>
+        <section class="console-panel" aria-label="Daily run schedule">
+          <h2 class="panel-title"><span class="panel-num">06</span>Daily run schedule <span class="title-chip">Stored server side</span></h2>
+          <p class="ops-status-line">The renewal engine runs automatically each day at this time, when enabled and once the scheduler is installed. When disabled or no time is set, the engine runs manually only.</p>
+          <div class="ops-form-row">
+            <label class="ops-check"><input type="checkbox" id="schedEnabled"> Enabled</label>
+            <div class="ops-field">
+              <label class="order-label" for="schedTime">Run at (24 hour)</label>
+              <input id="schedTime" type="time" step="60">
+            </div>
+            <div class="ops-field">
+              <label class="order-label" for="schedTz">Timezone</label>
+              <input id="schedTz" type="text" list="tzList" placeholder="America/New_York" spellcheck="false">
+              <datalist id="tzList">
+                <option value="America/New_York"></option>
+                <option value="America/Chicago"></option>
+                <option value="UTC"></option>
+                <option value="America/Denver"></option>
+                <option value="America/Los_Angeles"></option>
+                <option value="Europe/Berlin"></option>
+                <option value="Asia/Seoul"></option>
+              </datalist>
+            </div>
+            <button class="btn-addline" id="schedSaveBtn" type="button">Save schedule</button>
+          </div>
+          <p class="ops-status-line" id="schedStatus"></p>
         </section>
 
-        <!-- Attention queue -->
-        <section class="console-panel" aria-label="Attention queue">
-          <h2 class="panel-title">Attention queue <span class="title-chip">The rows a human must see</span></h2>
-          <p class="ops-status-line" id="attentionStatus"></p>
-          <div class="ops-table-wrap"><table class="ops-table" id="attentionTable" hidden>
-            <thead><tr><th>Reason</th><th>Member</th><th>Sub</th><th>Detail</th></tr></thead>
-            <tbody id="attentionBody"></tbody>
-          </table></div>
-        </section>
-      </div>
+
+      <div class="ops-stats" id="billingStats"></div>
 
       <!-- Subscription management -->
       <section class="console-panel" aria-label="Subscription management">
@@ -266,7 +316,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=cef144c6cb42"></script>
+<script src="js/catalog.js?v=dc01918c3035"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -397,6 +447,16 @@
   }
   function clearNode(node) { while (node.firstChild) { node.removeChild(node.firstChild); } }
 
+  /* Money, whole dollars and cents, tabular. There was no formatter on this
+     page because nothing on it printed an amount until the attention queue
+     started reporting one. */
+  function fmtMoney(n) {
+    return '$' + Number(n).toLocaleString('en-US', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  }
+
   function fmtDate(v) {
     if (!v) { return 'none'; }
     var s = String(v);
@@ -423,6 +483,57 @@
   function statePill(state) {
     var span = el('span', 'ops-state ops-state-' + state, String(state).replace(/_/g, ' '));
     return span;
+  }
+  function fmtPercent(n) {
+    return Number(n || 0).toFixed(2) + '%';
+  }
+  function appendStats(container, pairs) {
+    pairs.forEach(function (pair) {
+      var box = el('div', 'ops-stat');
+      box.appendChild(el('span', 'ops-stat-label', pair[0]));
+      box.appendChild(el('span', 'ops-stat-value', pair[1]));
+      container.appendChild(box);
+    });
+  }
+  function renderEconomics(economics, title) {
+    if (!economics) { return null; }
+    var card = el('div', 'ops-explain');
+    card.appendChild(el('h3', 'panel-title', title || 'Commission economics'));
+    var stats = el('div', 'ops-stats');
+    appendStats(stats, [
+      ['Sales volume', fmtPv(economics.sales_volume)],
+      ['CV basis', fmtPv(economics.commissionable_volume) + ' (' + fmtPercent(economics.cv_rate_of_sv) + ')'],
+      ['Non-CV reserve', fmtPv(economics.non_commissionable_reserve)],
+      ['Actual payout', fmtMoney(economics.actual_payout)],
+      ['Unpaid generated', fmtMoney(economics.unpaid_generated)],
+      ['Payout rate', fmtPercent(economics.payout_rate_of_sv) + ' of SV']
+    ]);
+    card.appendChild(stats);
+    var t = el('table', 'ops-table');
+    var thead = el('thead'); var htr = el('tr');
+    ['Level', 'Rate', 'Sources', 'Source CV', 'Generated', 'Paid', 'Not paid'].forEach(function (h, i) {
+      htr.appendChild(el('th', i > 1 ? 'ops-num' : null, h));
+    });
+    thead.appendChild(htr); t.appendChild(thead);
+    var tb = el('tbody');
+    (economics.by_level || []).forEach(function (row) {
+      var tr = el('tr');
+      cell(tr, 'Level ' + row.level);
+      cell(tr, fmtPercent(Number(row.rate || 0) * 100), 'ops-num');
+      cell(tr, row.source_count || 0, 'ops-num');
+      cell(tr, fmtPv(row.source_cv), 'ops-num');
+      cell(tr, fmtMoney(row.generated_amount), 'ops-num');
+      cell(tr, fmtMoney(row.paid_amount), 'ops-num');
+      cell(tr, fmtMoney(row.unpaid_amount), 'ops-num');
+      tb.appendChild(tr);
+    });
+    t.appendChild(tb);
+    var wrap = el('div', 'ops-table-wrap'); wrap.appendChild(t);
+    card.appendChild(wrap);
+    if (economics.note) {
+      card.appendChild(el('p', 'ops-status-line', economics.note));
+    }
+    return card;
   }
 
   /* ============================================================
@@ -961,26 +1072,169 @@
     }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
   }
 
-  /* ---------- attention queue ---------- */
+  /* ---------- attention queue ----------
+
+     RANKED BY CONSEQUENCE. The server orders this queue by reason
+     alphabetically (`order by q.reason, m.member_code`), which is an
+     ordering with no opinion: it put a cycle gap above a system fault on
+     the strength of the letter c. The rows a human must act on TODAY have
+     to come first, so severity is applied here.
+
+     Doing it in the browser is deliberate and is not the same as inventing
+     data. Which CLASSES of fault demand a human today is a policy call
+     about reason classes -- ours to make, ours to change, and readable in
+     one table. The per-row facts a policy cannot supply (how much money is
+     riding on it, what the deadline is, which decline class it was) are
+     the ones the server would have to answer, and those are left visibly
+     absent rather than guessed at. See
+     docs/OPERATIONS-QUEUE-SERVER-SPEC.md.
+
+     An unrecognised reason sorts into DECIDE rather than falling to the
+     bottom: a fault class nobody has classified yet is exactly the kind
+     that should be looked at, not the kind to bury. */
+
+  var SEVERITY = [
+    { key: 'act',    label: 'Act now',      rank: 0 },
+    { key: 'decide', label: 'Decide',       rank: 1 },
+    { key: 'before', label: 'Before close', rank: 2 }
+  ];
+
+  /* THE FOUR REASONS THE VIEW ACTUALLY EMITS.
+
+     Corrected 2026-08-19 against app.v_staff_attention_queue in migration
+     026, which is the source of truth. The first version of this map was
+     written from the design's illustrative rows and got one key wrong and
+     four keys that do not exist: it said 'orphan_attempt' where the view
+     says 'orphaned_attempt', so every real orphaned attempt -- a payment
+     dispatched with no recorded answer, which is the most urgent class
+     here -- fell through to DECIDE instead of ACT NOW. A default that is
+     merely reasonable hides a typo perfectly.
+
+     Unknown reasons still land in DECIDE on purpose: the view will grow,
+     and a class nobody has classified yet is one to look at rather than
+     bury. But the four that exist today are named exactly. */
+  var REASON_SEVERITY = {
+    /* money moved, or moved and we do not know what happened to it */
+    'orphaned_attempt':    'act',
+    'system_fault':        'act',
+    'unrecognized_code':   'act',
+    /* an integrity violation to judge, not a payment in flight */
+    'cycle_gap':           'decide'
+  };
+
+  function severityFor(reason) {
+    var key = String(reason || '').toLowerCase().replace(/[\s-]+/g, '_');
+    return REASON_SEVERITY[key] || 'decide';
+  }
+  function severityRank(reason) {
+    var k = severityFor(reason);
+    for (var i = 0; i < SEVERITY.length; i++) { if (SEVERITY[i].key === k) return SEVERITY[i].rank; }
+    return 1;
+  }
+  function severityLabel(reason) {
+    var k = severityFor(reason);
+    for (var i = 0; i < SEVERITY.length; i++) { if (SEVERITY[i].key === k) return SEVERITY[i].label; }
+    return 'Decide';
+  }
+
   function loadAttention() {
     var status = byId('attentionStatus');
+    var count = byId('attentionCount');
     status.textContent = 'Loading...';
     opsCall('billing-console', { action: 'attention' }).then(function (result) {
-      if (result.status !== 200) { status.textContent = serverMessage(result, 'Could not load the attention queue.'); return; }
-      var rows = result.data.rows || [];
+      if (result.status !== 200) {
+        status.textContent = serverMessage(result, 'Could not load the attention queue.');
+        count.textContent = 'The queue could not be read.';
+        return;
+      }
+      var rows = (result.data.rows || []).slice();
+
+      /* stable within a severity: the server's own order is kept, so two
+         runs of the same queue read the same way */
+      rows.sort(function (a, b) { return severityRank(a.reason) - severityRank(b.reason); });
+
+      /* DOES THE SERVICE REPORT MONEY YET?
+
+         The migration that adds amount_at_stake is applied, but the Edge
+         Function that returns it is a separate deploy. Rather than assume
+         either state, ask the payload: if not one row carries the property
+         at all, the service is still on the old shape and the page says so.
+
+         The test is `'amount_at_stake' in row`, NOT a truthiness check. A
+         cycle gap legitimately carries null -- there is no renewal period to
+         price and nothing was going to be charged -- and null must read as
+         "none", not as "the service is behind". */
+      var reportsMoney = rows.some(function (r) {
+        return r && Object.prototype.hasOwnProperty.call(r, 'amount_at_stake');
+      });
+      byId('queueGap').hidden = reportsMoney || rows.length === 0;
+
       var tbody = byId('attentionBody');
       clearNode(tbody);
       byId('attentionTable').hidden = rows.length === 0;
-      status.textContent = rows.length === 0 ? 'Nothing needs a human right now.' : rows.length + ' row(s) need a human.';
+      status.textContent = '';
+
+      var open = rows.filter(function (r) { return !r.cleared_at; });
+      var owed = 0, owedKnown = false;
+      open.forEach(function (r) {
+        if (typeof r.amount_at_stake === 'number') { owed += r.amount_at_stake; owedKnown = true; }
+      });
+
+      count.textContent = open.length === 0
+        ? (rows.length === 0 ? 'Nothing needs a human today.'
+                             : 'Everything here has been looked at.')
+        : open.length + (open.length === 1 ? ' thing needs' : ' things need') + ' a human today'
+          + (owedKnown ? ', holding ' + fmtMoney(owed) : '') + '.';
+
       rows.forEach(function (r) {
         var tr = el('tr');
-        cell(tr, r.reason);
-        cell(tr, r.member_code, 'ops-mono');
-        cell(tr, subCode(r.subscription_id), 'ops-code');
-        cell(tr, r.detail);
+        tr.className = 'q-row q-' + severityFor(r.reason);
+
+        var when = el('td');
+        when.className = 'q-when';
+        var badge = el('span');
+        badge.className = 'q-badge q-badge-' + severityFor(r.reason);
+        badge.textContent = severityLabel(r.reason);
+        when.appendChild(badge);
+        tr.appendChild(when);
+
+        var what = el('td');
+        var title = el('b');
+        title.className = 'q-what';
+        title.textContent = r.reason;
+        var detail = el('span');
+        detail.className = 'q-detail';
+        detail.textContent = r.detail || '';
+        what.appendChild(title);
+        what.appendChild(detail);
+        tr.appendChild(what);
+
+        /* AT STAKE. An em dash means "no amount reported for this row", and
+           that is a different statement from 0.00 -- which would say money
+           was on it and the money was nothing. The dash is used for both the
+           service being behind and a row that genuinely has none; the note
+           under the table distinguishes them. */
+        var stake = el('td');
+        stake.className = 'q-stake ops-num';
+        stake.textContent = typeof r.amount_at_stake === 'number'
+          ? fmtMoney(r.amount_at_stake)
+          : '\u2014';
+        tr.appendChild(stake);
+
+        cell(tr, r.member_code + ' \u00b7 ' + subCode(r.subscription_id), 'q-ref ops-mono');
+
+        /* Cleared rows stay visible and drop back, per 8a: the queue is a
+           record of what was looked at, not a list that empties itself. */
+        if (r.cleared_at) {
+          tr.classList.add('q-cleared');
+          title.title = 'Looked at by ' + (r.cleared_by || 'an operator');
+        }
         tbody.appendChild(tr);
       });
-    }).catch(function () { status.textContent = serviceUnavailable('billing console'); });
+    }).catch(function () {
+      status.textContent = serviceUnavailable('billing console');
+      count.textContent = 'The queue could not be read.';
+    });
   }
 
   /* ---------- subscription management ---------- */
@@ -1318,6 +1572,57 @@
   }
 
   /* ---------- current month + projection ---------- */
+  /* ============================================================
+     ONE COLLAPSE, FOUR PLACES.
+
+     These panels answer a question at the top and then keep going.
+     The member list runs to every member with volume this month, the
+     runs board and the trail to every period ever finalised, the house
+     ledger a year past the point anyone is reading for. None of that is
+     wrong to hold; it is wrong to make somebody scroll it to reach the
+     next panel.
+
+     So each list keeps the rows that answer its question and puts the
+     rest behind one control that says exactly how many it is hiding. It
+     never says "more": a count is the difference between a reader
+     deciding to open it and a reader wondering whether it is worth it.
+
+     Nothing is removed. Everything is one click away, and the control
+     is a real button, so it is reachable by keyboard and announces its
+     state. ============================================================ */
+  function collapseList(container, rows, keepFn, noun) {
+    if (!container) { return; }
+    /* A panel can be loaded more than once in a session, and clearing the
+       table body does not clear the control that sits beside it. Drop the
+       old one before deciding whether a new one is warranted. */
+    var stale = container.querySelector(':scope > .ops-more');
+    if (stale) { stale.remove(); }
+    if (rows.length === 0) { return; }
+    var extra = rows.filter(function (row, i) { return !keepFn(row, i); });
+    /* One hidden row is not worth a control: the button costs more room
+       than the row it hides. */
+    if (extra.length < 2) { return; }
+
+    var open = false;
+    var btn = el('button', 'ops-more');
+    btn.type = 'button';
+
+    function paint() {
+      extra.forEach(function (row) { row.hidden = !open; });
+      btn.textContent = open
+        ? 'Show fewer'
+        : 'Show all ' + rows.length + ' ' + noun + ' (' + extra.length + ' hidden)';
+      btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    }
+    btn.addEventListener('click', function () { open = !open; paint(); });
+    paint();
+    container.appendChild(btn);
+  }
+
+  function rowsOf(tbody) {
+    return Array.prototype.slice.call(tbody.querySelectorAll(':scope > tr'));
+  }
+
   function loadCurrentMonth() {
     var status = byId('cmStatus');
     status.textContent = 'Loading...';
@@ -1327,16 +1632,12 @@
       byId('cmChip').textContent = periodLabel(d.open_period) + (d.has_final_run ? ' (already finalized)' : ', accumulating');
       var stats = byId('cmStats');
       clearNode(stats);
-      [
+      appendStats(stats, [
         ['Bridged SV so far', fmtPv(d.bridged_sv)],
+        ['Implied CV at 80%', fmtPv(d.bridged_cv || (Number(d.bridged_sv || 0) * 0.8))],
         ['Bridged orders', d.bridged_orders],
         ['House retained PV (' + d.house_slices + ' slices)', fmtPv(d.house_retained_pv)]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       var tbody = byId('cmBody');
       clearNode(tbody);
       byId('cmTable').hidden = d.members.length === 0;
@@ -1352,6 +1653,10 @@
         cell(tr, m.sv >= 100 ? 'yes (at or above 100.00)' : 'not yet');
         tbody.appendChild(tr);
       });
+      /* The list is ordered by volume, so the top five ARE the answer to
+         "who is carrying this month". The tail is reference. */
+      collapseList(tbody.closest('.ops-table-wrap'), rowsOf(tbody),
+        function (row, i) { return i < 5; }, 'members');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1373,19 +1678,16 @@
         body.appendChild(el('div', 'ops-bad', 'ALERT: the server reports the dry run may have left rows behind. Stop and tell the engineer; do not trust these numbers.'));
       }
       var stats = el('div', 'ops-stats');
-      [
+      appendStats(stats, [
         ['Projected total SV', fmtPv(d.totals.total_sv)],
         ['Projected total CV', fmtPv(d.totals.total_cv)],
         ['Projected payout', fmtMoney(d.totals.total_payout)],
         ['Members paid', d.totals.members_paid],
         ['Qualified members', d.qualified_members]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       body.appendChild(stats);
+      var economics = renderEconomics(d.economics, 'Projected payout waterfall');
+      if (economics) { body.appendChild(economics); }
       if ((d.top_projected_earners || []).length) {
         var t = el('table', 'ops-table');
         var thead = el('thead'); var htr = el('tr');
@@ -1443,6 +1745,12 @@
         tr.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); drillRun(r.run_id); } });
         tbody.appendChild(tr);
       });
+      /* Runs are listed oldest first, so the two that matter are the LAST
+         two: the month that just closed and the one before it, which is
+         what anybody comparing against reaches for. */
+      var runRows = rowsOf(tbody);
+      collapseList(tbody.closest('.ops-table-wrap'), runRows,
+        function (row, i) { return i >= runRows.length - 2; }, 'runs');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1487,6 +1795,8 @@
       drawer.appendChild(el('p', 'ops-status-line',
         'Total SV ' + fmtPv(d.total_sv) + ', total CV ' + fmtPv(d.total_cv) +
         ', payout ' + fmtMoney(d.total_payout) + ', members paid ' + d.members_paid + '.'));
+      var runEconomics = renderEconomics(d.economics, 'Run payout waterfall');
+      if (runEconomics) { drawer.appendChild(runEconomics); }
 
       drawer.appendChild(el('h3', 'panel-title', 'Member results (top ' + d.results.length + ' of ' + d.results_total + ' by earnings)'));
       var rt = el('table', 'ops-table');
@@ -1551,17 +1861,12 @@
       status.textContent = '';
 
       var stats = el('div', 'ops-stats');
-      [
+      appendStats(stats, [
         ['Member', d.member_code],
         ['Current rank (run ' + d.current_rank_run_id + ')', d.current_rank || 'none'],
         ['Open month SV so far', fmtPv(d.open_month.sv)],
         ['Qualified so far', d.open_month.qualified_so_far ? 'yes' : ('not yet (gate ' + fmtPv(d.open_month.qualification_gate) + ')')]
-      ].forEach(function (pair) {
-        var box = el('div', 'ops-stat');
-        box.appendChild(el('span', 'ops-stat-label', pair[0]));
-        box.appendChild(el('span', 'ops-stat-value', pair[1]));
-        stats.appendChild(box);
-      });
+      ]);
       body.appendChild(el('p', 'ops-status-line', d.display_name + ', enrolled ' + fmtDate(d.enrolled_on) + '.'));
       body.appendChild(stats);
 
@@ -1592,14 +1897,18 @@
           'Downline contribution, ' + periodLabel(d.contribution.period) + ' (run ' + d.contribution.run_id + '), active legs: ' + d.contribution.active_legs));
         var ct = el('table', 'ops-table');
         var cthead = el('thead'); var chtr = el('tr');
-        ['Level', 'Lines', 'Amount'].forEach(function (h, i) { chtr.appendChild(el('th', i > 0 ? 'ops-num' : null, h)); });
+        ['Level', 'Rate', 'Sources', 'Source CV', 'Generated', 'Paid', 'Not paid'].forEach(function (h, i) { chtr.appendChild(el('th', i > 1 ? 'ops-num' : null, h)); });
         cthead.appendChild(chtr); ct.appendChild(cthead);
         var ctb = el('tbody');
         d.contribution.by_level.forEach(function (l) {
           var tr = el('tr');
           cell(tr, 'Level ' + l.level);
-          cell(tr, l.line_count, 'ops-num');
-          cell(tr, fmtMoney(l.amount), 'ops-num');
+          cell(tr, fmtPercent(Number(l.rate || 0) * 100), 'ops-num');
+          cell(tr, l.source_count || l.line_count || 0, 'ops-num');
+          cell(tr, fmtPv(l.source_cv), 'ops-num');
+          cell(tr, fmtMoney(l.generated_amount === undefined ? l.amount : l.generated_amount), 'ops-num');
+          cell(tr, fmtMoney(l.paid_amount === undefined ? l.amount : l.paid_amount), 'ops-num');
+          cell(tr, fmtMoney(l.unpaid_amount || 0), 'ops-num');
           ctb.appendChild(tr);
         });
         ct.appendChild(ctb);
@@ -1627,8 +1936,17 @@
         cell(tr, fmtPv(m.retained_pv), 'ops-num');
         cell(tr, fmtPv(m.cumulative_pv), 'ops-num');
         cell(tr, m.direction === 'first' ? 'first month' : m.direction);
+        tr.setAttribute('data-year', String(m.period).slice(0, 4));
         tbody.appendChild(tr);
       });
+      /* The ledger runs a year past the point anyone reads to. The first
+         year stays open and everything after it collapses -- keyed on the
+         earliest year present rather than on a hard-coded 2026, so the
+         panel does not quietly start hiding everything next January. */
+      var ledgerRows = rowsOf(tbody);
+      var firstYear = ledgerRows.length ? ledgerRows[0].getAttribute('data-year') : null;
+      collapseList(tbody.closest('.ops-table-wrap'), ledgerRows,
+        function (row) { return row.getAttribute('data-year') === firstYear; }, 'months');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1671,6 +1989,11 @@
         drawer.appendChild(wrap);
         body.appendChild(drawer);
       });
+      /* Periods arrive oldest first. Show the two most recent, the same
+         window the runs board keeps, and fold the older history away. */
+      var drawers = Array.prototype.slice.call(body.querySelectorAll('.ops-drawer'));
+      collapseList(body, drawers,
+        function (row, i) { return i >= drawers.length - 2; }, 'periods');
     }).catch(function () { status.textContent = serviceUnavailable('commission report'); });
   }
 
@@ -1702,6 +2025,19 @@
       'The renewal engine clock is not initialized on this fixture, so no billing run can execute here yet. Run now can preview fixture data, but execution stays locked until a runnable tick date exists.'
     ];
     var mockSchedule = { enabled: false, run_at_time: null, timezone: 'America/New_York', updated_by: null, updated_at: '2026-08-16T16:21:32Z' };
+    var MOCK_ECONOMICS = {
+      sales_volume: 108250, commissionable_volume: 86600, non_commissionable_reserve: 21650,
+      reachable_generated_payout: 22680, actual_payout: 20669.2, unpaid_generated: 2010.8,
+      payout_rate_of_sv: 19.09, payout_rate_of_cv: 23.87, cv_rate_of_sv: 80,
+      note: 'Generated payout is calculated only from existing upline positions in levels 1 through 5. If a gate or paid-depth rule blocks a line, it remains unpaid.',
+      by_level: [
+        { level: 1, rate: 0.10, source_count: 284, source_cv: 86600, generated_amount: 8660, paid_lines: 260, paid_source_cv: 81000, paid_amount: 8100, unpaid_amount: 560 },
+        { level: 2, rate: 0.05, source_count: 220, source_cv: 120000, generated_amount: 6000, paid_lines: 195, paid_source_cv: 112000, paid_amount: 5600, unpaid_amount: 400 },
+        { level: 3, rate: 0.05, source_count: 170, source_cv: 100000, generated_amount: 5000, paid_lines: 150, paid_source_cv: 96000, paid_amount: 4800, unpaid_amount: 200 },
+        { level: 4, rate: 0.03, source_count: 120, source_cv: 70000, generated_amount: 2100, paid_lines: 102, paid_source_cv: 63333.33, paid_amount: 1900, unpaid_amount: 200 },
+        { level: 5, rate: 0.02, source_count: 90, source_cv: 46000, generated_amount: 920, paid_lines: 70, paid_source_cv: 13460, paid_amount: 269.2, unpaid_amount: 650.8 }
+      ]
+    };
 
     if (fnName === 'billing-console') {
       if (body.action === 'overview') {
@@ -1765,7 +2101,7 @@
       if (body.panel === 'current_month') {
         return ok({
           panel: 'current_month', open_period: '2026-08-01', has_final_run: false,
-          bridged_orders: 11, bridged_sv: 2000, house_retained_pv: 3050, house_slices: 21,
+          bridged_orders: 11, bridged_sv: 2000, bridged_cv: 1600, house_retained_pv: 3050, house_slices: 21,
           members: [
             { member_code: 'GW-000003', display_name: 'Member Three', sv: 900, orders: 2 },
             { member_code: 'GW-000014', display_name: 'Member Fourteen', sv: 600, orders: 3 },
@@ -1781,6 +2117,13 @@
           banner: 'WHAT-IF PROJECTION, not a statement. Computed ' + when + '. Numbers change as the month accumulates and are not payable.',
           computed_at: when, period: '2026-08-01',
           totals: { total_sv: 2000, total_cv: 1600, total_payout: 289.6, members_paid: 7 },
+          economics: {
+            sales_volume: 2000, commissionable_volume: 1600, non_commissionable_reserve: 400,
+            reachable_generated_payout: 330, actual_payout: 289.6, unpaid_generated: 40.4,
+            payout_rate_of_sv: 14.48, payout_rate_of_cv: 18.1, cv_rate_of_sv: 80,
+            note: MOCK_ECONOMICS.note,
+            by_level: MOCK_ECONOMICS.by_level
+          },
           qualified_members: 4,
           rank_distribution: [{ rank: 'member', members: 996 }, { rank: 'builder', members: 4 }],
           top_projected_earners: [
@@ -1797,6 +2140,7 @@
             drill: {
               run_id: Number(body.run_id), period: '2026-07-01', spec_version: 'v1.3', status: Number(body.run_id) <= 6 ? 'superseded' : 'final',
               total_sv: 108250, total_cv: 86600, total_payout: 20669.2, members_paid: 284, finished_at: '2026-08-15T00:00:00Z',
+              economics: MOCK_ECONOMICS,
               lines: [
                 { earner_code: 'GW-000001', source_code: 'GW-000004', level: 1, source_cv: 120, rate: 0.10, amount: 12 },
                 { earner_code: 'GW-000001', source_code: 'GW-000009', level: 2, source_cv: 80, rate: 0.05, amount: 4 }
@@ -1835,11 +2179,11 @@
           contribution: {
             run_id: 12, period: '2026-07-01',
             by_level: [
-              { level: 1, line_count: 56, amount: 916 },
-              { level: 2, line_count: 65, amount: 654 },
-              { level: 3, line_count: 85, amount: 610 },
-              { level: 4, line_count: 70, amount: 338.4 },
-              { level: 5, line_count: 42, amount: 162.4 }
+              { level: 1, rate: 0.10, source_count: 56, source_cv: 9160, generated_amount: 916, paid_lines: 56, paid_amount: 916, unpaid_amount: 0 },
+              { level: 2, rate: 0.05, source_count: 65, source_cv: 13080, generated_amount: 654, paid_lines: 65, paid_amount: 654, unpaid_amount: 0 },
+              { level: 3, rate: 0.05, source_count: 85, source_cv: 12200, generated_amount: 610, paid_lines: 85, paid_amount: 610, unpaid_amount: 0 },
+              { level: 4, rate: 0.03, source_count: 70, source_cv: 11280, generated_amount: 338.4, paid_lines: 70, paid_amount: 338.4, unpaid_amount: 0 },
+              { level: 5, rate: 0.02, source_count: 42, source_cv: 8120, generated_amount: 162.4, paid_lines: 42, paid_amount: 162.4, unpaid_amount: 0 }
             ],
             active_legs: 51
           }

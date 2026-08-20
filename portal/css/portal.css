@@ -1,82 +1,50 @@
 /* Orvanna Member Portal, demo mode. Hardcoded palette, dark is the default theme. */
 
 :root {
-  --bg: #0F172A;          /* ink */
-  --bg-soft: #1E293B;     /* panel */
-  --bg-inset: #16223A;
-  --line: #334155;
-  --text: #E2E8F0;
-  --muted: #94A3B8;
-  --indigo: #4F46E5;
-  --indigo-soft: #818CF8;
-  --cyan: #22D3EE;
-  --good: #34D399;
-  --bad: #F87171;
+  --bg: #1B1917;          /* ink */
+  --bg-soft: #F1EDE6;     /* panel */
+  --bg-inset: #F1EDE6;
+  --line: #4B453D;
+  --text: #1B1917;
+  --muted: #6B645A;
+  --indigo: #1B1917;
+  --indigo-soft: #1B1917;
+  --cyan: #EC3013;
+  --good: #15803D;
+  --bad: #B91C1C;
   --amber: #FBBF24;
   --violet: #C084FC;
-  --shadow: 0 6px 18px rgba(2, 6, 23, 0.45);
+  --shadow: 0 6px 18px rgba(27, 25, 23, 0.45);
 
   /* Drawing tokens. Every fill inside a chart resolves through one of these
-     so the light theme can restate it; cyan at #22D3EE measures about 1.8:1
+     so the light theme can restate it; cyan at #EC3013 measures about 1.8:1
      on white, which is why the light theme swaps it for a darker teal. */
-  --c-own: #4F46E5;                        /* volume this member bought */
-  --c-cust: #22D3EE;                       /* volume their customers bought */
-  --c-cust-bg: rgba(34, 211, 238, 0.18);
-  --c-earn: #818CF8;                       /* commission series */
-  --c-earn-fill: rgba(129, 140, 248, 0.22);
-  --c-rule: #94A3B8;                       /* the qualification line */
-  --c-hatch: rgba(148, 163, 184, 0.5);     /* an open, unfilled gap */
-  --mark: #818CF8;                         /* hexagon marks */
-  --mark-lit: #22D3EE;                     /* the one lit mark on a board */
-  --lvl-1: #4F46E5;
-  --lvl-2: #6366F1;
-  --lvl-3: #818CF8;
-  --lvl-4: #A5B4FC;
-  --lvl-5: #C7D2FE;
+  --c-own: #1B1917;                        /* volume this member bought */
+  --c-cust: #EC3013;                       /* volume their customers bought */
+  --c-cust-bg: rgba(236, 48, 19, 0.18);
+  --c-earn: #1B1917;                       /* commission series */
+  --c-earn-fill: rgba(27, 25, 23, 0.22);
+  --c-rule: #6B645A;                       /* the qualification line */
+  --c-hatch: rgba(27, 25, 23, 0.35);     /* an open, unfilled gap */
+  --mark: #1B1917;                         /* hexagon marks */
+  --mark-lit: #EC3013;                     /* the one lit mark on a board */
+  --lvl-1: #1B1917;
+  --lvl-2: #1B1917;
+  --lvl-3: #1B1917;
+  --lvl-4: #6B645A;
+  --lvl-5: #F1EDE6;
 }
-html[data-theme="light"] {
-  --bg: #F1F5F9;
-  --bg-soft: #FFFFFF;
-  --bg-inset: #F8FAFC;
-  --line: #CBD5E1;
-  --text: #0F172A;
-  --muted: #475569;
-  --indigo-soft: #4F46E5;
-  /* Cyan carries TEXT in four places (the demo-mode pill, the Leader rank
-     badge, the tree expand control, the customer tag). At #22D3EE it measures
-     1.73:1 to 1.81:1 on the light backgrounds, so the light theme must restate
-     it, exactly as the comment above already said it should. This darker teal
-     measures 5.36:1 on white and 4.89:1 on the page background. */
-  --cyan: #0E7490;
-  /* Darkened 2026-08-15. These carry the portal's most important signal,
-     QUALIFIED and NOT QUALIFIED, and they are drawn on TINTED chips rather
-     than on the page background, which the lighter pair was never checked
-     against: 3.28:1 and 4.12:1 composited. This is the same mistake as the
-     cyan token fixed this morning, missed because only cyan was swept.
-     Computed now: #065F46 on the green chip is 6.72:1 and on the page 7.34:1;
-     #B91C1C on the red chip is 5.53:1. */
-  --good: #065F46;
-  --bad: #B91C1C;
-  --amber: #B45309;
-  --violet: #7C3AED;
-  --shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+/* THE LIGHT-THEME BLOCK WAS DELETED 2026-08-19, and it was a landmine, not
+   merely dead weight. The mono redesign retired the theme control -- app.js
+   now calls applyTheme("dark") unconditionally and the button is gone -- so
+   nothing could reach this block. But the redesign's token sweep had run
+   through it anyway, setting --bg, --bg-soft, --bg-inset AND --text all to
+   #1B1917: every surface ink, every word on it ink. Anything that ever set
+   data-theme="light" again -- a restored toggle, a hand-set attribute, a
+   stale key -- would have blacked the office out entirely, at 1:1.
 
-  --c-own: #4338CA;
-  --c-cust: #0E7490;
-  --c-cust-bg: rgba(14, 116, 144, 0.14);
-  --c-earn: #4F46E5;
-  --c-earn-fill: rgba(79, 70, 229, 0.16);
-  --c-rule: #475569;
-  --c-hatch: rgba(71, 85, 105, 0.4);
-  --mark: #4F46E5;
-  --mark-lit: #0E7490;
-  --lvl-1: #312E81;
-  --lvl-2: #3730A3;
-  --lvl-3: #4338CA;
-  --lvl-4: #6366F1;
-  --lvl-5: #A5B4FC;
-}
-
+   One palette, one set of tokens. The :root block above is the whole
+   palette now, and there is no second one to keep in step with it. */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 body {
@@ -116,7 +84,7 @@ body {
   letter-spacing: 0.12em;
   color: var(--cyan);
   border: 1px solid var(--cyan);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 3px 10px;
   white-space: nowrap;
 }
@@ -128,7 +96,7 @@ body {
   background: var(--bg-inset);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 7px 10px;
   font-size: 14px;
   min-width: 250px;
@@ -144,8 +112,8 @@ body {
   overflow-y: auto;
   background: var(--bg-soft);
   border: 1px solid var(--line);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
+  border-radius: 0;
+  box-shadow: none;
   z-index: 60;
 }
 .picker-item {
@@ -164,7 +132,7 @@ body {
   background: var(--bg-inset);
   color: var(--text);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   width: 38px;
   height: 35px;
   font-size: 17px;
@@ -186,7 +154,7 @@ body {
   background: transparent;
   color: var(--muted);
   border: 1px solid transparent;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
   padding: 9px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -207,8 +175,8 @@ body {
   right: 12px;
   top: 0;
   height: 3px;
-  border-radius: 0 0 3px 3px;
-  background: linear-gradient(90deg, var(--indigo), var(--cyan));
+  border-radius: 0;
+  background: #1B1917;
 }
 
 /* ---------- panels ---------- */
@@ -224,7 +192,7 @@ main {
 .panel-body {
   background: var(--bg-soft);
   border: 1px solid var(--line);
-  border-radius: 0 12px 12px 12px;
+  border-radius: 0;
   padding: 20px;
   min-height: 300px;
 }
@@ -248,16 +216,20 @@ main {
   height: 34px;
   border: 3px solid var(--line);
   border-top-color: var(--cyan);
-  border-radius: 50%;
+  border-radius: 0;
   animation: spin 0.9s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 .error-title { color: var(--bad); font-weight: 700; }
+/* The label was #1B1917 on var(--indigo), which the sweep had also set to
+   #1B1917: a solid black rectangle with an invisible word on it, and it is
+   the ONE control on a failed panel. Paper on ink, like every other solid
+   button in the office. */
 .retry-btn {
   background: var(--indigo);
-  color: #FFFFFF;
+  color: #EAE4D9;
   border: none;
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 18px;
   font-size: 14px;
   font-weight: 600;
@@ -270,7 +242,7 @@ main {
 .stat-card {
   background: var(--bg-inset);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 12px 16px;
   min-width: 150px;
   flex: 1;
@@ -286,7 +258,7 @@ main {
   font-weight: 700;
   letter-spacing: 0.05em;
   padding: 2px 9px;
-  border-radius: 999px;
+  border-radius: 0;
   border: 1px solid;
   white-space: nowrap;
 }
@@ -302,7 +274,7 @@ main {
   font-size: 12px;
   font-weight: 700;
   padding: 3px 12px;
-  border-radius: 999px;
+  border-radius: 0;
 }
 .qual-yes { background: rgba(52, 211, 153, 0.14); color: var(--good); border: 1px solid var(--good); }
 .qual-no  { background: rgba(248, 113, 113, 0.12); color: var(--bad); border: 1px solid var(--bad); }
@@ -311,7 +283,7 @@ main {
   display: inline-block;
   background: var(--bg-inset);
   border: 1px dashed var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--muted);
   font-size: 12.5px;
   padding: 6px 12px;
@@ -347,18 +319,42 @@ ul.tree > .tnode { padding-left: 0; }
 .tnode:last-child::after { height: 21px; bottom: auto; }
 ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
 
+/* The folded-frontline control. It is not a member, so it carries none of
+   the tree's connector drawing: the vertical rule ends at the last real
+   node above it and the button sits clear of the branch. */
+.tnode-more { padding-left: 20px; }
+.tnode-more::before { display: none; }
+.tnode-more::after { height: 0; border-left: 0; }
+.quiet-more {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  color: var(--muted);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  padding: 6px 2px;
+  margin: 4px 0;
+  cursor: pointer;
+}
+.quiet-more:hover { color: var(--cyan); border-bottom-color: var(--cyan); }
+.quiet-more:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
 .node-row {
   display: inline-flex;
   align-items: center;
   gap: 9px;
   background: var(--bg-inset);
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 0;
   padding: 6px 12px;
   margin: 4px 0;
   max-width: 100%;
 }
-.node-row.rootcard { border-color: var(--indigo-soft); box-shadow: var(--shadow); }
+.node-row.rootcard { border-color: var(--indigo-soft); box-shadow: none; }
 .node-toggle {
   background: transparent;
   border: none;
@@ -382,7 +378,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   color: var(--muted);
   background: var(--bg-soft);
   border: 1px solid var(--line);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 1px 8px;
   white-space: nowrap;
 }
@@ -392,7 +388,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   gap: 9px;
   background: transparent;
   border: 1px dashed var(--cyan);
-  border-radius: 9px;
+  border-radius: 0;
   padding: 5px 12px;
   margin: 4px 0;
   opacity: 0.92;
@@ -410,7 +406,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
 .chart-box {
   background: var(--bg-inset);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 0;
   padding: 16px;
   margin-bottom: 16px;
   overflow-x: auto;
@@ -434,7 +430,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   display: inline-block;
   width: 12px;
   height: 12px;
-  border-radius: 3px;
+  border-radius: 0;
   margin-right: 6px;
   vertical-align: -1px;
 }
@@ -450,7 +446,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   gap: 12px;
   background: var(--bg-inset);
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 11px 14px;
   margin-bottom: 8px;
   flex-wrap: wrap;
@@ -464,13 +460,13 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   flex-basis: 100%;
   height: 6px;
   background: var(--bg-soft);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
 }
 .req-bar-fill {
   height: 100%;
-  border-radius: 3px;
-  background: linear-gradient(90deg, var(--indigo), var(--cyan));
+  border-radius: 0;
+  background: #1B1917;
   transition: width 0.5s ease;
 }
 
@@ -479,7 +475,7 @@ ul.tree > .tnode::before, ul.tree > .tnode::after { display: none; }
   overflow: auto;
   max-height: 520px;
   border: 1px solid var(--line);
-  border-radius: 10px;
+  border-radius: 0;
 }
 table.stmt {
   border-collapse: collapse;
@@ -508,7 +504,7 @@ table.stmt {
 .level-chip {
   background: var(--bg-inset);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 5px 12px;
   font-size: 12.5px;
   color: var(--muted);
@@ -519,8 +515,8 @@ table.stmt {
 /* ---------- company ---------- */
 .dist-row { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
 .dist-name { width: 92px; font-size: 13px; font-weight: 600; }
-.dist-track { flex: 1; height: 18px; background: var(--bg-soft); border-radius: 5px; overflow: hidden; }
-.dist-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+.dist-track { flex: 1; height: 18px; background: var(--bg-soft); border-radius: 0; overflow: hidden; }
+.dist-fill { height: 100%; border-radius: 0; transition: width 0.5s ease; }
 .dist-count { width: 70px; text-align: right; font-size: 13px; font-variant-numeric: tabular-nums; color: var(--muted); }
 
 /* ================================================================
@@ -628,7 +624,7 @@ table.stmt {
   min-width: 60px;
   height: 12px;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
   /* the open, unmet part of the scale is hatched, never filled */
   background-image: repeating-linear-gradient(45deg,
@@ -650,7 +646,7 @@ table.stmt {
   background: transparent;
   color: var(--indigo-soft);
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0;
   padding: 8px 16px;
   font-size: 13px;
   font-weight: 600;
@@ -741,7 +737,7 @@ table.stmt {
   display: flex;
   height: 14px;
   border: 1px solid var(--line);
-  border-radius: 3px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--bg-inset);
 }
@@ -768,32 +764,32 @@ table.stmt {
 .runway-next { font-size: 12px; color: var(--muted); margin: 0 0 8px; letter-spacing: 0.04em; }
 .micro { display: flex; align-items: center; gap: 10px; margin-bottom: 7px; flex-wrap: wrap; }
 .micro-label { font-size: 12.5px; flex: 1; min-width: 130px; }
-.micro-track { flex-basis: 100%; height: 6px; background: var(--bg-inset); border: 1px solid var(--line); border-radius: 3px; overflow: hidden; }
+.micro-track { flex-basis: 100%; height: 6px; background: var(--bg-inset); border: 1px solid var(--line); border-radius: 0; overflow: hidden; }
 .micro-fill { display: block; height: 100%; background: var(--c-own); }
 .micro-val { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
 .leg-line { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--muted); margin: 12px 0 0; flex-wrap: wrap; }
 .discs { display: inline-flex; gap: 4px; }
-.disc { width: 10px; height: 10px; border-radius: 50%; display: block; }
+.disc { width: 10px; height: 10px; border-radius: 0; display: block; }
 .disc-on { background: var(--c-own); }
 .disc-off { border: 1.5px solid var(--line); }
 
 /* ---- Earnings Mix ---- */
-.mix-bar { display: flex; height: 26px; border-radius: 5px; overflow: hidden; border: 1px solid var(--line); }
+.mix-bar { display: flex; height: 26px; border-radius: 0; overflow: hidden; border: 1px solid var(--line); }
 .mix-seg { display: flex; align-items: center; justify-content: center; min-width: 0; }
 /* The level label sits ON the coloured segment, and the five level fills span
    from dark indigo to near-white. Recolouring the TEXT cannot solve that: on
-   the level 2 fill (#6366F1) white measures 4.47:1 and near-black 4.00:1, so
+   the level 2 fill (#1B1917) white measures 4.47:1 and near-black 4.00:1, so
    BOTH fail 4.5:1 and there is no third choice. The label therefore carries its
    own near-opaque dark chip, which makes the contrast a property of the chip
    instead of whichever fill happens to be underneath. Worst case, white on the
-   chip over the lightest fill (#C7D2FE), measures about 12.5:1. */
+   chip over the lightest fill (#F1EDE6), measures about 12.5:1. */
 .mix-seg-label {
   font-size: 11px;
   font-weight: 700;
-  color: #FFFFFF;
-  background: rgba(15, 23, 42, 0.85);
+  color: #1B1917;
+  background: rgba(27, 25, 23, 0.85);
   padding: 1px 5px;
-  border-radius: 3px;
+  border-radius: 0;
   line-height: 1.3;
 }
 .mix-l1 { background: var(--lvl-1); }
@@ -901,12 +897,12 @@ table.stmt {
    calmer chart surfaces.
    ============================================================ */
 
-body {
-  background:
-    radial-gradient(circle at 18% 0%, rgba(34, 211, 238, 0.10), transparent 32%),
-    radial-gradient(circle at 92% 16%, rgba(79, 70, 229, 0.10), transparent 28%),
-    var(--bg);
-}
+/* Two radial washes from the old glow system, deleted 2026-08-19. The
+   redesign has no gradients anywhere; these survived because the shell
+   covers the body edge to edge, so nobody ever saw them fail. A rule that
+   contradicts the system and is invisible is still the rule someone copies
+   next time. */
+body { background: var(--bg); }
 
 .portal-shell {
   width: 100%;
@@ -923,9 +919,9 @@ body {
   flex-direction: column;
   gap: 22px;
   padding: 24px 18px;
-  background: rgba(6, 11, 24, 0.82);
-  border-right: 1px solid rgba(148, 163, 184, 0.18);
-  box-shadow: 16px 0 42px rgba(2, 6, 23, 0.18);
+  background: rgba(234, 228, 217, 0.82);
+  border-right: 1px solid rgba(27, 25, 23, 0.22);
+  box-shadow: none;
 }
 
 .portal-brand {
@@ -937,12 +933,13 @@ body {
   min-height: 34px;
 }
 .brand-mark {
-  width: 18px;
-  height: 18px;
+  /* 20px on the medium cut; see the note in www/css/site-chrome.css. */
+  width: 20px;
+  height: 20px;
   display: inline-block;
   border: 1.5px solid var(--cyan);
-  border-radius: 5px;
-  box-shadow: inset 0 0 0 4px rgba(34, 211, 238, 0.08), 0 0 16px rgba(34, 211, 238, 0.20);
+  border-radius: 0;
+  box-shadow: none;
   transform: rotate(45deg);
 }
 .brand-word {
@@ -957,9 +954,9 @@ body {
   align-items: center;
   gap: 8px;
   padding: 10px 12px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.72);
   color: var(--muted);
   font-size: 12px;
 }
@@ -972,9 +969,9 @@ body {
 .mode-dot {
   width: 8px;
   height: 8px;
-  border-radius: 999px;
+  border-radius: 0;
   background: var(--cyan);
-  box-shadow: 0 0 14px rgba(34, 211, 238, 0.48);
+  box-shadow: none;
 }
 
 .portal-workspace {
@@ -987,11 +984,10 @@ body {
   position: sticky;
   top: 0;
   z-index: 35;
-  background: rgba(15, 23, 42, 0.86);
-  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
-  backdrop-filter: blur(14px);
+  background: rgba(27, 25, 23, 0.86);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  backdrop-filter: none;
 }
-html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
 .topbar-inner {
   max-width: 1280px;
   min-height: 82px;
@@ -1003,9 +999,13 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   gap: 20px;
   flex-wrap: wrap;
 }
+/* --cyan is the bright accent, which this sheet's own comment already
+   flags as unreadable on ink. It is also unreadable as an 11px kicker on
+   paper: 3.32:1. The deep form of the same accent, 5.95:1. This rule wins
+   over .top-kicker below it, which is why fixing that one did nothing. */
 .workspace-title p {
   margin: 0 0 3px;
-  color: var(--cyan);
+  color: #A3220B;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.16em;
@@ -1036,16 +1036,16 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
 .period-select,
 .theme-btn {
   min-height: 40px;
-  background: rgba(2, 6, 23, 0.30);
-  border-color: rgba(148, 163, 184, 0.26);
-  border-radius: 8px;
+  background: rgba(27, 25, 23, 0.06);
+  border-color: rgba(27, 25, 23, 0.22);
+  border-radius: 0;
 }
 .picker-input { min-width: 0; width: 100%; }
 .period-select { min-width: 0; width: 100%; }
 .picker-list {
   background: var(--bg-soft);
-  border-color: rgba(148, 163, 184, 0.28);
-  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.42);
+  border-color: rgba(27, 25, 23, 0.22);
+  box-shadow: none;
 }
 
 .tabs {
@@ -1065,7 +1065,7 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   gap: 10px;
   padding: 10px 12px;
   border: 1px solid transparent;
-  border-radius: 8px;
+  border-radius: 0;
   color: var(--muted);
   text-align: left;
   background: transparent;
@@ -1092,30 +1092,30 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   height: 32px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 8px;
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
   font-size: 0.72rem;
   font-weight: 800;
   color: var(--muted);
-  background: rgba(15, 23, 42, 0.48);
+  background: rgba(27, 25, 23, 0.48);
 }
 .tab:hover {
   color: var(--text);
-  background: rgba(148, 163, 184, 0.07);
+  background: rgba(27, 25, 23, 0.05);
 }
 .tab.active,
 .tab[aria-current="page"] {
   color: var(--text);
-  background: linear-gradient(135deg, rgba(34, 211, 238, 0.13), rgba(79, 70, 229, 0.16));
-  border-color: rgba(34, 211, 238, 0.36);
-  box-shadow: inset 3px 0 0 var(--cyan);
+  background: linear-gradient(135deg, rgba(236, 48, 19, 0.13), rgba(27, 25, 23, 0.16));
+  border-color: rgba(236, 48, 19, 0.36);
+  box-shadow: none;
 }
 .tab.active::after { display: none; }
 .tab.active .nav-icon,
 .tab[aria-current="page"] .nav-icon {
   color: var(--cyan);
-  border-color: rgba(34, 211, 238, 0.42);
-  background: rgba(34, 211, 238, 0.10);
+  border-color: rgba(236, 48, 19, 0.42);
+  background: rgba(236, 48, 19, 0.10);
 }
 
 .site-links {
@@ -1136,13 +1136,13 @@ html[data-theme="light"] .topbar { background: rgba(241, 245, 249, 0.9); }
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid rgba(148, 163, 184, 0.20);
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.44);
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.44);
 }
 .site-link:hover {
   color: var(--text);
-  border-color: rgba(34, 211, 238, 0.36);
+  border-color: rgba(236, 48, 19, 0.36);
   text-decoration: none;
 }
 .site-support {
@@ -1157,15 +1157,11 @@ main {
 .panel-body {
   min-height: 520px;
   padding: 24px;
-  border-radius: 10px;
-  background: rgba(30, 41, 59, 0.68);
-  border-color: rgba(148, 163, 184, 0.20);
-  box-shadow: 0 24px 70px rgba(2, 6, 23, 0.26);
+  border-radius: 0;
+  background: rgba(241, 237, 230, 0.68);
+  border-color: rgba(27, 25, 23, 0.22);
+  box-shadow: none;
 }
-html[data-theme="light"] .panel-body {
-  background: rgba(255, 255, 255, 0.82);
-}
-
 .ident {
   padding: 0 0 18px;
   margin-bottom: 20px;
@@ -1178,26 +1174,26 @@ html[data-theme="light"] .panel-body {
 .fig {
   min-width: 150px;
   padding: 10px 14px;
-  border: 1px solid rgba(148, 163, 184, 0.20);
-  border-radius: 8px;
-  background: rgba(2, 6, 23, 0.22);
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.04);
 }
 .fig-val { font-size: 1.38rem; }
 
 .stat-card {
-  border-radius: 8px;
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(2, 6, 23, 0.22);
+  border-radius: 0;
+  border-color: rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.04);
 }
 .stat-value { font-size: 1.55rem; }
 .board {
   padding: 16px;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 10px;
-  background: rgba(2, 6, 23, 0.16);
+  border: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  background: rgba(27, 25, 23, 0.03);
 }
 .board-head {
-  border-bottom-color: rgba(148, 163, 184, 0.18);
+  border-bottom-color: rgba(27, 25, 23, 0.22);
   margin-bottom: 14px;
 }
 .board-title {
@@ -1221,9 +1217,9 @@ html[data-theme="light"] .panel-body {
 .wire-list { max-height: 432px; }
 
 .chart-box {
-  border-radius: 10px;
-  border-color: rgba(148, 163, 184, 0.18);
-  background: rgba(2, 6, 23, 0.16);
+  border-radius: 0;
+  border-color: rgba(27, 25, 23, 0.22);
+  background: rgba(27, 25, 23, 0.03);
 }
 .chart-title {
   font-size: 0.9rem;
@@ -1243,39 +1239,51 @@ html[data-theme="light"] .panel-body {
   color: var(--muted);
   font-size: 11px;
 }
+/* THE CHARTS REJOIN THE PALETTE, 2026-08-18.
+
+   These four rules restated the old indigo #7C8CF8 and cyan #38BDF8 as
+   literals, AFTER the token definitions, so every bar and every trend line
+   in the office stayed periwinkle through the whole palette pass. The pass
+   zeroed the border-radius in this very block and did not touch the fills
+   beside them, which is what a search-and-replace over colour values does
+   when a rule overrides a token rather than using it.
+
+   They resolve through the drawing tokens now, which is what those tokens
+   were declared for: "every fill inside a chart resolves through one of
+   these so the light theme can restate it". */
 .seg-own,
 .mom-own {
-  fill: #7C8CF8;
+  fill: var(--c-own);
 }
 .seg-cust,
 .mom-cust {
-  fill: #38BDF8;
+  fill: var(--c-cust);
   stroke: none;
 }
 .mom-area {
-  fill: rgba(124, 140, 248, 0.14);
+  fill: var(--c-earn-fill);
 }
 .mom-stroke,
 .trend-line {
-  stroke: #7C8CF8;
+  stroke: var(--c-earn);
 }
 .mix-bar,
 .dist-track,
 .gate-track,
 .mom-row-track {
-  border-radius: 8px;
+  border-radius: 0;
 }
 .dist-fill,
 .mix-seg,
 .gate-fill,
 .req-bar-fill,
 .micro-fill {
-  border-radius: 8px;
+  border-radius: 0;
 }
 .dist-row { gap: 14px; }
 .table-scroll {
-  border-color: rgba(148, 163, 184, 0.20);
-  border-radius: 10px;
+  border-color: rgba(27, 25, 23, 0.22);
+  border-radius: 0;
 }
 
 .footer {
@@ -1297,7 +1305,7 @@ html[data-theme="light"] .panel-body {
     height: auto;
     padding: 16px;
     border-right: 0;
-    border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+    border-bottom: 1px solid rgba(27, 25, 23, 0.22);
     overflow: hidden;
   }
   .portal-brand,
@@ -1350,4 +1358,625 @@ html[data-theme="light"] .panel-body {
 @media (prefers-reduced-motion: reduce) {
   * { transition: none !important; animation: none !important; }
   .spinner { border-top-color: var(--indigo-soft); }
+}
+
+
+/* ============================================================
+   THE MEMBER OFFICE, REDESIGNED
+   Handoff screen 7a, built 2026-08-18.
+
+   The structural change is that five tab-swapped panels became one
+   page. Everything below dresses that: the ink sidebar, the answer
+   band, and the numbered blocks under it.
+
+   Zero radius, no shadows. Every numeric surface is tabular and
+   every numeric column is right aligned.
+   ============================================================ */
+
+.portal-shell {
+  display: grid;
+  grid-template-columns: 252px 1fr;
+  min-height: 100vh;
+  align-items: start;
+}
+
+/* ---------- the sidebar ---------- */
+
+.portal-sidebar {
+  background: #1B1917;
+  color: #C9C6C1;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  position: sticky;
+  top: 0;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.portal-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #F8F7F5;
+  text-decoration: none;
+}
+.portal-brand .brand-mark { width: 24px; height: 24px; border: 0; flex-shrink: 0; }
+.portal-brand .brand-mark svg { display: block; width: 100%; height: 100%; }
+
+/* THE MEDIUM CUT, from assets/logo-mark-md.svg: bar 25.5 x 12.5, inset 7.5.
+   The large cut (bar 22 x 10, inset 10) is drawn inline on every page and is
+   correct at 28px; at this size its bars close up into a smudge, which is
+   what the note beside the large cut warns about. Geometry, not scale. */
+.brand-mark .mark-accent { x: 31px; y: 7.5px; width: 25.5px; height: 12.5px; }
+.brand-mark .mark-bar:nth-of-type(2) { x: 44px; y: 32px; width: 12.5px; height: 25.5px; }
+.brand-mark .mark-bar:nth-of-type(3) { x: 7.5px; y: 44px; width: 25.5px; height: 12.5px; }
+.brand-mark .mark-bar:nth-of-type(4) { x: 7.5px; y: 7.5px; width: 12.5px; height: 25.5px; }
+
+/* On ink the structural bars are paper and the accent takes its on-ink
+   form; #EC3013 on #1B1917 is too close to read. */
+.portal-brand .mark-bar { fill: #EAE4D9; }
+.portal-brand .mark-accent { fill: #FF6A4A; }
+.portal-brand .brand-word {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.portal-pill {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid #4A453F;
+  padding: 4px 7px;
+  color: #8F8981;
+  margin-left: auto;
+}
+
+.side-block { border-top: 1px solid #4A453F; padding-top: 18px; }
+
+.side-kicker {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8F8981;
+  margin: 0 0 10px;
+}
+.side-kicker-sm { margin-top: 18px; }
+
+.side-name {
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #F8F7F5;
+  margin: 0 0 4px;
+}
+.side-code {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: #C9C6C1;
+  font-variant-numeric: tabular-nums;
+  margin: 0 0 12px;
+}
+.side-rank {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #EAE4D9;
+  color: #1B1917;
+  padding: 5px 9px;
+  margin: 0;
+}
+
+.side-period { display: flex; align-items: center; gap: 10px; }
+.side-period .period-select {
+  flex: 1 1 auto;
+  background: none;
+  border: 1px solid #4A453F;
+  border-radius: 0;
+  color: #F8F7F5;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 9px;
+}
+/* THE OPTIONS, not just the closed control. The sidebar select is
+   #F8F7F5 on a dark rail, and the native popup takes the control's colour
+   but the SYSTEM's background -- white -- so every month but the
+   highlighted one was near-white on white. Stated ink on white here, in
+   that order, because a platform that ignores one of the two properties
+   ignores the background first: ink then survives on the system white. */
+.side-period .period-select option {
+  background-color: #FFFFFF;
+  color: #1B1917;
+}
+
+.side-period-state {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #FF6A4A;
+  white-space: nowrap;
+}
+.side-period-state.is-locked { color: #8F8981; }
+.side-note {
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: #8F8981;
+  margin: 10px 0 0;
+}
+
+.side-block .picker-input {
+  width: 100%;
+  background: none;
+  border: 1px solid #4A453F;
+  border-radius: 0;
+  color: #F8F7F5;
+  font: inherit;
+  font-size: 12.5px;
+  padding: 8px 9px;
+}
+
+/* One-pixel gaps, and the active item is a paper block with ink text. */
+.side-nav { display: grid; gap: 1px; border-top: 1px solid #4A453F; padding-top: 18px; }
+.side-link {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #C9C6C1;
+  padding: 13px 12px;
+  border: 0;
+  background: none;
+}
+.side-link:hover { color: #F8F7F5; }
+.side-link.is-active { background: #EAE4D9; color: #1B1917; }
+
+.site-links { margin-top: auto; border-top: 1px solid #4A453F; padding-top: 18px; display: grid; gap: 2px; }
+.site-link {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #8F8981;
+  background: none;
+  border: 0;
+  padding: 7px 0;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.site-link:hover { color: #F8F7F5; }
+
+/* ---------- the workspace ---------- */
+
+.portal-workspace { background: #EAE4D9; min-width: 0; }
+
+/* THE BAR ITSELF, repainted 2026-08-19. Everything INSIDE it was swept to
+   the paper palette in the redesign -- the title to ink, the kicker to the
+   accent, one outline button and one solid -- but the bar kept the old
+   dark-theme fill, rgba(27,25,23,0.86) over paper. Measured: ink title on
+   that composite is 1.3:1, and the outline button was ink on ink, so the
+   bar read as a smear with a heading somewhere under it. The rule below it
+   for the light theme was the same colour family and is neutralised too. */
+.topbar {
+  background: #EAE4D9;
+  border-bottom: 2px solid #1B1917;
+  backdrop-filter: none;
+}
+
+/* ANCHORS CLEAR THE STICKY BAR. The sidebar's section links and every
+   #panel-... link scrolled their target to y=0, which is UNDER the bar --
+   so following "Statements" put the heading behind 117 pixels of chrome
+   and the reader saw the table with no title. scroll-margin-top belongs on
+   the target, not the scroller, so it holds whichever ancestor scrolls. */
+.panel { scroll-margin-top: 132px; }
+.topbar-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 32px;
+  flex-wrap: wrap;
+}
+.top-kicker {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6B645A;
+  margin: 0 0 10px;
+}
+.workspace-title h1 {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #1B1917;
+  margin: 0;
+}
+.controls { display: flex; gap: 12px; flex-wrap: wrap; }
+
+.pbtn {
+  display: inline-flex;
+  align-items: center;
+  font: inherit;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 2px solid #1B1917;
+  border-radius: 0;
+  padding: 11px 16px;
+  cursor: pointer;
+}
+.pbtn-line { background: none; color: #1B1917; }
+.pbtn-line:hover { background: rgba(236, 48, 19, 0.07); }
+.pbtn-solid { background: #1B1917; color: #EAE4D9; }
+.pbtn-solid:hover { background: #EC3013; border-color: #EC3013; color: #FFFFFF; }
+
+/* ---------- the answer band ---------- */
+
+.answers {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  background: #1B1917;
+  border-bottom: 2px solid #1B1917;
+}
+.answer { padding: 26px 30px 30px; }
+.answer + .answer { border-left: 1px solid #4A453F; }
+.answer-raised { background: #232019; }
+
+.answer-kicker {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #8F8981;
+  margin: 0 0 16px;
+}
+.answer-kicker-accent { color: #FF6A4A; }
+
+.answer-head { display: flex; align-items: baseline; gap: 14px; }
+.answer-big {
+  font-size: 40px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #F8F7F5;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+.answer-side {
+  font-size: 15px;
+  font-weight: 700;
+  color: #C9C6C1;
+  font-variant-numeric: tabular-nums;
+  margin: 0;
+}
+
+/* THE METER CAPS AT 100 PERCENT, in the stylesheet as well as the script:
+   the width is written by renderAnswers with Math.min, and max-width here
+   is the second lock. A ratio above one is not a measurement. */
+.answer-meter { height: 8px; background: #4A453F; margin: 18px 0 14px; }
+.answer-fill {
+  height: 100%;
+  max-width: 100%;
+  background: #EAE4D9;
+  transition: width 0.35s ease;
+}
+
+.answer-note {
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: #8F8981;
+  margin: 0;
+}
+
+.answer-tag {
+  display: inline-block;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: 1px solid #8F8981;
+  color: #C9C6C1;
+  padding: 5px 8px;
+  margin: 14px 0 12px;
+}
+
+.todo { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+.todo-row { display: grid; grid-template-columns: 11px 1fr; gap: 0 12px; align-items: start; }
+.todo-sq {
+  width: 11px;
+  height: 11px;
+  margin-top: 4px;
+  border: 1.5px solid #FF6A4A;
+  background: none;
+}
+.todo-sq.is-blocking { background: #FF6A4A; }
+.todo-what { display: block; font-size: 13.5px; font-weight: 700; color: #F8F7F5; margin-bottom: 4px; }
+.todo-why { display: block; font-size: 12.5px; line-height: 1.45; color: #8F8981; }
+
+/* ---------- the numbered blocks ---------- */
+
+/* Every panel is visible. `.panel.active` used to be the only one shown;
+   that class no longer decides anything and is left inert rather than
+   hunted through five renderers. */
+.panel { display: block; border-bottom: 2px solid #1B1917; padding: 26px 32px 32px; }
+.panel:last-of-type { border-bottom: 0; }
+
+/* The number and title come from the markup, so a panel cannot ship
+   without one and the renderers do not each invent their own heading. */
+.panel::before {
+  content: attr(data-num) "   " attr(data-title);
+  display: block;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: #1B1917;
+  margin-bottom: 18px;
+  white-space: pre;
+}
+
+#main.is-loading .panel:not(:first-of-type) { display: none; }
+#main.is-loading .answers { display: none; }
+
+.footer {
+  background: #1B1917;
+  color: #8F8981;
+  font-size: 12px;
+  padding: 18px 32px;
+  border-top: 2px solid #1B1917;
+}
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1080px) {
+  .portal-shell { grid-template-columns: 1fr; }
+  .portal-sidebar {
+    position: static;
+    max-height: none;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 18px 28px;
+  }
+  .site-links { margin-top: 0; }
+  .answers { grid-template-columns: 1fr; }
+  .answer + .answer { border-left: 0; border-top: 1px solid #4A453F; }
+}
+
+@media (max-width: 700px) {
+  .topbar-inner, .panel, .footer { padding-left: 20px; padding-right: 20px; }
+  .workspace-title h1 { font-size: 30px; }
+  .answer { padding: 22px 20px 26px; }
+}
+
+
+/* ============================================================
+   THE PANELS, FROM CARDS TO CELLS
+   Handoff screen 7a, second pass, 2026-08-19.
+
+   The first pass rebuilt the SHELL: one page, the ink sidebar,
+   the answer band. The insides stayed as they were -- bordered
+   stat-cards on an inset ground, which is the treatment the
+   redesign exists to remove. Same content, less chrome: a row of
+   cells divided by one hairline and nothing else.
+
+   These rules come after everything above and deliberately
+   override it, rather than editing five render functions to emit
+   different markup. The renderers already compute every number
+   7a asks for; what was wrong was the box around it.
+   ============================================================ */
+
+/* A row of stat-cards becomes a row of ruled cells. */
+.card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0;
+  border-top: 2px solid #1B1917;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 18px 22px 20px 0;
+  min-width: 0;
+}
+.stat-card + .stat-card {
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+  padding-left: 22px;
+}
+
+.stat-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6B645A;
+}
+
+/* 34px, per the token table's display stat. The cards had it at 22px,
+   which is a figure that has to be looked for rather than seen. */
+.stat-value {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  color: #1B1917;
+  margin-top: 10px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-note {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: #6B645A;
+  margin-top: 10px;
+}
+
+/* Boards and panels lose their boxes too: a heading, a rule, content. */
+.board {
+  background: transparent;
+  border: 0;
+  border-top: 2px solid #1B1917;
+  border-radius: 0;
+  padding: 18px 0 0;
+  margin-bottom: 26px;
+}
+.board-head {
+  border-bottom: 0;
+  padding-bottom: 12px;
+}
+
+.section-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: #1B1917;
+  text-transform: none;
+  margin: 0 0 8px;
+}
+.section-sub {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #6B645A;
+  max-width: 68ch;
+  margin: 0 0 18px;
+}
+
+/* Tables: rules between rows, nothing around them, numbers tabular
+   and right-aligned. */
+.table-scroll {
+  border: 0;
+  border-radius: 0;
+  overflow-x: auto;
+}
+table.data { width: 100%; border-collapse: collapse; }
+table.data th {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #6B645A;
+  text-align: left;
+  padding: 0 12px 10px 0;
+  border-bottom: 2px solid #1B1917;
+}
+table.data td {
+  font-size: 13.5px;
+  line-height: 1.2;
+  color: #1B1917;
+  padding: 13px 12px 13px 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+table.data td.num, table.data th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+/* Progress meters cap at 100 percent and read accent while short,
+   ink once met -- the colour is the answer, not decoration. */
+.req-bar, .micro-track, .gate-track, .mom-row-track, .dist-track {
+  height: 7px;
+  background: #DCD4C6;
+  border-radius: 0;
+}
+.req-bar-fill, .micro-fill, .gate-fill, .dist-fill {
+  height: 100%;
+  max-width: 100%;
+  border-radius: 0;
+  transition: width 0.35s ease;
+}
+
+/* Badges and pills: square, and only the one that means "act" is filled. */
+.badge, .pill, .tag {
+  border-radius: 0;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 5px 9px;
+}
+
+/* The last three boxes. The panel already has a heading and a rule from
+   .panel::before, so the body inside it needs no container of its own;
+   a chart needs a caption and a baseline, not a frame; and a requirement
+   is a row in a list, which is what a rule is for. */
+.panel-body {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+  min-height: 0;
+}
+
+.chart-box {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(27, 25, 23, 0.25);
+  border-radius: 0;
+  padding: 16px 0 0;
+  margin-bottom: 22px;
+  overflow-x: auto;
+}
+.chart-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #6B645A;
+  margin: 0 0 14px;
+}
+
+.req-item {
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  border-radius: 0;
+  padding: 14px 0;
+  margin-bottom: 0;
+}
+
+/* A met requirement reads ink; a short one reads accent. The tick and the
+   cross were carrying that alone, and a tick is a small thing to hang an
+   answer on. */
+.req-item.req-met .req-bar-fill { background: #1B1917; }
+.req-item.req-unmet .req-bar-fill { background: #EC3013; }
+
+/* ONE HEADING PER SECTION. The panel prints its own number and title from
+   the markup (.panel::before), and each renderer independently emits an
+   h2 of its own -- so every block read "01 The month in volume" followed
+   immediately by "My Volume". Two names for one thing, and the second one
+   is the older, vaguer of the pair.
+
+   Hidden rather than deleted from five renderers: the h2 is what those
+   functions were written around, it still labels the section for a screen
+   reader reading the panel out of context, and removing it is five edits
+   in JavaScript for no visual gain. The sub-heading underneath it stays,
+   because it explains rather than repeats. */
+.panel-body > .section-title:first-child {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }

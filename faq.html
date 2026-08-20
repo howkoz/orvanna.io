@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Frequently Asked Questions</title>
 <meta name="description" content="Short, straight answers about the Orvanna Conductor program: the agents, the two purchase modes, how earning works, what makes a month qualified, and when commissions run. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=dc01918c3035">
+<link rel="stylesheet" href="css/corporate.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/site-chrome.css?v=dc01918c3035">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -24,7 +24,7 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=dc01918c3035" defer></script>
 <style>
 /* ============================================================
    FREQUENTLY ASKED QUESTIONS: page styles.
@@ -52,23 +52,29 @@
 
 :root {
   /* surfaces, dark: the default */
-  --faq-bg:          #060B18;
-  --faq-bg-alt:      #0A1226;
-  --faq-card:        rgba(30, 41, 59, 0.52);
-  --faq-card-hover:  rgba(30, 41, 59, 0.72);
-  --faq-border:      rgba(129, 140, 248, 0.26);
-  --faq-border-soft: rgba(129, 140, 248, 0.16);
-  --faq-shadow:      0 0 24px rgba(79, 70, 229, 0.13);
+  --faq-bg:          #EAE4D9;
+  --faq-bg-alt:      #F1EDE6;
+  --faq-card:        rgba(241, 237, 230, 0.52);
+  --faq-card-hover:  rgba(241, 237, 230, 0.72);
+  --faq-border:      rgba(27, 25, 23, 0.26);
+  --faq-border-soft: rgba(27, 25, 23, 0.16);
+  /* No shadows anywhere, 2026-08-19. Kept as a token set to none rather
+     than deleted, so the three rules that reference it still parse and a
+     future author reintroducing a shadow has to change it HERE, once,
+     instead of scattering one per rule. */
+  --faq-shadow:      none;
 
   /* text */
-  --faq-heading:     #F1F5F9;
-  --faq-text:        #C7D0DE;
-  --faq-muted:       #94A3B8;
+  --faq-heading:     #1B1917;
+  --faq-text:        #4B453D;
+  --faq-muted:       #6B645A;
 
   /* accents */
-  --faq-accent:      #22D3EE;   /* the readable accent: links, kickers */
-  --faq-accent-soft: rgba(34, 211, 238, 0.10);
-  --faq-focus:       #22D3EE;
+  --faq-accent:      #A3220B;   /* the readable accent: links, kickers.
+                                   Was #EC3013, which measured 2.91 to 3.60:1
+                                   on this page's grounds and was not. */
+  --faq-accent-soft: rgba(236, 48, 19, 0.10);
+  --faq-focus:       #EC3013;
 }
 
 /* The light theme: a deliberate choice, never a system default. */
@@ -77,17 +83,17 @@
   --faq-bg-alt:      #F4F6FB;
   --faq-card:        #FFFFFF;
   --faq-card-hover:  #FAFBFF;
-  --faq-border:      rgba(79, 70, 229, 0.22);
+  --faq-border:      rgba(27, 25, 23, 0.22);
   --faq-border-soft: #E3E8F0;
-  --faq-shadow:      0 1px 2px rgba(15, 23, 42, 0.07);
+  --faq-shadow:      none;
 
-  --faq-heading:     #0F172A;
+  --faq-heading:     #1B1917;
   --faq-text:        #2B3444;
   --faq-muted:       #5B6472;
 
-  --faq-accent:      #4F46E5;
-  --faq-accent-soft: rgba(79, 70, 229, 0.09);
-  --faq-focus:       #4F46E5;
+  --faq-accent:      #1B1917;
+  --faq-accent-soft: rgba(27, 25, 23, 0.09);
+  --faq-focus:       #1B1917;
 }
 
 /* corporate.css paints the body navy for the dark-only pages.
@@ -105,7 +111,7 @@ body {
 .faq-page summary:focus-visible {
   outline: 2px solid var(--faq-focus);
   outline-offset: 3px;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 /* The navigation and the footer are dark bands in both themes, so
@@ -115,13 +121,13 @@ body {
 .faq-page .nav a:focus-visible,
 .faq-page .nav button:focus-visible,
 .faq-page .footer a:focus-visible {
-  outline-color: #22D3EE;
+  outline-color: #A3220B;
 }
 
-/* The theme control is the shared .nav-theme icon button from
-   corporate.css. The text button that used to sit here, reading
-   the literal word Dark, is gone: the site carries an icon on
-   every page and no words. */
+/* The theme control is gone site-wide as of the 2026-08-18
+   redesign: the palette is mono, so the button had nothing left
+   to switch. This page carried a text button reading the literal
+   word Dark, then the shared icon button, and now neither. */
 
 /* ---------- hero ---------- */
 
@@ -142,10 +148,9 @@ body {
 
 .faq-title {
   font-size: clamp(1.5rem, 3.4vw, 2.1rem);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.09em;
-  line-height: 1.25;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   color: var(--faq-heading);
   margin-bottom: 20px;
 }
@@ -161,7 +166,7 @@ body {
 .faq-key {
   background: var(--faq-card);
   border: 1px solid var(--faq-border);
-  border-radius: 12px;
+  border-radius: 0;
   box-shadow: var(--faq-shadow);
   padding: 22px 24px 18px;
   max-width: 46em;
@@ -169,9 +174,8 @@ body {
 
 .faq-key h2 {
   font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
   margin-bottom: 12px;
 }
@@ -218,7 +222,7 @@ body {
   color: var(--faq-accent);
   background: var(--faq-accent-soft);
   border: 1px solid var(--faq-border);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 14px;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
@@ -234,7 +238,7 @@ body {
   color: var(--faq-accent);
   background: transparent;
   border: 1.5px solid var(--faq-border);
-  border-radius: 999px;
+  border-radius: 0;
   padding: 6px 16px;
   cursor: pointer;
   margin-left: auto;
@@ -265,9 +269,8 @@ body {
 
 .faq-group-title {
   font-size: 1.12rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
 }
 
@@ -285,7 +288,7 @@ body {
 .faq-item {
   background: var(--faq-card);
   border: 1px solid var(--faq-border-soft);
-  border-radius: 12px;
+  border-radius: 0;
   margin-bottom: 10px;
   overflow: hidden;
   transition: border-color 0.15s ease, background-color 0.15s ease;
@@ -326,7 +329,7 @@ body {
   content: "";
   position: absolute;
   background: var(--faq-accent);
-  border-radius: 1px;
+  border-radius: 0;
   transition: transform 0.18s ease, opacity 0.18s ease;
 }
 
@@ -368,7 +371,7 @@ body {
 .faq-contact-card {
   background: var(--faq-card);
   border: 1px solid var(--faq-border);
-  border-radius: 14px;
+  border-radius: 0;
   box-shadow: var(--faq-shadow);
   padding: 30px 30px 26px;
   max-width: 46em;
@@ -376,9 +379,8 @@ body {
 
 .faq-contact-card h2 {
   font-size: 1.02rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.11em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
   color: var(--faq-heading);
   margin-bottom: 12px;
 }
@@ -449,36 +451,36 @@ body {
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link" href="team.html">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </nav>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link is-active" href="index.html" aria-current="page">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link" href="team.html">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
   </div>
 </header>
 
@@ -657,7 +659,7 @@ body {
         <div class="faq-a">
           <p>You earn on what the people in your organisation buy, never on what you buy yourself. Each month the company walks up the tree from every buyer and pays 10 percent to their sponsor, then 5, 5, 3 and 2 percent to the next four Conductors above.</p>
           <p>Those five percentages apply to Commissionable Volume (CV), not to the price on the receipt.</p>
-          <a class="faq-more" href="comp-plan.html">Read the compensation brochure</a>
+          <a class="faq-more" href="comp-plan-full.html">Read the compensation brochure</a>
         </div>
       </details>
 
@@ -695,7 +697,7 @@ body {
         <div class="faq-a">
           <p>Five rungs: Member, Builder, Leader, Director and Executive. Member is simply the name of the first rung, which everybody in the tree holds by default.</p>
           <p>The requirements climb from a qualified month with two active legs, up to Team Volume (TV) of 40,000.00 with two legs each holding a Leader or higher. Every requirement on a rung has to be met in the same month.</p>
-          <a class="faq-more" href="comp-plan.html">Every rank requirement in full</a>
+          <a class="faq-more" href="comp-plan-full.html">Every rank requirement in full</a>
         </div>
       </details>
 
@@ -913,7 +915,7 @@ body {
         <summary><span class="faq-sign" aria-hidden="true"></span><h3 class="faq-q">Where can I read the actual rules rather than a summary?</h3></summary>
         <div class="faq-a">
           <p>The compensation brochure is the one document that governs. If any page on this site disagrees with it, including this one, the brochure is right and the page is wrong.</p>
-          <a class="faq-more" href="comp-plan.html">The compensation brochure</a>
+          <a class="faq-more" href="comp-plan-full.html">The compensation brochure</a>
           <p><a class="faq-more" href="library.html">The library, for everything else</a></p>
         </div>
       </details>
@@ -952,7 +954,7 @@ body {
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h3 class="footer-head">Learn</h3>
         <a class="flink" href="team.html">The team</a>
@@ -972,6 +974,18 @@ body {
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 

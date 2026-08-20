@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Orvanna mark, small optical cut: 16px and under. Bar 29 x 15.5, inset 4.5. -->
+  <rect x="30.5" y="4.5" width="29" height="15.5" fill="#EC3013"/>
+  <rect x="44" y="32" width="15.5" height="29" fill="#1B1917"/>
+  <rect x="4.5" y="44" width="29" height="15.5" fill="#1B1917"/>
+  <rect x="4.5" y="4.5" width="15.5" height="29" fill="#1B1917"/>
+</svg>

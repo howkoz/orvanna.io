@@ -5,9 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Team</title>
 <meta name="description" content="The real Orvanna team: one human founder and ten artificial intelligence agents who plan, build, verify, and support this property. Demonstration company, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=cef144c6cb42">
-<link rel="stylesheet" href="css/corporate.css?v=cef144c6cb42">
-<link rel="stylesheet" href="css/site-chrome.css?v=cef144c6cb42">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=dc01918c3035">
+<link rel="stylesheet" href="css/corporate.css?v=dc01918c3035">
+<link rel="stylesheet" href="css/site-chrome.css?v=dc01918c3035">
 <!-- Theme boot. Applies the stored choice before first paint, so no page ever
      flashes the wrong palette. Dark is the default everywhere, so a visitor who
      never touches the theme icon sees exactly what they saw before. One key for
@@ -24,7 +24,369 @@
 </script>
 <!-- Shared chrome: the theme control and the Support control, for every
      corporate page. Replaces the per-page copies of both. -->
-<script src="js/site-chrome.js?v=cef144c6cb42" defer></script>
+<script src="js/site-chrome.js?v=dc01918c3035" defer></script>
+<style>
+/* ============================================================
+   THE TEAM PAGE, REBUILT 2026-08-19 from Team.dc.html.
+
+   The order is inverted. The old page opened with the roster and
+   put the reason to trust it at the bottom; this one leads with
+   the rule, the proof it produced, and the two gates that
+   enforced it, and meets the nine specialists last. A reader who
+   stops after the first screen has read the only claim that
+   matters.
+
+   TWO INTERACTIONS.
+     The four-stop gate walk is one index of state: pick a step
+     and the panel beneath it, and the lit box in the loop strip,
+     both follow.
+     The roster is nine native <details>. No script is involved
+     at all, which is why the rows still open with scripting off
+     -- the failure mode the old scroll-reveal block had, in the
+     one place it would have hurt most.
+
+   THE SCROLL REVEAL IS GONE. It was ~120 lines whose own comments
+   admitted the observer and the sweep both lose to a fast scroll,
+   with an unconditional 2.5-second deadline doing the real work.
+   Everything on this page is authored visible.
+   ============================================================ */
+
+.tm-frame {
+  max-width: 1180px;
+  margin: 0 auto;
+  border-left: 2px solid #1B1917;
+  border-right: 2px solid #1B1917;
+  background: #EAE4D9;
+  color: #4B453D;
+  font-size: 15px;
+  line-height: 1.55;
+}
+.tm-band { border-bottom: 2px solid #1B1917; }
+/* A zero-specificity reset, so every rule below still wins its own margin.
+   The same rule written as `.tm-frame p` would outrank a bare class and
+   flatten the whole page's vertical rhythm. */
+.tm-frame :where(p, h1, h2, h3, dl, dd, ul, ol) { margin: 0; padding: 0; }
+.tm-frame :where(ul, ol) { list-style: none; }
+
+/* THE DESIGN'S --faint (#8A8278) IS NOT USED ON PAPER HERE.
+   It measures 2.99:1 against the paper ground, which fails the build's
+   own floor and fails WCAG AA badly at the 10-11px these labels are set
+   at. Every one of them is --quiet (#6B645A) instead: 4.60:1 on paper,
+   4.99:1 on the raised panel. The same substitution was made on
+   comp-plan.html, so the two pages agree. --faint survives on the ink
+   ground, where its lighter value is the correct one. */
+
+.tm-eyebrow {
+  margin: 0;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: #A3220B;
+}
+.tm-eyebrow-q { color: #8F8981; }
+.tm-eyebrow-l { color: #FF6A4A; }
+.tm-eyebrow-d { color: #A3220B; font-size: 10.5px; letter-spacing: 0.18em; }
+
+/* ---------- the opening ---------- */
+
+.tm-hero { display: grid; grid-template-columns: 1.35fr 0.65fr; }
+.tm-hero-a { padding: 52px 34px 46px; }
+.tm-hero-b {
+  padding: 52px 30px 46px; background: #F1EDE6;
+  border-left: 1px solid rgba(27, 25, 23, 0.25);
+}
+.tm-hero-a h1 {
+  margin: 20px 0 0;
+  font-size: 58px; font-weight: 800; line-height: 0.98;
+  letter-spacing: -0.035em; color: #1B1917; max-width: 15ch;
+  text-wrap: balance;
+}
+.tm-lede { margin: 22px 0 0; max-width: 58ch; font-size: 16px; line-height: 1.6; color: #4B453D; }
+.tm-lede + .tm-lede { margin-top: 16px; }
+
+.tm-human { display: flex; align-items: baseline; gap: 12px; margin-top: 18px; }
+.tm-human b { font-size: 15px; font-weight: 700; color: #1B1917; }
+.tm-human span {
+  margin-left: auto; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase; color: #6B645A;
+}
+.tm-human-note { margin: 6px 0 0; font-size: 13px; line-height: 1.5; color: #6B645A; }
+
+.tm-count { margin: 18px 0 0; border-top: 2px solid #1B1917; }
+.tm-count > div {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  padding: 13px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.tm-count dt { font-size: 13.5px; color: #4B453D; }
+.tm-count dd { margin: 0; font-size: 14px; font-weight: 700; color: #1B1917; font-variant-numeric: tabular-nums; }
+
+.tm-total { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 14px 0 0; }
+.tm-total b { font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #1B1917; }
+.tm-total span { font-size: 22px; font-weight: 800; letter-spacing: -0.03em; color: #1B1917; font-variant-numeric: tabular-nums; }
+.tm-total-note { margin: 8px 0 0; font-size: 12.5px; line-height: 1.5; color: #6B645A; }
+
+/* ---------- the proof band, on ink ---------- */
+
+.tm-proof {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  background: #1B1917; color: #C9C6C1;
+}
+.tm-fig { padding: 24px 24px 26px; }
+.tm-fig + .tm-fig { border-left: 1px solid #4A453F; }
+.tm-fig.is-lit { background: #232019; }
+.tm-fig b {
+  display: block; font-size: 40px; font-weight: 800; line-height: 1;
+  letter-spacing: -0.035em; color: #F8F7F5; font-variant-numeric: tabular-nums;
+}
+.tm-fig.is-lit b { color: #FF6A4A; }
+.tm-fig span {
+  display: block; margin-top: 10px;
+  font-size: 10px; font-weight: 700; line-height: 1.45;
+  letter-spacing: 0.12em; text-transform: uppercase; color: #8F8981;
+}
+
+/* ---------- numbered section heads ---------- */
+
+.tm-head { padding: 34px 34px 12px; }
+.tm-head-row { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.tm-num { font-size: 11px; font-weight: 700; letter-spacing: 0.2em; color: #6B645A; }
+.tm-head h2 { margin: 0; font-size: 30px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #1B1917; }
+.tm-hint { font-size: 12.5px; color: #6B645A; }
+.tm-head-lede { margin: 12px 0 0; max-width: 78ch; font-size: 15.5px; line-height: 1.55; color: #4B453D; }
+.tm-split { border-top: 1px solid rgba(27, 25, 23, 0.25); margin-top: 20px; }
+
+/* ---------- 01, the four stops ---------- */
+
+.tm-gates { display: grid; grid-template-columns: minmax(0, 1fr) 320px; }
+.tm-gate-main { display: flex; flex-direction: column; }
+.tm-stops { display: grid; grid-template-columns: repeat(4, 1fr); border-bottom: 1px solid rgba(27, 25, 23, 0.25); }
+.tm-stop {
+  display: block; width: 100%; text-align: left;
+  padding: 16px 18px 18px; border: 0; border-radius: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent; color: #4B453D; font: inherit; cursor: pointer;
+}
+.tm-stop + .tm-stop { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.tm-stop:hover { background: #F1EDE6; }
+.tm-stop.is-on { background: #1B1917; color: #EAE4D9; border-bottom-color: #EC3013; }
+.tm-stop.is-on:hover { background: #1B1917; }
+.tm-stop b { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.75; }
+.tm-stop span { display: block; margin-top: 6px; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+
+.tm-gate-panel { padding: 26px 30px 30px; flex: 1 0 auto; }
+.tm-gate-panel h3 { margin: 12px 0 0; font-size: 26px; font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; color: #1B1917; }
+.tm-gate-body { margin: 12px 0 0; max-width: 62ch; font-size: 15px; line-height: 1.6; color: #4B453D; }
+.tm-gate-facts { margin: 22px 0 0; border-top: 2px solid #1B1917; }
+.tm-gate-facts > div {
+  display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 16px;
+  padding: 14px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.tm-gate-facts dt { font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #6B645A; }
+.tm-gate-facts dd { margin: 0; font-size: 14.5px; line-height: 1.5; color: #4B453D; }
+.tm-gate-facts .tm-onfail { border-bottom: 2px solid #EC3013; background: rgba(236, 48, 19, 0.06); padding-left: 0; }
+.tm-gate-facts .tm-onfail dt { color: #B52309; }
+
+/* The loop is anchored to the bottom of the column so the panel fills the
+   grid row against the taller phase rail with content rather than padding,
+   and the reader keeps their place in the cycle whichever stop is open. */
+.tm-loop { margin-top: auto; padding: 22px 30px 24px; background: #1B1917; color: #C9C6C1; }
+.tm-loop-steps {
+  display: grid; grid-template-columns: repeat(3, 1fr 14px) 1fr; gap: 8px;
+  align-items: center; margin: 14px 0 0; padding: 0; list-style: none;
+}
+.tm-loop-arrow { text-align: center; font-size: 12px; line-height: 1; color: #8F8981; }
+.tm-loop-step {
+  padding: 9px 8px; text-align: center;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  border: 1px solid #4A453F; color: #8F8981;
+}
+.tm-loop-step.is-on { background: #FF4A26; border-color: #FF4A26; color: #17181A; }
+.tm-loop-note {
+  display: grid; grid-template-columns: 16px 1fr; gap: 14px;
+  margin: 16px 0 0; font-size: 13px; line-height: 1.55; color: #C9C6C1;
+}
+.tm-loop-note span { width: 11px; height: 11px; background: #FF6A4A; margin-top: 5px; }
+
+.tm-phases { padding: 26px 26px 30px; background: #F1EDE6; border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.tm-phase-list { margin: 16px 0 0; padding: 0; list-style: none; border-top: 2px solid #1B1917; }
+.tm-phase-list li { padding: 15px 0; border-bottom: 1px solid rgba(27, 25, 23, 0.22); }
+.tm-phase-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.tm-phase-head b { font-size: 14.5px; font-weight: 700; color: #1B1917; }
+.tm-phase-head span { font-size: 11px; font-weight: 600; letter-spacing: 0.06em; color: #6B645A; white-space: nowrap; }
+.tm-phase-body { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: #4B453D; }
+.tm-passed {
+  display: inline-block; margin-top: 10px; padding: 5px 9px;
+  border: 1px solid rgba(27, 25, 23, 0.4);
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #4B453D;
+}
+.tm-built { margin: 14px 0 0; font-size: 12.5px; line-height: 1.5; color: #6B645A; }
+
+/* ---------- 02, the two named people ---------- */
+
+.tm-leads { display: grid; grid-template-columns: 1fr 1fr; }
+.tm-lead { display: grid; grid-template-columns: 150px minmax(0, 1fr); }
+.tm-lead + .tm-lead { border-left: 1px solid rgba(27, 25, 23, 0.25); }
+.tm-portrait { background: #D9D2C6; }
+.tm-portrait img {
+  display: block; width: 100%; height: 100%;
+  object-fit: cover; filter: grayscale(1) contrast(1.06);
+}
+.tm-lead-mark {
+  display: grid; place-items: center;
+  background: #F1EDE6; border-right: 1px solid rgba(27, 25, 23, 0.25);
+}
+.tm-fable { width: 64px; height: 64px; display: block; }
+.tm-lead-body { padding: 26px 26px 30px; }
+.tm-role-tag {
+  display: inline-block; padding: 5px 9px; background: #1B1917;
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: #EAE4D9;
+}
+.tm-lead-body h3 { margin: 14px 0 0; font-size: 24px; font-weight: 800; line-height: 1.1; letter-spacing: -0.025em; color: #1B1917; }
+.tm-lead-role { margin: 6px 0 0; font-size: 12.5px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: #6B645A; }
+.tm-lead-body p + p { margin-top: 12px; font-size: 14px; line-height: 1.55; color: #4B453D; }
+
+/* ---------- 03, the nine ---------- */
+
+.tm-roster { border-top: 1px solid rgba(27, 25, 23, 0.25); margin-top: 20px; }
+.tm-roster-head, .tm-row > summary {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr) 226px 124px 26px;
+  gap: 16px; align-items: center;
+}
+.tm-roster-head {
+  padding: 12px 34px; border-bottom: 2px solid #1B1917;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #6B645A;
+}
+.tm-row > summary {
+  padding: 15px 34px; border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+  cursor: pointer; list-style: none;
+}
+.tm-row > summary::-webkit-details-marker { display: none; }
+.tm-row > summary:hover { background: #F1EDE6; }
+.tm-row[open] > summary { background: rgba(236, 48, 19, 0.05); }
+.tm-cell-mark { display: grid; place-items: center; }
+.tm-mark { width: 36px; height: 36px; display: block; }
+.tm-cell-name { font-size: 15px; font-weight: 700; line-height: 1.25; color: #1B1917; }
+.tm-cell-role { font-size: 13.5px; line-height: 1.3; color: #4B453D; }
+.tm-cell-phase { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; color: #4B453D; }
+.tm-cell-sign { font-size: 17px; font-weight: 700; line-height: 1; color: #6B645A; transition: transform 0.2s ease; }
+.tm-row[open] .tm-cell-sign { transform: rotate(45deg); color: #B52309; }
+.tm-row-body {
+  padding: 4px 34px 22px 114px;
+  background: rgba(236, 48, 19, 0.05);
+  border-bottom: 1px solid rgba(27, 25, 23, 0.22);
+}
+.tm-row-body p { max-width: 72ch; font-size: 14.5px; line-height: 1.6; color: #4B453D; }
+.tm-badge {
+  display: inline-block; margin-top: 12px; padding: 5px 10px;
+  border: 1px solid rgba(27, 25, 23, 0.4);
+  font-size: 9.5px; font-weight: 700; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #4B453D;
+}
+
+/* ---------- the closing band ---------- */
+
+.tm-close { display: grid; grid-template-columns: 1fr 0.85fr; background: #1B1917; color: #C9C6C1; }
+.tm-close-a { padding: 38px 34px 42px; }
+.tm-close-b { padding: 38px 34px 42px; background: #232019; border-left: 1px solid #4A453F; }
+.tm-close-a h2 { margin: 16px 0 0; font-size: 34px; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; color: #F8F7F5; max-width: 18ch; }
+.tm-close-a p { margin: 16px 0 0; max-width: 54ch; font-size: 14.5px; line-height: 1.65; color: #C9C6C1; }
+.tm-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.tm-btn {
+  display: inline-block; padding: 15px 22px;
+  font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; text-decoration: none; border-radius: 0;
+  border: 2px solid transparent;
+}
+.tm-btn-solid { background: #EC3013; color: #FFFFFF; }
+.tm-btn-solid:hover { background: #FF6A4A; color: #17181A; }
+.tm-btn-ghost { border-color: #C9C6C1; color: #F8F7F5; }
+.tm-btn-ghost:hover { border-color: #FF6A4A; color: #FF6A4A; }
+.tm-claims { margin: 18px 0 0; padding: 0; list-style: none; border-top: 2px solid #4A453F; }
+.tm-claims li {
+  position: relative; padding: 14px 0 14px 30px;
+  border-bottom: 1px solid #4A453F;
+  font-size: 13.5px; line-height: 1.55; color: #C9C6C1;
+}
+.tm-claims li::before {
+  content: ""; position: absolute; left: 0; top: 19px;
+  width: 11px; height: 11px; background: #FF6A4A;
+}
+.tm-claims-note { margin: 16px 0 0; font-size: 12.5px; line-height: 1.55; color: #8F8981; }
+
+.tm-strip {
+  padding: 20px 34px 24px; background: #1B1917; color: #8F8981;
+  border-top: 1px solid #4A453F;
+  font-size: 12px; line-height: 1.5;
+  display: flex; gap: 18px; flex-wrap: wrap;
+}
+.tm-strip span:last-child { margin-left: auto; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1040px) {
+  .tm-proof { grid-template-columns: repeat(3, 1fr); }
+  .tm-fig:nth-child(4) { border-left: 0; }
+  .tm-fig:nth-child(n+4) { border-top: 1px solid #4A453F; }
+  .tm-roster-head, .tm-row > summary { grid-template-columns: 56px minmax(0, 1fr) 190px 104px 26px; }
+}
+@media (max-width: 900px) {
+  .tm-hero, .tm-gates, .tm-leads, .tm-close { grid-template-columns: 1fr; }
+  .tm-hero-b, .tm-phases, .tm-close-b { border-left: 0; border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .tm-close-b { border-top-color: #4A453F; }
+  .tm-lead + .tm-lead { border-left: 0; border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .tm-hero-a h1 { font-size: 42px; }
+  .tm-stops { grid-template-columns: 1fr 1fr; }
+  .tm-stop:nth-child(3) { border-left: 0; }
+  .tm-stop:nth-child(n+3) { border-top: 1px solid rgba(27, 25, 23, 0.25); }
+  .tm-loop-steps { grid-template-columns: 1fr 1fr; }
+  .tm-loop-arrow { display: none; }
+  .tm-roster-head { display: none; }
+  .tm-row > summary { grid-template-columns: 48px minmax(0, 1fr) 26px; row-gap: 6px; }
+  .tm-cell-role, .tm-cell-phase { grid-column: 2; }
+  .tm-row-body { padding-left: 34px; }
+}
+@media (max-width: 620px) {
+  .tm-frame { border-left: 0; border-right: 0; }
+  .tm-proof { grid-template-columns: 1fr 1fr; }
+  .tm-fig:nth-child(n+2) { border-top: 1px solid #4A453F; }
+  .tm-fig:nth-child(odd) { border-left: 0; }
+  .tm-hero-a, .tm-hero-b, .tm-head, .tm-gate-panel, .tm-loop, .tm-phases,
+  .tm-lead-body, .tm-close-a, .tm-close-b, .tm-strip { padding-left: 20px; padding-right: 20px; }
+  .tm-roster-head, .tm-row > summary, .tm-row-body { padding-left: 20px; padding-right: 20px; }
+  .tm-lead { grid-template-columns: 110px minmax(0, 1fr); }
+  .tm-hero-a h1 { font-size: 32px; }
+  .tm-close-a h2 { font-size: 27px; }
+  .tm-strip span:last-child { margin-left: 0; }
+}
+
+/* ---------- print ---------- */
+
+@media print {
+  .tm-frame { border: 0; max-width: none; background: #FFFFFF; color: #1A1A1A; }
+  .tm-band { border-bottom: 1px solid #C7CBD6; }
+  .tm-proof, .tm-loop, .tm-close, .tm-close-b, .tm-strip {
+    background: #FFFFFF; color: #1A1A1A; border-color: #C7CBD6;
+  }
+  .tm-fig b, .tm-close-a h2, .tm-loop-note, .tm-claims li { color: #000000; }
+  .tm-fig span, .tm-claims-note { color: #3D3D3D; }
+  .tm-fig + .tm-fig, .tm-loop-step { border-color: #C7CBD6; }
+  .tm-loop-step.is-on { background: #FFFFFF; border-color: #A3220B; color: #000000; }
+  .tm-stop.is-on { background: #FFFFFF; color: #000000; border-bottom-color: #A3220B; }
+  .tm-btn { border-color: #000000; color: #000000; background: #FFFFFF; }
+  /* Paper has no disclosure, so a closed row is asked to print open.
+     The engines that expose ::details-content honour this; the ones that
+     do not print the roster in whatever state the reader left it, which
+     is the honest fallback -- the row is never half-drawn either way. */
+  .tm-row > summary { list-style: none; }
+  .tm-row::details-content { content-visibility: visible !important; }
+  .tm-row-body { background: #FFFFFF; }
+  .tm-cell-sign { display: none; }
+  .tm-hero, .tm-leads, .tm-gates, .tm-row, .tm-fig { break-inside: avoid; }
+  a { color: #000000; }
+  @page { margin: 16mm; }
+}
+</style>
 </head>
 <body>
 
@@ -32,398 +394,340 @@
 <header class="nav">
   <div class="nav-inner">
     <a class="nav-brand" href="index.html" aria-label="Orvanna home">
-      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+          <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+          <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+          <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+          <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+        </svg>
+      </span>
       <span class="brand-word">Orvanna</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
-      <a class="nav-link" href="index.html">Learn</a>
-      <a class="nav-link" href="shop.html">Shop</a>
-      <a class="nav-link" href="library.html">Library</a>
-      <a class="nav-link" href="comp-plan.html">Plan</a>
-      <a class="nav-link" href="conductor.html">Conductors</a>
-      <a class="nav-link is-active" href="team.html" aria-current="page">Team</a>
-      <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
-      <span class="nav-link is-soon" aria-disabled="true">Enroll<span class="soon-pill">soon</span></span>
-      <a class="nav-signin" href="login.html">Sign In</a>
-      <button class="nav-theme" type="button" data-theme-toggle
-              aria-label="Switch to the light theme">
-        <svg class="icon-sun" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="1.8"/>
-          <g stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-            <line x1="12" y1="2.5" x2="12" y2="5"/><line x1="12" y1="19" x2="12" y2="21.5"/>
-            <line x1="2.5" y1="12" x2="5" y2="12"/><line x1="19" y1="12" x2="21.5" y2="12"/>
-            <line x1="5.4" y1="5.4" x2="7.2" y2="7.2"/><line x1="16.8" y1="16.8" x2="18.6" y2="18.6"/>
-            <line x1="18.6" y1="5.4" x2="16.8" y2="7.2"/><line x1="7.2" y1="16.8" x2="5.4" y2="18.6"/>
-          </g>
-        </svg>
-        <svg class="icon-moon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M 19 15.2 A 8.4 8.4 0 0 1 8.8 5 a 8.6 8.6 0 1 0 10.2 10.2 z"
-                fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-        </svg>
-      </button>
-    </nav>
+  <button class="nav-disclosure" type="button" data-nav-disclosure
+          aria-expanded="false" aria-controls="nav-menu">
+    <span class="nav-disclosure-mark" aria-hidden="true"></span>
+    <span class="nav-disclosure-label">Menu</span>
+  </button>
+  <div class="nav-menu" id="nav-menu">
+    <a class="nav-link" href="index.html">Learn</a>
+    <a class="nav-link" href="shop.html">Shop</a>
+    <a class="nav-link" href="library.html">Library</a>
+    <a class="nav-link" href="comp-plan.html">Plan</a>
+    <a class="nav-link" href="conductor.html">Conductors</a>
+    <a class="nav-link is-active" href="team.html" aria-current="page">Team</a>
+    <button class="nav-link nav-support" type="button" data-orvanna-support>Support</button>
+    <span class="nav-tail">
+      <a class="nav-signin" href="login.html">Sign in</a>
+      <a class="nav-cta" href="shop.html">Browse the catalog</a>
+    </span>
+  </div>
+</nav>
   </div>
 </header>
 
-<main>
+<main id="main">
+<div class="tm-frame">
 
-<!-- ============ TEAM INTRO ============ -->
-<section class="band glow-indigo" id="intro">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker">The team</p>
-      <h1 class="section-title">One human. Ten agents.</h1>
-      <p class="lead">Orvanna sells artificial intelligence (AI) agents, and its own staff are AI agents. One human owns the company and makes every user-visible decision; ten named agents do the rest. Eight of them planned, built, verified, and styled everything you see here, one manages those eight, and the newest one answers visitors. This page introduces each of them, and the rule that kept them honest.</p>
+  <!-- ============ THE RULE THIS PAGE IS ABOUT ============ -->
+  <section class="tm-band tm-hero" aria-labelledby="heroTitle">
+    <div class="tm-hero-a">
+      <p class="tm-eyebrow">The team &middot; one human, ten agents</p>
+      <h1 id="heroTitle">The builder never grades its own work</h1>
+      <p class="tm-lede">Orvanna sells AI agents, and its own staff are AI agents. One human owns the company and makes every user-visible decision. Ten named agents did the rest &mdash; and not one of them was allowed to mark its own homework.</p>
+      <p class="tm-lede">That rule is the only reason this page is worth reading. Every phase of the build ended at two independent gates, and both had to pass before anything closed. Here is what that produced, before you meet anybody.</p>
     </div>
-  </div>
-</section>
+    <aside class="tm-hero-b" aria-label="The roster">
+      <p class="tm-eyebrow">The roster</p>
+      <p class="tm-human"><b>One human founder</b><span>Not an agent</span></p>
+      <p class="tm-human-note">Owns the company and makes every user-visible decision.</p>
+      <dl class="tm-count">
+        <div><dt>Manager agent</dt><dd>1</dd></div>
+        <div><dt>Agents who built this</dt><dd>8</dd></div>
+        <div><dt>Agent who answers you</dt><dd>1</dd></div>
+      </dl>
+      <p class="tm-total"><b>Ten agents, ten jobs</b><span>10</span></p>
+      <p class="tm-total-note">Each agent owns exactly one job and is named for it. Nobody doubles up, which is why the gates can tell whose work failed.</p>
+    </aside>
+  </section>
 
-<!-- ============ LEADERSHIP: the founder, then the manager ============ -->
-<section class="band glow-cyan" id="leadership">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">Leadership</p>
-      <h2 class="section-title">The founder and the manager</h2>
+  <!-- ============ WHAT THE RULE PRODUCED ============ -->
+  <section class="tm-proof" aria-label="What the build produced">
+      <div class="tm-fig"><b>2</b><span>DAYS FROM SPECIFICATION TO LIVE</span></div>
+      <div class="tm-fig is-lit"><b>2</b><span>INDEPENDENT GATES PER PHASE</span></div>
+      <div class="tm-fig"><b>1,000</b><span>SYNTHETIC MEMBERS, REGENERATED BYTE FOR BYTE</span></div>
+      <div class="tm-fig"><b>24,000</b><span>ORDERS BEHIND THE DEMONSTRATION</span></div>
+      <div class="tm-fig"><b>6</b><span>MONTHS OF RUNS MATCHED TO THE CENT</span></div>
+  </section>
+
+  <!-- ============ 01 THE TWO GATES ============ -->
+  <section class="tm-band" aria-labelledby="gatesTitle">
+    <div class="tm-head">
+      <div class="tm-head-row"><span class="tm-num">01</span><h2 id="gatesTitle">Two gates, and what happens at each</h2></div>
+      <p class="tm-head-lede">Every phase ends here. The verifier recomputes the arithmetic from the specification prose alone; quality assurance traces every promise to something that works. Both must pass. One FAIL sends a defect list back to the builder and the phase stays open. Step through it.</p>
     </div>
-
-    <!-- The founder: the one human, the one circle among hexagons -->
-    <article class="profile-card glass glass-cyan reveal">
-      <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-      <!-- The founder's mark carries his photograph, which is the point of the
-           page: everyone else is a drawn hexagon, the one human is a face. The
-           dashed orbit ring, the indigo rim, and the single cyan node are kept
-           exactly as drawn, so the design language survives the change. -->
-      <div class="profile-mark" aria-hidden="true">
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <clipPath id="founderPortraitClip"><circle cx="48" cy="48" r="34"/></clipPath>
-          </defs>
-          <circle cx="48" cy="48" r="44" fill="none" stroke="#818CF8" stroke-width="1.4" opacity="0.35" stroke-dasharray="2 6"/>
-          <circle cx="48" cy="48" r="34" fill="#4F46E5"/>
-          <image href="assets/hk.jpg" x="14" y="14" width="68" height="68"
-                 clip-path="url(#founderPortraitClip)" preserveAspectRatio="xMidYMid slice"/>
-          <circle cx="48" cy="48" r="34" fill="none" stroke="#818CF8" stroke-width="2" opacity="0.7"/>
-          <circle cx="79" cy="26" r="5.5" fill="#22D3EE"/>
-        </svg>
+    <div class="tm-gates tm-split">
+      <div class="tm-gate-main">
+        <div class="tm-stops" role="group" aria-label="The four steps">
+        <button class="tm-stop" type="button" data-gate="0" aria-pressed="false"><b>STEP ONE</b><span>The builder</span></button>
+        <button class="tm-stop is-on" type="button" data-gate="1" aria-pressed="true"><b>STEP TWO</b><span>Gate one · verifier</span></button>
+        <button class="tm-stop" type="button" data-gate="2" aria-pressed="false"><b>STEP THREE</b><span>Gate two · QA</span></button>
+        <button class="tm-stop" type="button" data-gate="3" aria-pressed="false"><b>STEP FOUR</b><span>Phase closed</span></button>
+        </div>
+        <div class="tm-gate-panel">
+          <p class="tm-eyebrow" id="gateKicker">STEP TWO · GATE ONE</p>
+          <h3 id="gateTitle">The arithmetic is recomputed from scratch</h3>
+          <p class="tm-gate-body" id="gateBody">mlm-verifier reads the specification prose and recomputes every result independently — never the builder’s code, never its reasoning. Then it grades the phase PASS or FAIL. This is the gate that caught figures which looked right on the page and were not.</p>
+          <dl class="tm-gate-facts">
+            <div><dt>Who owns it</dt><dd id="gateOwner">mlm-verifier</dd></div>
+            <div><dt>It may not</dt><dd id="gateMayNot">Fix anything. It reports what it found and stops.</dd></div>
+            <div class="tm-onfail"><dt>On fail</dt><dd id="gateOnFail">FAIL, with the recomputed figure beside the submitted one.</dd></div>
+          </dl>
+        </div>
+        <div class="tm-loop">
+          <p class="tm-eyebrow tm-eyebrow-q">The loop, whichever step you are on</p>
+          <ol class="tm-loop-steps" id="loop">
+          <li class="tm-loop-step" data-loop="0">Builder</li>
+          <li class="tm-loop-arrow" aria-hidden="true">&rarr;</li>          <li class="tm-loop-step is-on" data-loop="1">Verifier</li>
+          <li class="tm-loop-arrow" aria-hidden="true">&rarr;</li>          <li class="tm-loop-step" data-loop="2">QA</li>
+          <li class="tm-loop-arrow" aria-hidden="true">&rarr;</li>          <li class="tm-loop-step" data-loop="3">Closed</li>
+        </ol>
+          <p class="tm-loop-note"><span aria-hidden="true"></span>A FAIL at either gate returns a defect list to the builder and the phase stays open. There is no third gate, no override, and no path that skips one.</p>
+        </div>
       </div>
-      <div>
-        <span class="role-tag tag-human">Human, founder</span>
-        <h3 class="profile-name">Howard Koziara</h3>
-        <p class="profile-role">Founder and Owner</p>
-        <p class="profile-bio">Howard is the one human in the company. He sets product direction and makes every user-visible decision: the product line, the prices, the compensation percentages, the brand. He brings a career in payment operations and payment strategy, and Orvanna is where that experience builds something entirely his own. Every open question in every specification defaults to his call.</p>
+      <aside class="tm-phases" aria-label="The four phases">
+        <p class="tm-eyebrow tm-eyebrow-d">The four phases</p>
+        <ol class="tm-phase-list">
+        <li>
+          <p class="tm-phase-head"><b>Foundation</b><span>Phase 1–2</span></p>
+          <p class="tm-phase-body">The rulebook and the database: schema, compensation plan specification, and a 1,000-member synthetic network with roughly 24,000 orders behind it.</p>
+          <span class="tm-passed">Both gates passed</span>
+        </li>
+        <li>
+          <p class="tm-phase-head"><b>The engine</b><span>Phase 3</span></p>
+          <p class="tm-phase-body">Volume rollups, rank evaluation, and monthly statements that lock when a run is finalised. Six months of runs matched to the cent by independent recomputation.</p>
+          <span class="tm-passed">Both gates passed</span>
+        </li>
+        <li>
+          <p class="tm-phase-head"><b>The portal</b><span>Phase 4–5</span></p>
+          <p class="tm-phase-body">The member office, the shop and the staff console, all reading live data. Every number is real engine output, and every page says what its figures are based on.</p>
+          <span class="tm-passed">Both gates passed</span>
+        </li>
+        <li>
+          <p class="tm-phase-head"><b>The property</b><span>This site</span></p>
+          <p class="tm-phase-body">The corporate site you are reading: designed, written, built and gated by the same team. Live at orvanna.io the same week it was specified.</p>
+          <span class="tm-passed">Both gates passed</span>
+        </li>
+        </ol>
+        <p class="tm-built">Built 13 to 14 August 2026. The site went live the same week it was specified.</p>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ============ 02 LEADERSHIP ============ -->
+  <section class="tm-band" aria-labelledby="leadTitle">
+    <div class="tm-head">
+      <div class="tm-head-row"><span class="tm-num">02</span><h2 id="leadTitle">Leadership</h2></div>
+    </div>
+    <div class="tm-leads tm-split">
+      <article class="tm-lead">
+        <div class="tm-portrait">
+          <img src="assets/hk.jpg" alt="Howard Koziara, founder" width="150" height="300">
+        </div>
+        <div class="tm-lead-body">
+          <span class="tm-role-tag">Human &middot; founder</span>
+          <h3>Howard Koziara</h3>
+          <p class="tm-lead-role">Founder and owner</p>
+          <p>The one human in the company. Sets product direction and makes every user-visible decision: the product line, the prices, the compensation percentages, the brand. Brings a career in payment operations and payment strategy. Every open question in every specification defaults to his call.</p>
+        </div>
+      </article>
+      <article class="tm-lead">
+        <div class="tm-lead-mark">
+          <svg class="tm-fable" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <line x1="24" y1="24" x2="24" y2="9" stroke="#1B1917" stroke-width="1.6"/>
+            <line x1="24" y1="24" x2="37" y2="16" stroke="#1B1917" stroke-width="1.6"/>
+            <line x1="24" y1="24" x2="37" y2="32" stroke="#1B1917" stroke-width="1.6"/>
+            <line x1="24" y1="24" x2="24" y2="39" stroke="#1B1917" stroke-width="1.6"/>
+            <line x1="24" y1="24" x2="11" y2="32" stroke="#1B1917" stroke-width="1.6"/>
+            <line x1="24" y1="24" x2="11" y2="16" stroke="#1B1917" stroke-width="1.6"/>
+            <rect x="21" y="6" width="6" height="6" fill="#1B1917"/>
+            <rect x="34" y="13" width="6" height="6" fill="#1B1917"/>
+            <rect x="34" y="29" width="6" height="6" fill="#1B1917"/>
+            <rect x="21" y="36" width="6" height="6" fill="#1B1917"/>
+            <rect x="8" y="29" width="6" height="6" fill="#1B1917"/>
+            <rect x="8" y="13" width="6" height="6" fill="#1B1917"/>
+            <rect x="19" y="19" width="10" height="10" fill="#EC3013"/>
+          </svg>
+        </div>
+        <div class="tm-lead-body">
+          <span class="tm-role-tag">AI agent &middot; manager</span>
+          <h3>Fable</h3>
+          <p class="tm-lead-role">Chief information officer</p>
+          <p>Manages the nine specialists: writes their charters, sequences the build phases, routes every result through both gates. Owns the deployment pipeline that put this site on orvanna.io, makes the calls Howard has delegated, and brings him the ones he has not. Above everything, enforces the one rule the whole build ran on.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ 03 THE NINE ============ -->
+  <section class="tm-band" aria-labelledby="rosterTitle">
+    <div class="tm-head">
+      <div class="tm-head-row"><span class="tm-num">03</span><h2 id="rosterTitle">Nine specialists, nine jobs</h2><span class="tm-hint">Open a row to read what it owns.</span></div>
+      <p class="tm-head-lede">Eight built this property; the ninth answers visitors. Every mark is redrawn as the shape of the job rather than the same outline with a different glyph inside &mdash; a stack of layers, a percent, two brackets, a check. You should be able to find an agent by silhouette without reading the name.</p>
+    </div>
+    <div class="tm-roster">
+      <p class="tm-roster-head" aria-hidden="true">
+        <span>Mark</span><span>Agent</span><span>Role</span><span>Phase</span><span></span>
+      </p>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><rect x="6" y="8" width="36" height="32" fill="none" stroke="#1b1917" stroke-width="2.6"/><rect x="14" y="16" width="20" height="16" fill="none" stroke="#1b1917" stroke-width="2"/><rect x="20" y="21" width="8" height="6" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">mlm-architect</span>
+            <span class="tm-cell-role">Chief Systems Architect</span>
+            <span class="tm-cell-phase">Phase 1–2</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Writes the rulebook: the schema specification, the compensation plan specification, and the worked examples every other agent builds against. When a specification is ambiguous, the ambiguity is the defect — and it belongs here.</p>
+            <p class="tm-badge">WRITES NO PRODUCTION CODE, BY DESIGN</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><rect x="7" y="11" width="34" height="7" fill="none" stroke="#1b1917" stroke-width="2.4"/><rect x="7" y="21" width="34" height="7" fill="none" stroke="#1b1917" stroke-width="2.4"/><rect x="7" y="31" width="34" height="7" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">mlm-db-engineer</span>
+            <span class="tm-cell-role">Head of Data Engineering</span>
+            <span class="tm-cell-phase">Phase 1–2</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Built the database: the migrations, the row-level security, and the 1,000-member synthetic world the whole demonstration runs on, with roughly 24,000 orders behind it.</p>
+            <p class="tm-badge">THE SEED REGENERATES BYTE FOR BYTE</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><line x1="13" y1="37" x2="35" y2="11" stroke="#ec3013" stroke-width="3"/><rect x="9" y="9" width="11" height="11" fill="none" stroke="#1b1917" stroke-width="2.6"/><rect x="28" y="28" width="11" height="11" fill="none" stroke="#1b1917" stroke-width="2.6"/></svg></span>
+            <span class="tm-cell-name">mlm-comp-engineer</span>
+            <span class="tm-cell-role">Head of Commission Engineering</span>
+            <span class="tm-cell-phase">Phase 3</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Built the commission engine: volume rollups, rank evaluation, and monthly runs that lock into statements nobody can edit afterward. A recomputed run supersedes rather than overwrites, so history stays intact.</p>
+            <p class="tm-badge">SIX MONTHS MATCHED TO THE CENT</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><polyline points="18,13 8,24 18,35" fill="none" stroke="#1b1917" stroke-width="3"/><polyline points="30,13 40,24 30,35" fill="none" stroke="#1b1917" stroke-width="3"/><rect x="21" y="21" width="6" height="6" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">mlm-site-builder</span>
+            <span class="tm-cell-role">Head of Web Engineering</span>
+            <span class="tm-cell-phase">Phase 4–5</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Built the working pages: the member office, the company dashboard, and the data wiring behind everything interactive on orvanna.io.</p>
+            <p class="tm-badge">EVERY ON-SCREEN NUMBER TRACES TO THE DATABASE</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><rect x="10" y="10" width="28" height="28" fill="none" stroke="#1b1917" stroke-width="2.6"/><line x1="24" y1="4" x2="24" y2="12" stroke="#1b1917" stroke-width="2.4"/><line x1="24" y1="36" x2="24" y2="44" stroke="#1b1917" stroke-width="2.4"/><line x1="4" y1="24" x2="12" y2="24" stroke="#1b1917" stroke-width="2.4"/><line x1="36" y1="24" x2="44" y2="24" stroke="#1b1917" stroke-width="2.4"/><rect x="20" y="20" width="8" height="8" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">orvanna-designer</span>
+            <span class="tm-cell-role">Design Director</span>
+            <span class="tm-cell-phase">This site</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Owns the look: the type scale, the brand marks, the rules and alignment that organise every user-facing page, including this one. If something here reads clearly at a glance, that was the job.</p>
+            <p class="tm-badge">ONE ACCENT PER SCREEN</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><line x1="8" y1="14" x2="40" y2="14" stroke="#1b1917" stroke-width="3"/><line x1="8" y1="24" x2="34" y2="24" stroke="#1b1917" stroke-width="3"/><line x1="8" y1="34" x2="26" y2="34" stroke="#1b1917" stroke-width="3"/><rect x="30" y="30" width="7" height="8" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">orvanna-writer</span>
+            <span class="tm-cell-role">Head of Content</span>
+            <span class="tm-cell-phase">This site</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Owns the words: every line of copy on this site, written under a strict honesty rule — no income claims, no fake social proof, no invented numbers. Wrote this row too, and kept the self-praise down.</p>
+            <p class="tm-badge">NO NUMBER APPEARS TWICE</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><polyline points="9,25 20,36 39,12" fill="none" stroke="#ec3013" stroke-width="4"/></svg></span>
+            <span class="tm-cell-name">mlm-verifier</span>
+            <span class="tm-cell-role">Head of Verification · gate one</span>
+            <span class="tm-cell-phase">Every phase</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>The first independent gate: recomputes every result from the specification prose alone and grades each phase PASS or FAIL. It never reads the builder&#x27;s reasoning, only its output.</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><rect x="8" y="11" width="7" height="7" fill="#1b1917"/><line x1="20" y1="14.5" x2="40" y2="14.5" stroke="#1b1917" stroke-width="2.6"/><rect x="8" y="21" width="7" height="7" fill="#ec3013"/><line x1="20" y1="24.5" x2="36" y2="24.5" stroke="#1b1917" stroke-width="2.6"/><rect x="8" y="31" width="7" height="7" fill="none" stroke="#1b1917" stroke-width="2.2"/><line x1="20" y1="34.5" x2="31" y2="34.5" stroke="#1b1917" stroke-width="2.6"/></svg></span>
+            <span class="tm-cell-name">mlm-qa</span>
+            <span class="tm-cell-role">Head of Quality Assurance · gate two</span>
+            <span class="tm-cell-phase">Every phase</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>The second independent gate: runs the acceptance checklist — promises first, evidence second. It reads what the page claims, then goes looking for the thing that does it.</p>
+          </div>
+        </details>
+        <details class="tm-row">
+          <summary>
+            <span class="tm-cell-mark"><svg class="tm-mark" aria-hidden="true" focusable="false" viewBox="0 0 48 48"><path d="M8 10 H40 V31 H22 L14 39 V31 H8 Z" fill="none" stroke="#1b1917" stroke-width="2.6" stroke-linejoin="round"/><rect x="15" y="18" width="5" height="5" fill="#1b1917"/><rect x="22" y="18" width="5" height="5" fill="#1b1917"/><rect x="29" y="18" width="5" height="5" fill="#ec3013"/></svg></span>
+            <span class="tm-cell-name">orvanna-concierge</span>
+            <span class="tm-cell-role">Head of Visitor Support</span>
+            <span class="tm-cell-phase">Live now</span>
+            <span class="tm-cell-sign" aria-hidden="true">+</span>
+          </summary>
+          <div class="tm-row-body">
+            <p>Answers visitors in the chat window that opens from Support, using the company&#x27;s own name — it greets you as Orvanna. It fields pricing questions, explains how the site and the member portal work, helps when a page misbehaves, and collects demonstration requests.</p>
+            <p class="tm-badge">THE ONLY AGENT A VISITOR TALKS TO</p>
+          </div>
+        </details>
+    </div>
+  </section>
+
+  <!-- ============ THE RULE, IN FULL ============ -->
+  <section class="tm-close" aria-labelledby="ruleTitle">
+    <div class="tm-close-a">
+      <p class="tm-eyebrow tm-eyebrow-l">The rule, in full</p>
+      <h2 id="ruleTitle">Why any of this is believable</h2>
+      <p>An agent that checks its own work will pass itself. So no agent here does. The verifier recomputes from the specification prose and never touches the code; quality assurance reads the promises and demands the artifact; the builder gets a defect list and no vote.</p>
+      <p>That is also why the numbers here can be stated plainly. Six months of commission runs were matched to the cent by independent recomputation, and the 1,000-member world regenerates byte for byte from its seed &mdash; so any result on this site can be reproduced on demand rather than taken on trust.</p>
+      <div class="tm-actions">
+        <a class="tm-btn tm-btn-solid" href="shop.html">Browse the catalog</a>
+        <a class="tm-btn tm-btn-ghost" href="index.html">Back to the story</a>
       </div>
-    </article>
-
-    <!-- Fable: Chief Information Officer (CIO), manages the agent team -->
-    <article class="profile-card is-manager glass reveal">
-      <span class="accent-bar" aria-hidden="true"></span>
-      <div class="profile-mark" aria-hidden="true">
-        <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-          <line x1="48" y1="48" x2="48" y2="22" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="70.5" y2="35" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="70.5" y2="61" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="48" y2="74" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="25.5" y2="61" stroke="#818CF8" stroke-width="1.8"/>
-          <line x1="48" y1="48" x2="25.5" y2="35" stroke="#818CF8" stroke-width="1.8"/>
-          <circle cx="48" cy="22" r="3.2" fill="#818CF8"/>
-          <circle cx="70.5" cy="35" r="3.2" fill="#818CF8"/>
-          <circle cx="70.5" cy="61" r="3.2" fill="#818CF8"/>
-          <circle cx="48" cy="74" r="3.2" fill="#818CF8"/>
-          <circle cx="25.5" cy="61" r="3.2" fill="#818CF8"/>
-          <circle cx="25.5" cy="35" r="3.2" fill="#818CF8"/>
-          <circle cx="48" cy="48" r="5" fill="#22D3EE"/>
-        </svg>
-      </div>
-      <div>
-        <span class="role-tag">AI agent, manager</span>
-        <h3 class="profile-name">Fable</h3>
-        <p class="profile-role">Chief Information Officer (CIO)</p>
-        <p class="profile-bio">Fable manages the specialists below: writes their charters, sequences the build phases, and routes every result through both verification gates. It owns the deployment pipeline that put this site on orvanna.io, makes the calls Howard has delegated, and brings him the ones he has not. Above everything, it enforces the one rule the whole build ran on: the builder never grades its own work.</p>
-      </div>
-    </article>
-  </div>
-</section>
-
-<!-- ============ THE SPECIALISTS ============ -->
-<section class="band glow-violet" id="specialists">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker kicker-light">The specialists</p>
-      <h2 class="section-title">Nine agents, nine jobs</h2>
-      <p class="lead">Each agent owns exactly one job and is named for it. The first eight built this property; the ninth answers questions about it. The marks below are their working identities, not mascots.</p>
     </div>
-    <div class="member-grid stagger reveal">
-
-      <!-- mlm-architect: nested hexagons, the blueprint -->
-      <article class="member glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <polygon points="72,48 60,68.8 36,68.8 24,48 36,27.2 60,27.2" fill="none" stroke="#818CF8" stroke-width="2" stroke-linejoin="round"/>
-            <circle cx="72" cy="48" r="2.8" fill="#818CF8"/>
-            <circle cx="24" cy="48" r="2.8" fill="#818CF8"/>
-            <circle cx="48" cy="48" r="4" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-architect</h3>
-        <p class="member-role">Chief Systems Architect</p>
-        <p class="member-bio">Writes the rulebook: the schema specification, the compensation plan specification, and the worked examples every other agent builds against. Writes no production code, by design.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- mlm-db-engineer: data layers -->
-      <article class="member glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <line x1="30" y1="36" x2="66" y2="36" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="30" y1="48" x2="66" y2="48" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="30" y1="60" x2="66" y2="60" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="30" cy="36" r="3" fill="#818CF8"/>
-            <circle cx="30" cy="48" r="3" fill="#818CF8"/>
-            <circle cx="30" cy="60" r="3" fill="#818CF8"/>
-            <circle cx="66" cy="48" r="4" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-db-engineer</h3>
-        <p class="member-role">Head of Data Engineering</p>
-        <p class="member-bio">Built the database: the migrations, the row-level security, and the 1,000-member synthetic world the whole demonstration runs on. The seed regenerates byte for byte, so any result can be reproduced on demand.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- mlm-comp-engineer: the percent mark -->
-      <article class="member glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <line x1="34" y1="64" x2="62" y2="32" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="36" cy="36" r="6" fill="none" stroke="#818CF8" stroke-width="3"/>
-            <circle cx="60" cy="60" r="6" fill="none" stroke="#818CF8" stroke-width="3"/>
-            <circle cx="48" cy="48" r="3.5" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-comp-engineer</h3>
-        <p class="member-role">Head of Commission Engineering</p>
-        <p class="member-bio">Built the commission engine: volume rollups, rank evaluation, and monthly commission runs that lock into statements no one can edit afterward. Every figure is computed to the cent, because the verifier checks.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- mlm-site-builder: code brackets -->
-      <article class="member glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <polyline points="38,36 26,48 38,60" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <polyline points="58,36 70,48 58,60" fill="none" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="48" cy="48" r="3.5" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-site-builder</h3>
-        <p class="member-role">Head of Web Engineering</p>
-        <p class="member-bio">Built the working pages: the member portal, the company dashboard, and the data wiring behind everything interactive on orvanna.io. If a number appears on screen, this agent connected it to the database that produced it.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- orvanna-designer: the compass -->
-      <article class="member glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="48" cy="48" r="16" fill="none" stroke="#818CF8" stroke-width="3"/>
-            <line x1="48" y1="26" x2="48" y2="34" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="48" y1="62" x2="48" y2="70" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="26" y1="48" x2="34" y2="48" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-            <line x1="62" y1="48" x2="70" y2="48" stroke="#818CF8" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="48" cy="48" r="4" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">orvanna-designer</h3>
-        <p class="member-role">Design Director</p>
-        <p class="member-bio">Owns the look: the glow design system, the brand marks, and the visual polish on every user-facing page, including this one. If something here reads clearly at a glance, that was the job.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- orvanna-writer: text lines with a cursor -->
-      <article class="member glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <line x1="30" y1="38" x2="66" y2="38" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="30" y1="48" x2="58" y2="48" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <line x1="30" y1="58" x2="50" y2="58" stroke="#818CF8" stroke-width="3.5" stroke-linecap="round"/>
-            <circle cx="57" cy="58" r="3.5" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">orvanna-writer</h3>
-        <p class="member-role">Head of Content</p>
-        <p class="member-bio">Owns the words: every line of copy on this site, written under a strict honesty rule, no income claims, no fake social proof, no invented numbers. Wrote this bio too, and kept the self-praise to a minimum.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- mlm-verifier: the check of nodes -->
-      <article class="member glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <polyline points="30,50 43,62 66,36" fill="none" stroke="#818CF8" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="30" cy="50" r="3" fill="#818CF8"/>
-            <circle cx="66" cy="36" r="3" fill="#818CF8"/>
-            <circle cx="43" cy="62" r="4" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-verifier</h3>
-        <p class="member-role">Head of Verification</p>
-        <p class="member-bio">The first independent gate: recomputes every result from the specification prose alone and grades each phase PASS or FAIL. It fixes nothing; it only reports what it found.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- mlm-qa: the checklist -->
-      <article class="member glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="32" cy="38" r="3.5" fill="#818CF8"/>
-            <line x1="42" y1="38" x2="66" y2="38" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="32" cy="52" r="3.5" fill="#22D3EE"/>
-            <line x1="42" y1="52" x2="60" y2="52" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="32" cy="66" r="3.5" fill="#818CF8"/>
-            <line x1="42" y1="66" x2="54" y2="66" stroke="#818CF8" stroke-width="3" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h3 class="member-name">mlm-qa</h3>
-        <p class="member-role">Head of Quality Assurance</p>
-        <p class="member-bio">The second independent gate: runs the Quality Assurance (QA) acceptance checklist, promises first, evidence second. No phase closes until every claim traces to a working artifact.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
-      <!-- orvanna-concierge: a speech bubble whose last dot is the lit node,
-           the one agent a visitor actually talks to -->
-      <article class="member glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <div class="member-mark" aria-hidden="true">
-          <svg viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
-            <polygon points="48,6 84.4,27 84.4,69 48,90 11.6,69 11.6,27" fill="#0A1226" stroke="#818CF8" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M32 33 h32 a5 5 0 0 1 5 5 v17 a5 5 0 0 1 -5 5 h-17 l-9 8 v-8 h-6 a5 5 0 0 1 -5 -5 v-17 a5 5 0 0 1 5 -5 z" fill="none" stroke="#818CF8" stroke-width="2.6" stroke-linejoin="round"/>
-            <circle cx="39" cy="46.5" r="2.7" fill="#818CF8"/>
-            <circle cx="48" cy="46.5" r="2.7" fill="#818CF8"/>
-            <circle cx="57" cy="46.5" r="4" fill="#22D3EE"/>
-          </svg>
-        </div>
-        <h3 class="member-name">orvanna-concierge</h3>
-        <p class="member-role">Head of Visitor Support</p>
-        <p class="member-bio">Answers visitors in the chat window that opens from Support in the navigation above, using the company's own name: it greets you as Orvanna. It fields pricing questions, explains how the site and the member portal work, helps when a page misbehaves, and collects demonstration requests, which is all it promises, because the founder is the only human here.</p>
-        <span class="role-tag">AI agent</span>
-      </article>
-
+    <div class="tm-close-b">
+      <p class="tm-eyebrow tm-eyebrow-q">What nobody here claims</p>
+      <ul class="tm-claims">
+        <li>No income is promised, implied, or described as typical anywhere on this site.</li>
+        <li>No customer story on any page is a real customer. Illustrations are labelled as illustrations.</li>
+        <li>No figure appears in two places. Where a number matters, one document owns it and the rest link to that document.</li>
+        <li>Nothing here was checked by the agent that made it. That is the whole of the rule, and it is the only claim on this page that the page itself cannot prove to you.</li>
+      </ul>
+      <p class="tm-claims-note">Orvanna is a demonstration company. The synthetic world is synthetic on purpose, and it says so on every page that shows a figure from it.</p>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- ============ THE BUILD STORY ============ -->
-<section class="band glow-cyan" id="build-story">
-  <div class="wrap">
-    <div class="reveal">
-      <p class="kicker">How it was built</p>
-      <h2 class="section-title on-dark">The builder never grades its own work</h2>
-      <p class="body-dark" style="margin-bottom: 44px;">This property was built in gated phases over two days, August 13 to 14, 2026. Every phase ends at two independent gates: a verifier that recomputes the math from the specifications, and a quality assurance gate that traces every promise to something that works. Both must pass to close a phase; one FAIL sends a defect list back to the builder.</p>
-    </div>
+  <p class="tm-strip">
+    <span>Orvanna is a demonstration company &middot; all data synthetic &middot; no real earnings, products or offers exist</span>
+    <span>Built 13&ndash;14 August 2026 &middot; every phase closed at two gates</span>
+  </p>
 
-    <!-- the two-gate figure -->
-    <div class="gate-figure reveal" role="img" aria-label="Build flow: the builder agent submits work to two independent gates, the verifier gate and the quality assurance gate. Both must pass before a phase closes. A fail returns a defect list to the builder.">
-      <svg viewBox="0 0 720 310" xmlns="http://www.w3.org/2000/svg">
-        <!-- connecting lines: builder to gates -->
-        <line x1="146" y1="140" x2="356" y2="88"  stroke="#818CF8" stroke-width="1.6" opacity="0.55"/>
-        <line x1="146" y1="164" x2="356" y2="216" stroke="#818CF8" stroke-width="1.6" opacity="0.55"/>
-        <!-- gates to phase closed -->
-        <line x1="424" y1="92"  x2="628" y2="146" stroke="#22D3EE" stroke-width="1.6" opacity="0.6"/>
-        <line x1="424" y1="212" x2="628" y2="158" stroke="#22D3EE" stroke-width="1.6" opacity="0.6"/>
-        <!-- fail path: dashed return -->
-        <path d="M 356 232 C 268 286, 176 268, 118 196" fill="none" stroke="#818CF8" stroke-width="1.4" stroke-dasharray="5 6" opacity="0.5"/>
-        <text x="248" y="290" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="13" fill="#94A3B8" letter-spacing="2">FAIL RETURNS A DEFECT LIST</text>
-
-        <!-- builder hexagon -->
-        <polygon points="110,110 144.6,130 144.6,170 110,190 75.4,170 75.4,130" fill="#0A1226" stroke="#818CF8" stroke-width="2.6" stroke-linejoin="round"/>
-        <circle cx="110" cy="138" r="3" fill="#818CF8"/>
-        <circle cx="98"  cy="160" r="3" fill="#818CF8"/>
-        <circle cx="122" cy="160" r="3" fill="#818CF8"/>
-        <line x1="110" y1="138" x2="98"  y2="160" stroke="#818CF8" stroke-width="1.6"/>
-        <line x1="110" y1="138" x2="122" y2="160" stroke="#818CF8" stroke-width="1.6"/>
-        <line x1="98"  y1="160" x2="122" y2="160" stroke="#818CF8" stroke-width="1.6"/>
-        <text x="110" y="216" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#F1F5F9" letter-spacing="3">BUILDER</text>
-
-        <!-- verifier gate hexagon -->
-        <polygon points="390,46 419.4,63 419.4,97 390,114 360.6,97 360.6,63" fill="#0A1226" stroke="#818CF8" stroke-width="2.6" stroke-linejoin="round"/>
-        <polyline points="378,80 387,89 403,68" fill="none" stroke="#22D3EE" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="390" y="34" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#F1F5F9" letter-spacing="3">VERIFIER GATE</text>
-
-        <!-- quality assurance gate hexagon -->
-        <polygon points="390,186 419.4,203 419.4,237 390,254 360.6,237 360.6,203" fill="#0A1226" stroke="#818CF8" stroke-width="2.6" stroke-linejoin="round"/>
-        <circle cx="378" cy="212" r="2.6" fill="#22D3EE"/>
-        <line x1="386" y1="212" x2="404" y2="212" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/>
-        <circle cx="378" cy="226" r="2.6" fill="#818CF8"/>
-        <line x1="386" y1="226" x2="400" y2="226" stroke="#818CF8" stroke-width="2.4" stroke-linecap="round"/>
-        <text x="390" y="276" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#F1F5F9" letter-spacing="3">QUALITY ASSURANCE GATE</text>
-
-        <!-- phase closed node -->
-        <circle cx="640" cy="152" r="22" fill="none" stroke="#22D3EE" stroke-width="1.4" opacity="0.35"/>
-        <circle cx="640" cy="152" r="9" fill="#22D3EE"/>
-        <text x="640" y="200" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="15" font-weight="700" fill="#F1F5F9" letter-spacing="3">PHASE CLOSED</text>
-        <text x="640" y="122" text-anchor="middle" font-family="Segoe UI, sans-serif" font-size="12" fill="#94A3B8" letter-spacing="2">BOTH MUST PASS</text>
-      </svg>
-    </div>
-    <p class="gate-caption reveal">Two green PASS grades close a phase; the builder never marks its own homework.</p>
-
-    <!-- the phase rail -->
-    <div class="phase-rail stagger reveal">
-      <article class="phase glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <p class="phase-num">Phase 1-2</p>
-        <h3 class="phase-name">Foundation</h3>
-        <p class="phase-body">The rulebook and the database: the schema, the compensation plan specification, and a 1,000-member synthetic network with roughly 24,000 orders behind it. The seed regenerates byte for byte.</p>
-      </article>
-      <article class="phase glass glass-cyan">
-        <span class="accent-bar bar-cyan" aria-hidden="true"></span>
-        <p class="phase-num">Phase 3</p>
-        <h3 class="phase-name">The engine</h3>
-        <p class="phase-body">The commission engine: volume rollups, rank evaluation, and monthly statements that lock when a run is finalized. Six months of runs were matched to the cent by independent recomputation.</p>
-      </article>
-      <article class="phase glass glass-violet">
-        <span class="accent-bar bar-violet" aria-hidden="true"></span>
-        <p class="phase-num">Phase 4-5</p>
-        <h3 class="phase-name">The portal</h3>
-        <p class="phase-body">The member office, the shop, and the staff console, all reading live data. Every number on the portal is real output of the engine, and every page says what its figures are based on.</p>
-      </article>
-      <article class="phase glass">
-        <span class="accent-bar" aria-hidden="true"></span>
-        <p class="phase-num">This site</p>
-        <h3 class="phase-name">The property</h3>
-        <p class="phase-body">The corporate site you are reading now: designed, written, built, and gated by the same team. It went live at orvanna.io the same week it was specified.</p>
-      </article>
-    </div>
-  </div>
-</section>
-
-<!-- ============ CALL TO ACTION ============ -->
-<section class="band glow-indigo cta" id="cta">
-  <div class="wrap cta-inner reveal">
-    <h2 class="section-title on-dark">See what they built</h2>
-    <p class="body-dark cta-sub">Browse the catalog the team built, or start the story from the beginning. Either way, you are looking at their work.</p>
-    <div class="cta-actions">
-      <a class="btn btn-solid" href="shop.html">Browse the catalog</a>
-      <a class="btn btn-ghost" href="index.html">Back to the story</a>
-    </div>
-  </div>
-</section>
-
+</div>
 </main>
 
 <!-- ============ FOOTER ============ -->
@@ -436,7 +740,7 @@
         <span class="flink">Domain agents</span>
         <span class="flink">Support agents</span>
         <span class="flink">Pricing</span>
-      </div>
+    </div>
       <div class="footer-col">
         <h4 class="footer-head">Learn</h4>
         <a class="flink" href="team.html">The team</a>
@@ -457,6 +761,18 @@
         <span class="flink">Open roles</span>
         <span class="flink">How we work</span>
         <span class="flink">Internships</span>
+      </div>
+      <div class="footer-col footer-brand">
+        <span class="footer-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+            <rect class="mark-accent" x="32" y="10" width="22" height="10"/>
+            <rect class="mark-bar" x="44" y="32" width="10" height="22"/>
+            <rect class="mark-bar" x="10" y="44" width="22" height="10"/>
+            <rect class="mark-bar" x="10" y="10" width="10" height="22"/>
+          </svg>
+          <span class="footer-word">Orvanna</span>
+        </span>
+        <a class="flink footer-brand-mail" href="mailto:support@orvanna.io">support@orvanna.io</a>
       </div>
     </div>
 
@@ -495,29 +811,90 @@
 
 <script>
 /* ============================================================
-   Scroll reveals (IntersectionObserver). Each section reveals
-   once. Reduced motion is handled in the stylesheet: everything
-   is fully visible and static. No looping animation runs on this
-   page, so there is nothing to pause when the tab is hidden.
+   THE FOUR-STOP GATE WALK. One index of state.
+
+   The panel ships rendered at step two -- gate one, the verifier,
+   which is the stop the page is really about -- and the loop
+   strip ships lit to match. This script REPLACES that state; it
+   never creates it, so the section reads correctly with scripting
+   off. The roster below needs no script at all: it is nine native
+   <details>.
    ============================================================ */
 (function () {
-  var reveals = document.querySelectorAll('.reveal');
+  'use strict';
 
-  if (!('IntersectionObserver' in window)) {
-    reveals.forEach(function (el) { el.classList.add('is-in'); });
-    return;
+  var GATES = [
+    {
+      "kicker": "STEP ONE · THE WORK",
+      "title": "A specialist builds one thing",
+      "body": "A specialist receives a charter naming exactly one job and builds against specification prose written by a different agent. It grades nothing. It does not decide whether it succeeded, and it has no vote on whether the phase closes.",
+      "owner": "Whichever specialist owns the phase",
+      "mayNot": "Mark its own work, or open the next phase.",
+      "onFail": "Receives a defect list and rebuilds. The phase stays open."
+    },
+    {
+      "kicker": "STEP TWO · GATE ONE",
+      "title": "The arithmetic is recomputed from scratch",
+      "body": "mlm-verifier reads the specification prose and recomputes every result independently — never the builder’s code, never its reasoning. Then it grades the phase PASS or FAIL. This is the gate that caught figures which looked right on the page and were not.",
+      "owner": "mlm-verifier",
+      "mayNot": "Fix anything. It reports what it found and stops.",
+      "onFail": "FAIL, with the recomputed figure beside the submitted one."
+    },
+    {
+      "kicker": "STEP THREE · GATE TWO",
+      "title": "Every promise is traced to a working artifact",
+      "body": "mlm-qa runs the acceptance checklist in one order: promises first, evidence second. It reads what the specification and the copy claim, then goes looking for the thing that actually does it. A sentence with nothing behind it is a defect even when the arithmetic is perfect.",
+      "owner": "mlm-qa",
+      "mayNot": "Accept a claim on the builder’s word.",
+      "onFail": "FAIL, naming the untraced claim."
+    },
+    {
+      "kicker": "STEP FOUR · BOTH MUST PASS",
+      "title": "Two passes, or the phase stays open",
+      "body": "Only two independent PASS grades close a phase. One FAIL at either gate returns a defect list to the builder and nothing advances. Fable routes all of it and enforces the rule; Howard settles anything the specification left open.",
+      "owner": "Fable, the manager agent",
+      "mayNot": "Close a phase on one pass, or on its own judgement.",
+      "onFail": "Nothing advances. The work goes back around."
+    }
+  ];
+
+  var stops = Array.prototype.slice.call(document.querySelectorAll('.tm-stop'));
+  var loop = Array.prototype.slice.call(document.querySelectorAll('.tm-loop-step'));
+  if (stops.length === 0) { return; }
+
+  var field = {
+    kicker: document.getElementById('gateKicker'),
+    title: document.getElementById('gateTitle'),
+    body: document.getElementById('gateBody'),
+    owner: document.getElementById('gateOwner'),
+    mayNot: document.getElementById('gateMayNot'),
+    onFail: document.getElementById('gateOnFail')
+  };
+
+  function paint(i) {
+    var g = GATES[i];
+    if (!g) { return; }
+    field.kicker.textContent = g.kicker;
+    field.title.textContent = g.title;
+    field.body.textContent = g.body;
+    field.owner.textContent = g.owner;
+    field.mayNot.textContent = g.mayNot;
+    field.onFail.textContent = g.onFail;
+    stops.forEach(function (s, n) {
+      s.classList.toggle('is-on', n === i);
+      s.setAttribute('aria-pressed', n === i ? 'true' : 'false');
+    });
+    /* The loop strip is the same index seen from the side: whichever stop is
+       open, the reader can see where it sits in the cycle. */
+    loop.forEach(function (l, n) { l.classList.toggle('is-on', n === i); });
   }
 
-  var io = new IntersectionObserver(function (entries) {
-    entries.forEach(function (entry) {
-      if (!entry.isIntersecting) return;
-      entry.target.classList.add('is-in');
-      io.unobserve(entry.target);
+  stops.forEach(function (s) {
+    s.addEventListener('click', function () {
+      paint(Number(s.getAttribute('data-gate')));
     });
-  }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
-
-  reveals.forEach(function (el) { io.observe(el); });
-})();
+  });
+}());
 </script>
 
 <!-- The Support control and the theme control both live in

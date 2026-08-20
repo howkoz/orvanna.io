@@ -32,80 +32,95 @@
   'use strict';
 
   /* ----------------------------------------------------------
-     1. THEME
+     1. PALETTE AND THE NAVIGATION DISCLOSURE
      ----------------------------------------------------------
-     The stored choice is applied by a small inline snippet in
-     each page's <head>, BEFORE first paint, so nothing flashes
-     the wrong palette. This file does not repeat that job; it
-     owns the button, the accessible name, and persistence.
+     This section used to own a theme toggle: one storage key,
+     'orvanna-theme', replacing the four per-page keys the site
+     had grown, so a reader who picked light on the library still
+     had light on the plan page.
 
-     Storage key: 'orvanna-theme', values 'dark' or 'light'.
-     It replaces the four keys the pages used to use
-     (orvannaLibraryTheme, orvanna-conductor-theme,
-     orvanna-comp-plan-theme, orvanna-faq-theme), which is the
-     point: a reader who picks light on the library still has
-     light on the plan page.
+     The redesign ended the choice. See pinPalette below for what
+     replaced it and what was deliberately left alone.
      ---------------------------------------------------------- */
 
-  var STORAGE_KEY = 'orvanna-theme';
   var root = document.documentElement;
 
-  function storage() {
-    try { return window.localStorage; } catch (err) { return null; }
+  /* THE PALETTE IS NO LONGER A CHOICE.
+
+     The redesign is mono: one warm paper, one ink, one accent. A control
+     that switched between two palettes has nothing left to switch, so it
+     is gone from the bar rather than left there doing nothing visible.
+
+     What is NOT done here, deliberately: the 144 `[data-theme="light"]`
+     rules still in the stylesheets are not swept tonight. The attribute is
+     pinned to the value every page already boots with, so every one of
+     those selectors resolves exactly as it does today and this change is
+     visually inert. Deleting them is a separate, mechanical pass with its
+     own gate; doing it in the same commit as a nav rebuild would make a
+     regression impossible to attribute.
+
+     One real behaviour change: a returning visitor who once chose light
+     now gets the same page as everybody else. The stored key is cleared
+     rather than read, because a preference between two things that are now
+     one thing is a trap for the next reader of this code. */
+  function pinPalette() {
+    root.setAttribute('data-theme', 'dark');
+    try { window.localStorage.removeItem('orvanna-theme'); }
+    catch (err) { /* storage blocked: nothing was stored to clear */ }
   }
 
-  function currentTheme() {
-    /* Dark is the default. Anything that is not the literal
-       string 'light' is dark, including a missing attribute. */
-    return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
-  }
+  /* ----------------------------------------------------------
+     THE NAVIGATION DISCLOSURE
+     ----------------------------------------------------------
+     Under 900px the menu collapses behind one button. Above it,
+     the button is display:none and none of this runs to any
+     visible effect.
 
-  function paintToggles() {
-    var theme = currentTheme();
-    var label = theme === 'dark'
-      ? 'Switch to the light theme'
-      : 'Switch to the dark theme';
-    var buttons = document.querySelectorAll('[data-theme-toggle]');
-    Array.prototype.forEach.call(buttons, function (button) {
-      /* The control is icon-only, so the accessible name is the
-         only name it has. It has to track state or the button
-         lies to a screen reader in one of its two states. */
-      button.setAttribute('aria-label', label);
-      button.setAttribute('title', label);
-    });
-  }
+     The menu is shut with `display: none` in CSS, so its links
+     leave the tab order when hidden. That is the part a
+     disclosure usually gets wrong: a menu you cannot see but can
+     still tab into strands keyboard focus somewhere invisible.
+     ---------------------------------------------------------- */
 
-  function applyTheme(theme) {
-    root.setAttribute('data-theme', theme === 'light' ? 'light' : 'dark');
-    var store = storage();
-    if (store) {
-      try { store.setItem(STORAGE_KEY, currentTheme()); }
-      catch (err) { /* private browsing: the choice lasts this page only */ }
+  function initDisclosure() {
+    var button = document.querySelector('[data-nav-disclosure]');
+    if (!button) { return; }
+    var links = button.closest ? button.closest('.nav-links') : null;
+    if (!links) { return; }
+
+    function setOpen(open) {
+      links.classList.toggle('is-open', open);
+      button.setAttribute('aria-expanded', open ? 'true' : 'false');
     }
-    paintToggles();
-  }
 
-  function initTheme() {
-    /* Belt and braces: if the inline head snippet was blocked,
-       set the attribute now so the CSS selectors are explicit. */
-    if (root.getAttribute('data-theme') !== 'light') {
-      root.setAttribute('data-theme', 'dark');
-    }
-    paintToggles();
-
-    var buttons = document.querySelectorAll('[data-theme-toggle]');
-    Array.prototype.forEach.call(buttons, function (button) {
-      button.addEventListener('click', function () {
-        applyTheme(currentTheme() === 'dark' ? 'light' : 'dark');
-      });
+    button.addEventListener('click', function () {
+      setOpen(button.getAttribute('aria-expanded') !== 'true');
     });
 
-    /* A second tab of the same site may change the choice. Keep
-       this tab honest rather than letting the two disagree. */
-    window.addEventListener('storage', function (event) {
-      if (event.key !== STORAGE_KEY) { return; }
-      root.setAttribute('data-theme', event.newValue === 'light' ? 'light' : 'dark');
-      paintToggles();
+    /* Escape returns focus to the control that opened the menu.
+       Closing and leaving focus inside a hidden panel is the
+       same strandingth e display:none above exists to prevent. */
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'Escape') { return; }
+      if (button.getAttribute('aria-expanded') !== 'true') { return; }
+      setOpen(false);
+      button.focus();
+    });
+
+    /* A click outside shuts it. Without this the panel covers the
+       page's first screen and the only way out is the button. */
+    document.addEventListener('click', function (event) {
+      if (button.getAttribute('aria-expanded') !== 'true') { return; }
+      if (links.contains(event.target)) { return; }
+      setOpen(false);
+    });
+
+    /* Dragging the window back above the breakpoint must not
+       leave `is-open` set: the class would then apply to a bar
+       that has no disclosure, and the desktop menu would inherit
+       a state nothing can clear. */
+    window.addEventListener('resize', function () {
+      if (window.innerWidth > 900) { setOpen(false); }
     });
   }
 
@@ -284,7 +299,8 @@
      ---------------------------------------------------------- */
 
   function start() {
-    initTheme();
+    pinPalette();
+    initDisclosure();
     initSupport();
   }
 
