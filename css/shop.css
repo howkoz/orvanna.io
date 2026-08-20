@@ -2428,6 +2428,43 @@ body.payment-in-flight .checkout-summary {
 }
 .challenge-chrome[hidden] { display: none; }
 
+/* ============================================================
+   THE PLAID PANEL JOINS THE PAPER SYSTEM, 2026-08-20
+
+   Reported as "Plaid has not been working since the redesign". The
+   mechanism was never broken: the panel opens, the institutions
+   list, the flow runs. What broke was every colour in it, and the
+   reason it was missed is worth keeping.
+
+   THE REDESIGN'S SCOPE WAS #viewCheckout, correctly and by written
+   instruction. This panel lives OUTSIDE all four views, as a
+   full-screen dialog appended near the end of the document, so it
+   was never in scope and never converted. It is reachable only from
+   the checkout, which means a shopper reads it as part of the
+   checkout while the stylesheet treats it as somewhere else. A
+   boundary the code draws and the shopper cannot see is exactly the
+   kind that leaves things behind.
+
+   WHAT WAS ACTUALLY WRONG. Three of the old dark theme's colours
+   survived here:
+
+     the scrim      rgba(2, 6, 20, .78)   navy, dimming a paper page
+     row fills      rgba(2, 6, 20, .42)   navy tiles on paper
+     borders        rgba(148,163,184,..)  slate, from the dark palette
+
+   And a fourth that is subtler and did the most damage:
+   `color: var(--shop-paper)`. That token meant "the near-white ink
+   used on dark tiles" when these rules were written. The paper
+   conversion repurposed it to #1B1917, which is INK. So every label
+   in here asked for near-white, received ink, and was painted onto
+   a navy fill. That is why the bank rows read as unlabelled grey
+   blocks rather than as a list of banks.
+
+   The lesson is about the token, not the panel: RENAMING A TOKEN'S
+   MEANING IS A SILENT CHANGE TO EVERY RULE THAT READS IT. Nothing
+   failed, no build broke, and the only symptom was in a dialog
+   nobody opened during the conversion.
+   ============================================================ */
 .plaid-panel {
   position: fixed;
   inset: 0;
@@ -2436,7 +2473,7 @@ body.payment-in-flight .checkout-summary {
   align-items: flex-start;
   justify-content: center;
   padding: 86px 18px 24px;
-  background: rgba(2, 6, 20, 0.78);
+  background: rgba(27, 25, 23, 0.55);
   backdrop-filter: none;
 }
 .plaid-panel[hidden] { display: none; }
@@ -2466,7 +2503,7 @@ body.payment-in-flight .checkout-summary {
   min-height: 32px;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(148, 163, 184, 0.24);
+  border: 1px solid rgba(27, 25, 23, 0.25);
   border-radius: 0;
   color: var(--shop-text);
   font-size: 0.68rem;
@@ -2476,7 +2513,7 @@ body.payment-in-flight .checkout-summary {
 }
 .plaid-progress-step.is-active {
   border-color: var(--shop-accent-ink);
-  color: var(--shop-paper);
+  color: var(--shop-strong);
   background: rgba(236, 48, 19, 0.12);
   box-shadow: none;
 }
@@ -2492,7 +2529,7 @@ body.payment-in-flight .checkout-summary {
 }
 #plaidTitle {
   margin: 0;
-  color: var(--shop-paper);
+  color: var(--shop-strong);
   font-size: 1.35rem;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -2525,7 +2562,7 @@ body.payment-in-flight .checkout-summary {
   font-size: 0.86rem;
   line-height: 1.7;
 }
-.plaid-copy strong { color: var(--shop-paper); }
+.plaid-copy strong { color: var(--shop-strong); }
 .plaid-step[hidden] { display: none; }
 .plaid-bank-list {
   display: grid;
@@ -2539,10 +2576,10 @@ body.payment-in-flight .checkout-summary {
   grid-template-rows: auto auto;
   align-items: center;
   column-gap: 14px;
-  border: 1px solid rgba(148, 163, 184, 0.34);
+  border: 1px solid rgba(27, 25, 23, 0.25);
   border-radius: 0;
-  background: rgba(2, 6, 20, 0.42);
-  color: var(--shop-paper);
+  background: var(--shop-panel-raised, #F6F4F0);
+  color: var(--shop-strong);
   font-weight: 800;
   letter-spacing: 0.05em;
   text-align: left;
@@ -2601,9 +2638,9 @@ body.payment-in-flight .checkout-summary {
   gap: 14px;
   padding: 12px 14px;
   border-radius: 0;
-  border: 1px solid rgba(148, 163, 184, 0.34);
-  background: rgba(2, 6, 20, 0.42);
-  color: var(--shop-paper);
+  border: 1px solid rgba(27, 25, 23, 0.25);
+  background: var(--shop-panel-raised, #F6F4F0);
+  color: var(--shop-strong);
 }
 .plaid-account.is-selected {
   border-color: var(--shop-accent-ink);
@@ -2625,7 +2662,7 @@ body.payment-in-flight .checkout-summary {
   height: 54px;
   margin: 20px auto;
   border-radius: 0;
-  border: 3px solid rgba(148, 163, 184, 0.24);
+  border: 3px solid rgba(27, 25, 23, 0.25);
   border-top-color: var(--shop-accent-ink);
   animation: plaid-spin 0.85s linear infinite;
 }
