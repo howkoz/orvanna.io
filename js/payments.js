@@ -757,11 +757,13 @@
        shown at all, which is the whole point of frictionless.
 
        The old timer survives ONLY as the fallback for when the
-       status poll itself errors, and a hard cap reveals a
-       still-present frame regardless, so a real challenge can never
-       be trapped invisible. All of this is presentation: it never
-       gates the payment, and the outcome still comes from our
-       server either way.
+       status poll itself errors. If the service answers with a
+       terminal no-action status, the frame stays suppressed: that is
+       a frictionless payment doing exactly what it is supposed to do.
+       A hard cap is used only while the status is still unknown, so a
+       real challenge can never be trapped invisible. All of this is
+       presentation: it never gates the payment, and the outcome still
+       comes from our server either way.
        ============================================================ */
     var CHALLENGE_REVEAL_MS = 1400;      /* fallback timer, poll-error case */
     var REVEAL_POLL_MS = 400;            /* how often to ask while deciding */
@@ -843,12 +845,27 @@
       });
     }
 
+    function isChallengeActionStatus(status, payment) {
+      return status === 'requires_customer_action' && !!(payment && payment.next_action);
+    }
+
+    function isTerminalNoActionStatus(status) {
+      return /^(succeeded|failed|cancelled|canceled|requires_capture|requires_payment_method)$/.test(status);
+    }
+
     function scheduleChallengeReveal() {
       revealActive = true;
       var startedAt = Date.now();
+      var lastKnownStatus = '';
+      var pollAnswered = false;
 
-      function revealNow() {
-        if (!revealActive && !challengePendingTimer) return;
+      function revealNow(fromFallback) {
+        if (!fromFallback && !revealActive) return;
+        if (pollAnswered && isTerminalNoActionStatus(lastKnownStatus)) {
+          cancelChallengeReveal();
+          setChallengeFrameVisible(challengeFrame(), false);
+          return;
+        }
         cancelChallengeReveal();
         var still = challengeFrame();
         /* gone already: the silent phase finished and there was never
@@ -865,14 +882,22 @@
         pollPaymentStatusOnce().then(function (p) {
           if (!revealActive) return;
           var st = String((p && p.status) || '').toLowerCase();
-          if (st === 'requires_customer_action' && p.next_action) {
+          pollAnswered = true;
+          lastKnownStatus = st;
+          if (isChallengeActionStatus(st, p)) {
             revealNow();
+            return;
+          }
+          if (isTerminalNoActionStatus(st)) {
+            cancelChallengeReveal();
+            setChallengeFrameVisible(challengeFrame(), false);
             return;
           }
           if (Date.now() - startedAt > REVEAL_POLL_MAX_MS) {
             /* the service never said challenge but the frame is still
-               here: reveal it rather than risk trapping a real
-               challenge invisible */
+               here and has not reached a terminal frictionless state:
+               reveal it rather than risk trapping a real challenge
+               invisible */
             revealNow();
             return;
           }
@@ -885,7 +910,7 @@
           revealActive = false;
           challengePendingTimer = window.setTimeout(function () {
             challengePendingTimer = null;
-            revealNow();
+            revealNow(true);
           }, CHALLENGE_REVEAL_MS);
         });
       }
