@@ -502,7 +502,77 @@
     function mountWidget(publishableKey) {
       state.publishableKey = publishableKey;
       state.hyper = window.Hyper(publishableKey);
-      state.widgets = state.hyper.widgets({ clientSecret: state.clientSecret });
+      /* ============================================================
+         THE CARD FORM WEARS THE SITE'S PALETTE, 2026-08-20
+
+         Until now this call passed only a client secret, so the
+         provider's form rendered in ITS defaults: a blue accent and
+         rounded corners, inside a page whose whole design system is
+         warm paper, one red accent and zero radius. It was the single
+         element on the checkout that did not belong to the site, and
+         it sits at the exact moment a shopper is deciding whether to
+         trust the page with a card number.
+
+         EVERY VALUE BELOW IS THE SITE'S OWN, composited rather than
+         guessed. The page states its field colours as alpha layers
+         (--field-bg is rgba(234,228,217,.6) over the --glass-bg panel),
+         and an iframe cannot inherit a translucent colour from its
+         parent, so each one is flattened here to the solid value the
+         page actually paints:
+
+           panel  --glass-bg              #F1EDE6
+           field  60% #EAE4D9 over panel  #EDE8DE
+           ink    --field-fg              #1B1917
+           body   --shop-text             #4B453D
+           muted  --shop-muted            #6B645A
+           danger the sheet's failure red #B91C1C
+
+         TWO VALUES DELIBERATELY DO NOT MIRROR THE PAGE, and this is
+         the one judgement call here. Computed against the #EDE8DE
+         field, the page's own field border (30% ink) lands at 1.90 to
+         1 and its focus ring (65% accent) at 2.45 to 1. Both are below
+         the 3 to 1 floor that Web Content Accessibility Guidelines
+         1.4.11 sets for non-text interface parts. Copying them would
+         have carried a measured failure into the one form on this site
+         that handles a card, so the border is taken to 50% ink
+         (#84807A, 3.21 to 1) and the focus ring to the accent at full
+         strength (#EC3013, 3.44 to 1). Consistency with a failing
+         value is not consistency worth having.
+
+         THE PAGE'S OWN FIELDS STILL CARRY THAT FAILURE. Fixing them is
+         a corporate.css change touching every form on the site, which
+         is a different blast radius and belongs in its own commit
+         rather than smuggled into a payment-form theme. Written down
+         here so it is a known debt rather than a discovery.
+
+         VARIABLES ONLY, ON PURPOSE. The loader also accepts a `rules`
+         object for per-selector overrides, and the bundle does mention
+         .Input and .Error. It was left out: the selector vocabulary
+         could not be confirmed from the loader source, and a rule that
+         silently does nothing is worse than no rule, because it reads
+         as covered. If the variables below do not get the form all the
+         way there, rules are the next lever and should be verified
+         against a rendered form rather than assumed.
+         ============================================================ */
+      state.widgets = state.hyper.widgets({
+        clientSecret: state.clientSecret,
+        appearance: {
+          theme: 'Default',
+          labels: 'Above',          /* the page labels its fields above them */
+          colorScheme: 'Light',
+          variables: {
+            fontFamily: '"Segoe UI", "Segoe UI Variable Text", system-ui, -apple-system, sans-serif',
+            fontSizeBase: '15px',   /* .field is 0.95rem */
+            borderRadius: '0',      /* the system has no corner radius anywhere */
+            colorPrimary: '#EC3013',
+            colorBackground: '#EDE8DE',
+            colorText: '#1B1917',
+            colorTextSecondary: '#4B453D',
+            colorTextPlaceholder: '#6B645A',
+            colorDanger: '#B91C1C'
+          }
+        }
+      });
       /* CARD ONLY, AND NO TAB CHROME (owner request, 2026-08-18: remove
          the Google Pay strip and the Card panel; the screen is too busy).
 

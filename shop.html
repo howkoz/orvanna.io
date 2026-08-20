@@ -5,16 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Shop</title>
 <meta name="description" content="The Orvanna agent catalog: artificial intelligence agents, bundles, and packs as monthly subscriptions or one-time purchases. Demonstration storefront, all data synthetic.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=e27fcc744cc7">
-<link rel="stylesheet" href="css/corporate.css?v=e27fcc744cc7">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=4219092868ec">
+<link rel="stylesheet" href="css/corporate.css?v=4219092868ec">
 <!-- The shared chrome, in this order on purpose. corporate.css carries the
      page tokens and the reading surface; css/site-chrome.css owns the bar and
      the footer for all nine corporate pages, and it also DECLARES the
      --chrome-* tokens, so it has to load before anything that reads them;
      css/shop.css comes last because it owns the commerce layer and the cart,
      which the contract calls a function of this page rather than chrome. -->
-<link rel="stylesheet" href="css/site-chrome.css?v=e27fcc744cc7">
-<link rel="stylesheet" href="css/shop.css?v=e27fcc744cc7">
+<link rel="stylesheet" href="css/site-chrome.css?v=4219092868ec">
+<link rel="stylesheet" href="css/shop.css?v=4219092868ec">
 <!-- Why this page in particular must never defer the block below: a deferred
      script would let dark paint first and then snap to light, which on a
      checkout reads as the page reloading mid-payment. The wording below is
@@ -910,8 +910,8 @@
   </div>
 </footer>
 
-<script src="js/catalog.js?v=e27fcc744cc7"></script>
-<script src="js/payments.js?v=e27fcc744cc7"></script>
+<script src="js/catalog.js?v=4219092868ec"></script>
+<script src="js/payments.js?v=4219092868ec"></script>
 <script>
 /* ============================================================
    Orvanna shop. The catalog lives in js/catalog.js (single
@@ -3515,6 +3515,12 @@
       }
       liveState.orderNumber = result.data.order_number;
       liveState.clientSecret = result.data.client_secret;
+      /* WHAT THIS PAYMENT ASKED OF THE BANK, kept where the page can
+         answer for it. create-payment reports three_ds_mode so the
+         checkout never has to infer whether a challenge was requested;
+         it defaults to 'auto' so a function deployed before that field
+         existed still reads as the honest unknown rather than as a
+         promise. */
       liveState.threeDsMode = result.data.three_ds_mode || 'auto';
       applyServerTotals(result.data.totals);
       /* written the moment the order number exists, so it is on
@@ -3585,6 +3591,12 @@
          4000 1111 1111 1115  approval screen, then the card declines
        Expiry month 01, year = current + 3. Full matrix:
        docs/TEST-CARDS.html. See also ROADMAP.md. */
+    /* THE TEST-CARD NOTE HAS TO MATCH THE RAIL IT IS DESCRIBING.
+       2503 only opens an approval screen when the request actually asked
+       for authentication. In auto mode the same card approves
+       frictionlessly with no passcode, and a note promising a screen
+       that never arrives is how a working rail gets read as broken,
+       which is exactly what happened on 2026-08-19. */
     var challengeHint = liveState.threeDsMode === 'three_ds'
       ? '4000 0000 0000 2503 opens the approval screen from your bank; enter the passcode 1234 it shows you and the payment approves. '
       : '4000 0000 0000 2503 is the challenge test card when the backend is forcing 3DS; in auto mode it may approve frictionlessly with no OTP. ';
@@ -4169,6 +4181,6 @@
 })();
 </script>
 
-<script src="js/site-chrome.js?v=e27fcc744cc7"></script>
+<script src="js/site-chrome.js?v=4219092868ec"></script>
 </body>
 </html>
