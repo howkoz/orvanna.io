@@ -2657,7 +2657,39 @@
            spinner over this message would imply something is */
         var spinner = document.querySelector('.plaid-processing');
         if (spinner) spinner.hidden = true;
-        plaidResult.textContent = 'End of the sandbox preview. No order was created, no order number exists, and nothing was charged: the Open Banking payment path is not wired to the payment rail yet. This is the exact point where the real bank authorization will complete once the open-banking rail lands (Phase S2 of the subscription work). Your cart is unchanged. Use Back to checkout to keep shopping or to pay by card.';
+        /* THE PREVIEW NOW FINISHES, 2026-08-20 (owner request).
+
+           It used to stop here and say no order exists. That was
+           honest and it was a dead end: the one payment method a
+           visitor could walk end to end was the one that refused to
+           show them an ending. Google Pay and PayPal have always
+           closed the same way this now does, through demoPlaceOrder,
+           so this is the bank tile joining a path the other two
+           already take rather than a new one being invented.
+
+           SIMULATED IN THE BROWSER, AND NOWHERE ELSE. This writes NO
+           order to the database, on purpose and after checking what
+           would happen if it did. The shop-to-comp bridge selects on
+           `d.payment_status = v_state_gate` (migration 019), so an
+           order row written as succeeded becomes commission volume,
+           and a simulated payment reaching the commission engine is
+           precisely the fault that produced 2,700 phantom Personal
+           Volume in August. A demo ending is not worth a second one.
+
+           So the number is minted by orderNumber(), which returns the
+           O-SIM- shape that exists for exactly this reason: it cannot
+           collide with a real order and a screenshot of it cannot be
+           mistaken for a record of money. Nothing reaches the server,
+           the staff order list, or the bridge.
+
+           The copy still names what did not happen, because the point
+           of the preview is to be believed. */
+        plaidResult.textContent = 'Sandbox authorization complete.';
+        demoPlaceOrder({
+          paymentLabel: 'Bank account, sandbox preview',
+          demoNote: 'Open Banking sandbox preview complete. This order is SIMULATED IN THIS BROWSER: no payment was created, no money moved, and no order exists on the server, which is why its number begins O-SIM. The real bank authorization completes here once the open-banking rail lands (Phase S2 of the subscription work).'
+        });
+        closePlaidPanel();
         plaidAuthorize.disabled = false;
         plaidAuthorize.textContent = plaidAuthorizeLabel();
       }, 650);
