@@ -1526,10 +1526,25 @@ a.product-icon { display: block; }
   border: 2px solid #1B1917;
   box-shadow: none;
 }
-.wallet-paypal-sheet {
-  color: #1B1917;
-  background: #1B1917;
-}
+/* THE PAYPAL SHEET INHERITS THE GROUND, 2026-08-20.
+
+   This rule used to force its own dark ground, from when the sheet
+   imitated PayPal's dark treatment. The pass that converted
+   .wallet-sheet to paper moved this selector's COLOR to ink and left
+   its BACKGROUND at ink, so the whole sheet computed 1.00 to 1 and
+   PayPal went from unreadable one way to unreadable the other. That
+   is the same fault twice in the same block, by the same hand, an
+   hour after writing down that colour lives in pairs. Reading a rule
+   is not the same as reading the pair it forms.
+
+   The override is deleted rather than corrected. .wallet-sheet
+   already carries the right ground and the right ink, and a second
+   declaration of the same surface is what allowed the two halves to
+   drift apart in the first place. The PayPal-specific rules that
+   remain are the ones that are genuinely different: the wordmark
+   colours, the gold Pay button, and a note that is informational
+   rather than a warning. */
+
 .wallet-head {
   min-height: 58px;
   display: flex;
@@ -1562,7 +1577,17 @@ a.product-icon { display: block; }
   font-style: italic;
 }
 .wallet-paypal-logo span:first-child { color: #003087; }
-.wallet-paypal-logo span:last-child { color: #009CDE; }
+/* THE LIGHTER HALF OF THE WORDMARK, corrected 2026-08-20. #009CDE is
+   PayPal's light blue and it computes 2.81 to 1 on the paper sheet,
+   under the 4.5 floor. It is not exempt for being a brand colour: this
+   is not supplied artwork, it is the word "Pal" set in this page's own
+   type and dressed to look like a logotype, and this project already
+   rejected exactly that argument once for a blue letter G. Accepting
+   it would let any text opt out of the floor by asserting a brand.
+   #0070BA is PayPal's own darker primary and computes 4.75 to 1, so
+   the mark stays recognisably theirs and readable. Replace both halves
+   with supplied artwork when it is licensed. */
+.wallet-paypal-logo span:last-child { color: #0070BA; }
 .wallet-close {
   width: 34px;
   height: 34px;
