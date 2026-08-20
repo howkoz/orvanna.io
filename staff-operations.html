@@ -5,10 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Orvanna Staff Operations</title>
 <meta name="description" content="Orvanna staff operations: the subscription billing console and the commission dashboard. Staff sign-in required; demonstration data.">
-<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=f8e5e82fef7a">
-<link rel="stylesheet" href="css/corporate.css?v=f8e5e82fef7a">
-<link rel="stylesheet" href="css/staff.css?v=f8e5e82fef7a">
-<link rel="stylesheet" href="css/staff-ops.css?v=f8e5e82fef7a">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg?v=8d70634136c1">
+<link rel="stylesheet" href="css/corporate.css?v=8d70634136c1">
+<link rel="stylesheet" href="css/staff.css?v=8d70634136c1">
+<link rel="stylesheet" href="css/staff-ops.css?v=8d70634136c1">
 </head>
 <body class="console-body">
 
@@ -91,6 +91,7 @@
           <span class="title-chip">Ranked by consequence, not by arrival</span></h2>
         <p class="queue-count" id="attentionCount">Loading the queue&hellip;</p>
         <p class="ops-status-line" id="attentionStatus"></p>
+        <div class="queue-breakdown" id="attentionBreakdown" hidden></div>
         <div class="ops-table-wrap"><table class="ops-table queue-table" id="attentionTable" hidden>
           <thead><tr>
             <th class="q-when">When</th>
@@ -100,6 +101,7 @@
           </tr></thead>
           <tbody id="attentionBody"></tbody>
         </table></div>
+        <button class="ops-btn-quiet queue-toggle" id="attentionToggle" type="button" hidden></button>
         <p class="queue-note">Every action on this page is server enforced and
           written to the audit log against the operator&#39;s member number.
           Clearing a row records that a human looked; it does not move money
@@ -330,7 +332,7 @@
   <div class="console-wrap" id="footLine">Orvanna staff operations &middot; demonstration data &middot; commission figures from the real compensation engine; billing execution is gated by the server</div>
 </footer>
 
-<script src="js/catalog.js?v=f8e5e82fef7a"></script>
+<script src="js/catalog.js?v=8d70634136c1"></script>
 <script>
 /* ============================================================
    Orvanna Staff Operations: the billing console (subscription
@@ -1260,6 +1262,11 @@
       var tbody = byId('attentionBody');
       clearNode(tbody);
       byId('attentionTable').hidden = rows.length === 0;
+      var toggle = byId('attentionToggle');
+      var breakdown = byId('attentionBreakdown');
+      toggle.hidden = true;
+      breakdown.hidden = true;
+      clearNode(breakdown);
       status.textContent = '';
 
       var open = rows.filter(function (r) { return !r.cleared_at; });
@@ -1273,6 +1280,34 @@
                              : 'Everything here has been looked at.')
         : open.length + (open.length === 1 ? ' thing needs' : ' things need') + ' a human today'
           + (owedKnown ? ', holding ' + fmtMoney(owed) : '') + '.';
+
+      var groups = {};
+      open.forEach(function (r) {
+        var key = String(r.reason || 'Needs review');
+        if (!groups[key]) groups[key] = { count: 0, amount: 0, amountKnown: false };
+        groups[key].count += 1;
+        if (typeof r.amount_at_stake === 'number') {
+          groups[key].amount += r.amount_at_stake;
+          groups[key].amountKnown = true;
+        }
+      });
+      Object.keys(groups).sort(function (a, b) {
+        return groups[b].count - groups[a].count;
+      }).forEach(function (key) {
+        var group = groups[key];
+        var item = el('span', 'queue-breakdown-item');
+        var label = key.replace(/_/g, ' ');
+        item.textContent = group.count + ' ' + label
+          + (group.amountKnown ? ' · ' + fmtMoney(group.amount) : '');
+        breakdown.appendChild(item);
+      });
+      breakdown.hidden = open.length === 0;
+
+      /* Show a small sample from every issue class instead of filling the
+         first viewport with dozens of near-identical records. The full
+         queue remains one click away and keeps its existing row actions. */
+      var visiblePerReason = {};
+      var collapsedRows = [];
 
       rows.forEach(function (r) {
         var tr = el('tr');
@@ -1322,8 +1357,30 @@
           tr.classList.add('q-cleared');
           title.title = 'Looked at by ' + (r.cleared_by || 'an operator');
         }
+        var reasonKey = String(r.reason || 'Needs review');
+        visiblePerReason[reasonKey] = visiblePerReason[reasonKey] || 0;
+        if (r.cleared_at || visiblePerReason[reasonKey] >= 2) {
+          tr.hidden = true;
+          tr.classList.add('q-collapsed-row');
+          collapsedRows.push(tr);
+        } else {
+          visiblePerReason[reasonKey] += 1;
+        }
         tbody.appendChild(tr);
       });
+
+      if (collapsedRows.length) {
+        var expanded = false;
+        toggle.hidden = false;
+        toggle.textContent = 'Show all ' + rows.length + ' queue items';
+        toggle.onclick = function () {
+          expanded = !expanded;
+          collapsedRows.forEach(function (row) { row.hidden = !expanded; });
+          toggle.textContent = expanded
+            ? 'Collapse queue'
+            : 'Show all ' + rows.length + ' queue items';
+        };
+      }
     }).catch(function () {
       status.textContent = serviceUnavailable('billing console');
       count.textContent = 'The queue could not be read.';

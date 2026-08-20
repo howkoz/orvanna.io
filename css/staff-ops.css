@@ -660,6 +660,30 @@
   margin: 6px 0 18px;
 }
 
+.queue-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: -6px 0 18px;
+}
+
+.queue-breakdown-item {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 5px 10px;
+  border: 1px solid rgba(27, 25, 23, 0.32);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #4B453D;
+  text-transform: capitalize;
+  font-variant-numeric: tabular-nums;
+}
+
+.queue-toggle {
+  margin-top: 14px;
+}
+
 .queue-table { width: 100%; }
 .queue-table th.q-when { width: 130px; }
 .queue-table th.q-ref  { width: 200px; }
